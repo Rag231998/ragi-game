@@ -1,52 +1,120 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  background: radial-gradient(circle, #1b1b2f, #090910);
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #263bff 0%, #15162c 35%, #080812 100%);
   color: white;
-  font-family: Arial, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   text-align: center;
+  overflow-x: hidden;
+}
+
+.app {
+  width: min(960px, 96vw);
+  margin: 0 auto;
+  padding: 22px 0 35px;
+}
+
+.hero {
+  margin-bottom: 14px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #00ffcc;
+  letter-spacing: 3px;
+  font-size: 13px;
+  font-weight: bold;
 }
 
 h1 {
-  margin-top: 25px;
-  color: #ffd700;
-  text-shadow: 0 0 15px #ff9900;
+  margin: 6px 0 8px;
+  color: #ffd84d;
+  font-size: clamp(34px, 7vw, 64px);
+  text-shadow: 0 0 18px #ff9d00, 0 0 30px #ff4d00;
 }
 
-p {
-  color: #ddd;
+.subtitle {
+  margin: 0 auto;
+  max-width: 700px;
+  color: #e8e8ff;
 }
 
 .hud {
   display: flex;
   justify-content: center;
-  gap: 25px;
-  margin: 15px;
-  font-size: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.hud-card {
+  min-width: 112px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  backdrop-filter: blur(8px);
+}
+
+.hud-card span {
+  display: block;
+  color: #bfc3ff;
+  font-size: 13px;
+}
+
+.hud-card strong {
+  display: block;
+  margin-top: 4px;
+  color: #fff;
+  font-size: 22px;
+}
+
+.message-bar {
+  min-height: 42px;
+  margin: 8px auto 15px;
+  padding: 11px 16px;
+  max-width: 700px;
+  border-radius: 14px;
+  background: rgba(0,255,204,0.12);
+  border: 1px solid rgba(0,255,204,0.3);
+  color: #dffff8;
   font-weight: bold;
+}
+
+#game-wrapper {
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
 }
 
 #game {
   display: grid;
-  grid-template-columns: repeat(10, 36px);
-  gap: 3px;
+  grid-template-columns: repeat(13, 34px);
+  gap: 4px;
   justify-content: center;
-  margin-top: 20px;
+  padding: 12px;
+  border-radius: 22px;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 0 35px rgba(0, 255, 204, 0.12);
 }
 
 .cell {
-  width: 36px;
-  height: 36px;
-  background: #161625;
-  border-radius: 6px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #15182f;
+  position: relative;
 }
 
 .wall {
-  background: linear-gradient(135deg, #005eff, #003399);
-  box-shadow: 0 0 8px #005eff;
-}
-
-.dot {
-  position: relative;
+  background: linear-gradient(135deg, #1673ff, #0031aa);
+  box-shadow: inset 0 0 8px rgba(255,255,255,0.18), 0 0 10px rgba(22,115,255,0.7);
 }
 
 .dot::after {
@@ -55,51 +123,181 @@ p {
   height: 10px;
   background: #00ffcc;
   position: absolute;
-  top: 13px;
-  left: 13px;
+  top: 12px;
+  left: 12px;
   transform: rotate(45deg);
-  box-shadow: 0 0 8px #00ffcc;
+  box-shadow: 0 0 10px #00ffcc;
+}
+
+.power::after {
+  content: "⚡";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  filter: drop-shadow(0 0 8px #fff36b);
+}
+
+.shield::after {
+  content: "🛡️";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+}
+
+.portal::after {
+  content: "🌀";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 23px;
+  animation: spin 1.2s linear infinite;
 }
 
 .player {
-  background: #ffb000;
+  background: #ffbf1b;
   border-radius: 50%;
-  box-shadow: 0 0 15px orange;
+  box-shadow: 0 0 18px orange, inset 0 -6px 0 rgba(0,0,0,0.15);
+}
+
+.player::after {
+  content: "😄";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
 }
 
 .enemy {
   background: #ff2d55;
   border-radius: 50%;
-  box-shadow: 0 0 15px red;
+  box-shadow: 0 0 16px #ff2d55;
 }
 
-.power {
-  position: relative;
-}
-
-.power::after {
-  content: "";
-  width: 18px;
-  height: 18px;
-  background: #00ffcc;
-  border-radius: 50%;
+.enemy::after {
+  content: "👾";
   position: absolute;
-  top: 9px;
-  left: 9px;
-  box-shadow: 0 0 15px #00ffcc;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 21px;
+}
+
+.enemy.scared {
+  background: #00b7ff;
+  box-shadow: 0 0 18px #00d9ff;
+}
+
+.enemy.scared::after {
+  content: "😵";
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  background: rgba(5,7,18,0.82);
+  backdrop-filter: blur(6px);
+}
+
+.hidden {
+  display: none;
+}
+
+.modal-box {
+  width: min(360px, 92vw);
+  padding: 24px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0.07));
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+}
+
+.modal-box h2 {
+  margin: 0 0 10px;
+  color: #ffd84d;
+  font-size: 34px;
 }
 
 button {
-  margin-top: 20px;
-  padding: 12px 25px;
+  margin: 6px;
+  padding: 13px 22px;
   border: none;
-  border-radius: 10px;
-  background: #ffd700;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ffd84d, #ff9e00);
+  color: #171717;
   font-size: 18px;
   font-weight: bold;
   cursor: pointer;
+  box-shadow: 0 8px 0 #9f5900, 0 0 16px rgba(255,216,77,0.3);
 }
 
 button:hover {
-  background: #ff9900;
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(4px);
+  box-shadow: 0 4px 0 #9f5900;
+}
+
+.controls {
+  margin-top: 18px;
+}
+
+.controls button {
+  min-width: 68px;
+}
+
+.tips {
+  max-width: 720px;
+  margin: 18px auto 0;
+  color: #d8dcff;
+}
+
+kbd {
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 620px) {
+  #game {
+    grid-template-columns: repeat(13, 25px);
+    gap: 3px;
+    padding: 9px;
+  }
+
+  .cell {
+    width: 25px;
+    height: 25px;
+    border-radius: 6px;
+  }
+
+  .dot::after {
+    width: 7px;
+    height: 7px;
+    top: 9px;
+    left: 9px;
+  }
+
+  .player::after,
+  .enemy::after,
+  .power::after,
+  .shield::after,
+  .portal::after {
+    font-size: 16px;
+  }
 }

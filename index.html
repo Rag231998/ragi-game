@@ -1,24 +1,73 @@
 <!DOCTYPE html>
 <html lang="no">
 <head>
-  <meta charset="UTF-8">
-  <title>Mini Maze Game</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ragish Joy Maze Deluxe</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Mini Maze Game</h1>
-  <p>Bruk piltastene for å bevege deg.</p>
+  <main class="app">
+    <section class="hero">
+      <p class="eyebrow">DELUXE VERSION</p>
+      <h1>Ragish Ultimate Deluxe</h1>
+      <p class="subtitle">Samle diamanter, ta power-ups, overlev fiendene og kom deg gjennom alle nivåene.</p>
+    </section>
 
-  <div id="game"></div>
-  <div class="hud">
-  <div>Score: <span id="score">0</span></div>
-  <div>Highscore: <span id="highscore">0</span></div>
-  <div>Level: <span id="level">1</span></div>
-</div>
+    <section class="hud" aria-label="Spillstatus">
+      <div class="hud-card"><span>Score</span><strong id="score">0</strong></div>
+      <div class="hud-card"><span>Highscore</span><strong id="highscore">0</strong></div>
+      <div class="hud-card"><span>Level</span><strong id="level">1</strong></div>
+      <div class="hud-card"><span>Lives</span><strong id="lives">❤️❤️❤️</strong></div>
+      <div class="hud-card"><span>Combo</span><strong id="combo">x1</strong></div>
+    </section>
 
-<button onclick="restartGame()">Restart</button>
+    <section id="messageBar" class="message-bar">Trykk Start Game</section>
+
+    <section id="game-wrapper">
+      <div id="game" aria-label="Spillbrett"></div>
+
+      <div id="startScreen" class="overlay">
+        <div class="modal-box">
+          <h2>Ready?</h2>
+          <p>Bruk piltastene på PC eller knappene under på mobil.</p>
+          <p>⚡ Power-up gjør fiender spiselige i noen sekunder.</p>
+          <p>🌀 Portal åpnes når alle diamanter er samlet.</p>
+          <button onclick="startGame()">Start Game</button>
+        </div>
+      </div>
+
+      <div id="levelScreen" class="overlay hidden">
+        <div class="modal-box">
+          <h2 id="levelTitle">Level Complete!</h2>
+          <p id="levelDescription">Neste nivå starter straks.</p>
+        </div>
+      </div>
+
+      <div id="endScreen" class="overlay hidden">
+        <div class="modal-box">
+          <h2 id="endTitle">GAME OVER</h2>
+          <p>Score: <span id="finalScore">0</span></p>
+          <p>Highscore: <span id="finalHighscore">0</span></p>
+          <button onclick="restartGame()">Restart</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls" aria-label="Mobilkontroller">
+      <button onclick="movePlayer(0,-1)">⬆️</button>
+      <div>
+        <button onclick="movePlayer(-1,0)">⬅️</button>
+        <button onclick="movePlayer(1,0)">➡️</button>
+      </div>
+      <button onclick="movePlayer(0,1)">⬇️</button>
+    </section>
+
+    <section class="tips">
+      <strong>Tips:</strong> Trykk <kbd>P</kbd> for pause. Ta ⚡ og jakt på fiender for bonuspoeng.
+    </section>
+  </main>
 
   <script src="script.js"></script>
 </body>
 </html>
-
