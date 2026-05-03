@@ -1119,3 +1119,236 @@ textarea {
     display: none;
   }
 }
+
+/* --------------------------------------------------
+   V3 Arcade polish: tighter PC layout + safer iOS touch
+   -------------------------------------------------- */
+:root {
+  --arcade-top-space: clamp(6px, 1.2vh, 14px);
+}
+
+body {
+  position: static !important;
+  overflow: hidden !important;
+  touch-action: auto !important;
+}
+
+.app {
+  width: min(1180px, 100vw) !important;
+  height: calc(var(--real-vh, 1vh) * 100) !important;
+  max-height: calc(var(--real-vh, 1vh) * 100) !important;
+  display: grid !important;
+  grid-template-rows: auto auto auto auto 1fr auto auto !important;
+  place-items: center;
+  gap: clamp(4px, 0.7vh, 10px) !important;
+  padding: var(--arcade-top-space) max(8px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left)) !important;
+}
+
+.hero {
+  width: min(980px, 98vw);
+}
+
+h1 {
+  font-size: clamp(32px, min(6.5vw, 7vh), 72px) !important;
+  line-height: 0.92 !important;
+  margin: 0 auto 2px !important;
+  letter-spacing: -1px;
+  animation: titlePulse 2.8s ease-in-out infinite;
+}
+
+.title-icon {
+  display: inline-block;
+  filter: drop-shadow(0 0 12px rgba(255,216,77,0.8));
+  animation: iconBounce 1.6s ease-in-out infinite;
+}
+
+.fun-tagline {
+  margin: 0 auto 3px;
+  color: #9fffee;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  font-size: clamp(11px, 1.8vh, 16px);
+  text-shadow: 0 0 14px rgba(0,255,204,0.45);
+}
+
+.subtitle {
+  font-size: clamp(11px, 1.55vh, 15px) !important;
+}
+
+.language-picker {
+  margin-top: clamp(4px, 0.6vh, 8px) !important;
+}
+
+.hud-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.07));
+  box-shadow: 0 8px 24px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.14);
+}
+
+.action-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: -2px 0 0;
+}
+
+.sound-button {
+  margin: 0;
+  padding: 8px 14px;
+  font-size: clamp(12px, 1.6vh, 15px);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #00ffcc, #36d7ff);
+  box-shadow: 0 5px 0 #006b7c, 0 0 18px rgba(0,255,204,0.24);
+}
+
+#game-wrapper {
+  transform-origin: center top;
+}
+
+#game {
+  --cell-size: min(42px, calc((96vw - 55px) / 13), calc((58vh - 25px) / 11)) !important;
+  box-shadow: 0 0 45px rgba(0, 255, 204, 0.22), 0 26px 65px rgba(0,0,0,0.5);
+  border: 1px solid rgba(0,255,204,0.22);
+}
+
+.overlay {
+  animation: overlayIn 0.28s ease both;
+}
+
+.modal-box {
+  background:
+    radial-gradient(circle at top, rgba(255,216,77,0.18), transparent 38%),
+    linear-gradient(180deg, rgba(44,55,103,0.82), rgba(15,18,43,0.78));
+  border: 1px solid rgba(255,255,255,0.26);
+}
+
+.mini-hype {
+  margin-top: 9px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(0,255,204,0.12);
+  border: 1px solid rgba(0,255,204,0.22);
+  color: #dffff8;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+.party-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.party-layer span {
+  position: absolute;
+  font-size: clamp(22px, 4vw, 46px);
+  opacity: 0.16;
+  filter: drop-shadow(0 0 12px rgba(255,255,255,0.2));
+  animation: floatParty 9s ease-in-out infinite;
+}
+
+.party-layer span:nth-child(1) { left: 8%; top: 18%; animation-delay: 0s; }
+.party-layer span:nth-child(2) { left: 88%; top: 20%; animation-delay: 1.2s; }
+.party-layer span:nth-child(3) { left: 15%; top: 78%; animation-delay: 2.1s; }
+.party-layer span:nth-child(4) { left: 79%; top: 72%; animation-delay: 3.4s; }
+.party-layer span:nth-child(5) { left: 50%; top: 88%; animation-delay: 4.2s; }
+.party-layer span:nth-child(6) { left: 47%; top: 12%; animation-delay: 5.1s; }
+
+.burst-emoji {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  font-size: 26px;
+  animation: burstUp 900ms ease-out forwards;
+}
+
+.screen-hype {
+  animation: screenHype 420ms ease-out;
+}
+
+@keyframes titlePulse {
+  0%,100% { text-shadow: 0 0 18px #ff9d00, 0 0 30px #ff4d00; }
+  50% { text-shadow: 0 0 25px #fff36b, 0 0 46px #ff9d00; }
+}
+
+@keyframes iconBounce {
+  0%,100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-4px) rotate(4deg); }
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes floatParty {
+  0%,100% { transform: translateY(0) rotate(0deg) scale(1); }
+  50% { transform: translateY(-22px) rotate(16deg) scale(1.15); }
+}
+
+@keyframes burstUp {
+  0% { transform: translate(-50%, 0) scale(0.6); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translate(var(--burst-x), -120px) scale(1.5) rotate(22deg); opacity: 0; }
+}
+
+@keyframes screenHype {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.012); }
+  100% { transform: scale(1); }
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 760px) {
+  :root { --cell-size: clamp(34px, min(4.4vw, 5.8vh), 42px) !important; }
+  .controls { display: none !important; }
+  .tips { display: block !important; }
+}
+
+@media (max-width: 620px) {
+  body {
+    overflow: hidden !important;
+  }
+  .app {
+    height: calc(var(--real-vh, 1vh) * 100) !important;
+    max-height: calc(var(--real-vh, 1vh) * 100) !important;
+    gap: 4px !important;
+  }
+  h1 {
+    font-size: clamp(26px, 9vw, 38px) !important;
+  }
+  .fun-tagline,
+  .subtitle {
+    display: none;
+  }
+  .hud-card {
+    min-width: calc((100vw - 48px) / 5) !important;
+    padding: 5px 4px !important;
+  }
+  .message-bar {
+    width: 94vw;
+  }
+  #game {
+    --cell-size: min(30px, calc((96vw - 48px) / 13), calc((43vh - 22px) / 11)) !important;
+  }
+  .modal-box {
+    width: min(350px, 91vw) !important;
+    padding: 15px !important;
+  }
+  .controls {
+    display: grid !important;
+    transform: scale(0.92);
+    transform-origin: center top;
+  }
+}
+
+@media (max-height: 700px) {
+  .eyebrow,
+  .fun-tagline,
+  .subtitle,
+  .tips {
+    display: none !important;
+  }
+  h1 { font-size: clamp(22px, 5.2vh, 40px) !important; }
+  #game { --cell-size: min(33px, calc((96vw - 55px) / 13), calc((50vh - 25px) / 11)) !important; }
+}

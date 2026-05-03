@@ -5,14 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Ragi Joy Maze Deluxe</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="party-layer" aria-hidden="true">
+    <span>💎</span><span>⚡</span><span>🎉</span><span>🚀</span><span>👾</span><span>🌀</span>
+  </div>
   <main class="app">
     <section class="hero">
       <p class="eyebrow">DELUXE VERSION</p>
-      <h1>Ragish 28 years old still single and mingle.Play my game -> Joy Maze Deluxe</h1>
+      <h1><span class="title-icon">🎮</span> Ragish 28 still single <span class="title-icon">🚀</span></h1>
+      <p class="fun-tagline">Ragish Edition • Online battle • Pure arcade joy 😄✨</p>
       <p id="subtitle" class="subtitle">Samle diamanter, ta power-ups, overlev fiendene og kom deg gjennom alle nivåene.</p>
 
       <div class="language-picker">
@@ -42,6 +45,10 @@
 
     <section id="messageBar" class="message-bar">Trykk Start Game</section>
 
+    <section class="action-row" aria-label="Ekstra valg">
+      <button id="soundButton" class="sound-button" type="button" onclick="toggleGameSound()">🔊 Arcade sound: ON</button>
+    </section>
+
     <section id="game-wrapper">
       <div id="game" aria-label="Spillbrett"></div>
 
@@ -52,9 +59,10 @@
           <p id="powerInstruction">⚡ Power-up gjør fiender spiselige i noen sekunder.</p>
           <p id="portalInstruction">🌀 Portal åpnes når alle diamanter er samlet.</p>
           <div class="mode-buttons">
-            <button id="startButton" onclick="startGame()">Spill mot data</button>
+            <button id="startButton" onclick="startGame()">🚀 Spill mot data</button>
             <button id="friendModeButton" type="button" onclick="showFriendLobby()">🌍 Spill mot venn</button>
           </div>
+          <div class="mini-hype">💎 Samle • ⚡ Boost • 👾 Overlev • 🌀 Escape</div>
         </div>
       </div>
 

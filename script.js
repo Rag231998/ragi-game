@@ -1244,3 +1244,184 @@ loadLevel(0);
 gameRunning = false;
 applyLanguage();
 clearInterval(enemyTimer);
+
+// --------------------------------------------------
+// V3 Arcade polish: lyd, hype-animasjoner og mer responsiv følelse
+// --------------------------------------------------
+let arcadeSoundEnabled = localStorage.getItem("ragiJoySound") !== "off";
+let arcadeAudioContext = null;
+let arcadeMusicTimer = null;
+let arcadeMusicStep = 0;
+
+function getAudioContext() {
+  if (!arcadeSoundEnabled) return null;
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return null;
+  if (!arcadeAudioContext) arcadeAudioContext = new AudioContextClass();
+  if (arcadeAudioContext.state === "suspended") arcadeAudioContext.resume();
+  return arcadeAudioContext;
+}
+
+function playTone(frequency = 440, duration = 0.08, type = "square", volume = 0.035) {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const oscillator = ctx.createOscillator();
+  const gain = ctx.createGain();
+  oscillator.type = type;
+  oscillator.frequency.value = frequency;
+  gain.gain.setValueAtTime(volume, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  oscillator.connect(gain);
+  gain.connect(ctx.destination);
+  oscillator.start();
+  oscillator.stop(ctx.currentTime + duration);
+}
+
+function playArcadeSound(kind) {
+  if (!arcadeSoundEnabled) return;
+  const sounds = {
+    start: [[392, 0.08], [523, 0.09], [659, 0.11]],
+    dot: [[880, 0.045]],
+    power: [[330, 0.08], [660, 0.09], [990, 0.12]],
+    hit: [[180, 0.12, "sawtooth", 0.045], [120, 0.14, "sawtooth", 0.04]],
+    win: [[523, 0.09], [659, 0.09], [784, 0.12], [1046, 0.18]],
+    join: [[440, 0.07], [587, 0.08]],
+    ready: [[784, 0.08], [988, 0.10]]
+  };
+  const sequence = sounds[kind] || sounds.dot;
+  sequence.forEach((note, index) => {
+    setTimeout(() => playTone(note[0], note[1], note[2] || "square", note[3] || 0.035), index * 80);
+  });
+}
+
+function startArcadeMusic() {
+  if (!arcadeSoundEnabled || arcadeMusicTimer) return;
+  const notes = [196, 247, 294, 247, 330, 294, 247, 392];
+  arcadeMusicTimer = setInterval(() => {
+    if (!gameRunning || paused || !arcadeSoundEnabled) return;
+    playTone(notes[arcadeMusicStep % notes.length], 0.055, "triangle", 0.012);
+    arcadeMusicStep++;
+  }, 360);
+}
+
+function stopArcadeMusic() {
+  clearInterval(arcadeMusicTimer);
+  arcadeMusicTimer = null;
+}
+
+function updateSoundButton() {
+  const button = document.getElementById("soundButton");
+  if (!button) return;
+  button.textContent = arcadeSoundEnabled ? "🔊 Arcade sound: ON" : "🔇 Arcade sound: OFF";
+}
+
+function toggleGameSound() {
+  arcadeSoundEnabled = !arcadeSoundEnabled;
+  localStorage.setItem("ragiJoySound", arcadeSoundEnabled ? "on" : "off");
+  updateSoundButton();
+  if (arcadeSoundEnabled) {
+    playArcadeSound("ready");
+    startArcadeMusic();
+  } else {
+    stopArcadeMusic();
+  }
+}
+
+function hypeBurst(amount = 12, centerX = window.innerWidth / 2, centerY = window.innerHeight / 2) {
+  const emojis = ["💎", "⚡", "🎉", "🚀", "✨", "👾", "🌀", "🔥"];
+  document.body.classList.add("screen-hype");
+  setTimeout(() => document.body.classList.remove("screen-hype"), 450);
+
+  for (let i = 0; i < amount; i++) {
+    const item = document.createElement("span");
+    item.className = "burst-emoji";
+    item.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    item.style.left = `${centerX + (Math.random() * 80 - 40)}px`;
+    item.style.top = `${centerY + (Math.random() * 40 - 20)}px`;
+    item.style.setProperty("--burst-x", `${Math.random() * 180 - 90}px`);
+    document.body.appendChild(item);
+    setTimeout(() => item.remove(), 950);
+  }
+}
+
+// Wrap eksisterende spillfunksjoner uten å ødelegge strukturen din.
+const originalStartGame = startGame;
+startGame = function patchedStartGame() {
+  originalStartGame();
+  playArcadeSound("start");
+  startArcadeMusic();
+  hypeBurst(18);
+};
+
+const originalStartOnlineGame = startOnlineGame;
+startOnlineGame = function patchedStartOnlineGame() {
+  originalStartOnlineGame();
+  playArcadeSound("start");
+  startArcadeMusic();
+  hypeBurst(22);
+};
+
+const originalCollectTile = collectTile;
+collectTile = function patchedCollectTile(x, y) {
+  const before = map[y] && map[y][x];
+  originalCollectTile(x, y);
+  if (before === TILE.DOT) playArcadeSound("dot");
+  if (before === TILE.POWER || before === TILE.SHIELD || before === TILE.PORTAL) {
+    playArcadeSound(before === TILE.POWER ? "power" : "ready");
+    hypeBurst(8, window.innerWidth / 2, window.innerHeight / 2);
+  }
+};
+
+const originalLoseLife = loseLife;
+loseLife = function patchedLoseLife() {
+  playArcadeSound("hit");
+  originalLoseLife();
+};
+
+const originalNextLevel = nextLevel;
+nextLevel = function patchedNextLevel() {
+  playArcadeSound("win");
+  hypeBurst(18);
+  originalNextLevel();
+};
+
+const originalEndGame = endGame;
+endGame = function patchedEndGame(won) {
+  if (won) {
+    playArcadeSound("win");
+    hypeBurst(26);
+  } else {
+    playArcadeSound("hit");
+  }
+  stopArcadeMusic();
+  originalEndGame(won);
+};
+
+const originalShowFriendLobby = showFriendLobby;
+showFriendLobby = function patchedShowFriendLobby() {
+  originalShowFriendLobby();
+  playArcadeSound("join");
+};
+
+const originalSetPlayerReady = setPlayerReady;
+setPlayerReady = async function patchedSetPlayerReady() {
+  playArcadeSound("ready");
+  await originalSetPlayerReady();
+};
+
+// PC skal starte mer zoomet inn/nærmere, men mobil skal fortsatt få plass.
+function tuneBoardForScreen() {
+  const root = document.documentElement;
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  if (w >= 900 && h >= 760) {
+    root.style.setProperty("--cell-size", "min(42px, 5.7vh)");
+  } else if (w <= 620) {
+    root.style.setProperty("--cell-size", "min(30px, calc((96vw - 48px) / 13), calc((43vh - 22px) / 11))");
+  }
+}
+
+window.addEventListener("resize", tuneBoardForScreen, { passive: true });
+window.addEventListener("orientationchange", () => setTimeout(tuneBoardForScreen, 250), { passive: true });
+tuneBoardForScreen();
+updateSoundButton();
