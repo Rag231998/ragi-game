@@ -301,3 +301,413 @@ kbd {
     font-size: 16px;
   }
 }
+
+
+/* --------------------------------------------------
+   Fancy og søkbar språkvelger
+   -------------------------------------------------- */
+.language-picker {
+  position: relative;
+  width: min(760px, 94vw);
+  margin: 14px auto 0;
+  z-index: 20;
+}
+
+.language-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 11px 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(0,255,204,0.95), rgba(43,128,255,0.95));
+  color: #061018;
+  box-shadow: 0 8px 0 rgba(0,64,91,0.65), 0 0 22px rgba(0,255,204,0.35);
+}
+
+.language-button span:first-child { font-size: 24px; }
+.language-arrow { font-size: 22px; line-height: 1; }
+
+.language-panel {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 12px);
+  transform: translateX(-50%);
+  width: min(760px, 94vw);
+  padding: 14px;
+  border-radius: 22px;
+  background: rgba(9, 12, 31, 0.94);
+  border: 1px solid rgba(0, 255, 204, 0.35);
+  box-shadow: 0 22px 60px rgba(0,0,0,0.55), 0 0 35px rgba(0,255,204,0.16);
+  backdrop-filter: blur(12px);
+}
+
+.language-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  border-radius: 15px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.16);
+}
+
+.language-search-wrap input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.language-search-wrap input::placeholder { color: rgba(255,255,255,0.62); }
+
+.language-list {
+  max-height: 280px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+  gap: 8px;
+  padding-right: 4px;
+}
+
+.language-option {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 9px;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.10);
+  color: white;
+  box-shadow: none;
+  font-size: 15px;
+  text-align: left;
+  transition: 0.18s ease;
+}
+
+.language-option:hover { transform: scale(1.03); background: rgba(0,255,204,0.18); }
+.language-option.active-language { outline: 2px solid #00ffcc; background: rgba(0,255,204,0.22); box-shadow: 0 0 18px rgba(0,255,204,0.35); }
+.language-option .flag { font-size: 22px; }
+.language-option .language-meta { display: flex; flex-direction: column; line-height: 1.15; }
+.language-option .country { color: rgba(255,255,255,0.66); font-size: 12px; margin-top: 2px; }
+.language-empty { grid-column: 1 / -1; color: #d8dcff; padding: 14px; }
+
+@media (max-width: 620px) {
+  .language-panel {
+    position: fixed;
+    top: 72px;
+    left: 50%;
+    width: 94vw;
+  }
+  .language-list { max-height: 55vh; grid-template-columns: 1fr; }
+}
+
+
+/* --------------------------------------------------
+   Spillmodus og online-rom
+   -------------------------------------------------- */
+.mode-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.friend-lobby {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(0, 255, 204, 0.08);
+  border: 1px solid rgba(0, 255, 204, 0.25);
+}
+
+.friend-title {
+  margin: 0 0 6px;
+  color: #00ffcc;
+  font-weight: bold;
+}
+
+.friend-small {
+  margin: 0 0 10px;
+  color: #d8dcff;
+  font-size: 14px;
+}
+
+.join-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.join-row input {
+  width: min(210px, 90%);
+  padding: 12px 14px;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 14px;
+  outline: none;
+  background: rgba(255,255,255,0.12);
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.join-row input::placeholder { color: rgba(255,255,255,0.55); }
+
+.room-info {
+  margin: 12px auto;
+  padding: 12px;
+  max-width: 270px;
+  border-radius: 16px;
+  background: rgba(255,216,77,0.13);
+  border: 1px solid rgba(255,216,77,0.35);
+}
+
+.room-info p { margin: 0 0 4px; color: #ffeaa0; }
+.room-info strong { display: block; font-size: 26px; letter-spacing: 2px; color: #ffd84d; }
+
+.online-status {
+  margin-top: 10px;
+  color: #e8e8ff;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.player-two {
+  background: #36d7ff;
+  border-radius: 50%;
+  box-shadow: 0 0 18px #36d7ff, inset 0 -6px 0 rgba(0,0,0,0.15);
+}
+
+.player-two::after {
+  content: "😎";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+}
+
+@media (max-width: 620px) {
+  .join-row input { width: 100%; }
+  .friend-lobby button { font-size: 14px; padding: 10px 12px; }
+  .player-two::after { font-size: 16px; }
+}
+
+/* --------------------------------------------------
+   Proff popup for Spill mot venn / romkode
+   -------------------------------------------------- */
+.friend-modal {
+  width: min(560px, 94vw);
+  max-height: 92vh;
+  padding: 0;
+  border: none;
+  border-radius: 28px;
+  color: white;
+  background: transparent;
+  overflow: visible;
+}
+
+.friend-modal::backdrop {
+  background: rgba(0, 0, 0, 0.68);
+  backdrop-filter: blur(8px);
+}
+
+.friend-modal-card {
+  position: relative;
+  padding: 26px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top left, rgba(0,255,204,0.24), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(255,216,77,0.18), transparent 30%),
+    linear-gradient(180deg, rgba(28,34,72,0.98), rgba(11,13,32,0.98));
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 30px 90px rgba(0,0,0,0.65), 0 0 36px rgba(0,255,204,0.16);
+  text-align: left;
+}
+
+.friend-modal-close {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 42px;
+  height: 42px;
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  color: white;
+  box-shadow: none;
+  font-size: 20px;
+}
+
+.friend-kicker {
+  margin: 0 0 8px;
+  color: #00ffcc;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.friend-modal h2 {
+  margin: 0 48px 8px 0;
+  color: #ffd84d;
+  font-size: clamp(30px, 6vw, 46px);
+  text-shadow: 0 0 18px rgba(255,157,0,0.65);
+}
+
+.friend-subtitle,
+.friend-help {
+  margin: 0 0 18px;
+  color: #d8dcff;
+  line-height: 1.4;
+}
+
+.friend-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 6px;
+  margin: 18px 0;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.09);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.friend-tab {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 13px;
+  background: transparent;
+  color: #d8dcff;
+  box-shadow: none;
+  font-size: 16px;
+}
+
+.friend-tab.is-active {
+  background: linear-gradient(135deg, #00ffcc, #2b80ff);
+  color: #061018;
+  box-shadow: 0 0 20px rgba(0,255,204,0.22);
+}
+
+.friend-panel {
+  margin: 14px 0;
+}
+
+.friend-primary {
+  width: 100%;
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.friend-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #bfc3ff;
+  font-weight: bold;
+}
+
+.friend-input-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.friend-input,
+.room-code-display {
+  min-width: 0;
+  height: 54px;
+  padding: 0 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(0,255,204,0.28);
+  outline: none;
+  background: rgba(255,255,255,0.10);
+  color: white;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.room-code-display {
+  color: #00ffcc;
+  text-align: center;
+  text-shadow: 0 0 12px rgba(0,255,204,0.55);
+}
+
+.room-info,
+.lobby-panel {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(0,255,204,0.26);
+  background: rgba(0,255,204,0.08);
+}
+
+.ready-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ready-card {
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.10);
+  text-align: center;
+}
+
+.ready-card span {
+  display: block;
+  color: #bfc3ff;
+  font-size: 13px;
+}
+
+.ready-card strong {
+  display: block;
+  margin-top: 5px;
+  color: white;
+}
+
+.online-status {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.10);
+  color: #dffff8;
+  text-align: center;
+  font-weight: bold;
+  line-height: 1.35;
+}
+
+@media (max-width: 620px) {
+  .friend-modal-card { padding: 22px 16px; }
+  .friend-input-row { grid-template-columns: 1fr; }
+  .friend-input,
+  .room-code-display { width: 100%; }
+  .ready-grid { grid-template-columns: 1fr; }
+}
+
+/* Gjør mobilknappene roligere: mindre scrolling/zoom mens man spiller. */
+.controls,
+.controls button,
+#game {
+  touch-action: manipulation;
+}
+
+/* Gir tydelig feedback når romkode-knappen jobber */
+button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+  transform: none !important;
+}

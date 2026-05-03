@@ -3,15 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ragish Joy Maze Deluxe</title>
+  <title>Ragish 28 years old still single and mingle. Joy Maze Deluxe</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <main class="app">
     <section class="hero">
       <p class="eyebrow">DELUXE VERSION</p>
-      <h1>Jeevithan LOVE Navina tooooo much omg.. Ultimate Deluxe</h1>
-      <p class="subtitle">Samle diamanter, ta power-ups, overlev fiendene og kom deg gjennom alle nivåene.</p>
+      <h1>Ragish 28 years old still single and mingle.Play my game -> Joy Maze Deluxe</h1>
+      <p id="subtitle" class="subtitle">Samle diamanter, ta power-ups, overlev fiendene og kom deg gjennom alle nivåene.</p>
+
+      <div class="language-picker">
+        <button id="languageButton" class="language-button" type="button" onclick="toggleLanguagePanel()" aria-expanded="false">
+          <span id="currentLanguageFlag">🇳🇴</span>
+          <span id="currentLanguageName">Norsk</span>
+          <span class="language-arrow">⌄</span>
+        </button>
+
+        <div id="languagePanel" class="language-panel hidden" aria-label="Velg språk">
+          <div class="language-search-wrap">
+            <span>🔎</span>
+            <input id="languageSearch" type="text" placeholder="Søk språk eller land..." oninput="filterLanguageList()" />
+          </div>
+          <div id="languageList" class="language-list"></div>
+        </div>
+      </div>
     </section>
 
     <section class="hud" aria-label="Spillstatus">
@@ -29,11 +45,14 @@
 
       <div id="startScreen" class="overlay">
         <div class="modal-box">
-          <h2>Ready?</h2>
-          <p>Bruk piltastene på PC eller knappene under på mobil.</p>
-          <p>⚡ Power-up gjør fiender spiselige i noen sekunder.</p>
-          <p>🌀 Portal åpnes når alle diamanter er samlet.</p>
-          <button onclick="startGame()">Start Game</button>
+          <h2 id="startTitle">Ready?</h2>
+          <p id="startInstruction">Bruk piltastene på PC eller knappene under på mobil.</p>
+          <p id="powerInstruction">⚡ Power-up gjør fiender spiselige i noen sekunder.</p>
+          <p id="portalInstruction">🌀 Portal åpnes når alle diamanter er samlet.</p>
+          <div class="mode-buttons">
+            <button id="startButton" onclick="startGame()">Spill mot data</button>
+            <button id="friendModeButton" type="button" onclick="showFriendLobby()">🌍 Spill mot venn</button>
+          </div>
         </div>
       </div>
 
@@ -49,7 +68,7 @@
           <h2 id="endTitle">GAME OVER</h2>
           <p>Score: <span id="finalScore">0</span></p>
           <p>Highscore: <span id="finalHighscore">0</span></p>
-          <button onclick="restartGame()">Restart</button>
+          <button id="restartButton" onclick="restartGame()">Restart</button>
         </div>
       </div>
     </section>
@@ -64,9 +83,86 @@
     </section>
 
     <section class="tips">
-      <strong>Tips:</strong> Trykk <kbd>P</kbd> for pause. Ta ⚡ og jakt på fiender for bonuspoeng.
+      <strong id="tipsTitle">Tips:</strong> <span id="tipsText">Trykk <kbd>P</kbd> for pause. Ta ⚡ og jakt på fiender for bonuspoeng.</span>
     </section>
   </main>
+
+
+  <!-- Egen proff boks for Spill mot venn. Den ligger utenfor spillbrettet så den ikke blir klemt/rotete. -->
+  <dialog id="friendModal" class="friend-modal" aria-labelledby="friendModalTitle">
+    <div class="friend-modal-card">
+      <button id="friendModalClose" class="friend-modal-close" type="button" aria-label="Lukk">✕</button>
+
+      <p class="friend-kicker">ONLINE MULTIPLAYER BETA</p>
+      <h2 id="friendModalTitle">Spill mot venn</h2>
+      <p class="friend-subtitle">Lag et privat rom, send koden til kompisen din og start når begge er klare.</p>
+
+      <div class="friend-tabs" role="tablist" aria-label="Velg multiplayer handling">
+        <button id="friendTabCreate" class="friend-tab is-active" type="button" role="tab" aria-selected="true">Lag rom</button>
+        <button id="friendTabJoin" class="friend-tab" type="button" role="tab" aria-selected="false">Bli med</button>
+      </div>
+
+      <section id="createRoomPanel" class="friend-panel">
+        <button id="createRoomButton" class="friend-primary" type="button" onclick="createFriendRoom()">✨ Generer romkode</button>
+        <p class="friend-help">Koden vises her og kan sendes på Teams, Messenger, WhatsApp osv.</p>
+      </section>
+
+      <section id="joinRoomPanel" class="friend-panel hidden" hidden>
+        <label class="friend-label" for="roomCodeInput">Skriv inn romkode fra vennen din</label>
+        <div class="friend-input-row">
+          <input id="roomCodeInput" class="friend-input" type="text" maxlength="6" placeholder="ABC123" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+          <button id="joinRoomButton" type="button" onclick="joinFriendRoom()">Bli med</button>
+        </div>
+      </section>
+
+      <section id="roomInfo" class="room-info hidden" hidden>
+        <label class="friend-label" for="roomCodeDisplay">Din romkode</label>
+        <div class="friend-input-row">
+          <input id="roomCodeDisplay" class="room-code-display" type="text" readonly value="" />
+          <button id="copyRoomButton" type="button" onclick="copyRoomCode()">Kopier</button>
+        </div>
+      </section>
+
+      <section id="lobbyPanel" class="lobby-panel hidden" hidden>
+        <div class="ready-grid">
+          <div class="ready-card">
+            <span>Du</span>
+            <strong id="readySelf">Ikke klar</strong>
+          </div>
+          <div class="ready-card">
+            <span>Venn</span>
+            <strong id="readyOther">Venter ...</strong>
+          </div>
+        </div>
+        <button id="readyButton" class="friend-primary" type="button" onclick="setPlayerReady()">✅ Jeg er klar</button>
+      </section>
+
+      <div id="onlineStatus" class="online-status" aria-live="polite">Velg Lag rom eller Bli med.</div>
+    </div>
+  </dialog>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+    import { getDatabase, ref, set, get, onValue, update, remove, onDisconnect, runTransaction } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCCU3cjdqYfwGv-Ztbt3ODj1pOM-8s4Xhs",
+      authDomain: "rag-game.firebaseapp.com",
+      databaseURL: "https://rag-game-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "rag-game",
+      storageBucket: "rag-game.firebasestorage.app",
+      messagingSenderId: "709645403858",
+      appId: "1:709645403858:web:0f01a8c59b46cb996f8f0b",
+      measurementId: "G-NL6SZDFTW5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    // Gjør Firebase tilgjengelig for vanlig script.js uten npm/build tools.
+    window.FirebaseGame = { database, ref, set, get, onValue, update, remove, onDisconnect, runTransaction };
+    window.dispatchEvent(new Event("firebase-ready"));
+  </script>
 
   <script src="script.js"></script>
 </body>
