@@ -2,8 +2,10 @@
 <html lang="no">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ragish 28 years old still single and mingle. Joy Maze Deluxe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Ragi Joy Maze Deluxe</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -74,12 +76,12 @@
     </section>
 
     <section class="controls" aria-label="Mobilkontroller">
-      <button onclick="movePlayer(0,-1)">⬆️</button>
+      <button class="move-btn" data-dx="0" data-dy="-1" type="button" aria-label="Opp">⬆️</button>
       <div>
-        <button onclick="movePlayer(-1,0)">⬅️</button>
-        <button onclick="movePlayer(1,0)">➡️</button>
+        <button class="move-btn" data-dx="-1" data-dy="0" type="button" aria-label="Venstre">⬅️</button>
+        <button class="move-btn" data-dx="1" data-dy="0" type="button" aria-label="Høyre">➡️</button>
       </div>
-      <button onclick="movePlayer(0,1)">⬇️</button>
+      <button class="move-btn" data-dx="0" data-dy="1" type="button" aria-label="Ned">⬇️</button>
     </section>
 
     <section class="tips">
@@ -93,7 +95,7 @@
     <div class="friend-modal-card">
       <button id="friendModalClose" class="friend-modal-close" type="button" aria-label="Lukk">✕</button>
 
-      <p class="friend-kicker">ONLINE MULTIPLAYER BETA</p>
+      <p class="friend-kicker">ONLINE MULTIPLAYER</p>
       <h2 id="friendModalTitle">Spill mot venn</h2>
       <p class="friend-subtitle">Lag et privat rom, send koden til kompisen din og start når begge er klare.</p>
 

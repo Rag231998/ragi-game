@@ -711,3 +711,411 @@ button:disabled {
   cursor: wait;
   transform: none !important;
 }
+
+
+/* --------------------------------------------------
+   Proff fullskjerm / mobilfix / mer "arcade" følelse
+   -------------------------------------------------- */
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+body {
+  height: 100svh;
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+  touch-action: none;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+body::before {
+  background:
+    radial-gradient(circle at 15% 18%, rgba(0,255,204,0.22), transparent 24%),
+    radial-gradient(circle at 82% 12%, rgba(255,216,77,0.18), transparent 22%),
+    radial-gradient(circle at 50% 90%, rgba(255,45,85,0.16), transparent 24%);
+  animation: joyGlow 8s ease-in-out infinite alternate;
+}
+
+body::after {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(circle, black, transparent 72%);
+}
+
+.app {
+  height: 100svh;
+  width: min(980px, 98vw);
+  display: grid;
+  grid-template-rows: auto auto auto 1fr auto auto;
+  align-content: start;
+  gap: clamp(5px, 1vh, 12px);
+  padding: clamp(6px, 1.5vh, 16px) 0;
+  overflow: hidden;
+}
+
+.hero { margin-bottom: 0; }
+.eyebrow { font-size: clamp(10px, 1.7vh, 13px); }
+h1 {
+  margin: 3px auto 4px;
+  max-width: 900px;
+  font-size: clamp(22px, 4.2vh, 50px);
+  line-height: 0.98;
+}
+.subtitle {
+  font-size: clamp(12px, 1.9vh, 16px);
+}
+
+.hud {
+  margin: 0;
+  gap: clamp(5px, 1vw, 10px);
+}
+
+.hud-card {
+  min-width: clamp(76px, 15vw, 112px);
+  padding: clamp(6px, 1.2vh, 10px) clamp(8px, 1.5vw, 14px);
+  border-radius: 14px;
+}
+
+.hud-card span { font-size: clamp(10px, 1.6vh, 13px); }
+.hud-card strong { font-size: clamp(16px, 2.6vh, 22px); }
+
+.message-bar {
+  min-height: auto;
+  margin: 0 auto;
+  padding: clamp(7px, 1.4vh, 11px) 14px;
+  font-size: clamp(12px, 1.8vh, 16px);
+}
+
+#game-wrapper {
+  align-self: center;
+  justify-self: center;
+  max-width: 98vw;
+  max-height: 100%;
+}
+
+#game {
+  --tile-size: min(34px, calc((98vw - 62px) / 13), calc((48svh - 34px) / 11));
+  grid-template-columns: repeat(13, var(--tile-size));
+  gap: clamp(2px, 0.65vw, 4px);
+  padding: clamp(7px, 1.4vw, 12px);
+  border-radius: 24px;
+}
+
+.cell {
+  width: var(--tile-size);
+  height: var(--tile-size);
+  border-radius: max(5px, calc(var(--tile-size) * 0.22));
+}
+
+.dot::after {
+  width: calc(var(--tile-size) * 0.30);
+  height: calc(var(--tile-size) * 0.30);
+  top: calc(var(--tile-size) * 0.35);
+  left: calc(var(--tile-size) * 0.35);
+}
+
+.player::after,
+.enemy::after,
+.power::after,
+.shield::after,
+.portal::after,
+.player-two::after {
+  font-size: calc(var(--tile-size) * 0.64);
+}
+
+.modal-box {
+  width: min(390px, 90vw);
+  padding: clamp(14px, 2.3vh, 24px);
+}
+
+.modal-box h2 {
+  font-size: clamp(24px, 4vh, 34px);
+}
+
+.controls {
+  margin-top: 0;
+  display: grid;
+  place-items: center;
+  gap: 3px;
+  touch-action: none;
+}
+
+.controls button {
+  min-width: clamp(54px, 12vw, 68px);
+  padding: clamp(8px, 1.5vh, 13px) clamp(15px, 3vw, 22px);
+  font-size: clamp(17px, 2.9vh, 24px);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.tips {
+  margin: 0 auto;
+  font-size: clamp(11px, 1.6vh, 15px);
+}
+
+button,
+input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-height: 720px) {
+  .subtitle,
+  .tips { display: none; }
+  .language-picker { margin-top: 6px; }
+  .hud-card { min-width: 74px; }
+}
+
+@media (max-width: 620px) {
+  .app {
+    width: 100vw;
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+  .language-button {
+    padding: 8px 14px;
+    font-size: 14px;
+  }
+  .friend-modal {
+    max-height: 96svh;
+  }
+  .friend-modal-card {
+    max-height: 94svh;
+    overflow-y: auto;
+  }
+}
+
+@keyframes joyGlow {
+  from { transform: rotate(0deg) scale(1); opacity: 0.85; }
+  to { transform: rotate(8deg) scale(1.08); opacity: 1; }
+}
+
+/* --------------------------------------------------
+   iOS + Windows compatibility / full-screen layout
+   -------------------------------------------------- */
+:root {
+  --cell-size: clamp(24px, min(5.2vw, 4.4vh), 34px);
+  --cell-gap: clamp(2px, 0.45vw, 4px);
+  --game-pad: clamp(7px, 1.2vw, 12px);
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100dvh;
+  position: fixed;
+  inset: 0;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.app {
+  width: min(960px, 100vw);
+  height: 100dvh;
+  max-height: 100dvh;
+  padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: clamp(5px, 0.9vh, 12px);
+}
+
+.hero { margin-bottom: 0; flex: 0 0 auto; }
+.eyebrow { font-size: clamp(9px, 1.4vh, 13px); }
+h1 { margin: 0; font-size: clamp(26px, min(7vw, 5.4vh), 54px); line-height: 1; }
+.subtitle { font-size: clamp(11px, 1.7vh, 15px); line-height: 1.25; }
+.language-picker { margin-top: clamp(5px, 0.8vh, 10px); }
+.language-button { padding: clamp(7px, 1vh, 11px) clamp(12px, 2vw, 18px); font-size: clamp(13px, 1.7vh, 18px); }
+
+.hud {
+  flex: 0 0 auto;
+  gap: clamp(5px, 1vw, 10px);
+  margin: 0;
+}
+
+.hud-card {
+  min-width: clamp(66px, 17vw, 112px);
+  padding: clamp(5px, 0.8vh, 10px) clamp(7px, 1.2vw, 14px);
+  border-radius: clamp(10px, 1.8vh, 16px);
+}
+
+.hud-card span { font-size: clamp(10px, 1.5vh, 13px); }
+.hud-card strong { font-size: clamp(16px, 2.4vh, 22px); margin-top: 1px; }
+
+.message-bar {
+  flex: 0 0 auto;
+  min-height: 0;
+  margin: 0 auto;
+  padding: clamp(7px, 1.2vh, 11px) 12px;
+  font-size: clamp(12px, 1.7vh, 16px);
+  max-width: min(700px, 94vw);
+}
+
+#game-wrapper {
+  flex: 0 0 auto;
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+#game {
+  grid-template-columns: repeat(13, var(--cell-size)) !important;
+  gap: var(--cell-gap) !important;
+  padding: var(--game-pad) !important;
+  margin: 0 !important;
+  max-width: 100%;
+  touch-action: none;
+}
+
+.cell {
+  width: var(--cell-size) !important;
+  height: var(--cell-size) !important;
+  border-radius: clamp(5px, 1vh, 8px);
+}
+
+.dot::after {
+  width: calc(var(--cell-size) * 0.28) !important;
+  height: calc(var(--cell-size) * 0.28) !important;
+  top: calc(var(--cell-size) * 0.36) !important;
+  left: calc(var(--cell-size) * 0.36) !important;
+}
+
+.player::after,
+.enemy::after,
+.power::after,
+.shield::after,
+.portal::after,
+.player-two::after {
+  font-size: calc(var(--cell-size) * 0.62) !important;
+}
+
+.controls {
+  flex: 0 0 auto;
+  margin-top: clamp(3px, 0.7vh, 10px);
+  touch-action: none;
+}
+
+.controls button {
+  min-width: clamp(46px, 13vw, 68px);
+  height: clamp(42px, 7.4vh, 58px);
+  margin: clamp(2px, 0.6vh, 6px);
+  padding: 0;
+  font-size: clamp(18px, 3vh, 26px);
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tips {
+  flex: 0 0 auto;
+  margin: 0 auto;
+  font-size: clamp(11px, 1.6vh, 15px);
+  line-height: 1.2;
+  max-width: min(720px, 94vw);
+}
+
+button,
+input {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* På PC/Windows er tastatur best. Skjul mobilpiler for å bruke mer plass. */
+@media (hover: hover) and (pointer: fine) and (min-width: 760px) {
+  .controls { display: none; }
+  :root { --cell-size: clamp(30px, min(4.4vw, 5.2vh), 38px); }
+}
+
+/* Lav skjerm: fjern mest mulig luft så alt passer uten scroll. */
+@media (max-height: 760px) {
+  .subtitle { display: none; }
+  .language-picker { margin-top: 4px; }
+  .hud { gap: 5px; }
+  .tips { display: none; }
+  :root { --cell-size: clamp(22px, min(5vw, 4.1vh), 31px); --cell-gap: 2px; --game-pad: 7px; }
+}
+
+@media (max-height: 650px) {
+  .eyebrow { display: none; }
+  h1 { font-size: clamp(22px, 4.8vh, 36px); }
+  .hud-card { min-width: 62px; padding: 4px 6px; }
+  .message-bar { padding: 5px 8px; }
+  :root { --cell-size: clamp(20px, min(4.7vw, 3.8vh), 28px); }
+}
+
+@media (max-width: 480px) {
+  .hud-card { min-width: calc((100vw - 42px) / 5); }
+  .hud-card span { font-size: 9px; }
+  .hud-card strong { font-size: 15px; }
+  .modal-box { width: min(330px, 88vw); padding: 16px; }
+  .modal-box h2 { font-size: 28px; }
+  button { font-size: 15px; padding: 11px 14px; }
+}
+
+.friend-modal {
+  max-height: min(92dvh, 92vh);
+  overflow: hidden;
+}
+
+.friend-modal-card {
+  max-height: min(92dvh, 92vh);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.language-panel {
+  max-height: min(72dvh, 560px);
+  overflow: hidden;
+}
+
+.language-list {
+  max-height: min(52dvh, 320px);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* V2.1: ekstra iOS/Windows fullskjerm-stabilitet */
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  min-height: calc(var(--real-vh, 1vh) * 100);
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+@media (hover: hover) and (pointer: fine) {
+  .controls {
+    display: none;
+  }
+}

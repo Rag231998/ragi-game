@@ -136,7 +136,7 @@ const TILE = {
 const levels = [
   {
     name: "Happy Start",
-    speed: 520,
+    speed: 560,
     enemies: [{ x: 11, y: 9 }],
     player: { x: 1, y: 1 },
     map: [
@@ -155,7 +155,7 @@ const levels = [
   },
   {
     name: "Diamond Rush",
-    speed: 430,
+    speed: 500,
     enemies: [{ x: 11, y: 1 }, { x: 11, y: 9 }],
     player: { x: 1, y: 9 },
     map: [
@@ -174,7 +174,7 @@ const levels = [
   },
   {
     name: "Power Party",
-    speed: 360,
+    speed: 455,
     enemies: [{ x: 11, y: 1 }, { x: 1, y: 9 }],
     player: { x: 1, y: 1 },
     map: [
@@ -193,7 +193,7 @@ const levels = [
   },
   {
     name: "Chaos Castle",
-    speed: 310,
+    speed: 430,
     enemies: [{ x: 11, y: 1 }, { x: 11, y: 9 }, { x: 1, y: 9 }],
     player: { x: 1, y: 1 },
     map: [
@@ -212,7 +212,7 @@ const levels = [
   },
   {
     name: "Turbo Tunnel",
-    speed: 260,
+    speed: 405,
     enemies: [{ x: 11, y: 1 }, { x: 1, y: 9 }, { x: 11, y: 9 }],
     player: { x: 1, y: 1 },
     map: [
@@ -231,7 +231,7 @@ const levels = [
   },
   {
     name: "Final Joy",
-    speed: 220,
+    speed: 380,
     enemies: [{ x: 11, y: 1 }, { x: 1, y: 9 }, { x: 11, y: 9 }, { x: 6, y: 5 }],
     player: { x: 1, y: 1 },
     map: [
@@ -277,11 +277,15 @@ let roomCode = null;
 let playerSlot = null; // "p1" eller "p2"
 let remotePlayer = null;
 let roomListenerOff = null;
-let playerId = localStorage.getItem("ragiJoyPlayerId");
+// Unik ID per nettleserfane/enhet.
+// Viktig: sessionStorage gjør at to faner på samme PC også kan teste som to ulike spillere.
+let playerId = sessionStorage.getItem("ragiJoyPlayerId");
 if (!playerId) {
-  playerId = "player-" + Math.random().toString(36).slice(2, 10);
-  localStorage.setItem("ragiJoyPlayerId", playerId);
+  playerId = "player-" + Math.random().toString(36).slice(2, 10) + "-" + Date.now().toString(36);
+  sessionStorage.setItem("ragiJoyPlayerId", playerId);
 }
+let joinInProgress = false;
+let levelStartTime = 0;
 
 function firebaseReady() {
   return Boolean(window.FirebaseGame && window.FirebaseGame.database);
@@ -289,6 +293,45 @@ function firebaseReady() {
 
 function roomPath(code) {
   return `rooms/${code}`;
+}
+
+// Fast database-URL brukt som REST fallback. Dette gjør multiplayer mer stabilt på
+// GitHub Pages, iOS/Safari og lokale Live Server-tester hvis Firebase SDK-cache krangler.
+const FIREBASE_DATABASE_URL = "https://rag-game-default-rtdb.europe-west1.firebasedatabase.app";
+
+function firebaseRestUrl(path) {
+  return `${FIREBASE_DATABASE_URL}/${path}.json`;
+}
+
+async function restGet(path) {
+  const response = await fetch(firebaseRestUrl(path), { cache: "no-store" });
+  if (!response.ok) throw new Error(`REST GET feilet: ${response.status}`);
+  return response.json();
+}
+
+async function restPut(path, data) {
+  const response = await fetch(firebaseRestUrl(path), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+  if (!response.ok) throw new Error(`REST PUT feilet: ${response.status}`);
+  return response.json();
+}
+
+async function restPatch(path, data) {
+  const response = await fetch(firebaseRestUrl(path), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+  if (!response.ok) throw new Error(`REST PATCH feilet: ${response.status}`);
+  return response.json();
+}
+
+async function restDelete(path) {
+  const response = await fetch(firebaseRestUrl(path), { method: "DELETE" });
+  if (!response.ok) throw new Error(`REST DELETE feilet: ${response.status}`);
 }
 
 function waitForFirebase(timeoutMs = 5000) {
@@ -340,10 +383,22 @@ function loadLevel(index) {
   shield = false;
   portalOpen = false;
   diamondsLeft = countTiles(TILE.DOT);
+  levelStartTime = Date.now();
   clearInterval(enemyTimer);
-  enemyTimer = setInterval(moveEnemies, level.speed);
+  enemyTimer = setTimeout(moveEnemies, getEnemyDelay());
   messageBar.textContent = `Level ${index + 1}: ${level.name}`;
   drawGame();
+}
+
+function getEnemyDelay() {
+  // Fiendene starter roligere på hvert level og øker gradvis.
+  // Lavere tall = raskere fiender. Dette gjør level 4+ spillbart, men fortsatt spennende.
+  const level = levels[levelIndex] || levels[0];
+  const secondsPlayed = Math.floor((Date.now() - levelStartTime) / 1000);
+  const gradualBoost = Math.min(105, secondsPlayed * 3);
+  const levelBoost = Math.min(45, levelIndex * 7);
+  const delay = level.speed - gradualBoost - levelBoost;
+  return Math.max(285, delay);
 }
 
 function countTiles(tileType) {
@@ -512,6 +567,11 @@ function moveEnemies() {
 
   checkEnemyCollision();
   drawGame();
+
+  clearInterval(enemyTimer);
+  if (gameRunning && !paused) {
+    enemyTimer = setTimeout(moveEnemies, getEnemyDelay());
+  }
 }
 
 function getPossibleEnemyMoves(enemy) {
@@ -609,15 +669,26 @@ function togglePause() {
   if (!gameRunning) return;
   paused = !paused;
   messageBar.textContent = paused ? t("paused") : t("resumed");
+  if (paused) {
+    clearInterval(enemyTimer);
+  } else {
+    clearInterval(enemyTimer);
+    enemyTimer = setTimeout(moveEnemies, getEnemyDelay());
+  }
 }
 
 document.addEventListener("keydown", event => {
+  // Windows/PC: hindrer at piltastene scroller nettsiden mens du spiller.
+  if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(event.key)) {
+    event.preventDefault();
+  }
+
   if (event.key === "ArrowUp") movePlayer(0, -1);
   if (event.key === "ArrowDown") movePlayer(0, 1);
   if (event.key === "ArrowLeft") movePlayer(-1, 0);
   if (event.key === "ArrowRight") movePlayer(1, 0);
   if (event.key.toLowerCase() === "p") togglePause();
-});
+}, { passive: false });
 
 
 function toggleLanguagePanel() {
@@ -762,127 +833,205 @@ function closeFriendLobby() {
 }
 
 async function createFriendRoom() {
-  // Gir umiddelbar respons i UI, slik at knappen aldri føles død.
+  // Stabil room creation:
+  // 1) Finn ledig kode
+  // 2) Skriv rommet til Firebase
+  // 3) Les rommet tilbake via både SDK/REST før koden vises
   setOnlineStatus("Lager romkode ...");
   if (createRoomButton) createRoomButton.disabled = true;
 
   try {
     const ready = await waitForFirebase();
     if (!ready) {
-      setOnlineStatus("Firebase ble ikke klar. Sjekk internett, åpne siden via Live Server, eller last siden på nytt.");
-      alert("Firebase er ikke klar. Tips: åpne prosjektet via Live Server i VS Code, ikke bare dobbeltklikk på index.html.");
+      setOnlineStatus("Firebase ble ikke klar. Last siden på nytt og sjekk internett.");
+      alert("Firebase er ikke klar. Last siden på nytt og prøv igjen.");
       return;
     }
 
     const fb = window.FirebaseGame;
-    let newCode = generateRoomCode();
-    let attempts = 0;
+    let savedRoomCode = generateRoomCode();
 
-    while (attempts < 8) {
-      const snapshot = await fb.get(fb.ref(fb.database, roomPath(newCode)));
-      if (!snapshot.exists()) break;
-      newCode = generateRoomCode();
-      attempts++;
+    for (let attempts = 0; attempts < 12; attempts++) {
+      const existing = await restGet(roomPath(savedRoomCode));
+      if (!existing) break;
+      savedRoomCode = generateRoomCode();
     }
 
-    roomCode = newCode;
-    playerSlot = "p1";
-    onlineMode = true;
-
-    // Vis koden med en gang. Deretter lagres rommet i Firebase.
-    showRoomInfo();
-    setOnlineStatus("Romkode laget. Lagrer rommet i Firebase ...");
-
+    const now = Date.now();
     const roomData = {
-      createdAt: Date.now(),
+      code: savedRoomCode,
+      createdAt: now,
+      updatedAt: now,
       status: "waiting",
       hostId: playerId,
-      level: 1,
+      createdFromUrl: window.location.href,
       players: {
         p1: {
           id: playerId,
+          slot: "p1",
           ready: false,
+          connected: true,
           x: levels[0].player.x,
           y: levels[0].player.y,
           score: 0,
           lives: 3,
-          joinedAt: Date.now()
+          joinedAt: now,
+          updatedAt: now
         }
       }
     };
 
-    await fb.set(fb.ref(fb.database, roomPath(roomCode)), roomData);
+    setOnlineStatus("Lagrer rommet i Firebase ...");
+
+    // REST først gjør at rommet er synlig fra andre enheter med en gang.
+    await restPut(roomPath(savedRoomCode), roomData);
+
+    // SDK set i tillegg, slik at onValue/listeners får helt samme datastruktur.
+    const newRoomRef = fb.ref(fb.database, roomPath(savedRoomCode));
+    await fb.set(newRoomRef, roomData);
+
+    // Verifiser via REST. Dette er samme sti mobilen leser fra.
+    const verifiedRoom = await restGet(roomPath(savedRoomCode));
+    if (!verifiedRoom || verifiedRoom.code !== savedRoomCode) {
+      throw new Error("Rommet ble ikke verifisert etter lagring.");
+    }
+
+    roomCode = savedRoomCode;
+    playerSlot = "p1";
+    onlineMode = true;
+    showRoomInfo();
 
     try {
-      fb.onDisconnect(fb.ref(fb.database, `${roomPath(roomCode)}/players/p1`)).remove();
+      fb.onDisconnect(fb.ref(fb.database, `${roomPath(roomCode)}/players/p1/connected`)).set(false);
     } catch (error) {
       console.log("onDisconnect kunne ikke settes:", error);
     }
 
     listenToRoom();
-    setOnlineStatus("Rommet er laget ✅ Kopier koden og send den til vennen din.");
+    setOnlineStatus(`Rommet er lagret i Firebase ✅ Kode: ${roomCode}. Hold denne siden åpen og send koden til vennen din.`);
   } catch (error) {
     console.error("Kunne ikke lage rom:", error);
     setOnlineStatus("Kunne ikke lage rom. Sjekk Firebase Rules/Test mode og prøv igjen.");
-    alert("Kunne ikke lage rom. Åpne Developer Console/F12 for detaljer. Vanlig årsak: Firebase rules, internett eller at siden ikke kjøres via Live Server.");
+    alert("Kunne ikke lage rom. Sjekk Firebase Rules, internett og at databaseURL er riktig.");
   } finally {
     if (createRoomButton) createRoomButton.disabled = false;
   }
 }
 
-async function joinFriendRoom() {
-  if (!firebaseReady()) {
-    alert("Firebase er ikke klar. Sjekk internett eller last siden på nytt.");
-    return;
-  }
-
+async function waitForRoomSnapshot(roomRef, code, maxAttempts = 12) {
+  // iOS/Safari og GitHub Pages kan av og til bruke litt tid etter oppdatering/cache.
+  // Derfor prøver vi flere ganger før vi sier at rommet ikke finnes.
   const fb = window.FirebaseGame;
-  const typedCode = normalizeRoomCode(roomCodeInput ? roomCodeInput.value : "");
-  if (!typedCode || typedCode.length < 6) {
-    alert("Skriv inn hele romkoden først.");
-    return;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const snapshot = await fb.get(roomRef);
+    if (snapshot.exists()) return snapshot;
+    setOnlineStatus(`Søker etter rom ${code} ... forsøk ${attempt}/${maxAttempts}`);
+    await new Promise(resolve => setTimeout(resolve, 550));
   }
+  return null;
+}
 
-  const snapshot = await fb.get(fb.ref(fb.database, roomPath(typedCode)));
-  if (!snapshot.exists()) {
-    alert("Fant ikke rommet. Sjekk romkoden.");
-    return;
-  }
-
-  const room = snapshot.val();
-  const players = room.players || {};
-  if (players.p1 && players.p1.id === playerId) {
-    playerSlot = "p1";
-  } else if (!players.p2 || players.p2.id === playerId) {
-    playerSlot = "p2";
-  } else {
-    alert("Rommet har allerede to spillere.");
-    return;
-  }
-
-  roomCode = typedCode;
-  onlineMode = true;
-
-  const startPos = playerSlot === "p2" ? { x: 11, y: 9 } : levels[0].player;
-  await fb.update(fb.ref(fb.database, `${roomPath(roomCode)}/players/${playerSlot}`), {
-    id: playerId,
-    ready: false,
-    x: startPos.x,
-    y: startPos.y,
-    score: 0,
-    lives: 3,
-    joinedAt: Date.now()
-  });
+async function joinFriendRoom() {
+  if (joinInProgress) return;
+  joinInProgress = true;
+  if (joinRoomButton) joinRoomButton.disabled = true;
+  setOnlineStatus("Kobler til rommet ...");
 
   try {
-    fb.onDisconnect(fb.ref(fb.database, `${roomPath(roomCode)}/players/${playerSlot}`)).remove();
-  } catch (error) {
-    console.log("onDisconnect kunne ikke settes:", error);
-  }
+    const ready = await waitForFirebase();
+    if (!ready) {
+      setOnlineStatus("Firebase er ikke klar. Last siden på nytt og prøv igjen.");
+      alert("Firebase er ikke klar. Last siden på nytt og prøv igjen.");
+      return;
+    }
 
-  showRoomInfo();
-  listenToRoom();
-  setOnlineStatus("Du er inne i rommet. Trykk klar når du er klar.");
+    const fb = window.FirebaseGame;
+    const typedCode = normalizeRoomCode(roomCodeInput ? roomCodeInput.value : "");
+    if (!typedCode || typedCode.length < 6) {
+      setOnlineStatus("Skriv inn hele romkoden på 6 tegn.");
+      alert("Skriv inn hele romkoden først.");
+      return;
+    }
+
+    const roomRef = fb.ref(fb.database, roomPath(typedCode));
+
+    // Først prøver vi SDK flere ganger. Hvis SDK ikke ser rommet, prøver vi REST direkte.
+    let roomCheck = await waitForRoomSnapshot(roomRef, typedCode, 6);
+    let currentRoom = roomCheck && roomCheck.exists() ? roomCheck.val() : null;
+
+    if (!currentRoom) {
+      setOnlineStatus(`SDK fant ikke ${typedCode}. Prøver direkte database-lesing ...`);
+      for (let attempt = 1; attempt <= 8; attempt++) {
+        currentRoom = await restGet(roomPath(typedCode));
+        if (currentRoom) break;
+        setOnlineStatus(`Søker direkte etter rom ${typedCode} ... forsøk ${attempt}/8`);
+        await new Promise(resolve => setTimeout(resolve, 600));
+      }
+    }
+
+    if (!currentRoom) {
+      setOnlineStatus(`Fant ikke rommet ${typedCode}. Lag ny kode på PC-en og vent til det står lagret i Firebase.`);
+      alert(`Fant ikke rommet ${typedCode}. Sjekk at du skrev riktig kode, og se i Firebase → Realtime Database → Data → rooms om koden finnes.`);
+      return;
+    }
+
+    const now = Date.now();
+    const players = currentRoom.players || {};
+
+    if (players.p1 && players.p1.id === playerId) {
+      playerSlot = "p1";
+    } else if (players.p2 && players.p2.id === playerId) {
+      playerSlot = "p2";
+    } else if (!players.p1) {
+      playerSlot = "p1";
+    } else if (!players.p2) {
+      playerSlot = "p2";
+    } else {
+      setOnlineStatus("Rommet har allerede to spillere.");
+      alert("Rommet har allerede to spillere.");
+      return;
+    }
+
+    const startPos = playerSlot === "p2" ? { x: 11, y: 9 } : levels[0].player;
+    const playerData = {
+      id: playerId,
+      slot: playerSlot,
+      ready: false,
+      connected: true,
+      x: startPos.x,
+      y: startPos.y,
+      score: 0,
+      lives: 3,
+      joinedAt: players[playerSlot]?.joinedAt || now,
+      updatedAt: now
+    };
+
+    // Oppdater via REST og SDK. Dette gir best kompatibilitet på iOS/GitHub Pages.
+    await restPatch(`${roomPath(typedCode)}/players/${playerSlot}`, playerData);
+    await restPatch(roomPath(typedCode), { updatedAt: now, lastJoinSlot: playerSlot });
+    await fb.update(fb.ref(fb.database, `${roomPath(typedCode)}/players/${playerSlot}`), playerData);
+    await fb.update(roomRef, { updatedAt: now, lastJoinSlot: playerSlot });
+
+    roomCode = typedCode;
+    onlineMode = true;
+
+    try {
+      fb.onDisconnect(fb.ref(fb.database, `${roomPath(roomCode)}/players/${playerSlot}/connected`)).set(false);
+    } catch (error) {
+      console.log("onDisconnect kunne ikke settes:", error);
+    }
+
+    showRoomInfo();
+    listenToRoom();
+    setOnlineStatus(`Du er koblet til som ${playerSlot === "p1" ? "Spiller 1" : "Spiller 2"}. Trykk klar når du er klar.`);
+  } catch (error) {
+    console.error("Kunne ikke bli med i rom:", error);
+    setOnlineStatus("Kunne ikke bli med i rommet. Sjekk Firebase Rules og internett.");
+    alert("Kunne ikke bli med i rommet. Sjekk F12/Console for feilmelding.");
+  } finally {
+    joinInProgress = false;
+    if (joinRoomButton) joinRoomButton.disabled = false;
+  }
 }
 
 function showRoomInfo() {
@@ -906,14 +1055,22 @@ async function copyRoomCode() {
 async function setPlayerReady() {
   if (!firebaseReady() || !roomCode || !playerSlot) return;
   const fb = window.FirebaseGame;
-  await fb.update(fb.ref(fb.database, `${roomPath(roomCode)}/players/${playerSlot}`), { ready: true });
-  setOnlineStatus("Du er klar. Venter på den andre spilleren.");
+  await fb.update(fb.ref(fb.database, `${roomPath(roomCode)}/players/${playerSlot}`), {
+    ready: true,
+    connected: true,
+    updatedAt: Date.now()
+  });
+  setOnlineStatus("Du er klar ✅ Venter på den andre spilleren.");
 }
 
 function updateReadyCards(selfPlayer, otherPlayer) {
-  if (readySelf) readySelf.textContent = selfPlayer && selfPlayer.ready ? "Klar ✅" : "Ikke klar";
+  if (readySelf) {
+    if (!selfPlayer) readySelf.textContent = "Kobler ...";
+    else readySelf.textContent = selfPlayer.ready ? "Klar ✅" : "Ikke klar";
+  }
   if (readyOther) {
-    if (!otherPlayer) readyOther.textContent = "Venter ...";
+    if (!otherPlayer) readyOther.textContent = "Venter på venn ...";
+    else if (otherPlayer.connected === false) readyOther.textContent = "Frakoblet";
     else readyOther.textContent = otherPlayer.ready ? "Klar ✅" : "Ikke klar";
   }
 }
@@ -943,14 +1100,30 @@ function listenToRoom() {
     if (room.status !== "running") {
       const p1Status = p1 ? (p1.ready ? "klar ✅" : "ikke klar") : "venter";
       const p2Status = p2 ? (p2.ready ? "klar ✅" : "ikke klar") : "venter";
-      setOnlineStatus(`Spiller 1: ${p1Status} | Spiller 2: ${p2Status}`);
+      if (p1 && p2) {
+        setOnlineStatus(`Begge er koblet til. Spiller 1: ${p1Status} | Spiller 2: ${p2Status}`);
+      } else {
+        setOnlineStatus(`Venter på to spillere. Spiller 1: ${p1Status} | Spiller 2: ${p2Status}`);
+      }
     }
 
-    if (p1 && p2 && p1.ready && p2.ready && room.status === "waiting" && playerSlot === "p1") {
-      await fb.update(fb.ref(fb.database, roomPath(roomCode)), { status: "running", startedAt: Date.now() });
+    if (p1 && p2 && p1.ready && p2.ready && room.status === "waiting") {
+      await fb.runTransaction(fb.ref(fb.database, roomPath(roomCode)), currentRoom => {
+        if (!currentRoom || currentRoom.status !== "waiting") return currentRoom;
+        const cp1 = currentRoom.players && currentRoom.players.p1;
+        const cp2 = currentRoom.players && currentRoom.players.p2;
+        if (cp1 && cp2 && cp1.ready && cp2.ready) {
+          currentRoom.status = "running";
+          currentRoom.startedAt = Date.now();
+          currentRoom.updatedAt = Date.now();
+        }
+        return currentRoom;
+      });
+      return;
     }
 
     if (room.status === "running" && !gameRunning) {
+      setOnlineStatus("Begge er klare ✅ Starter kamp ...");
       closeFriendLobby();
       startOnlineGame();
     }
@@ -997,6 +1170,7 @@ async function syncOnlinePlayer() {
     score,
     lives,
     level: levelIndex + 1,
+    connected: true,
     updatedAt: Date.now()
   });
 }
@@ -1011,13 +1185,60 @@ if (friendModalClose) friendModalClose.addEventListener("click", closeFriendLobb
 if (roomCodeInput) {
   roomCodeInput.addEventListener("input", () => {
     roomCodeInput.value = normalizeRoomCode(roomCodeInput.value);
+    if (roomCodeInput.value.length === 6 && !joinInProgress) {
+      setOnlineStatus("Kode fylt inn. Trykk Bli med for å koble til rommet.");
+    }
   });
   roomCodeInput.addEventListener("keydown", event => {
     if (event.key === "Enter") joinFriendRoom();
   });
 }
 
+
+function installDeviceCompatibility() {
+  // iOS + Windows: bruk samme kodebase, men stopp browseren fra å scrolle/zoome spillet.
+  const setRealViewportHeight = () => {
+    document.documentElement.style.setProperty("--real-vh", `${window.innerHeight * 0.01}px`);
+  };
+
+  setRealViewportHeight();
+  window.addEventListener("resize", setRealViewportHeight, { passive: true });
+  window.addEventListener("orientationchange", () => setTimeout(setRealViewportHeight, 250), { passive: true });
+
+  // Stopp dra/scroll på selve spillet, men tillat skriving i inputfelt og scroll inni modaler/lister.
+  document.addEventListener("touchmove", event => {
+    const allowedScroll = event.target.closest("input, textarea, select, .friend-modal-card, .language-list");
+    if (!allowedScroll) event.preventDefault();
+  }, { passive: false });
+
+  document.querySelectorAll(".move-btn").forEach(button => {
+    const dx = Number(button.dataset.dx || 0);
+    const dy = Number(button.dataset.dy || 0);
+    const move = event => {
+      event.preventDefault();
+      event.stopPropagation();
+      movePlayer(dx, dy);
+    };
+
+    // Pointer events fungerer på Windows, Android og nyere iOS.
+    button.addEventListener("pointerdown", move, { passive: false });
+    // Fallback for eldre iOS/Safari.
+    button.addEventListener("touchstart", move, { passive: false });
+  });
+
+  // Dobbeltrykk skal ikke zoome på iPhone mens man trykker raskt på pilene.
+  let lastTouchEnd = 0;
+  document.addEventListener("touchend", event => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 320 && event.target.closest(".controls, #game-wrapper, button")) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+}
+
 // Tegner første level bak startskjermen slik at spillet ser levende ut før start.
+installDeviceCompatibility();
 highscoreText.textContent = highscore;
 loadLevel(0);
 gameRunning = false;
