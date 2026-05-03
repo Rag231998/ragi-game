@@ -423,6 +423,10 @@ let roomCode = null;
 let playerSlot = null; // "p1" eller "p2"
 let remotePlayer = null;
 let roomListenerOff = null;
+let roomPollTimer = null;
+let lastOnlineSyncAt = 0;
+let pendingOnlineSync = null;
+let lastRemoteFingerprint = "";
 // Unik ID per nettleserfane/enhet.
 // Viktig: sessionStorage gjør at to faner på samme PC også kan teste som to ulike spillere.
 let playerId = sessionStorage.getItem("ragiJoyPlayerId");
@@ -1461,25 +1465,11 @@ function listenToRoom() {
       return;
     }
 
+    applyRoomState(room);
+
     const players = room.players || {};
     const p1 = players.p1;
     const p2 = players.p2;
-    const selfPlayer = players[playerSlot];
-    const otherSlot = playerSlot === "p1" ? "p2" : "p1";
-    const otherPlayer = players[otherSlot] || null;
-    remotePlayer = otherPlayer;
-
-    updateReadyCards(selfPlayer, otherPlayer);
-
-    if (room.status !== "running") {
-      const p1Status = p1 ? (p1.ready ? "klar ✅" : "ikke klar") : "venter";
-      const p2Status = p2 ? (p2.ready ? "klar ✅" : "ikke klar") : "venter";
-      if (p1 && p2) {
-        setOnlineStatus(`Begge er koblet til. Spiller 1: ${p1Status} | Spiller 2: ${p2Status}`);
-      } else {
-        setOnlineStatus(`Venter på to spillere. Spiller 1: ${p1Status} | Spiller 2: ${p2Status}`);
-      }
-    }
 
     if (p1 && p2 && p1.ready && p2.ready && room.status === "waiting") {
       await fb.runTransaction(fb.ref(fb.database, roomPath(roomCode)), currentRoom => {
@@ -1493,17 +1483,12 @@ function listenToRoom() {
         }
         return currentRoom;
       });
-      return;
     }
-
-    if (room.status === "running" && !gameRunning) {
-      setOnlineStatus("Begge er klare ✅ Starter kamp ...");
-      closeFriendLobby();
-      startOnlineGame();
-    }
-
-    if (onlineMode && gameRunning) drawGame();
   });
+
+  // Ekstra sikkerhet: direkte REST-polling gjør at live-posisjon fungerer også i Safari/iOS
+  // hvis Firebase SDK-listeneren blir treg eller ikke fyrer på små posisjonsendringer.
+  startRoomPolling();
 }
 
 function detachRoomListener() {
@@ -1511,6 +1496,64 @@ function detachRoomListener() {
     roomListenerOff();
     roomListenerOff = null;
   }
+  stopRoomPolling();
+}
+
+function applyRoomState(room) {
+  // Felles funksjon brukt både av Firebase onValue og REST polling.
+  // Dette gjør at posisjonene oppdateres på PC, iOS/Safari og GitHub Pages selv hvis én av metodene henger.
+  if (!room || !room.players || !playerSlot) return;
+
+  const players = room.players || {};
+  const p1 = players.p1;
+  const p2 = players.p2;
+  const selfPlayer = players[playerSlot];
+  const otherSlot = playerSlot === "p1" ? "p2" : "p1";
+  const otherPlayer = players[otherSlot] || null;
+
+  remotePlayer = otherPlayer;
+  updateReadyCards(selfPlayer, otherPlayer);
+
+  if (room.status !== "running") {
+    const p1Status = p1 ? (p1.ready ? "klar ✅" : "ikke klar") : "venter";
+    const p2Status = p2 ? (p2.ready ? "klar ✅" : "ikke klar") : "venter";
+    if (p1 && p2) setOnlineStatus(`Begge er koblet til. Spiller 1: ${p1Status} | Spiller 2: ${p2Status}`);
+    else setOnlineStatus(`Venter på to spillere. Spiller 1: ${p1Status} | Spiller 2: ${p2Status}`);
+  }
+
+  if (room.status === "running" && !gameRunning) {
+    setOnlineStatus("Begge er klare ✅ Starter kamp ...");
+    closeFriendLobby();
+    startOnlineGame();
+    return;
+  }
+
+  if (onlineMode && gameRunning) {
+    const fingerprint = otherPlayer ? `${otherSlot}:${otherPlayer.x},${otherPlayer.y}:${otherPlayer.score}:${otherPlayer.lives}:${otherPlayer.updatedAt}:${otherPlayer.avatarEmoji || ""}` : "none";
+    if (fingerprint !== lastRemoteFingerprint) {
+      lastRemoteFingerprint = fingerprint;
+      drawGame();
+    }
+  }
+}
+
+function startRoomPolling() {
+  stopRoomPolling();
+  if (!roomCode) return;
+  roomPollTimer = setInterval(async () => {
+    if (!onlineMode || !roomCode) return;
+    try {
+      const room = await restGet(roomPath(roomCode));
+      applyRoomState(room);
+    } catch (error) {
+      console.log("REST polling feilet:", error);
+    }
+  }, 350);
+}
+
+function stopRoomPolling() {
+  if (roomPollTimer) clearInterval(roomPollTimer);
+  roomPollTimer = null;
 }
 
 function startOnlineGame() {
@@ -1536,9 +1579,10 @@ function startOnlineGame() {
 }
 
 async function syncOnlinePlayer() {
-  if (!onlineMode || !firebaseReady() || !roomCode || !playerSlot) return;
-  const fb = window.FirebaseGame;
-  await fb.update(fb.ref(fb.database, `${roomPath(roomCode)}/players/${playerSlot}`), {
+  if (!onlineMode || !roomCode || !playerSlot) return;
+
+  const now = Date.now();
+  const payload = {
     x: player.x,
     y: player.y,
     score,
@@ -1547,8 +1591,34 @@ async function syncOnlinePlayer() {
     avatarEmoji: selectedPlayerEmoji,
     avatarImage: selectedPlayerImage,
     connected: true,
-    updatedAt: Date.now()
-  });
+    updatedAt: now
+  };
+
+  // Throttle litt slik at vi ikke spammer Firebase ved raske tastetrykk/swipe,
+  // men fortsatt føles sanntid. Hvis spilleren trykker raskt, sendes siste posisjon rett etterpå.
+  const elapsed = now - lastOnlineSyncAt;
+  if (elapsed < 90) {
+    clearTimeout(pendingOnlineSync);
+    pendingOnlineSync = setTimeout(() => syncOnlinePlayer(), 95 - elapsed);
+    return;
+  }
+  lastOnlineSyncAt = now;
+
+  try {
+    // REST først: dette er samme database-sti som den andre enheten poller fra.
+    await restPatch(`${roomPath(roomCode)}/players/${playerSlot}`, payload);
+  } catch (error) {
+    console.log("REST sync feilet:", error);
+  }
+
+  try {
+    if (firebaseReady()) {
+      const fb = window.FirebaseGame;
+      await fb.update(fb.ref(fb.database, `${roomPath(roomCode)}/players/${playerSlot}`), payload);
+    }
+  } catch (error) {
+    console.log("SDK sync feilet:", error);
+  }
 }
 
 window.addEventListener("firebase-ready", () => {

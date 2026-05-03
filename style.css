@@ -1196,3 +1196,51 @@ body[data-theme="fiesta"] .wall { background: linear-gradient(135deg, #ffe449, #
   .emoji-grid button { min-height: 46px; font-size: 24px; }
   .customize-button { font-size: 12px; padding: 9px 12px; }
 }
+
+/* =====================================================
+   V13 FIX: room code must show full 6-character code
+   and multiplayer dialog must not squeeze the code field.
+   ===================================================== */
+#roomInfo {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+#roomInfo .friend-input-row {
+  grid-template-columns: minmax(190px, 1fr) auto !important;
+  align-items: stretch !important;
+}
+
+#roomCodeDisplay.room-code-display {
+  width: 100% !important;
+  min-width: 190px !important;
+  max-width: none !important;
+  font-size: clamp(21px, 5vw, 28px) !important;
+  letter-spacing: clamp(3px, 1vw, 6px) !important;
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+#copyRoomButton {
+  min-width: 108px !important;
+  white-space: nowrap !important;
+}
+
+@media (max-width: 480px) {
+  #roomInfo .friend-input-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  #roomCodeDisplay.room-code-display {
+    min-width: 0 !important;
+    height: 58px !important;
+    font-size: 26px !important;
+    letter-spacing: 6px !important;
+  }
+
+  #copyRoomButton {
+    width: 100% !important;
+  }
+}
