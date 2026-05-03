@@ -436,6 +436,7 @@ if (!playerId) {
 }
 let joinInProgress = false;
 let levelStartTime = 0;
+let slowEnemiesUntil = 0;
 
 function firebaseReady() {
   return Boolean(window.FirebaseGame && window.FirebaseGame.database);
@@ -552,7 +553,8 @@ function getEnemyDelay() {
   // Gradvis økning: rolig i starten, litt raskere etter hvert.
   const gradualBoost = Math.min(95, secondsPlayed * 2.2);
   const levelBoost = Math.min(55, levelIndex * 5.5);
-  const delay = level.speed + difficulty.speedBonus - gradualBoost - levelBoost;
+  const shopSlowBonus = Date.now() < slowEnemiesUntil ? 180 : 0;
+  const delay = level.speed + difficulty.speedBonus + shopSlowBonus - gradualBoost - levelBoost;
   return Math.max(selectedDifficulty === "extreme" ? 245 : 300, delay);
 }
 
@@ -1548,7 +1550,7 @@ function startRoomPolling() {
     } catch (error) {
       console.log("REST polling feilet:", error);
     }
-  }, 350);
+  }, 650);
 }
 
 function stopRoomPolling() {
@@ -1578,8 +1580,8 @@ function startOnlineGame() {
   drawGame();
 }
 
-async function syncOnlinePlayer() {
-  if (!onlineMode || !roomCode || !playerSlot) return;
+function syncOnlinePlayer() {
+  if (!onlineMode || !roomCode || !playerSlot || !firebaseReady()) return;
 
   const now = Date.now();
   const payload = {
@@ -1594,30 +1596,23 @@ async function syncOnlinePlayer() {
     updatedAt: now
   };
 
-  // Throttle litt slik at vi ikke spammer Firebase ved raske tastetrykk/swipe,
-  // men fortsatt føles sanntid. Hvis spilleren trykker raskt, sendes siste posisjon rett etterpå.
+  // V14: Ikke vent på nettverket når spilleren trykker.
+  // Før ble det sendt REST + SDK på hver bevegelse, og det kunne gi input-lag.
+  // Nå sendes Firebase SDK fire-and-forget. REST-polling er bare backup for lesing.
   const elapsed = now - lastOnlineSyncAt;
-  if (elapsed < 90) {
+  if (elapsed < 55) {
     clearTimeout(pendingOnlineSync);
-    pendingOnlineSync = setTimeout(() => syncOnlinePlayer(), 95 - elapsed);
+    pendingOnlineSync = setTimeout(() => syncOnlinePlayer(), 60 - elapsed);
     return;
   }
   lastOnlineSyncAt = now;
 
   try {
-    // REST først: dette er samme database-sti som den andre enheten poller fra.
-    await restPatch(`${roomPath(roomCode)}/players/${playerSlot}`, payload);
+    const fb = window.FirebaseGame;
+    fb.update(fb.ref(fb.database, `${roomPath(roomCode)}/players/${playerSlot}`), payload)
+      .catch(error => console.log("SDK sync feilet:", error));
   } catch (error) {
-    console.log("REST sync feilet:", error);
-  }
-
-  try {
-    if (firebaseReady()) {
-      const fb = window.FirebaseGame;
-      await fb.update(fb.ref(fb.database, `${roomPath(roomCode)}/players/${playerSlot}`), payload);
-    }
-  } catch (error) {
-    console.log("SDK sync feilet:", error);
+    console.log("Sync startet ikke:", error);
   }
 }
 
@@ -1662,20 +1657,29 @@ function installDeviceCompatibility() {
   document.querySelectorAll(".move-btn").forEach(button => {
     const dx = Number(button.dataset.dx || 0);
     const dy = Number(button.dataset.dy || 0);
+    let lastDirectMove = 0;
     const move = event => {
       event.preventDefault();
       event.stopPropagation();
+      lastDirectMove = Date.now();
       movePlayer(dx, dy);
     };
 
-    // Ikke registrer både pointerdown og touchstart på samme iPhone.
-    // Det kunne gi dobbeltbevegelse/kaos i Safari.
+    // iOS/Safari kan fyre både pointer/touch og click.
+    // Click får derfor bare virke hvis det ikke nettopp kom en direkte touch/pointer.
     if (window.PointerEvent) {
       button.addEventListener("pointerdown", move, { passive: false });
     } else {
       button.addEventListener("touchstart", move, { passive: false });
     }
-    button.addEventListener("click", move, { passive: false });
+    button.addEventListener("click", event => {
+      if (Date.now() - lastDirectMove < 420) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+      move(event);
+    }, { passive: false });
   });
 
   // Swipe direkte på brettet: mye bedre på iPhone enn å bare bruke små piler.
@@ -1858,6 +1862,73 @@ function updateCustomizerUi() {
   if (randomToggle) randomToggle.checked = randomEnemyEmojis;
   const musicSelect = document.getElementById("musicSelect");
   if (musicSelect) musicSelect.value = selectedMusicTrack;
+}
+
+
+
+// -----------------------------
+// V14 Power Shop
+// -----------------------------
+function showShopModal() {
+  updateShopUi();
+  const modal = document.getElementById("shopModal");
+  if (modal && typeof modal.showModal === "function") modal.showModal();
+  else if (modal) modal.setAttribute("open", "open");
+  playSfx("select");
+}
+
+function closeShopModal() {
+  const modal = document.getElementById("shopModal");
+  if (modal && typeof modal.close === "function") modal.close();
+  else if (modal) modal.removeAttribute("open");
+}
+
+function updateShopUi(message) {
+  const shopScore = document.getElementById("shopScore");
+  const shopMessage = document.getElementById("shopMessage");
+  if (shopScore) shopScore.textContent = score;
+  if (shopMessage && message) shopMessage.textContent = message;
+}
+
+function buyShopItem(item) {
+  const prices = { life: 500, shield: 300, slow: 450, combo: 350 };
+  const price = prices[item] || 0;
+  if (score < price) {
+    updateShopUi(`Ikke nok score. Du trenger ${price} poeng.`);
+    playSfx("lose");
+    return;
+  }
+
+  score -= price;
+  if (item === "life") {
+    lives = Math.min(lives + 1, 6);
+    messageBar.textContent = "❤️ Ekstra liv kjøpt!";
+    updateShopUi("Ekstra liv aktivert ❤️");
+    playSfx("level");
+  }
+  if (item === "shield") {
+    shield = true;
+    messageBar.textContent = "🛡️ Skjold kjøpt!";
+    updateShopUi("Skjold aktivert 🛡️");
+    playSfx("shield");
+  }
+  if (item === "slow") {
+    slowEnemiesUntil = Date.now() + 10000;
+    clearInterval(enemyTimer);
+    if (gameRunning && !paused) enemyTimer = setTimeout(moveEnemies, getEnemyDelay());
+    messageBar.textContent = "🐢 Fiendene er tregere i 10 sekunder!";
+    updateShopUi("Slow enemies aktivert i 10 sekunder 🐢");
+    playSfx("power");
+  }
+  if (item === "combo") {
+    combo = Math.min(combo + 3, 12);
+    messageBar.textContent = `🔥 Combo boost! x${combo}`;
+    updateShopUi(`Combo boost aktivert x${combo} 🔥`);
+    playSfx("enemy");
+  }
+
+  drawGame();
+  syncOnlinePlayer();
 }
 
 // Tegner første level bak startskjermen slik at spillet ser levende ut før start.

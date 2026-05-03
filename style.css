@@ -1244,3 +1244,144 @@ body[data-theme="fiesta"] .wall { background: linear-gradient(135deg, #ffe449, #
     width: 100% !important;
   }
 }
+
+/* =====================================================
+   V14 PERFORMANCE + ROOM CODE + POWER SHOP
+   - Room code is forced wide enough on desktop and mobile.
+   - Shop uses local score only, so it does not add network lag.
+   ===================================================== */
+.friend-modal-card #roomInfo.room-info {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 18px !important;
+}
+
+.friend-modal-card #roomInfo .friend-input-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  width: 100% !important;
+}
+
+.friend-modal-card #roomCodeDisplay.room-code-display {
+  flex: 1 1 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: 62px !important;
+  font-size: clamp(28px, 5vw, 38px) !important;
+  letter-spacing: clamp(5px, 1.1vw, 9px) !important;
+  text-align: center !important;
+  padding: 0 18px !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.friend-modal-card #copyRoomButton {
+  flex: 0 0 128px !important;
+  min-width: 128px !important;
+  height: 62px !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+.action-row {
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.shop-open-button {
+  background: linear-gradient(135deg, #ffd84d, #ff5fd8) !important;
+}
+
+.shop-modal {
+  width: min(620px, 94vw);
+  max-height: 92dvh;
+  padding: 0;
+  border: 0;
+  border-radius: 28px;
+  background: transparent;
+  color: white;
+}
+.shop-modal::backdrop {
+  background: rgba(0,0,0,.68);
+  backdrop-filter: blur(8px);
+}
+.shop-card {
+  position: relative;
+  max-height: 92dvh;
+  overflow-y: auto;
+  padding: 26px;
+  border-radius: 28px;
+  text-align: left;
+  background:
+    radial-gradient(circle at top left, rgba(255,216,77,.25), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(0,255,204,.20), transparent 32%),
+    linear-gradient(180deg, rgba(30,35,75,.98), rgba(9,10,27,.98));
+  border: 1px solid rgba(255,255,255,.18);
+  box-shadow: 0 30px 90px rgba(0,0,0,.65), 0 0 40px rgba(255,216,77,.18);
+  -webkit-overflow-scrolling: touch;
+}
+.shop-card h2 {
+  margin: 0 48px 8px 0;
+  color: #ffd84d;
+  font-size: clamp(30px, 5vw, 44px);
+  text-shadow: 0 0 18px rgba(255,157,0,.65);
+}
+.shop-wallet {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin: 16px 0;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(0,255,204,.10);
+  border: 1px solid rgba(0,255,204,.28);
+}
+.shop-wallet span { color: #bffcff; font-weight: 800; }
+.shop-wallet strong { color: #ffd84d; font-size: 30px; }
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.shop-item {
+  margin: 0 !important;
+  min-height: 126px;
+  padding: 14px !important;
+  border-radius: 20px !important;
+  color: white !important;
+  text-align: center;
+  background: rgba(255,255,255,.10) !important;
+  border: 1px solid rgba(255,255,255,.15) !important;
+  box-shadow: 0 10px 28px rgba(0,0,0,.28) !important;
+}
+.shop-item:hover {
+  background: rgba(0,255,204,.16) !important;
+  transform: translateY(-2px) !important;
+}
+.shop-emoji { display: block; font-size: 34px; margin-bottom: 6px; }
+.shop-item strong { display: block; font-size: 17px; }
+.shop-item small { display: block; margin-top: 5px; color: #ffd84d; font-weight: 800; }
+.shop-message {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.09);
+  color: #dffff8;
+  text-align: center;
+  font-weight: 800;
+}
+
+@media (max-width: 520px) {
+  .friend-modal-card #roomInfo .friend-input-row {
+    flex-direction: column !important;
+  }
+  .friend-modal-card #copyRoomButton {
+    width: 100% !important;
+    flex-basis: auto !important;
+  }
+  .shop-card { padding: 20px 14px; }
+  .shop-grid { grid-template-columns: 1fr; }
+  .shop-item { min-height: 92px; }
+}
