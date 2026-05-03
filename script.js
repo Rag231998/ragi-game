@@ -78,8 +78,8 @@ const languageOptions = [
 ];
 
 const translations = {
-  no: { subtitle: "Samle diamanter, ta power-ups, overlev fiendene og kom deg gjennom alle nivåene.", startTitle: "Klar?", startInstruction: "Bruk piltastene på PC eller knappene under på mobil.", powerInstruction: "⚡ Power-up gjør fiender spiselige i noen sekunder.", portalInstruction: "🌀 Portal åpnes når alle diamanter er samlet.", startButton: "Start Game", restartButton: "Restart", tipsTitle: "Tips:", tipsText: "Trykk <kbd>P</kbd> for pause. Ta ⚡ og jakt på fiender for bonuspoeng.", messageStart: "Trykk Start Game", searchPlaceholder: "Søk språk eller land...", levelComplete: "Level fullført!", gameOver: "GAME OVER", won: "DU VANT! 🎉", paused: "Pause aktivert. Trykk P igjen for å fortsette.", resumed: "Spillet fortsetter!", nice: "Nice! Combo", power: "⚡ Power Mode! Nå kan du spise fiender!", powerEnd: "Power Mode ferdig. Fortsett å samle diamanter!", shield: "🛡️ Skjold aktivert! Én kollisjon blir reddet.", shieldSaved: "Skjoldet reddet deg!", portalOpen: "🌀 Portalen er åpen! Gå til midten for neste level.", enemyEat: "Boom! Du spiste en fiende! +bonus", lostLife: "Du mistet et liv!", livesLeft: "liv igjen. Level starter på nytt.", levelDoneDesc: "Bra jobba! Neste nivå blir raskere og mer kaotisk.", noResults: "Ingen språk funnet." },
-  en: { subtitle: "Collect diamonds, grab power-ups, survive the enemies and clear every level.", startTitle: "Ready?", startInstruction: "Use arrow keys on PC or the buttons below on mobile.", powerInstruction: "⚡ Power-up makes enemies edible for a few seconds.", portalInstruction: "🌀 The portal opens when all diamonds are collected.", startButton: "Start Game", restartButton: "Restart", tipsTitle: "Tip:", tipsText: "Press <kbd>P</kbd> to pause. Grab ⚡ and chase enemies for bonus points.", messageStart: "Press Start Game", searchPlaceholder: "Search language or country...", levelComplete: "Level Complete!", gameOver: "GAME OVER", won: "YOU WON! 🎉", paused: "Paused. Press P again to continue.", resumed: "Game continues!", nice: "Nice! Combo", power: "⚡ Power Mode! You can eat enemies now!", powerEnd: "Power Mode ended. Keep collecting diamonds!", shield: "🛡️ Shield activated! One collision will be saved.", shieldSaved: "The shield saved you!", portalOpen: "🌀 Portal is open! Go to the center for the next level.", enemyEat: "Boom! You ate an enemy! +bonus", lostLife: "You lost a life!", livesLeft: "lives left. Level restarts.", levelDoneDesc: "Good job! The next level is faster and more chaotic.", noResults: "No languages found." }
+  no: { subtitle: "Samle diamanter, ta power-ups, overlev fiendene og kom deg gjennom alle nivåene.", startTitle: "Klar?", startInstruction: "Bruk piltastene på PC eller knappene under på mobil.", powerInstruction: "⚡ Power-up gjør fiender spiselige i noen sekunder.", portalInstruction: "🌀 Portal åpnes når alle diamanter er samlet.", startButton: "🚀 Spill mot data", playComputer: "🚀 Spill mot data", playFriend: "🌍 Spill mot venn", restartButton: "Restart", tipsTitle: "Tips:", tipsText: "Trykk <kbd>P</kbd> for pause. Ta ⚡ og jakt på fiender for bonuspoeng.", messageStart: "Trykk Start Game", searchPlaceholder: "Søk språk eller land...", levelComplete: "Level fullført!", gameOver: "GAME OVER", won: "DU VANT! 🎉", paused: "Pause aktivert. Trykk P igjen for å fortsette.", resumed: "Spillet fortsetter!", nice: "Nice! Combo", power: "⚡ Power Mode! Nå kan du spise fiender!", powerEnd: "Power Mode ferdig. Fortsett å samle diamanter!", shield: "🛡️ Skjold aktivert! Én kollisjon blir reddet.", shieldSaved: "Skjoldet reddet deg!", portalOpen: "🌀 Portalen er åpen! Gå til midten for neste level.", enemyEat: "Boom! Du spiste en fiende! +bonus", lostLife: "Du mistet et liv!", livesLeft: "liv igjen. Level starter på nytt.", levelDoneDesc: "Bra jobba! Neste nivå blir raskere og mer kaotisk.", noResults: "Ingen språk funnet.", difficultyEasy: "😄 Enkel", difficultyNormal: "😎 Middels", difficultyHard: "🔥 Vanskelig", difficultyExtreme: "💀 Ekstrem", difficultyMessage: "Vanskelighet", friendKicker: "ONLINE MULTIPLAYER", friendModalTitle: "Spill mot venn", friendModalSubtitle: "Lag et privat rom, send koden til kompisen din og start når begge er klare.", friendTabCreate: "Lag rom", friendTabJoin: "Bli med", createRoomButton: "✨ Generer romkode", friendHelp: "Koden vises her og kan sendes på Teams, Messenger, WhatsApp osv.", roomCodeLabel: "Skriv inn romkode fra vennen din", joinRoomButton: "Bli med", ownRoomCodeLabel: "Din romkode", copyButton: "Kopier", youLabel: "Du", friendLabel: "Venn", notReady: "Ikke klar", waitingFriend: "Venter på venn ...", connecting: "Kobler ...", disconnected: "Frakoblet", readyButton: "✅ Jeg er klar", onlineStatusStart: "Velg Lag rom eller Bli med.", soundOn: "🔊 Arcade sound: ON", soundOff: "🔇 Arcade sound: OFF" },
+  en: { subtitle: "Collect diamonds, grab power-ups, survive the enemies and clear every level.", startTitle: "Ready?", startInstruction: "Use arrow keys on PC or the buttons below on mobile.", powerInstruction: "⚡ Power-up makes enemies edible for a few seconds.", portalInstruction: "🌀 The portal opens when all diamonds are collected.", startButton: "🚀 Play vs computer", playComputer: "🚀 Play vs computer", playFriend: "🌍 Play with friend", restartButton: "Restart", tipsTitle: "Tip:", tipsText: "Press <kbd>P</kbd> to pause. Grab ⚡ and chase enemies for bonus points.", messageStart: "Press Start Game", searchPlaceholder: "Search language or country...", levelComplete: "Level Complete!", gameOver: "GAME OVER", won: "YOU WON! 🎉", paused: "Paused. Press P again to continue.", resumed: "Game continues!", nice: "Nice! Combo", power: "⚡ Power Mode! You can eat enemies now!", powerEnd: "Power Mode ended. Keep collecting diamonds!", shield: "🛡️ Shield activated! One collision will be saved.", shieldSaved: "The shield saved you!", portalOpen: "🌀 Portal is open! Go to the center for the next level.", enemyEat: "Boom! You ate an enemy! +bonus", lostLife: "You lost a life!", livesLeft: "lives left. Level restarts.", levelDoneDesc: "Good job! The next level is faster and more chaotic.", noResults: "No languages found.", difficultyEasy: "😄 Easy", difficultyNormal: "😎 Medium", difficultyHard: "🔥 Hard", difficultyExtreme: "💀 Extreme", difficultyMessage: "Difficulty", friendKicker: "ONLINE MULTIPLAYER", friendModalTitle: "Play with friend", friendModalSubtitle: "Create a private room, send the code to your friend and start when both are ready.", friendTabCreate: "Create room", friendTabJoin: "Join", createRoomButton: "✨ Generate room code", friendHelp: "The code appears here and can be sent on Teams, Messenger, WhatsApp etc.", roomCodeLabel: "Enter the room code from your friend", joinRoomButton: "Join", ownRoomCodeLabel: "Your room code", copyButton: "Copy", youLabel: "You", friendLabel: "Friend", notReady: "Not ready", waitingFriend: "Waiting for friend ...", connecting: "Connecting ...", disconnected: "Disconnected", readyButton: "✅ I am ready", onlineStatusStart: "Choose Create room or Join.", soundOn: "🔊 Arcade sound: ON", soundOff: "🔇 Arcade sound: OFF" }
 };
 
 const quickLanguageText = {
@@ -114,7 +114,44 @@ const quickLanguageText = {
 };
 
 for (const [code, values] of Object.entries(quickLanguageText)) {
-  translations[code] = { ...translations.en, subtitle: values[0], startTitle: values[1], startInstruction: values[2], startButton: values[3], messageStart: values[3] };
+  translations[code] = { ...translations.en, subtitle: values[0], startTitle: values[1], startInstruction: values[2], startButton: values[3], playComputer: `🚀 ${values[3]}`, messageStart: values[3] };
+}
+
+// Ekstra UI-tekster for knapper som kom etter språkvelgeren ble laget.
+// Uten dette vil vanskelighetsknapper og multiplayer-knapper bli stående på norsk.
+const quickLanguageUiText = {
+  de: { playComputer: "🚀 Gegen Computer", playFriend: "🌍 Mit Freund spielen", difficultyEasy: "😄 Einfach", difficultyNormal: "😎 Mittel", difficultyHard: "🔥 Schwer", difficultyExtreme: "💀 Extrem", friendModalTitle: "Mit Freund spielen", friendTabCreate: "Raum erstellen", friendTabJoin: "Beitreten", createRoomButton: "✨ Raumcode erstellen", joinRoomButton: "Beitreten", copyButton: "Kopieren", readyButton: "✅ Ich bin bereit" },
+  fr: { playComputer: "🚀 Jouer contre l'ordinateur", playFriend: "🌍 Jouer avec un ami", difficultyEasy: "😄 Facile", difficultyNormal: "😎 Moyen", difficultyHard: "🔥 Difficile", difficultyExtreme: "💀 Extrême", friendModalTitle: "Jouer avec un ami", friendTabCreate: "Créer une salle", friendTabJoin: "Rejoindre", createRoomButton: "✨ Générer un code", joinRoomButton: "Rejoindre", copyButton: "Copier", readyButton: "✅ Je suis prêt" },
+  es: { playComputer: "🚀 Jugar contra PC", playFriend: "🌍 Jugar con amigo", difficultyEasy: "😄 Fácil", difficultyNormal: "😎 Medio", difficultyHard: "🔥 Difícil", difficultyExtreme: "💀 Extremo", friendModalTitle: "Jugar con amigo", friendTabCreate: "Crear sala", friendTabJoin: "Unirse", createRoomButton: "✨ Generar código", joinRoomButton: "Unirse", copyButton: "Copiar", readyButton: "✅ Estoy listo" },
+  ta: { playComputer: "🚀 Computer-க்கு எதிராக", playFriend: "🌍 நண்பருடன் விளையாடு", difficultyEasy: "😄 எளிது", difficultyNormal: "😎 நடுத்தரம்", difficultyHard: "🔥 கடினம்", difficultyExtreme: "💀 மிக கடினம்", friendModalTitle: "நண்பருடன் விளையாடு", friendTabCreate: "Room உருவாக்கு", friendTabJoin: "சேர்", createRoomButton: "✨ Room code உருவாக்கு", joinRoomButton: "சேர்", copyButton: "Copy", readyButton: "✅ நான் தயார்" },
+  sv: { playComputer: "🚀 Spela mot dator", playFriend: "🌍 Spela med vän", difficultyEasy: "😄 Enkel", difficultyNormal: "😎 Medel", difficultyHard: "🔥 Svår", difficultyExtreme: "💀 Extrem", friendModalTitle: "Spela med vän", friendTabCreate: "Skapa rum", friendTabJoin: "Gå med", createRoomButton: "✨ Skapa rumskod", joinRoomButton: "Gå med", copyButton: "Kopiera", readyButton: "✅ Jag är redo" },
+  da: { playComputer: "🚀 Spil mod computer", playFriend: "🌍 Spil med ven", difficultyEasy: "😄 Let", difficultyNormal: "😎 Middel", difficultyHard: "🔥 Svær", difficultyExtreme: "💀 Ekstrem", friendModalTitle: "Spil med ven", friendTabCreate: "Lav rum", friendTabJoin: "Deltag", createRoomButton: "✨ Generer rumkode", joinRoomButton: "Deltag", copyButton: "Kopiér", readyButton: "✅ Jeg er klar" },
+  nl: { playComputer: "🚀 Speel tegen computer", playFriend: "🌍 Speel met vriend", difficultyEasy: "😄 Makkelijk", difficultyNormal: "😎 Normaal", difficultyHard: "🔥 Moeilijk", difficultyExtreme: "💀 Extreem", friendModalTitle: "Speel met vriend", friendTabCreate: "Kamer maken", friendTabJoin: "Meedoen", createRoomButton: "✨ Code maken", joinRoomButton: "Meedoen", copyButton: "Kopiëren", readyButton: "✅ Ik ben klaar" },
+  pl: { playComputer: "🚀 Graj z komputerem", playFriend: "🌍 Graj ze znajomym", difficultyEasy: "😄 Łatwy", difficultyNormal: "😎 Średni", difficultyHard: "🔥 Trudny", difficultyExtreme: "💀 Ekstremalny", friendModalTitle: "Graj ze znajomym", friendTabCreate: "Utwórz pokój", friendTabJoin: "Dołącz", createRoomButton: "✨ Wygeneruj kod", joinRoomButton: "Dołącz", copyButton: "Kopiuj", readyButton: "✅ Jestem gotowy" }
+};
+for (const [code, extra] of Object.entries(quickLanguageUiText)) {
+  translations[code] = { ...(translations[code] || translations.en), ...extra };
+}
+
+
+// V12: Tekster for customizer/figur/musikk. Disse legges på alle språk slik at nye menyer ikke blir stående på norsk.
+const customizerUiText = {
+  no: { customizeButton: "🎨 Velg figur, emoji og musikk", customizeKicker: "PLAYER STYLE", customizeTitle: "Gjør spillet ditt personlig", customizeSubtitle: "Velg emoji, last opp eget bilde, slå på random fiender og velg musikkrytme før du starter.", customizeEmojiTitle: "1. Velg spiller-emoji", customizeImageTitle: "2. Eller last opp eget bilde", clearAvatarButton: "Fjern bilde", avatarNote: "Bildet lagres kun i nettleseren din. Bruk et kvadratisk bilde for best resultat.", customizeEnemyTitle: "3. Fiender", randomEnemyLabel: "Random fiende-emoji på hvert brett 👾💀😈🤡", customizeMusicTitle: "4. Musikk / rytme", musicTheme: "Auto etter brett", musicHappy: "Happy arcade", musicTurbo: "Turbo chase", musicChill: "Chill diamonds", musicBoss: "Boss mode", previewMusicButton: "▶️ Test rytme", saveCustomizeButton: "✅ Lagre valg" },
+  en: { customizeButton: "🎨 Choose character, emoji and music", customizeKicker: "PLAYER STYLE", customizeTitle: "Make the game yours", customizeSubtitle: "Choose an emoji, upload your own picture, enable random enemies and select music before you start.", customizeEmojiTitle: "1. Choose player emoji", customizeImageTitle: "2. Or upload your own picture", clearAvatarButton: "Remove picture", avatarNote: "The picture is saved only in your browser. Use a square image for best result.", customizeEnemyTitle: "3. Enemies", randomEnemyLabel: "Random enemy emoji on every board 👾💀😈🤡", customizeMusicTitle: "4. Music / rhythm", musicTheme: "Auto by board", musicHappy: "Happy arcade", musicTurbo: "Turbo chase", musicChill: "Chill diamonds", musicBoss: "Boss mode", previewMusicButton: "▶️ Test rhythm", saveCustomizeButton: "✅ Save choices" },
+  ta: { customizeButton: "🎨 உருவம், emoji, இசை தேர்வு", customizeTitle: "உங்கள் விளையாட்டை தனிப்பயனாக்குங்கள்", customizeSubtitle: "Emoji தேர்வு செய்யவும், உங்கள் படம் upload செய்யவும், random enemies மற்றும் இசை தேர்வு செய்யவும்.", customizeEmojiTitle: "1. Player emoji தேர்வு", customizeImageTitle: "2. உங்கள் படம் upload செய்யவும்", clearAvatarButton: "படத்தை நீக்கு", avatarNote: "படம் உங்கள் browser-இல் மட்டும் சேமிக்கப்படும். Square image சிறந்தது.", customizeEnemyTitle: "3. எதிரிகள்", randomEnemyLabel: "ஒவ்வொரு board-லும் random enemy emoji 👾💀😈🤡", customizeMusicTitle: "4. இசை / rhythm", musicTheme: "Board படி auto", musicHappy: "Happy arcade", musicTurbo: "Turbo chase", musicChill: "Chill diamonds", musicBoss: "Boss mode", previewMusicButton: "▶️ Rhythm test", saveCustomizeButton: "✅ தேர்வை சேமி" },
+  de: { customizeButton: "🎨 Figur, Emoji und Musik wählen", customizeTitle: "Mach das Spiel persönlich", customizeSubtitle: "Wähle Emoji, lade ein Bild hoch, aktiviere zufällige Gegner und wähle Musik.", customizeEmojiTitle: "1. Spieler-Emoji wählen", customizeImageTitle: "2. Oder eigenes Bild hochladen", clearAvatarButton: "Bild entfernen", avatarNote: "Das Bild wird nur im Browser gespeichert. Ein quadratisches Bild ist am besten.", customizeEnemyTitle: "3. Gegner", randomEnemyLabel: "Zufällige Gegner-Emojis auf jedem Brett 👾💀😈🤡", customizeMusicTitle: "4. Musik / Rhythmus", musicTheme: "Auto nach Brett", musicHappy: "Happy arcade", musicTurbo: "Turbo chase", musicChill: "Chill diamonds", musicBoss: "Boss mode", previewMusicButton: "▶️ Rhythmus testen", saveCustomizeButton: "✅ Auswahl speichern" },
+  fr: { customizeButton: "🎨 Choisir personnage, emoji et musique", customizeTitle: "Personnalise ton jeu", customizeSubtitle: "Choisis un emoji, ajoute ton image, active les ennemis aléatoires et choisis la musique.", customizeEmojiTitle: "1. Choisir l’emoji joueur", customizeImageTitle: "2. Ou ajouter ton image", clearAvatarButton: "Retirer l’image", avatarNote: "L’image est enregistrée seulement dans ton navigateur. Une image carrée est idéale.", customizeEnemyTitle: "3. Ennemis", randomEnemyLabel: "Emoji ennemi aléatoire à chaque plateau 👾💀😈🤡", customizeMusicTitle: "4. Musique / rythme", musicTheme: "Auto selon plateau", musicHappy: "Happy arcade", musicTurbo: "Turbo chase", musicChill: "Chill diamonds", musicBoss: "Boss mode", previewMusicButton: "▶️ Tester le rythme", saveCustomizeButton: "✅ Enregistrer" },
+  es: { customizeButton: "🎨 Elegir personaje, emoji y música", customizeTitle: "Personaliza tu juego", customizeSubtitle: "Elige emoji, sube tu imagen, activa enemigos aleatorios y elige música.", customizeEmojiTitle: "1. Elige emoji del jugador", customizeImageTitle: "2. O sube tu imagen", clearAvatarButton: "Quitar imagen", avatarNote: "La imagen se guarda solo en tu navegador. Usa una imagen cuadrada.", customizeEnemyTitle: "3. Enemigos", randomEnemyLabel: "Emoji enemigo aleatorio en cada tablero 👾💀😈🤡", customizeMusicTitle: "4. Música / ritmo", musicTheme: "Auto por tablero", musicHappy: "Happy arcade", musicTurbo: "Turbo chase", musicChill: "Chill diamonds", musicBoss: "Boss mode", previewMusicButton: "▶️ Probar ritmo", saveCustomizeButton: "✅ Guardar" },
+  sv: { customizeButton: "🎨 Välj figur, emoji och musik", customizeTitle: "Gör spelet personligt", customizeSubtitle: "Välj emoji, ladda upp bild, slå på slumpade fiender och välj musik.", customizeEmojiTitle: "1. Välj spelar-emoji", customizeImageTitle: "2. Eller ladda upp egen bild", clearAvatarButton: "Ta bort bild", avatarNote: "Bilden sparas bara i din webbläsare. Fyrkantig bild fungerar bäst.", customizeEnemyTitle: "3. Fiender", randomEnemyLabel: "Slumpad fiende-emoji på varje bana 👾💀😈🤡", customizeMusicTitle: "4. Musik / rytm", musicTheme: "Auto efter bana", musicHappy: "Happy arcade", musicTurbo: "Turbo chase", musicChill: "Chill diamonds", musicBoss: "Boss mode", previewMusicButton: "▶️ Testa rytm", saveCustomizeButton: "✅ Spara val" },
+  da: { customizeButton: "🎨 Vælg figur, emoji og musik", customizeTitle: "Gør spillet personligt", customizeSubtitle: "Vælg emoji, upload billede, slå tilfældige fjender til og vælg musik.", customizeEmojiTitle: "1. Vælg spiller-emoji", customizeImageTitle: "2. Eller upload eget billede", clearAvatarButton: "Fjern billede", avatarNote: "Billedet gemmes kun i din browser. Et kvadratisk billede virker bedst.", customizeEnemyTitle: "3. Fjender", randomEnemyLabel: "Tilfældig fjende-emoji på hvert bræt 👾💀😈🤡", customizeMusicTitle: "4. Musik / rytme", musicTheme: "Auto efter bræt", musicHappy: "Happy arcade", musicTurbo: "Turbo chase", musicChill: "Chill diamonds", musicBoss: "Boss mode", previewMusicButton: "▶️ Test rytme", saveCustomizeButton: "✅ Gem valg" },
+  pl: { customizeButton: "🎨 Wybierz postać, emoji i muzykę", customizeTitle: "Dostosuj swoją grę", customizeSubtitle: "Wybierz emoji, wgraj zdjęcie, włącz losowych wrogów i wybierz muzykę.", customizeEmojiTitle: "1. Wybierz emoji gracza", customizeImageTitle: "2. Lub wgraj swoje zdjęcie", clearAvatarButton: "Usuń zdjęcie", avatarNote: "Zdjęcie zapisuje się tylko w przeglądarce. Najlepszy jest obraz kwadratowy.", customizeEnemyTitle: "3. Wrogowie", randomEnemyLabel: "Losowe emoji wroga na każdej planszy 👾💀😈🤡", customizeMusicTitle: "4. Muzyka / rytm", musicTheme: "Auto według planszy", musicHappy: "Happy arcade", musicTurbo: "Turbo chase", musicChill: "Chill diamonds", musicBoss: "Boss mode", previewMusicButton: "▶️ Test rytmu", saveCustomizeButton: "✅ Zapisz" }
+};
+const customizerFallbackByCode = {
+  it: "en", pt: "en", nl: "en", fi: "en", tr: "en", ar: "en", hi: "en", ur: "en", bn: "en", zh: "en", ja: "en", ko: "en", ru: "en", uk: "en", ro: "en", cs: "en", el: "en", id: "en", th: "en", vi: "en", si: "en"
+};
+for (const language of languageOptions) {
+  const baseCode = customizerUiText[language.code] ? language.code : (customizerFallbackByCode[language.code] || "en");
+  translations[language.code] = { ...(translations[language.code] || translations.en), ...customizerUiText[baseCode] };
 }
 
 let currentLanguage = localStorage.getItem("ragiJoyLanguage") || "no";
@@ -134,9 +171,12 @@ const TILE = {
 };
 
 const levels = [
+  // Flere brett-varianter. Alle brett er 13 x 11 ruter.
+  // 1=vegg, 0=tomt, 2=diamant, 3=power-up, 4=skjold, 5=portal.
   {
     name: "Happy Start",
-    speed: 560,
+    theme: "neon",
+    speed: 610,
     enemies: [{ x: 11, y: 9 }],
     player: { x: 1, y: 1 },
     map: [
@@ -155,7 +195,8 @@ const levels = [
   },
   {
     name: "Diamond Rush",
-    speed: 500,
+    theme: "candy",
+    speed: 585,
     enemies: [{ x: 11, y: 1 }, { x: 11, y: 9 }],
     player: { x: 1, y: 9 },
     map: [
@@ -174,7 +215,8 @@ const levels = [
   },
   {
     name: "Power Party",
-    speed: 455,
+    theme: "electric",
+    speed: 560,
     enemies: [{ x: 11, y: 1 }, { x: 1, y: 9 }],
     player: { x: 1, y: 1 },
     map: [
@@ -192,27 +234,69 @@ const levels = [
     ]
   },
   {
-    name: "Chaos Castle",
-    speed: 430,
-    enemies: [{ x: 11, y: 1 }, { x: 11, y: 9 }, { x: 1, y: 9 }],
+    name: "Spiral Smile",
+    theme: "sunset",
+    speed: 540,
+    enemies: [{ x: 11, y: 1 }, { x: 11, y: 9 }],
     player: { x: 1, y: 1 },
     map: [
       "1111111111111",
-      "1222202222221",
-      "1011101011101",
-      "1220222220221",
-      "1210111010121",
+      "1222222222221",
+      "1011111111201",
+      "1022222221201",
+      "1021111121201",
+      "1021230021201",
+      "1021111121201",
+      "1022222221201",
+      "1021111111201",
+      "1422222222221",
+      "1111111111111"
+    ]
+  },
+  {
+    name: "Bridge Blitz",
+    theme: "ocean",
+    speed: 520,
+    enemies: [{ x: 11, y: 1 }, { x: 1, y: 9 }, { x: 11, y: 9 }],
+    player: { x: 1, y: 1 },
+    map: [
+      "1111111111111",
+      "1222022202221",
+      "1211010101121",
+      "1222022202221",
+      "1011110111101",
+      "1222232222221",
+      "1011110111101",
+      "1222022202221",
+      "1211010101121",
+      "1222022202421",
+      "1111111111111"
+    ]
+  },
+  {
+    name: "Ghost Garden",
+    theme: "forest",
+    speed: 500,
+    enemies: [{ x: 11, y: 1 }, { x: 1, y: 9 }, { x: 6, y: 5 }],
+    player: { x: 1, y: 1 },
+    map: [
+      "1111111111111",
       "1222223222221",
-      "1210111010121",
-      "1220222220221",
-      "1011101011101",
-      "1222220222241",
+      "1210101010121",
+      "1220202020221",
+      "1010101010101",
+      "1222224222221",
+      "1010101010101",
+      "1220202020221",
+      "1210101010121",
+      "1222223222221",
       "1111111111111"
     ]
   },
   {
     name: "Turbo Tunnel",
-    speed: 405,
+    theme: "lava",
+    speed: 485,
     enemies: [{ x: 11, y: 1 }, { x: 1, y: 9 }, { x: 11, y: 9 }],
     player: { x: 1, y: 1 },
     map: [
@@ -230,8 +314,49 @@ const levels = [
     ]
   },
   {
-    name: "Final Joy",
-    speed: 380,
+    name: "Snake Arena",
+    theme: "purple",
+    speed: 470,
+    enemies: [{ x: 11, y: 1 }, { x: 1, y: 9 }, { x: 11, y: 9 }],
+    player: { x: 1, y: 1 },
+    map: [
+      "1111111111111",
+      "1222222222221",
+      "1011111111101",
+      "1222222222201",
+      "1211111111201",
+      "1222234222201",
+      "1021111111121",
+      "1022222222221",
+      "1011111111101",
+      "1222222222221",
+      "1111111111111"
+    ]
+  },
+  {
+    name: "Rocket Cross",
+    theme: "rocket",
+    speed: 455,
+    enemies: [{ x: 11, y: 1 }, { x: 1, y: 9 }, { x: 11, y: 9 }, { x: 6, y: 1 }],
+    player: { x: 1, y: 1 },
+    map: [
+      "1111111111111",
+      "1222220222221",
+      "1211101011121",
+      "1222203022221",
+      "1110101010111",
+      "1222224222221",
+      "1110101010111",
+      "1222220302221",
+      "1211101011121",
+      "1222220222221",
+      "1111111111111"
+    ]
+  },
+  {
+    name: "Final Fiesta",
+    theme: "fiesta",
+    speed: 440,
     enemies: [{ x: 11, y: 1 }, { x: 1, y: 9 }, { x: 11, y: 9 }, { x: 6, y: 5 }],
     player: { x: 1, y: 1 },
     map: [
@@ -266,6 +391,27 @@ let enemyTimer = null;
 let powerTimer = null;
 let diamondsLeft = 0;
 let portalOpen = false;
+
+
+// Vanskelighetsvalg påvirker kun spill mot data.
+// Dette gjør at spilleren kan velge brettfølelse uten at online-rommet blir ustabilt.
+const difficultySettings = {
+  easy: { label: "Enkel", labelKey: "difficultyEasy", lives: 4, speedBonus: 85, enemyLimit: -1, scoreBonus: 1 },
+  normal: { label: "Middels", labelKey: "difficultyNormal", lives: 3, speedBonus: 35, enemyLimit: 0, scoreBonus: 1.15 },
+  hard: { label: "Vanskelig", labelKey: "difficultyHard", lives: 3, speedBonus: -10, enemyLimit: 1, scoreBonus: 1.35 },
+  extreme: { label: "Ekstrem", labelKey: "difficultyExtreme", lives: 2, speedBonus: -45, enemyLimit: 1, scoreBonus: 1.65 }
+};
+let selectedDifficulty = localStorage.getItem("ragiJoyDifficulty") || "normal";
+let soundEnabled = localStorage.getItem("ragiJoySound") !== "off";
+
+// Personlige valg før spillstart.
+// Lagres lokalt i nettleseren, så spilleren kan ha egen emoji/bilde uten server.
+let selectedPlayerEmoji = localStorage.getItem("ragiJoyPlayerEmoji") || "😄";
+let selectedPlayerImage = localStorage.getItem("ragiJoyPlayerImage") || "";
+let randomEnemyEmojis = localStorage.getItem("ragiJoyRandomEnemies") !== "off";
+let selectedMusicTrack = localStorage.getItem("ragiJoyMusicTrack") || "theme";
+const enemyEmojiPool = ["👾", "💀", "😈", "🤡", "👻", "🦖", "🧟", "🐙", "🦹", "🔥"];
+
 
 // -----------------------------
 // Online multiplayer beta
@@ -377,7 +523,9 @@ function loadLevel(index) {
   const level = levels[index];
   map = cloneMap(level.map);
   player = { ...level.player };
-  enemies = level.enemies.map(enemy => ({ ...enemy, startX: enemy.x, startY: enemy.y }));
+  enemies = level.enemies.map(enemy => ({ ...enemy, startX: enemy.x, startY: enemy.y, face: getEnemyFace() }));
+  applyLevelTheme(level);
+  applyDifficultyToEnemies();
   combo = 1;
   powerMode = false;
   shield = false;
@@ -388,17 +536,20 @@ function loadLevel(index) {
   enemyTimer = setTimeout(moveEnemies, getEnemyDelay());
   messageBar.textContent = `Level ${index + 1}: ${level.name}`;
   drawGame();
+  if (gameRunning) startMusic();
 }
 
 function getEnemyDelay() {
   // Fiendene starter roligere på hvert level og øker gradvis.
   // Lavere tall = raskere fiender. Dette gjør level 4+ spillbart, men fortsatt spennende.
   const level = levels[levelIndex] || levels[0];
+  const difficulty = difficultySettings[selectedDifficulty] || difficultySettings.normal;
   const secondsPlayed = Math.floor((Date.now() - levelStartTime) / 1000);
-  const gradualBoost = Math.min(105, secondsPlayed * 3);
-  const levelBoost = Math.min(45, levelIndex * 7);
-  const delay = level.speed - gradualBoost - levelBoost;
-  return Math.max(285, delay);
+  // Gradvis økning: rolig i starten, litt raskere etter hvert.
+  const gradualBoost = Math.min(95, secondsPlayed * 2.2);
+  const levelBoost = Math.min(55, levelIndex * 5.5);
+  const delay = level.speed + difficulty.speedBonus - gradualBoost - levelBoost;
+  return Math.max(selectedDifficulty === "extreme" ? 245 : 300, delay);
 }
 
 function countTiles(tileType) {
@@ -417,7 +568,8 @@ function startGame() {
   detachRoomListener();
   score = 0;
   levelIndex = 0;
-  lives = 3;
+  lives = difficultySettings[selectedDifficulty].lives;
+  hypeStart();
   gameRunning = true;
   paused = false;
   startScreen.classList.add("hidden");
@@ -449,14 +601,17 @@ function drawGame() {
       const enemyHere = enemies.find(enemy => enemy.x === x && enemy.y === y);
       if (enemyHere) {
         cell.className = powerMode ? "cell enemy scared" : "cell enemy";
+        cell.dataset.emoji = powerMode ? "😵" : (enemyHere.face || "👾");
       }
 
       if (onlineMode && remotePlayer && remotePlayer.x === x && remotePlayer.y === y) {
         cell.className = "cell player-two";
+        applyAvatarToCell(cell, remotePlayer.avatarEmoji || "😎", remotePlayer.avatarImage || "");
       }
 
       if (player.x === x && player.y === y) {
         cell.className = playerSlot === "p2" ? "cell player-two" : "cell player";
+        applyAvatarToCell(cell, selectedPlayerEmoji, selectedPlayerImage);
       }
 
       game.appendChild(cell);
@@ -498,6 +653,8 @@ function collectTile(x, y) {
     diamondsLeft--;
     map[y][x] = TILE.EMPTY;
     messageBar.textContent = `${t("nice")} x${combo}`;
+    spawnPop("💎", x, y);
+    playSfx("coin");
   }
 
   if (tile === TILE.POWER) {
@@ -505,6 +662,8 @@ function collectTile(x, y) {
     activatePowerMode();
     map[y][x] = TILE.EMPTY;
     messageBar.textContent = t("power");
+    spawnPop("⚡", x, y);
+    playSfx("power");
   }
 
   if (tile === TILE.SHIELD) {
@@ -512,6 +671,8 @@ function collectTile(x, y) {
     score += 30;
     map[y][x] = TILE.EMPTY;
     messageBar.textContent = t("shield");
+    spawnPop("🛡️", x, y);
+    playSfx("shield");
   }
 
   if (diamondsLeft === 0 && !portalOpen) {
@@ -538,6 +699,8 @@ function openPortal() {
   portalOpen = true;
   map[5][6] = TILE.PORTAL;
   messageBar.textContent = t("portalOpen");
+  spawnCenterBurst("🌀 PORTAL!");
+  playSfx("portal");
 }
 
 function moveEnemies() {
@@ -598,6 +761,8 @@ function checkEnemyCollision() {
     enemy.x = enemy.startX;
     enemy.y = enemy.startY;
     messageBar.textContent = t("enemyEat");
+    spawnCenterBurst("👾 +BONUS");
+    playSfx("enemy");
     return;
   }
 
@@ -639,6 +804,8 @@ function nextLevel() {
   levelTitle.textContent = `Level ${levelIndex + 1} ${t("levelComplete")}`;
   levelDescription.textContent = t("levelDoneDesc");
   levelScreen.classList.remove("hidden");
+  spawnCenterBurst("🎉 LEVEL UP!");
+  playSfx("level");
 
   setTimeout(() => {
     levelIndex++;
@@ -652,6 +819,7 @@ function endGame(won) {
   gameRunning = false;
   clearInterval(enemyTimer);
   clearTimeout(powerTimer);
+  stopMusic();
 
   if (score > highscore) {
     highscore = score;
@@ -662,7 +830,149 @@ function endGame(won) {
   finalScore.textContent = score;
   finalHighscore.textContent = highscore;
   endScreen.classList.remove("hidden");
+  playSfx(won ? "win" : "lose");
   drawGame();
+}
+
+
+function applyLevelTheme(level) {
+  document.body.dataset.theme = level.theme || "neon";
+}
+
+function applyDifficultyToEnemies() {
+  const difficulty = difficultySettings[selectedDifficulty] || difficultySettings.normal;
+  if (difficulty.enemyLimit < 0 && enemies.length > 1) {
+    enemies = enemies.slice(0, Math.max(1, enemies.length + difficulty.enemyLimit));
+  }
+  if (difficulty.enemyLimit > 0 && enemies.length < 5) {
+    const level = levels[levelIndex] || levels[0];
+    const cloneSource = level.enemies[level.enemies.length - 1] || { x: 11, y: 9 };
+    enemies.push({ ...cloneSource, x: Math.max(1, cloneSource.x - 1), startX: Math.max(1, cloneSource.x - 1), startY: cloneSource.y, face: getEnemyFace() });
+  }
+}
+
+function setDifficulty(mode) {
+  if (!difficultySettings[mode]) return;
+  selectedDifficulty = mode;
+  localStorage.setItem("ragiJoyDifficulty", mode);
+  document.querySelectorAll(".difficulty-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.difficulty === mode);
+  });
+  const selected = difficultySettings[mode];
+  messageBar.textContent = `${t("difficultyMessage")}: ${t(selected.labelKey)}`;
+  playSfx("select");
+}
+
+function spawnPop(text, x, y) {
+  const rect = game.getBoundingClientRect();
+  const cellWidth = rect.width / (map[0]?.length || 13);
+  const cellHeight = rect.height / (map.length || 11);
+  const pop = document.createElement("div");
+  pop.className = "pop-effect";
+  pop.textContent = text;
+  pop.style.left = `${rect.left + x * cellWidth + cellWidth / 2}px`;
+  pop.style.top = `${rect.top + y * cellHeight + cellHeight / 2}px`;
+  document.body.appendChild(pop);
+  setTimeout(() => pop.remove(), 760);
+}
+
+function spawnCenterBurst(text) {
+  const burst = document.createElement("div");
+  burst.className = "center-burst";
+  burst.textContent = text;
+  document.body.appendChild(burst);
+  setTimeout(() => burst.remove(), 1050);
+}
+
+let audioContext = null;
+let musicTimer = null;
+let musicStep = 0;
+const musicTracks = {
+  neon: [392, 523, 659, 784, 659, 523],
+  candy: [440, 554, 659, 880, 659, 554],
+  electric: [330, 660, 494, 740, 554, 831],
+  lava: [196, 392, 466, 587, 466, 392],
+  fiesta: [523, 659, 784, 1046, 784, 659],
+  happy: [523, 659, 784, 1046, 880, 784, 659, 523],
+  turbo: [330, 392, 494, 659, 988, 659, 494, 392],
+  chill: [262, 330, 392, 523, 392, 330],
+  boss: [196, 233, 262, 330, 392, 330, 262, 233]
+};
+
+function getAudioContext() {
+  if (!soundEnabled) return null;
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) return null;
+  audioContext = audioContext || new AudioCtx();
+  if (audioContext.state === "suspended") audioContext.resume();
+  return audioContext;
+}
+
+function tone(freq, duration = 0.08, type = "square", volume = 0.035) {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.value = volume;
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start();
+  gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+  osc.stop(ctx.currentTime + duration);
+}
+
+function playSfx(name) {
+  if (!soundEnabled) return;
+  const patterns = {
+    select: [[420, .04], [620, .05]],
+    coin: [[880, .035], [1175, .05]],
+    power: [[392, .06], [784, .08], [988, .08]],
+    shield: [[330, .06], [440, .06], [660, .08]],
+    portal: [[523, .07], [659, .07], [1046, .12]],
+    enemy: [[130, .06], [220, .08], [440, .08]],
+    level: [[523, .06], [659, .06], [784, .06], [1046, .12]],
+    win: [[523, .08], [659, .08], [784, .08], [1046, .18]],
+    lose: [[220, .12], [165, .16]],
+    start: [[392, .07], [523, .07], [659, .07], [784, .12]]
+  };
+  (patterns[name] || patterns.select).forEach(([f, d], i) => setTimeout(() => tone(f, d), i * 65));
+}
+
+function startMusic() {
+  stopMusic();
+  if (!soundEnabled) return;
+  const currentTheme = (levels[levelIndex] && levels[levelIndex].theme) || "neon";
+  const trackName = selectedMusicTrack === "theme" ? currentTheme : selectedMusicTrack;
+  const track = musicTracks[trackName] || musicTracks[currentTheme] || musicTracks.neon;
+  musicStep = 0;
+  musicTimer = setInterval(() => {
+    if (!gameRunning || paused || !soundEnabled) return;
+    const freq = track[musicStep % track.length];
+    tone(freq, 0.045, "triangle", 0.018);
+    musicStep++;
+  }, 420);
+}
+
+function stopMusic() {
+  if (musicTimer) clearInterval(musicTimer);
+  musicTimer = null;
+}
+
+function toggleGameSound() {
+  soundEnabled = !soundEnabled;
+  localStorage.setItem("ragiJoySound", soundEnabled ? "on" : "off");
+  const btn = document.getElementById("soundButton");
+  if (btn) btn.textContent = soundEnabled ? t("soundOn") : t("soundOff");
+  if (soundEnabled) { playSfx("select"); if (gameRunning) startMusic(); }
+  else stopMusic();
+}
+
+function hypeStart() {
+  spawnCenterBurst("🚀 GO GO GO!");
+  playSfx("start");
+  startMusic();
 }
 
 function togglePause() {
@@ -759,10 +1069,70 @@ function applyLanguage() {
   setText("startInstruction", t("startInstruction"));
   setText("powerInstruction", t("powerInstruction"));
   setText("portalInstruction", t("portalInstruction"));
-  setText("startButton", t("startButton"));
+  setHtml("startButton", t("playComputer"));
+  setHtml("friendModeButton", t("playFriend"));
   setText("restartButton", t("restartButton"));
   setText("tipsTitle", t("tipsTitle"));
   setHtml("tipsText", t("tipsText"));
+
+  const difficultyButtonText = {
+    easy: t("difficultyEasy"),
+    normal: t("difficultyNormal"),
+    hard: t("difficultyHard"),
+    extreme: t("difficultyExtreme")
+  };
+  document.querySelectorAll(".difficulty-btn").forEach(btn => {
+    const mode = btn.dataset.difficulty;
+    if (difficultyButtonText[mode]) btn.innerHTML = difficultyButtonText[mode];
+  });
+
+  setText("friendModalTitle", t("friendModalTitle"));
+  const friendKicker = document.querySelector("#friendModal .friend-kicker");
+  if (friendKicker) friendKicker.textContent = t("friendKicker");
+  const friendSubtitle = document.querySelector("#friendModal .friend-subtitle");
+  if (friendSubtitle) friendSubtitle.textContent = t("friendModalSubtitle");
+  setText("friendTabCreate", t("friendTabCreate"));
+  setText("friendTabJoin", t("friendTabJoin"));
+  setHtml("createRoomButton", t("createRoomButton"));
+  const friendHelp = document.querySelector("#createRoomPanel .friend-help");
+  if (friendHelp) friendHelp.textContent = t("friendHelp");
+  const labels = document.querySelectorAll(".friend-label");
+  if (labels[0]) labels[0].textContent = t("roomCodeLabel");
+  if (labels[1]) labels[1].textContent = t("ownRoomCodeLabel");
+  setText("joinRoomButton", t("joinRoomButton"));
+  setText("copyRoomButton", t("copyButton"));
+  setHtml("readyButton", t("readyButton"));
+  const readyCards = document.querySelectorAll(".ready-card span");
+  if (readyCards[0]) readyCards[0].textContent = t("youLabel");
+  if (readyCards[1]) readyCards[1].textContent = t("friendLabel");
+  if (onlineStatus && onlineStatus.textContent === "Velg Lag rom eller Bli med.") onlineStatus.textContent = t("onlineStatusStart");
+  const soundBtn = document.getElementById("soundButton");
+  if (soundBtn) soundBtn.textContent = soundEnabled ? t("soundOn") : t("soundOff");
+
+  // V12: Oppdater alle nye customizer-tekster når språk byttes.
+  setHtml("customizeButton", t("customizeButton"));
+  setText("customizeKicker", t("customizeKicker"));
+  setText("customizeTitle", t("customizeTitle"));
+  setText("customizeSubtitle", t("customizeSubtitle"));
+  setText("customizeEmojiTitle", t("customizeEmojiTitle"));
+  setText("customizeImageTitle", t("customizeImageTitle"));
+  setText("clearAvatarButton", t("clearAvatarButton"));
+  setText("avatarNote", t("avatarNote"));
+  setText("customizeEnemyTitle", t("customizeEnemyTitle"));
+  setText("randomEnemyLabel", t("randomEnemyLabel"));
+  setText("customizeMusicTitle", t("customizeMusicTitle"));
+  setHtml("previewMusicButton", t("previewMusicButton"));
+  setHtml("saveCustomizeButton", t("saveCustomizeButton"));
+  const musicSelect = document.getElementById("musicSelect");
+  if (musicSelect) {
+    const selectedMusicValue = musicSelect.value || selectedMusicTrack || "theme";
+    const musicLabels = { theme: t("musicTheme"), happy: t("musicHappy"), turbo: t("musicTurbo"), chill: t("musicChill"), boss: t("musicBoss") };
+    Array.from(musicSelect.options).forEach(option => {
+      if (musicLabels[option.value]) option.textContent = musicLabels[option.value];
+    });
+    musicSelect.value = selectedMusicValue;
+  }
+
   if (messageBar && !gameRunning) messageBar.textContent = t("messageStart");
   renderLanguageList(languageSearch ? languageSearch.value : "");
 }
@@ -809,7 +1179,7 @@ function switchFriendTab(tab) {
   if (!firebaseReady()) {
     setOnlineStatus("Firebase kobler til ... Last siden på nytt hvis den ikke blir klar.");
   } else {
-    setOnlineStatus(createIsActive ? "Trykk Generer romkode for å lage et privat rom." : "Skriv inn romkoden fra vennen din.");
+    setOnlineStatus(createIsActive ? t("createRoomButton") : t("roomCodeLabel"));
   }
 
   if (!createIsActive && roomCodeInput) roomCodeInput.focus();
@@ -822,7 +1192,7 @@ function showFriendLobby() {
     else friendModal.setAttribute("open", "open");
   }
   setOnlineStatus(firebaseReady()
-    ? "Velg Lag rom, eller trykk Bli med og skriv inn koden du har fått."
+    ? t("onlineStatusStart")
     : "Firebase kobler til ... Last siden på nytt hvis dette ikke endrer seg."
   );
 }
@@ -875,6 +1245,8 @@ async function createFriendRoom() {
           y: levels[0].player.y,
           score: 0,
           lives: 3,
+          avatarEmoji: selectedPlayerEmoji,
+          avatarImage: selectedPlayerImage,
           joinedAt: now,
           updatedAt: now
         }
@@ -1002,6 +1374,8 @@ async function joinFriendRoom() {
       y: startPos.y,
       score: 0,
       lives: 3,
+      avatarEmoji: selectedPlayerEmoji,
+      avatarImage: selectedPlayerImage,
       joinedAt: players[playerSlot]?.joinedAt || now,
       updatedAt: now
     };
@@ -1060,18 +1434,18 @@ async function setPlayerReady() {
     connected: true,
     updatedAt: Date.now()
   });
-  setOnlineStatus("Du er klar ✅ Venter på den andre spilleren.");
+  setOnlineStatus(`${t("readyButton")} ${t("waitingFriend")}`);
 }
 
 function updateReadyCards(selfPlayer, otherPlayer) {
   if (readySelf) {
-    if (!selfPlayer) readySelf.textContent = "Kobler ...";
-    else readySelf.textContent = selfPlayer.ready ? "Klar ✅" : "Ikke klar";
+    if (!selfPlayer) readySelf.textContent = t("connecting");
+    else readySelf.textContent = selfPlayer.ready ? "Klar ✅" : t("notReady");
   }
   if (readyOther) {
-    if (!otherPlayer) readyOther.textContent = "Venter på venn ...";
-    else if (otherPlayer.connected === false) readyOther.textContent = "Frakoblet";
-    else readyOther.textContent = otherPlayer.ready ? "Klar ✅" : "Ikke klar";
+    if (!otherPlayer) readyOther.textContent = t("waitingFriend");
+    else if (otherPlayer.connected === false) readyOther.textContent = t("disconnected");
+    else readyOther.textContent = otherPlayer.ready ? "Klar ✅" : t("notReady");
   }
 }
 
@@ -1170,6 +1544,8 @@ async function syncOnlinePlayer() {
     score,
     lives,
     level: levelIndex + 1,
+    avatarEmoji: selectedPlayerEmoji,
+    avatarImage: selectedPlayerImage,
     connected: true,
     updatedAt: Date.now()
   });
@@ -1196,7 +1572,8 @@ if (roomCodeInput) {
 
 
 function installDeviceCompatibility() {
-  // iOS + Windows: bruk samme kodebase, men stopp browseren fra å scrolle/zoome spillet.
+  // V6: iOS/Safari-safe. Ikke lås hele siden globalt.
+  // Vi stopper bare scroll/zoom når fingeren er på selve spillet eller pilknappene.
   const setRealViewportHeight = () => {
     document.documentElement.style.setProperty("--real-vh", `${window.innerHeight * 0.01}px`);
   };
@@ -1205,11 +1582,12 @@ function installDeviceCompatibility() {
   window.addEventListener("resize", setRealViewportHeight, { passive: true });
   window.addEventListener("orientationchange", () => setTimeout(setRealViewportHeight, 250), { passive: true });
 
-  // Stopp dra/scroll på selve spillet, men tillat skriving i inputfelt og scroll inni modaler/lister.
-  document.addEventListener("touchmove", event => {
-    const allowedScroll = event.target.closest("input, textarea, select, .friend-modal-card, .language-list");
-    if (!allowedScroll) event.preventDefault();
-  }, { passive: false });
+  const preventGameGesture = event => {
+    if (event.target.closest("#game, #game-wrapper, .controls")) {
+      event.preventDefault();
+    }
+  };
+  document.addEventListener("touchmove", preventGameGesture, { passive: false });
 
   document.querySelectorAll(".move-btn").forEach(button => {
     const dx = Number(button.dataset.dx || 0);
@@ -1220,13 +1598,42 @@ function installDeviceCompatibility() {
       movePlayer(dx, dy);
     };
 
-    // Pointer events fungerer på Windows, Android og nyere iOS.
-    button.addEventListener("pointerdown", move, { passive: false });
-    // Fallback for eldre iOS/Safari.
-    button.addEventListener("touchstart", move, { passive: false });
+    // Ikke registrer både pointerdown og touchstart på samme iPhone.
+    // Det kunne gi dobbeltbevegelse/kaos i Safari.
+    if (window.PointerEvent) {
+      button.addEventListener("pointerdown", move, { passive: false });
+    } else {
+      button.addEventListener("touchstart", move, { passive: false });
+    }
+    button.addEventListener("click", move, { passive: false });
   });
 
-  // Dobbeltrykk skal ikke zoome på iPhone mens man trykker raskt på pilene.
+  // Swipe direkte på brettet: mye bedre på iPhone enn å bare bruke små piler.
+  let startX = 0;
+  let startY = 0;
+  let swipeStarted = false;
+  if (game) {
+    game.addEventListener("touchstart", event => {
+      const touch = event.changedTouches[0];
+      startX = touch.clientX;
+      startY = touch.clientY;
+      swipeStarted = true;
+    }, { passive: true });
+
+    game.addEventListener("touchend", event => {
+      if (!swipeStarted) return;
+      const touch = event.changedTouches[0];
+      const dx = touch.clientX - startX;
+      const dy = touch.clientY - startY;
+      swipeStarted = false;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 22) return;
+      event.preventDefault();
+      if (Math.abs(dx) > Math.abs(dy)) movePlayer(dx > 0 ? 1 : -1, 0);
+      else movePlayer(0, dy > 0 ? 1 : -1);
+    }, { passive: false });
+  }
+
+  // Dobbeltrykk skal ikke zoome på iPhone mens man trykker raskt i spillet.
   let lastTouchEnd = 0;
   document.addEventListener("touchend", event => {
     const now = Date.now();
@@ -1237,191 +1644,160 @@ function installDeviceCompatibility() {
   }, { passive: false });
 }
 
+// Liten WebAudio-arcade-effekt. Safari tillater lyd først etter brukertrykk.
+let v6AudioContext = null;
+function v6Beep(freq = 440, duration = 0.08, type = "square", gainValue = 0.035) {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    v6AudioContext = v6AudioContext || new AudioCtx();
+    if (v6AudioContext.state === "suspended") v6AudioContext.resume();
+    const osc = v6AudioContext.createOscillator();
+    const gain = v6AudioContext.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.value = gainValue;
+    osc.connect(gain);
+    gain.connect(v6AudioContext.destination);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.0001, v6AudioContext.currentTime + duration);
+    osc.stop(v6AudioContext.currentTime + duration);
+  } catch (_) {}
+}
+function v6HypeSound() {
+  [392, 523, 659, 784].forEach((f, i) => setTimeout(() => v6Beep(f, 0.07, "square", 0.035), i * 70));
+}
+
+const v6OriginalStartGame = startGame;
+startGame = function() {
+  v6HypeSound();
+  return v6OriginalStartGame.apply(this, arguments);
+};
+
+
+// -----------------------------
+// V11 Customizer: emoji, eget bilde, fiender og playlist
+// -----------------------------
+function getEnemyFace() {
+  if (!randomEnemyEmojis) return "👾";
+  return enemyEmojiPool[Math.floor(Math.random() * enemyEmojiPool.length)];
+}
+
+function applyAvatarToCell(cell, emoji, imageData) {
+  if (!cell) return;
+  if (imageData) {
+    cell.classList.add("has-avatar");
+    cell.style.backgroundImage = `url(${imageData})`;
+    cell.removeAttribute("data-emoji");
+  } else {
+    cell.classList.remove("has-avatar");
+    cell.style.backgroundImage = "";
+    cell.dataset.emoji = emoji || "😄";
+  }
+}
+
+function showCustomizeModal() {
+  const modal = document.getElementById("customizeModal");
+  updateCustomizerUi();
+  if (modal && typeof modal.showModal === "function") modal.showModal();
+  else if (modal) modal.setAttribute("open", "open");
+  playSfx("select");
+}
+
+function closeCustomizeModal() {
+  const modal = document.getElementById("customizeModal");
+  if (modal && typeof modal.close === "function") modal.close();
+  else if (modal) modal.removeAttribute("open");
+  drawGame();
+}
+
+function setPlayerEmoji(emoji) {
+  selectedPlayerEmoji = emoji;
+  selectedPlayerImage = "";
+  localStorage.setItem("ragiJoyPlayerEmoji", emoji);
+  localStorage.removeItem("ragiJoyPlayerImage");
+  updateCustomizerUi();
+  drawGame();
+  playSfx("select");
+}
+
+function handleAvatarUpload(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith("image/")) {
+    alert("Velg en bildefil.");
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    selectedPlayerImage = String(reader.result || "");
+    localStorage.setItem("ragiJoyPlayerImage", selectedPlayerImage);
+    updateCustomizerUi();
+    drawGame();
+    playSfx("level");
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearAvatarImage() {
+  selectedPlayerImage = "";
+  localStorage.removeItem("ragiJoyPlayerImage");
+  updateCustomizerUi();
+  drawGame();
+  playSfx("select");
+}
+
+function toggleRandomEnemies(value) {
+  randomEnemyEmojis = Boolean(value);
+  localStorage.setItem("ragiJoyRandomEnemies", randomEnemyEmojis ? "on" : "off");
+  enemies.forEach(enemy => enemy.face = getEnemyFace());
+  drawGame();
+  playSfx("enemy");
+}
+
+function setMusicTrack(track) {
+  selectedMusicTrack = track || "theme";
+  localStorage.setItem("ragiJoyMusicTrack", selectedMusicTrack);
+  if (gameRunning && soundEnabled) startMusic();
+  playSfx("select");
+}
+
+function previewMusicTrack() {
+  const previousRunning = gameRunning;
+  const select = document.getElementById("musicSelect");
+  if (select) setMusicTrack(select.value);
+  soundEnabled = true;
+  localStorage.setItem("ragiJoySound", "on");
+  const btn = document.getElementById("soundButton");
+  if (btn) btn.textContent = t("soundOn");
+  const track = musicTracks[selectedMusicTrack === "theme" ? "happy" : selectedMusicTrack] || musicTracks.happy;
+  track.slice(0, 8).forEach((freq, i) => setTimeout(() => tone(freq, 0.07, i % 2 ? "triangle" : "square", 0.03), i * 95));
+  if (previousRunning) startMusic();
+}
+
+function updateCustomizerUi() {
+  const preview = document.getElementById("avatarPreview");
+  if (preview) {
+    preview.textContent = selectedPlayerImage ? "" : selectedPlayerEmoji;
+    preview.style.backgroundImage = selectedPlayerImage ? `url(${selectedPlayerImage})` : "";
+  }
+  document.querySelectorAll("#playerEmojiGrid button").forEach(btn => {
+    btn.classList.toggle("active-choice", btn.textContent.trim() === selectedPlayerEmoji && !selectedPlayerImage);
+  });
+  const randomToggle = document.getElementById("randomEnemyToggle");
+  if (randomToggle) randomToggle.checked = randomEnemyEmojis;
+  const musicSelect = document.getElementById("musicSelect");
+  if (musicSelect) musicSelect.value = selectedMusicTrack;
+}
+
 // Tegner første level bak startskjermen slik at spillet ser levende ut før start.
 installDeviceCompatibility();
 highscoreText.textContent = highscore;
+setDifficulty(selectedDifficulty);
+const soundBtn = document.getElementById("soundButton");
+if (soundBtn) soundBtn.textContent = soundEnabled ? t("soundOn") : t("soundOff");
 loadLevel(0);
 gameRunning = false;
 applyLanguage();
+updateCustomizerUi();
 clearInterval(enemyTimer);
-
-// --------------------------------------------------
-// V3 Arcade polish: lyd, hype-animasjoner og mer responsiv følelse
-// --------------------------------------------------
-let arcadeSoundEnabled = localStorage.getItem("ragiJoySound") !== "off";
-let arcadeAudioContext = null;
-let arcadeMusicTimer = null;
-let arcadeMusicStep = 0;
-
-function getAudioContext() {
-  if (!arcadeSoundEnabled) return null;
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContextClass) return null;
-  if (!arcadeAudioContext) arcadeAudioContext = new AudioContextClass();
-  if (arcadeAudioContext.state === "suspended") arcadeAudioContext.resume();
-  return arcadeAudioContext;
-}
-
-function playTone(frequency = 440, duration = 0.08, type = "square", volume = 0.035) {
-  const ctx = getAudioContext();
-  if (!ctx) return;
-  const oscillator = ctx.createOscillator();
-  const gain = ctx.createGain();
-  oscillator.type = type;
-  oscillator.frequency.value = frequency;
-  gain.gain.setValueAtTime(volume, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-  oscillator.connect(gain);
-  gain.connect(ctx.destination);
-  oscillator.start();
-  oscillator.stop(ctx.currentTime + duration);
-}
-
-function playArcadeSound(kind) {
-  if (!arcadeSoundEnabled) return;
-  const sounds = {
-    start: [[392, 0.08], [523, 0.09], [659, 0.11]],
-    dot: [[880, 0.045]],
-    power: [[330, 0.08], [660, 0.09], [990, 0.12]],
-    hit: [[180, 0.12, "sawtooth", 0.045], [120, 0.14, "sawtooth", 0.04]],
-    win: [[523, 0.09], [659, 0.09], [784, 0.12], [1046, 0.18]],
-    join: [[440, 0.07], [587, 0.08]],
-    ready: [[784, 0.08], [988, 0.10]]
-  };
-  const sequence = sounds[kind] || sounds.dot;
-  sequence.forEach((note, index) => {
-    setTimeout(() => playTone(note[0], note[1], note[2] || "square", note[3] || 0.035), index * 80);
-  });
-}
-
-function startArcadeMusic() {
-  if (!arcadeSoundEnabled || arcadeMusicTimer) return;
-  const notes = [196, 247, 294, 247, 330, 294, 247, 392];
-  arcadeMusicTimer = setInterval(() => {
-    if (!gameRunning || paused || !arcadeSoundEnabled) return;
-    playTone(notes[arcadeMusicStep % notes.length], 0.055, "triangle", 0.012);
-    arcadeMusicStep++;
-  }, 360);
-}
-
-function stopArcadeMusic() {
-  clearInterval(arcadeMusicTimer);
-  arcadeMusicTimer = null;
-}
-
-function updateSoundButton() {
-  const button = document.getElementById("soundButton");
-  if (!button) return;
-  button.textContent = arcadeSoundEnabled ? "🔊 Arcade sound: ON" : "🔇 Arcade sound: OFF";
-}
-
-function toggleGameSound() {
-  arcadeSoundEnabled = !arcadeSoundEnabled;
-  localStorage.setItem("ragiJoySound", arcadeSoundEnabled ? "on" : "off");
-  updateSoundButton();
-  if (arcadeSoundEnabled) {
-    playArcadeSound("ready");
-    startArcadeMusic();
-  } else {
-    stopArcadeMusic();
-  }
-}
-
-function hypeBurst(amount = 12, centerX = window.innerWidth / 2, centerY = window.innerHeight / 2) {
-  const emojis = ["💎", "⚡", "🎉", "🚀", "✨", "👾", "🌀", "🔥"];
-  document.body.classList.add("screen-hype");
-  setTimeout(() => document.body.classList.remove("screen-hype"), 450);
-
-  for (let i = 0; i < amount; i++) {
-    const item = document.createElement("span");
-    item.className = "burst-emoji";
-    item.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-    item.style.left = `${centerX + (Math.random() * 80 - 40)}px`;
-    item.style.top = `${centerY + (Math.random() * 40 - 20)}px`;
-    item.style.setProperty("--burst-x", `${Math.random() * 180 - 90}px`);
-    document.body.appendChild(item);
-    setTimeout(() => item.remove(), 950);
-  }
-}
-
-// Wrap eksisterende spillfunksjoner uten å ødelegge strukturen din.
-const originalStartGame = startGame;
-startGame = function patchedStartGame() {
-  originalStartGame();
-  playArcadeSound("start");
-  startArcadeMusic();
-  hypeBurst(18);
-};
-
-const originalStartOnlineGame = startOnlineGame;
-startOnlineGame = function patchedStartOnlineGame() {
-  originalStartOnlineGame();
-  playArcadeSound("start");
-  startArcadeMusic();
-  hypeBurst(22);
-};
-
-const originalCollectTile = collectTile;
-collectTile = function patchedCollectTile(x, y) {
-  const before = map[y] && map[y][x];
-  originalCollectTile(x, y);
-  if (before === TILE.DOT) playArcadeSound("dot");
-  if (before === TILE.POWER || before === TILE.SHIELD || before === TILE.PORTAL) {
-    playArcadeSound(before === TILE.POWER ? "power" : "ready");
-    hypeBurst(8, window.innerWidth / 2, window.innerHeight / 2);
-  }
-};
-
-const originalLoseLife = loseLife;
-loseLife = function patchedLoseLife() {
-  playArcadeSound("hit");
-  originalLoseLife();
-};
-
-const originalNextLevel = nextLevel;
-nextLevel = function patchedNextLevel() {
-  playArcadeSound("win");
-  hypeBurst(18);
-  originalNextLevel();
-};
-
-const originalEndGame = endGame;
-endGame = function patchedEndGame(won) {
-  if (won) {
-    playArcadeSound("win");
-    hypeBurst(26);
-  } else {
-    playArcadeSound("hit");
-  }
-  stopArcadeMusic();
-  originalEndGame(won);
-};
-
-const originalShowFriendLobby = showFriendLobby;
-showFriendLobby = function patchedShowFriendLobby() {
-  originalShowFriendLobby();
-  playArcadeSound("join");
-};
-
-const originalSetPlayerReady = setPlayerReady;
-setPlayerReady = async function patchedSetPlayerReady() {
-  playArcadeSound("ready");
-  await originalSetPlayerReady();
-};
-
-// PC skal starte mer zoomet inn/nærmere, men mobil skal fortsatt få plass.
-function tuneBoardForScreen() {
-  const root = document.documentElement;
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  if (w >= 900 && h >= 760) {
-    root.style.setProperty("--cell-size", "min(42px, 5.7vh)");
-  } else if (w <= 620) {
-    root.style.setProperty("--cell-size", "min(30px, calc((96vw - 48px) / 13), calc((43vh - 22px) / 11))");
-  }
-}
-
-window.addEventListener("resize", tuneBoardForScreen, { passive: true });
-window.addEventListener("orientationchange", () => setTimeout(tuneBoardForScreen, 250), { passive: true });
-tuneBoardForScreen();
-updateSoundButton();

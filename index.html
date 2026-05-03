@@ -5,17 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Ragi Joy Maze Deluxe</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="party-layer" aria-hidden="true">
-    <span>💎</span><span>⚡</span><span>🎉</span><span>🚀</span><span>👾</span><span>🌀</span>
-  </div>
+  <div class="party-layer" aria-hidden="true"><span>💎</span><span>⚡</span><span>🎉</span><span>🚀</span><span>👾</span><span>🌀</span></div>
   <main class="app">
     <section class="hero">
       <p class="eyebrow">DELUXE VERSION</p>
-      <h1><span class="title-icon">🎮</span> Ragish 28 still single <span class="title-icon">🚀</span></h1>
-      <p class="fun-tagline">Ragish Edition • Online battle • Pure arcade joy 😄✨</p>
+      <h1>🎮 Ragish kutty 28 single Joys Maze 🚀</h1>
+      <p class="fun-tagline">Arcade battle • ulike brett • online multiplayer • full joy 😄✨</p>
       <p id="subtitle" class="subtitle">Samle diamanter, ta power-ups, overlev fiendene og kom deg gjennom alle nivåene.</p>
 
       <div class="language-picker">
@@ -45,7 +44,7 @@
 
     <section id="messageBar" class="message-bar">Trykk Start Game</section>
 
-    <section class="action-row" aria-label="Ekstra valg">
+    <section class="action-row" aria-label="Lyd og stemning">
       <button id="soundButton" class="sound-button" type="button" onclick="toggleGameSound()">🔊 Arcade sound: ON</button>
     </section>
 
@@ -58,11 +57,17 @@
           <p id="startInstruction">Bruk piltastene på PC eller knappene under på mobil.</p>
           <p id="powerInstruction">⚡ Power-up gjør fiender spiselige i noen sekunder.</p>
           <p id="portalInstruction">🌀 Portal åpnes når alle diamanter er samlet.</p>
+          <div class="difficulty-panel" aria-label="Velg vanskelighetsgrad">
+            <button class="difficulty-btn" data-difficulty="easy" type="button" onclick="setDifficulty('easy')">😄 Enkel</button>
+            <button class="difficulty-btn" data-difficulty="normal" type="button" onclick="setDifficulty('normal')">😎 Middels</button>
+            <button class="difficulty-btn" data-difficulty="hard" type="button" onclick="setDifficulty('hard')">🔥 Vanskelig</button>
+            <button class="difficulty-btn" data-difficulty="extreme" type="button" onclick="setDifficulty('extreme')">💀 Ekstrem</button>
+          </div>
+          <button id="customizeButton" class="customize-button" type="button" onclick="showCustomizeModal()">🎨 Velg figur, emoji og musikk</button>
           <div class="mode-buttons">
             <button id="startButton" onclick="startGame()">🚀 Spill mot data</button>
             <button id="friendModeButton" type="button" onclick="showFriendLobby()">🌍 Spill mot venn</button>
           </div>
-          <div class="mini-hype">💎 Samle • ⚡ Boost • 👾 Overlev • 🌀 Escape</div>
         </div>
       </div>
 
@@ -97,6 +102,58 @@
     </section>
   </main>
 
+  <!-- Tilpass spilleren før start: emoji, eget bilde, random fiender og musikkspor. -->
+  <dialog id="customizeModal" class="customize-modal" aria-labelledby="customizeTitle">
+    <div class="customize-card">
+      <button id="customizeClose" class="friend-modal-close" type="button" onclick="closeCustomizeModal()" aria-label="Lukk">✕</button>
+      <p id="customizeKicker" class="friend-kicker">PLAYER STYLE</p>
+      <h2 id="customizeTitle">Gjør spillet ditt personlig</h2>
+      <p id="customizeSubtitle" class="friend-subtitle">Velg emoji, last opp eget bilde, slå på random fiender og velg musikkrytme før du starter.</p>
+
+      <div class="custom-section">
+        <h3 id="customizeEmojiTitle">1. Velg spiller-emoji</h3>
+        <div class="emoji-grid" id="playerEmojiGrid">
+          <button type="button" onclick="setPlayerEmoji('😄')">😄</button>
+          <button type="button" onclick="setPlayerEmoji('😎')">😎</button>
+          <button type="button" onclick="setPlayerEmoji('🚀')">🚀</button>
+          <button type="button" onclick="setPlayerEmoji('🐯')">🐯</button>
+          <button type="button" onclick="setPlayerEmoji('👑')">👑</button>
+          <button type="button" onclick="setPlayerEmoji('🔥')">🔥</button>
+          <button type="button" onclick="setPlayerEmoji('🤖')">🤖</button>
+          <button type="button" onclick="setPlayerEmoji('🦁')">🦁</button>
+        </div>
+      </div>
+
+      <div class="custom-section">
+        <h3 id="customizeImageTitle">2. Eller last opp eget bilde</h3>
+        <input id="avatarUpload" class="avatar-upload" type="file" accept="image/*" onchange="handleAvatarUpload(event)" />
+        <div class="avatar-preview-row">
+          <div id="avatarPreview" class="avatar-preview">😄</div>
+          <button id="clearAvatarButton" type="button" onclick="clearAvatarImage()">Fjern bilde</button>
+        </div>
+        <p id="avatarNote" class="custom-note">Bildet lagres kun i nettleseren din. Bruk et kvadratisk bilde for best resultat.</p>
+      </div>
+
+      <div class="custom-section">
+        <h3 id="customizeEnemyTitle">3. Fiender</h3>
+        <label class="toggle-row"><input id="randomEnemyToggle" type="checkbox" onchange="toggleRandomEnemies(this.checked)" /> <span id="randomEnemyLabel">Random fiende-emoji på hvert brett 👾💀😈🤡</span></label>
+      </div>
+
+      <div class="custom-section">
+        <h3 id="customizeMusicTitle">4. Musikk / rytme</h3>
+        <select id="musicSelect" class="music-select" onchange="setMusicTrack(this.value)">
+          <option value="theme">Auto etter brett</option>
+          <option value="happy">Happy arcade</option>
+          <option value="turbo">Turbo chase</option>
+          <option value="chill">Chill diamonds</option>
+          <option value="boss">Boss mode</option>
+        </select>
+        <button id="previewMusicButton" type="button" onclick="previewMusicTrack()">▶️ Test rytme</button>
+      </div>
+
+      <button id="saveCustomizeButton" class="friend-primary" type="button" onclick="closeCustomizeModal()">✅ Lagre valg</button>
+    </div>
+  </dialog>
 
   <!-- Egen proff boks for Spill mot venn. Den ligger utenfor spillbrettet så den ikke blir klemt/rotete. -->
   <dialog id="friendModal" class="friend-modal" aria-labelledby="friendModalTitle">
@@ -114,7 +171,7 @@
 
       <section id="createRoomPanel" class="friend-panel">
         <button id="createRoomButton" class="friend-primary" type="button" onclick="createFriendRoom()">✨ Generer romkode</button>
-        <p class="friend-help">Koden vises her og kan sendes på Teams, Messenger, WhatsApp osv.</p>
+        <p class="friend-help">Koden vises her</p>
       </section>
 
       <section id="joinRoomPanel" class="friend-panel hidden" hidden>
