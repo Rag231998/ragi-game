@@ -413,11 +413,13 @@ let selectedMusicTrack = localStorage.getItem("ragiJoyMusicTrack") || "theme";
 const enemyEmojiPool = ["👾", "💀", "😈", "🤡", "👻", "🦖", "🧟", "🐙", "🦹", "🔥"];
 
 
-// -----------------------------
-// Online multiplayer beta
-// -----------------------------
-// Dette er første versjon: Firebase brukes til romkode, klar-status og synk av posisjon/score.
-// Singleplayer-delen er beholdt som før.
+// =====================================================
+// MULTIPLAYER CORE - DO NOT CHANGE WITHOUT TESTING
+// Denne delen styrer romkode, ready-status og sanntidsposisjon.
+// Viktig prinsipp: lokal bevegelse skal ALDRI vente på Firebase.
+// Firebase-skriving kjøres "fire-and-forget" slik at piltaster/mobilknapper
+// alltid føles raske. Endringer her kan lett skape delay eller stoppe online sync.
+// =====================================================
 let onlineMode = false;
 let roomCode = null;
 let playerSlot = null; // "p1" eller "p2"
@@ -427,6 +429,8 @@ let roomPollTimer = null;
 let lastOnlineSyncAt = 0;
 let pendingOnlineSync = null;
 let lastRemoteFingerprint = "";
+let lastRoomDataAt = 0;
+let onlineMoveSeq = 0;
 // Unik ID per nettleserfane/enhet.
 // Viktig: sessionStorage gjør at to faner på samme PC også kan teste som to ulike spillere.
 let playerId = sessionStorage.getItem("ragiJoyPlayerId");
@@ -1433,13 +1437,17 @@ async function copyRoomCode() {
 }
 
 async function setPlayerReady() {
-  if (!firebaseReady() || !roomCode || !playerSlot) return;
-  const fb = window.FirebaseGame;
-  await fb.update(fb.ref(fb.database, `${roomPath(roomCode)}/players/${playerSlot}`), {
-    ready: true,
-    connected: true,
-    updatedAt: Date.now()
-  });
+  if (!roomCode || !playerSlot) return;
+  const readyPayload = { ready: true, connected: true, updatedAt: Date.now() };
+  try {
+    await restPatch(`${roomPath(roomCode)}/players/${playerSlot}`, readyPayload);
+  } catch (error) {
+    console.log("REST ready feilet:", error);
+  }
+  if (firebaseReady()) {
+    const fb = window.FirebaseGame;
+    await fb.update(fb.ref(fb.database, `${roomPath(roomCode)}/players/${playerSlot}`), readyPayload);
+  }
   setOnlineStatus(`${t("readyButton")} ${t("waitingFriend")}`);
 }
 
@@ -1467,6 +1475,7 @@ function listenToRoom() {
       return;
     }
 
+    lastRoomDataAt = Date.now();
     applyRoomState(room);
 
     const players = room.players || {};
@@ -1511,7 +1520,14 @@ function applyRoomState(room) {
   const p2 = players.p2;
   const selfPlayer = players[playerSlot];
   const otherSlot = playerSlot === "p1" ? "p2" : "p1";
-  const otherPlayer = players[otherSlot] || null;
+  const rawOtherPlayer = players[otherSlot] || null;
+  const otherPlayer = rawOtherPlayer ? {
+    ...rawOtherPlayer,
+    x: Number(rawOtherPlayer.x),
+    y: Number(rawOtherPlayer.y),
+    score: Number(rawOtherPlayer.score || 0),
+    lives: Number(rawOtherPlayer.lives || 0)
+  } : null;
 
   remotePlayer = otherPlayer;
   updateReadyCards(selfPlayer, otherPlayer);
@@ -1531,7 +1547,7 @@ function applyRoomState(room) {
   }
 
   if (onlineMode && gameRunning) {
-    const fingerprint = otherPlayer ? `${otherSlot}:${otherPlayer.x},${otherPlayer.y}:${otherPlayer.score}:${otherPlayer.lives}:${otherPlayer.updatedAt}:${otherPlayer.avatarEmoji || ""}` : "none";
+    const fingerprint = otherPlayer ? `${otherSlot}:${otherPlayer.x},${otherPlayer.y}:${otherPlayer.score}:${otherPlayer.lives}:${otherPlayer.updatedAt}:${otherPlayer.moveSeq || 0}:${otherPlayer.avatarEmoji || ""}` : "none";
     if (fingerprint !== lastRemoteFingerprint) {
       lastRemoteFingerprint = fingerprint;
       drawGame();
@@ -1544,13 +1560,17 @@ function startRoomPolling() {
   if (!roomCode) return;
   roomPollTimer = setInterval(async () => {
     if (!onlineMode || !roomCode) return;
+    // Fallback: REST leses bare når SDK-listeneren har vært stille.
+    // Dette holder online stabilt uten at input/piltaster får delay.
+    if (Date.now() - lastRoomDataAt < 900) return;
     try {
       const room = await restGet(roomPath(roomCode));
+      lastRoomDataAt = Date.now();
       applyRoomState(room);
     } catch (error) {
-      console.log("REST polling feilet:", error);
+      console.log("REST fallback feilet:", error);
     }
-  }, 650);
+  }, 1000);
 }
 
 function stopRoomPolling() {
@@ -1566,6 +1586,8 @@ function startOnlineGame() {
   gameRunning = true;
   paused = false;
   onlineMode = true;
+  lastRemoteFingerprint = "";
+  lastRoomDataAt = Date.now();
   startScreen.classList.add("hidden");
   endScreen.classList.add("hidden");
   levelScreen.classList.add("hidden");
@@ -1581,9 +1603,11 @@ function startOnlineGame() {
 }
 
 function syncOnlinePlayer() {
-  if (!onlineMode || !roomCode || !playerSlot || !firebaseReady()) return;
+  if (!onlineMode || !roomCode || !playerSlot) return;
 
   const now = Date.now();
+  onlineMoveSeq += 1;
+
   const payload = {
     x: player.x,
     y: player.y,
@@ -1593,27 +1617,56 @@ function syncOnlinePlayer() {
     avatarEmoji: selectedPlayerEmoji,
     avatarImage: selectedPlayerImage,
     connected: true,
+    moveSeq: onlineMoveSeq,
     updatedAt: now
   };
 
-  // V14: Ikke vent på nettverket når spilleren trykker.
-  // Før ble det sendt REST + SDK på hver bevegelse, og det kunne gi input-lag.
-  // Nå sendes Firebase SDK fire-and-forget. REST-polling er bare backup for lesing.
+  // MULTIPLAYER CORE - DO NOT MAKE THIS AWAIT.
+  // Lokal bevegelse skal være instant. Nettverk sendes i bakgrunnen.
   const elapsed = now - lastOnlineSyncAt;
-  if (elapsed < 55) {
+  if (elapsed < 35) {
     clearTimeout(pendingOnlineSync);
-    pendingOnlineSync = setTimeout(() => syncOnlinePlayer(), 60 - elapsed);
+    pendingOnlineSync = setTimeout(() => syncOnlinePlayer(), 40 - elapsed);
     return;
   }
   lastOnlineSyncAt = now;
 
+  const playerPath = `${roomPath(roomCode)}/players/${playerSlot}`;
+  const roomUpdate = {
+    [`players/${playerSlot}/x`]: payload.x,
+    [`players/${playerSlot}/y`]: payload.y,
+    [`players/${playerSlot}/score`]: payload.score,
+    [`players/${playerSlot}/lives`]: payload.lives,
+    [`players/${playerSlot}/level`]: payload.level,
+    [`players/${playerSlot}/avatarEmoji`]: payload.avatarEmoji,
+    [`players/${playerSlot}/avatarImage`]: payload.avatarImage,
+    [`players/${playerSlot}/connected`]: true,
+    [`players/${playerSlot}/moveSeq`]: payload.moveSeq,
+    [`players/${playerSlot}/updatedAt`]: payload.updatedAt,
+    lastMove: { slot: playerSlot, x: payload.x, y: payload.y, moveSeq: payload.moveSeq, updatedAt: now },
+    updatedAt: now
+  };
+
   try {
-    const fb = window.FirebaseGame;
-    fb.update(fb.ref(fb.database, `${roomPath(roomCode)}/players/${playerSlot}`), payload)
-      .catch(error => console.log("SDK sync feilet:", error));
+    if (firebaseReady()) {
+      const fb = window.FirebaseGame;
+      fb.update(fb.ref(fb.database, roomPath(roomCode)), roomUpdate)
+        .catch(error => console.log("SDK online sync feilet:", error));
+    }
   } catch (error) {
-    console.log("Sync startet ikke:", error);
+    console.log("SDK online sync startet ikke:", error);
   }
+
+  // REST backup uten await. Dette hjelper hvis SDK-listener/cache oppfører seg rart på Safari/GitHub Pages,
+  // men påvirker ikke hastigheten fordi movePlayer ikke venter på svaret.
+  try {
+    fetch(firebaseRestUrl(playerPath), {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      keepalive: false
+    }).catch(() => {});
+  } catch (_) {}
 }
 
 window.addEventListener("firebase-ready", () => {

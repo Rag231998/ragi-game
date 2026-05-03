@@ -1385,3 +1385,64 @@ body[data-theme="fiesta"] .wall { background: linear-gradient(135deg, #ffe449, #
   .shop-grid { grid-template-columns: 1fr; }
   .shop-item { min-height: 92px; }
 }
+
+
+/* =====================================================
+   V15 FINAL: wider room code box + stable multiplayer layout
+   ===================================================== */
+.friend-modal-card {
+  width: min(720px, 96vw) !important;
+  max-width: 96vw !important;
+}
+
+.friend-modal-card #roomInfo.room-info {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.friend-modal-card #roomInfo .friend-input-row {
+  display: grid !important;
+  grid-template-columns: minmax(260px, 1fr) auto !important;
+  gap: 14px !important;
+  width: 100% !important;
+}
+
+.friend-modal-card #roomCodeDisplay.room-code-display {
+  width: 100% !important;
+  min-width: 260px !important;
+  box-sizing: border-box !important;
+  font-size: clamp(30px, 4vw, 42px) !important;
+  letter-spacing: clamp(6px, 0.9vw, 10px) !important;
+  text-align: center !important;
+}
+
+.friend-modal-card #copyRoomButton {
+  min-width: 132px !important;
+  height: 62px !important;
+}
+
+@media (max-width: 540px) {
+  .friend-modal-card {
+    width: 94vw !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .friend-modal-card #roomInfo .friend-input-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .friend-modal-card #roomCodeDisplay.room-code-display {
+    min-width: 0 !important;
+    width: 100% !important;
+    font-size: 34px !important;
+    letter-spacing: 8px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  .friend-modal-card #copyRoomButton {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+}
