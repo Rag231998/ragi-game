@@ -582,13 +582,104 @@ function cloneMap(levelMap) {
   return levelMap.map(row => row.split("").map(Number));
 }
 
+/* --------------------------------------------------------------------------
+   V31 ENEMY VARIATION
+   Enemy count and spawn points now vary every time a level is loaded.
+   This is intentionally kept separate from multiplayer core. Host/P1 will sync
+   the active enemy positions to P2 through the existing multiplayer code.
+-------------------------------------------------------------------------- */
+function randomInt(min, max) {
+  const low = Math.ceil(min);
+  const high = Math.floor(max);
+  return Math.floor(Math.random() * (high - low + 1)) + low;
+}
+
+function shuffleArray(items) {
+  const array = items.slice();
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function distanceBetween(a, b) {
+  return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+}
+
+function getEnemyCountRangeForLevel(index) {
+  const levelNumber = index + 1;
+  const difficultyKey = selectedDifficulty || "normal";
+  const lateBonus = Math.floor(Math.max(0, levelNumber - 1) / 15);
+
+  const ranges = {
+    easy:    { min: 1, max: Math.min(3, 2 + lateBonus) },
+    normal:  { min: 1, max: Math.min(4, 3 + lateBonus) },
+    hard:    { min: 2, max: Math.min(5, 3 + lateBonus) },
+    extreme: { min: 2, max: Math.min(6, 4 + lateBonus) }
+  };
+
+  const range = ranges[difficultyKey] || ranges.normal;
+  return { min: range.min, max: Math.max(range.min, range.max) };
+}
+
+function getWalkableEnemySpots(level) {
+  const spots = [];
+  for (let y = 0; y < map.length; y++) {
+    for (let x = 0; x < map[y].length; x++) {
+      const tile = map[y][x];
+      if (tile === TILE.WALL || tile === TILE.PORTAL) continue;
+      const pos = { x, y };
+      if (distanceBetween(pos, player) < 5) continue; // do not spawn on top of the player
+      spots.push(pos);
+    }
+  }
+
+  // Keep original designed enemy spawns as preferred candidates when they are valid.
+  const designed = (level.enemies || [])
+    .filter(enemy => map[enemy.y] && map[enemy.y][enemy.x] !== TILE.WALL)
+    .map(enemy => ({ x: enemy.x, y: enemy.y }));
+
+  const unique = new Map();
+  [...designed, ...spots].forEach(pos => unique.set(`${pos.x},${pos.y}`, pos));
+  return Array.from(unique.values());
+}
+
+function buildRandomEnemySetForLevel(level, index) {
+  const { min, max } = getEnemyCountRangeForLevel(index);
+  const possibleSpots = shuffleArray(getWalkableEnemySpots(level));
+  const wantedCount = Math.min(possibleSpots.length, randomInt(min, max));
+
+  const picked = [];
+  for (const spot of possibleSpots) {
+    // Spread enemies a bit so they do not all spawn in one corner.
+    if (picked.some(existing => distanceBetween(existing, spot) < 3)) continue;
+    picked.push({ ...spot });
+    if (picked.length >= wantedCount) break;
+  }
+
+  // Fallback: if the map is tight, fill remaining slots from any valid spot.
+  for (const spot of possibleSpots) {
+    if (picked.length >= wantedCount) break;
+    if (picked.some(existing => existing.x === spot.x && existing.y === spot.y)) continue;
+    picked.push({ ...spot });
+  }
+
+  return picked.map(enemy => ({
+    x: enemy.x,
+    y: enemy.y,
+    startX: enemy.x,
+    startY: enemy.y,
+    face: getEnemyFace()
+  }));
+}
+
 function loadLevel(index) {
   const level = levels[index];
   map = cloneMap(level.map);
   player = { ...level.player };
-  enemies = level.enemies.map(enemy => ({ ...enemy, startX: enemy.x, startY: enemy.y, face: getEnemyFace() }));
+  enemies = buildRandomEnemySetForLevel(level, index);
   applyLevelTheme(level);
-  applyDifficultyToEnemies();
   combo = 1;
   powerMode = false;
   shield = false;
@@ -4382,3 +4473,2025 @@ initPrivacyBanner();
 
   updateMusicDockUi();
 })();
+
+/* --------------------------------------------------------------------------
+   V30 WORLD BUILD
+   - Pause button + back to menu only when paused
+   - Language selector hidden during active play
+   - Extra shop powers for singleplayer
+   - More varied boards after level 10
+   - Enemy style/animation selector
+   Multiplayer sync code above is intentionally untouched.
+-------------------------------------------------------------------------- */
+Object.assign(translations.no, {
+  pauseButton: "⏸️ Pause",
+  resumeButton: "▶️ Fortsett",
+  menuFromPauseButton: "🏠 Hovedmeny",
+  enemyStyleLabel: "Velg fiende-stil / animasjon",
+  shopBombTitle: "💣 Diamantbombe",
+  shopBombDesc: "Sender alle fiender tilbake til start og gir bonuspoeng.",
+  shopFreezeTitle: "❄️ Freeze blast",
+  shopFreezeDesc: "Fryser fiendene i noen sekunder så du kan rømme.",
+  shopMagnetTitle: "🧲 Diamantmagnet",
+  shopMagnetDesc: "Suger inn diamanter rundt deg mens du beveger deg.",
+  shopDoubleTitle: "⭐ Dobbel score",
+  shopDoubleDesc: "Alle poeng dobles i 20 sekunder.",
+  shopTeleportTitle: "🌀 Nødteleport",
+  shopTeleportDesc: "Flytter deg til et trygt tilfeldig sted på brettet.",
+  shopBoughtBomb: "💣 BOOM! Alle fiender ble sendt tilbake.",
+  shopBoughtFreeze: "❄️ Fiendene er fryst i noen sekunder!",
+  shopBoughtMagnet: "🧲 Magnet aktivert! Diamanter nær deg trekkes inn.",
+  shopBoughtDouble: "⭐ Dobbel score aktivert i 20 sekunder!",
+  shopBoughtTeleport: "🌀 Nødteleport aktivert!",
+  shopEffectActive: "Aktiv"
+});
+Object.assign(translations.en, {
+  pauseButton: "⏸️ Pause",
+  resumeButton: "▶️ Resume",
+  menuFromPauseButton: "🏠 Main menu",
+  enemyStyleLabel: "Choose enemy style / animation",
+  shopBombTitle: "💣 Diamond bomb",
+  shopBombDesc: "Sends all enemies back to spawn and gives bonus points.",
+  shopFreezeTitle: "❄️ Freeze blast",
+  shopFreezeDesc: "Freezes enemies for a few seconds so you can escape.",
+  shopMagnetTitle: "🧲 Diamond magnet",
+  shopMagnetDesc: "Pulls nearby diamonds in while you move.",
+  shopDoubleTitle: "⭐ Double score",
+  shopDoubleDesc: "All points are doubled for 20 seconds.",
+  shopTeleportTitle: "🌀 Emergency teleport",
+  shopTeleportDesc: "Moves you to a safe random tile on the board.",
+  shopBoughtBomb: "💣 BOOM! All enemies were sent back.",
+  shopBoughtFreeze: "❄️ Enemies are frozen for a few seconds!",
+  shopBoughtMagnet: "🧲 Magnet active! Nearby diamonds are pulled in.",
+  shopBoughtDouble: "⭐ Double score active for 20 seconds!",
+  shopBoughtTeleport: "🌀 Emergency teleport activated!",
+  shopEffectActive: "Active"
+});
+for (const language of languageOptions) {
+  translations[language.code] = translations[language.code] || { ...translations.en };
+  for (const key of [
+    "pauseButton", "resumeButton", "menuFromPauseButton", "enemyStyleLabel",
+    "shopBombTitle", "shopBombDesc", "shopFreezeTitle", "shopFreezeDesc",
+    "shopMagnetTitle", "shopMagnetDesc", "shopDoubleTitle", "shopDoubleDesc",
+    "shopTeleportTitle", "shopTeleportDesc", "shopBoughtBomb", "shopBoughtFreeze",
+    "shopBoughtMagnet", "shopBoughtDouble", "shopBoughtTeleport", "shopEffectActive"
+  ]) {
+    if (!translations[language.code][key]) translations[language.code][key] = translations.en[key];
+  }
+}
+
+// --- Varied campaign maps after level 10 ---
+const V30_LEVEL_NAMES = [
+  "Mirror Maze", "Emoji Crossfire", "Laser Garden", "Frozen Loop", "Monster Market",
+  "Snake Tunnel", "Diamond Factory", "Fire Temple", "Rocket Box", "Ghost Circuit",
+  "Turbo Spiral", "Double Trouble", "Crystal Blocks", "Wild Forest", "Space Panic",
+  "Boss Corridor", "Storm Bridge", "Candy Trap", "Night Runner", "Final Party"
+];
+
+function v30BuildLevel(index) {
+  const width = 13;
+  const height = 11;
+  const mode = index % 12;
+  const rows = Array.from({ length: height }, (_, y) => Array.from({ length: width }, (_, x) => {
+    if (x === 0 || y === 0 || x === width - 1 || y === height - 1) return "1";
+    return "2";
+  }));
+  const wall = (x, y) => { if (x > 0 && y > 0 && x < width - 1 && y < height - 1) rows[y][x] = "1"; };
+  const open = (x, y, value = "2") => { if (x > 0 && y > 0 && x < width - 1 && y < height - 1) rows[y][x] = value; };
+
+  if (mode === 0) {
+    for (let y = 2; y < 9; y++) { if (y !== 5) { wall(3, y); wall(9, y); } }
+    for (let x = 4; x < 9; x += 2) wall(x, 5);
+  } else if (mode === 1) {
+    for (let x = 2; x < 11; x++) { if (x !== 6) { wall(x, 3); wall(x, 7); } }
+    wall(6, 5); wall(2, 5); wall(10, 5);
+  } else if (mode === 2) {
+    for (let x = 2; x <= 10; x++) wall(x, 2);
+    for (let y = 2; y <= 8; y++) wall(10, y);
+    for (let x = 3; x <= 10; x++) wall(x, 8);
+    for (let y = 4; y <= 8; y++) wall(3, y);
+    for (let x = 3; x <= 8; x++) wall(x, 4);
+    open(6, 2); open(10, 5); open(6, 8); open(3, 6); open(6, 4);
+  } else if (mode === 3) {
+    [[3,2],[5,2],[7,2],[9,2],[2,4],[4,4],[8,4],[10,4],[3,6],[5,6],[7,6],[9,6],[2,8],[6,8],[10,8]].forEach(([x,y]) => wall(x,y));
+  } else if (mode === 4) {
+    for (let y = 2; y <= 8; y++) if (y !== 5) wall(6, y);
+    for (let x = 2; x <= 10; x++) if (x !== 6) wall(x, 5);
+    open(6, 5, "3"); open(2, 2, "4"); open(10, 8, "3");
+  } else if (mode === 5) {
+    for (let x = 2; x <= 10; x += 2) {
+      for (let y = 2; y <= 8; y++) if ((x + y + index) % 4 !== 0) wall(x, y);
+    }
+    open(2, 5); open(6, 5); open(10, 5);
+  } else if (mode === 6) {
+    for (let x = 2; x <= 10; x++) if (x !== 4 && x !== 8) { wall(x, 2); wall(x, 8); }
+    for (let y = 3; y <= 7; y++) if (y !== 5) { wall(2, y); wall(10, y); }
+    wall(6,3); wall(6,7); open(6,5,"3");
+  } else if (mode === 7) {
+    for (let y = 2; y <= 8; y += 2) for (let x = 2; x <= 10; x++) if (x !== ((y + index) % 8) + 2) wall(x, y);
+  } else if (mode === 8) {
+    [[2,2],[3,2],[9,2],[10,2],[2,8],[3,8],[9,8],[10,8],[5,4],[6,4],[7,4],[5,6],[6,6],[7,6]].forEach(([x,y]) => wall(x,y));
+    open(6,5,"4");
+  } else if (mode === 9) {
+    for (let y = 2; y <= 8; y++) { wall(4, y); wall(8, y); }
+    open(4, 3); open(8, 7); open(4, 8); open(8, 2);
+    for (let x = 2; x <= 10; x++) if (x % 3 === 0) wall(x, 5);
+    open(6, 5, "3");
+  } else if (mode === 10) {
+    [[2,3],[3,3],[4,3],[8,3],[9,3],[10,3],[2,7],[3,7],[4,7],[8,7],[9,7],[10,7],[6,2],[6,4],[6,6],[6,8]].forEach(([x,y]) => wall(x,y));
+  } else {
+    for (let y = 2; y <= 8; y++) {
+      if (y !== 5) { wall(2, y); wall(5, y); wall(8, y); wall(11, y); }
+    }
+    open(5, 3); open(8, 7); open(2, 5); open(11, 5);
+  }
+
+  // Safe player, portal/powerups and enemy spawns.
+  [[1,1],[11,9],[11,1],[1,9],[6,5],[6,1],[1,5],[11,5]].forEach(([x,y]) => open(x, y));
+  open(3 + (index % 7), 3, "3");
+  open(9 - (index % 5), 7, index % 3 === 0 ? "4" : "3");
+  open(6, 5, mode % 4 === 0 ? "4" : rows[5][6]);
+
+  const enemySeeds = [
+    { x: 11, y: 9 }, { x: 11, y: 1 }, { x: 1, y: 9 }, { x: 6, y: 5 }, { x: 6, y: 1 }
+  ];
+  const enemyCount = Math.min(5, 2 + Math.floor((index - 10) / 14));
+  return {
+    name: `${V30_LEVEL_NAMES[index % V30_LEVEL_NAMES.length]} ${index + 1}`,
+    theme: v26ThemeCycle[index % v26ThemeCycle.length],
+    speed: Math.max(365, 610 - index * 2.5),
+    enemies: enemySeeds.slice(0, enemyCount).map(enemy => ({ ...enemy })),
+    player: { x: 1, y: 1 },
+    map: rows.map(row => row.join(""))
+  };
+}
+for (let i = 10; i < levels.length; i++) {
+  levels[i] = v30BuildLevel(i);
+}
+
+// --- Pause/menu UI ---
+function v30UpdatePlayUi() {
+  const active = Boolean(gameRunning);
+  document.body.classList.toggle("game-active", active);
+  document.body.classList.toggle("paused-state", Boolean(active && paused));
+  const pauseButton = document.getElementById("pauseButton");
+  if (pauseButton) {
+    pauseButton.textContent = paused ? t("resumeButton") : t("pauseButton");
+    pauseButton.disabled = !active;
+  }
+  const menuButton = document.getElementById("menuFromPauseButton");
+  if (menuButton) menuButton.textContent = t("menuFromPauseButton");
+}
+
+function returnToMainMenuFromPause() {
+  if (!gameRunning) return;
+  paused = false;
+  goToMainMenu();
+  v30UpdatePlayUi();
+}
+window.returnToMainMenuFromPause = returnToMainMenuFromPause;
+
+const v30PreviousTogglePause = togglePause;
+togglePause = function() {
+  v30PreviousTogglePause.apply(this, arguments);
+  v30UpdatePlayUi();
+};
+window.togglePause = togglePause;
+
+for (const fnName of ["startGame", "startOnlineGame", "goToMainMenu", "endGame", "openPowerShop", "closePowerShop"]) {
+  const previous = window[fnName] || globalThis[fnName];
+  if (typeof previous === "function") {
+    window[fnName] = globalThis[fnName] = function v30StateWrapper() {
+      const result = previous.apply(this, arguments);
+      setTimeout(v30UpdatePlayUi, 0);
+      return result;
+    };
+  }
+}
+
+const v30PreviousApplyLanguage = applyLanguage;
+applyLanguage = function() {
+  v30PreviousApplyLanguage.apply(this, arguments);
+  const set = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+  set("pauseButton", paused ? t("resumeButton") : t("pauseButton"));
+  set("menuFromPauseButton", t("menuFromPauseButton"));
+  set("enemyStyleLabel", t("enemyStyleLabel"));
+  set("shopBombTitle", t("shopBombTitle"));
+  set("shopBombDesc", t("shopBombDesc"));
+  set("shopFreezeTitle", t("shopFreezeTitle"));
+  set("shopFreezeDesc", t("shopFreezeDesc"));
+  set("shopMagnetTitle", t("shopMagnetTitle"));
+  set("shopMagnetDesc", t("shopMagnetDesc"));
+  set("shopDoubleTitle", t("shopDoubleTitle"));
+  set("shopDoubleDesc", t("shopDoubleDesc"));
+  set("shopTeleportTitle", t("shopTeleportTitle"));
+  set("shopTeleportDesc", t("shopTeleportDesc"));
+  v30UpdateShopTexts();
+  v30UpdatePlayUi();
+};
+window.applyLanguage = applyLanguage;
+
+// --- Enemy style selector ---
+const V30_ENEMY_STYLE_KEY = "ragiJoyEnemyStyle";
+let selectedEnemyStyle = localStorage.getItem(V30_ENEMY_STYLE_KEY) || "monsters";
+const v30EnemyPools = {
+  monsters: ["👾", "💀", "😈", "🤡", "👻", "🧟", "🦹"],
+  fire: ["🔥", "👹", "💣", "⚡", "🌋", "☄️"],
+  ghosts: ["👻", "💀", "🧛", "🦇", "🕷️"],
+  boss: ["🧟", "🦹", "👺", "🤖", "🐲"],
+  animals: ["🦖", "🐙", "🦈", "🐍", "🦂", "🦇"]
+};
+function setEnemyStyle(style) {
+  if (!v30EnemyPools[style]) style = "monsters";
+  selectedEnemyStyle = style;
+  randomEnemyEmojis = true;
+  localStorage.setItem(V30_ENEMY_STYLE_KEY, selectedEnemyStyle);
+  localStorage.setItem("ragiJoyRandomEnemies", "on");
+  document.body.dataset.enemyStyle = selectedEnemyStyle;
+  enemies.forEach(enemy => enemy.face = getEnemyFace());
+  updateCustomizerUi();
+  drawGame();
+  playSfx("enemy");
+}
+window.setEnemyStyle = setEnemyStyle;
+
+const v30PreviousGetEnemyFace = getEnemyFace;
+getEnemyFace = function() {
+  if (!randomEnemyEmojis) return "👾";
+  const pool = v30EnemyPools[selectedEnemyStyle] || enemyEmojiPool || v30EnemyPools.monsters;
+  return pool[Math.floor(Math.random() * pool.length)];
+};
+window.getEnemyFace = getEnemyFace;
+
+const v30PreviousUpdateCustomizerUi = updateCustomizerUi;
+updateCustomizerUi = function() {
+  v30PreviousUpdateCustomizerUi.apply(this, arguments);
+  document.body.dataset.enemyStyle = selectedEnemyStyle;
+  document.querySelectorAll("#enemyStyleGrid button").forEach(btn => {
+    btn.classList.toggle("active-choice", btn.dataset.enemyStyle === selectedEnemyStyle);
+  });
+};
+window.updateCustomizerUi = updateCustomizerUi;
+
+// --- Extra shop powers ---
+Object.assign(V23_SHOP_COSTS, {
+  bomb: 1500,
+  freeze: 1100,
+  magnet: 900,
+  double: 1300,
+  teleport: 700
+});
+let v30FreezeUntil = 0;
+let v30MagnetUntil = 0;
+let v30DoubleUntil = 0;
+
+function v30UpdateShopTexts() {
+  const set = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+  set("shopBombTitle", t("shopBombTitle"));
+  set("shopBombDesc", t("shopBombDesc"));
+  set("shopFreezeTitle", t("shopFreezeTitle"));
+  set("shopFreezeDesc", t("shopFreezeDesc"));
+  set("shopMagnetTitle", t("shopMagnetTitle"));
+  set("shopMagnetDesc", t("shopMagnetDesc"));
+  set("shopDoubleTitle", t("shopDoubleTitle"));
+  set("shopDoubleDesc", t("shopDoubleDesc"));
+  set("shopTeleportTitle", t("shopTeleportTitle"));
+  set("shopTeleportDesc", t("shopTeleportDesc"));
+  set("buyBombButton", `${t("shopBuy")} ${V23_SHOP_COSTS.bomb}`);
+  set("buyFreezeButton", `${t("shopBuy")} ${V23_SHOP_COSTS.freeze}`);
+  set("buyMagnetButton", `${t("shopBuy")} ${V23_SHOP_COSTS.magnet}`);
+  set("buyDoubleButton", `${t("shopBuy")} ${V23_SHOP_COSTS.double}`);
+  set("buyTeleportButton", `${t("shopBuy")} ${V23_SHOP_COSTS.teleport}`);
+}
+
+const v30PreviousShopTexts = v23UpdateShopTexts;
+v23UpdateShopTexts = function() {
+  v30PreviousShopTexts.apply(this, arguments);
+  v30UpdateShopTexts();
+};
+window.v23UpdateShopTexts = v23UpdateShopTexts;
+
+const v30PreviousShopUi = v23UpdateShopUi;
+v23UpdateShopUi = function() {
+  v30PreviousShopUi.apply(this, arguments);
+  const now = Date.now();
+  const notSingle = onlineMode || !gameRunning;
+  const setDisabled = (id, value) => { const btn = document.getElementById(id); if (btn) btn.disabled = value; };
+  setDisabled("buyBombButton", notSingle || score < V23_SHOP_COSTS.bomb);
+  setDisabled("buyFreezeButton", notSingle || score < V23_SHOP_COSTS.freeze || now < v30FreezeUntil);
+  setDisabled("buyMagnetButton", notSingle || score < V23_SHOP_COSTS.magnet || now < v30MagnetUntil);
+  setDisabled("buyDoubleButton", notSingle || score < V23_SHOP_COSTS.double || now < v30DoubleUntil);
+  setDisabled("buyTeleportButton", notSingle || score < V23_SHOP_COSTS.teleport);
+};
+window.v23UpdateShopUi = v23UpdateShopUi;
+
+function v30Spend(cost) {
+  if (onlineMode || !gameRunning) return false;
+  if (score < cost) {
+    if (messageBar) messageBar.textContent = t("shopNotEnough");
+    playSfx("lose");
+    return false;
+  }
+  score -= cost;
+  return true;
+}
+
+function v30ResetEnemiesWithBonus() {
+  enemies.forEach(enemy => { enemy.x = enemy.startX; enemy.y = enemy.startY; });
+  score += Math.max(120, enemies.length * 90);
+  spawnCenterBurst("💣 BOOM");
+  if (messageBar) messageBar.textContent = t("shopBoughtBomb");
+  playSfx("enemy");
+  drawGame();
+}
+
+function v30SafeEmptyTiles() {
+  const result = [];
+  for (let y = 1; y < map.length - 1; y++) {
+    for (let x = 1; x < map[y].length - 1; x++) {
+      if (map[y][x] === TILE.WALL) continue;
+      if (enemies.some(enemy => Math.abs(enemy.x - x) + Math.abs(enemy.y - y) < 5)) continue;
+      result.push({ x, y });
+    }
+  }
+  return result;
+}
+
+function v30TeleportPlayer() {
+  const spots = v30SafeEmptyTiles();
+  if (!spots.length) return;
+  const pos = spots[Math.floor(Math.random() * spots.length)];
+  player.x = pos.x;
+  player.y = pos.y;
+  collectTile(player.x, player.y);
+  spawnCenterBurst("🌀 TELEPORT");
+  if (messageBar) messageBar.textContent = t("shopBoughtTeleport");
+  playSfx("power");
+  drawGame();
+}
+
+function v30CollectNearbyDiamonds() {
+  if (!gameRunning || onlineMode || Date.now() > v30MagnetUntil) return;
+  let picked = 0;
+  for (let y = Math.max(1, player.y - 2); y <= Math.min(map.length - 2, player.y + 2); y++) {
+    for (let x = Math.max(1, player.x - 2); x <= Math.min(map[y].length - 2, player.x + 2); x++) {
+      if (map[y][x] === TILE.DOT && Math.abs(player.x - x) + Math.abs(player.y - y) <= 2) {
+        map[y][x] = TILE.EMPTY;
+        diamondsLeft--;
+        score += Date.now() < v30DoubleUntil ? 20 : 10;
+        picked++;
+        spawnPop("💎", x, y);
+      }
+    }
+  }
+  if (picked) {
+    combo = Math.min(combo + picked, 9);
+    checkPortal();
+    drawGame();
+  }
+}
+
+const v30PreviousBuyShopItem = buyShopItem;
+buyShopItem = function(item) {
+  if (!["bomb", "freeze", "magnet", "double", "teleport"].includes(item)) {
+    return v30PreviousBuyShopItem.apply(this, arguments);
+  }
+  const cost = V23_SHOP_COSTS[item];
+  if (!v30Spend(cost)) return;
+
+  if (item === "bomb") v30ResetEnemiesWithBonus();
+  if (item === "freeze") {
+    v30FreezeUntil = Date.now() + 6500;
+    spawnCenterBurst("❄️ FREEZE");
+    if (messageBar) messageBar.textContent = t("shopBoughtFreeze");
+    playSfx("power");
+    drawGame();
+  }
+  if (item === "magnet") {
+    v30MagnetUntil = Date.now() + 14000;
+    spawnCenterBurst("🧲 MAGNET");
+    if (messageBar) messageBar.textContent = t("shopBoughtMagnet");
+    v30CollectNearbyDiamonds();
+    playSfx("power");
+  }
+  if (item === "double") {
+    v30DoubleUntil = Date.now() + 20000;
+    spawnCenterBurst("⭐ 2X SCORE");
+    if (messageBar) messageBar.textContent = t("shopBoughtDouble");
+    playSfx("level");
+    drawGame();
+  }
+  if (item === "teleport") v30TeleportPlayer();
+  v23UpdateShopUi();
+};
+window.buyShopItem = buyShopItem;
+
+const v30PreviousMoveEnemies = moveEnemies;
+moveEnemies = function() {
+  if (!onlineMode && gameRunning && !paused && Date.now() < v30FreezeUntil) {
+    clearInterval(enemyTimer);
+    enemyTimer = setTimeout(moveEnemies, 260);
+    return;
+  }
+  return v30PreviousMoveEnemies.apply(this, arguments);
+};
+window.moveEnemies = moveEnemies;
+
+const v30PreviousCollectTile = collectTile;
+collectTile = function(x, y) {
+  const before = score;
+  v30PreviousCollectTile.apply(this, arguments);
+  if (!onlineMode && Date.now() < v30DoubleUntil && score > before) {
+    score += score - before;
+  }
+};
+window.collectTile = collectTile;
+
+const v30PreviousMovePlayer = movePlayer;
+movePlayer = function(dx, dy) {
+  const beforeX = player.x;
+  const beforeY = player.y;
+  v30PreviousMovePlayer.apply(this, arguments);
+  if (!onlineMode && gameRunning && !paused && (player.x !== beforeX || player.y !== beforeY)) {
+    v30CollectNearbyDiamonds();
+  }
+};
+window.movePlayer = movePlayer;
+
+const v30PreviousLoadLevel = loadLevel;
+loadLevel = function(index) {
+  v30PreviousLoadLevel.apply(this, arguments);
+  if (!onlineMode) {
+    // Keep temporary shop effects between levels, but never keep old board placements.
+    document.body.dataset.enemyStyle = selectedEnemyStyle;
+  }
+  v30UpdatePlayUi();
+};
+window.loadLevel = loadLevel;
+
+// Initialize V30 UI state.
+document.body.dataset.enemyStyle = selectedEnemyStyle;
+setTimeout(() => {
+  updateCustomizerUi();
+  v30UpdateShopTexts();
+  v30UpdatePlayUi();
+}, 0);
+
+/* --------------------------------------------------------------------------
+   V32: Nedtelling + robust nødteleport + shop-stabilitet
+   - Legger til 3-2-1-GO overlay før singleplayer starter.
+   - Fikser nødteleport slik at spilleren alltid flyttes til en trygg tom rute.
+   - Legger inn manglende portal-check som shop/magnet kan bruke uten feil.
+   Multiplayer-sync endres ikke her.
+-------------------------------------------------------------------------- */
+Object.assign(translations.no, {
+  countdownReady: "Gjør deg klar!",
+  countdownGo: "KJØR!",
+  countdownTip: "Samle 💎, bruk ⚡ smart og overlev fiendene.",
+  shopTeleportNoSpot: "Fant ingen trygg rute akkurat nå. Prøv igjen etter at du har flyttet deg litt.",
+  shopTeleportMoved: "🌀 Nødteleport fullført! Du er flyttet til trygg rute."
+});
+Object.assign(translations.en, {
+  countdownReady: "Get ready!",
+  countdownGo: "GO!",
+  countdownTip: "Collect 💎, use ⚡ smartly and survive the enemies.",
+  shopTeleportNoSpot: "No safe tile found right now. Move a little and try again.",
+  shopTeleportMoved: "🌀 Emergency teleport complete! You moved to a safe tile."
+});
+for (const language of languageOptions) {
+  translations[language.code] = translations[language.code] || { ...translations.en };
+  ["countdownReady", "countdownGo", "countdownTip", "shopTeleportNoSpot", "shopTeleportMoved"].forEach(key => {
+    if (!translations[language.code][key]) translations[language.code][key] = translations.en[key];
+  });
+}
+
+function v32EnsureCountdownOverlay() {
+  let overlay = document.getElementById("countdownOverlay");
+  if (overlay) return overlay;
+  overlay = document.createElement("div");
+  overlay.id = "countdownOverlay";
+  overlay.className = "countdown-overlay hidden";
+  overlay.setAttribute("aria-live", "polite");
+  overlay.innerHTML = `
+    <div class="countdown-card">
+      <div class="countdown-kicker" id="countdownKicker">${t("countdownReady")}</div>
+      <div class="countdown-number" id="countdownNumber">3</div>
+      <div class="countdown-tip" id="countdownTip">${t("countdownTip")}</div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  return overlay;
+}
+
+function v32ShowCountdown() {
+  return new Promise(resolve => {
+    const overlay = v32EnsureCountdownOverlay();
+    const kicker = document.getElementById("countdownKicker");
+    const number = document.getElementById("countdownNumber");
+    const tip = document.getElementById("countdownTip");
+    if (kicker) kicker.textContent = t("countdownReady");
+    if (tip) tip.textContent = t("countdownTip");
+    overlay.classList.remove("hidden");
+    overlay.classList.remove("countdown-go-state");
+
+    const sequence = ["3", "2", "1", t("countdownGo")];
+    let index = 0;
+    const tick = () => {
+      if (number) {
+        number.textContent = sequence[index];
+        number.classList.remove("countdown-pop");
+        // Restart CSS animation reliably.
+        void number.offsetWidth;
+        number.classList.add("countdown-pop");
+      }
+      if (sequence[index] === t("countdownGo")) {
+        overlay.classList.add("countdown-go-state");
+        if (typeof playSfx === "function") playSfx("level");
+      } else if (typeof playSfx === "function") {
+        playSfx("select");
+      }
+      index++;
+      if (index < sequence.length) {
+        setTimeout(tick, 620);
+      } else {
+        setTimeout(() => {
+          overlay.classList.add("hidden");
+          resolve();
+        }, 560);
+      }
+    };
+    tick();
+  });
+}
+
+function checkPortal() {
+  if (diamondsLeft <= 0 && !portalOpen && typeof openPortal === "function") openPortal();
+}
+window.checkPortal = checkPortal;
+
+function v32TileIsSafeForTeleport(x, y) {
+  if (!map[y] || map[y][x] === undefined) return false;
+  const tile = map[y][x];
+  if (tile === TILE.WALL || tile === TILE.PORTAL) return false;
+  if (x === player.x && y === player.y) return false;
+  if (v23Turrets && v23Turrets.some(turret => turret.x === x && turret.y === y)) return false;
+  // En safe rute må ha litt avstand til ALLE fiender, ellers føles teleporten ødelagt.
+  return !enemies.some(enemy => Math.abs(enemy.x - x) + Math.abs(enemy.y - y) < 4);
+}
+
+function v32SafeTeleportTiles() {
+  const safe = [];
+  const fallback = [];
+  for (let y = 1; y < map.length - 1; y++) {
+    for (let x = 1; x < map[y].length - 1; x++) {
+      if (!map[y] || map[y][x] === TILE.WALL || map[y][x] === TILE.PORTAL) continue;
+      if (x === player.x && y === player.y) continue;
+      if (v23Turrets && v23Turrets.some(turret => turret.x === x && turret.y === y)) continue;
+      const nearestEnemy = enemies.reduce((best, enemy) => Math.min(best, Math.abs(enemy.x - x) + Math.abs(enemy.y - y)), 99);
+      if (nearestEnemy >= 4) safe.push({ x, y, nearestEnemy });
+      else if (nearestEnemy >= 2) fallback.push({ x, y, nearestEnemy });
+    }
+  }
+  return (safe.length ? safe : fallback).sort((a, b) => b.nearestEnemy - a.nearestEnemy);
+}
+
+function v30TeleportPlayer() {
+  if (!gameRunning || onlineMode) return false;
+  const spots = v32SafeTeleportTiles();
+  if (!spots.length) {
+    if (messageBar) messageBar.textContent = t("shopTeleportNoSpot");
+    if (typeof playSfx === "function") playSfx("lose");
+    return false;
+  }
+  const bestFive = spots.slice(0, Math.min(5, spots.length));
+  const pos = bestFive[Math.floor(Math.random() * bestFive.length)];
+
+  player.x = pos.x;
+  player.y = pos.y;
+
+  // Samle evt. diamant/power på landingsruten, men ikke kall nextLevel direkte mens butikken er åpen.
+  const landedTile = map[player.y][player.x];
+  if (landedTile === TILE.DOT || landedTile === TILE.POWER || landedTile === TILE.SHIELD) {
+    collectTile(player.x, player.y);
+  }
+  checkEnemyCollision();
+  spawnPop("🌀", player.x, player.y);
+  spawnCenterBurst("🌀 TELEPORT");
+  if (messageBar) messageBar.textContent = t("shopTeleportMoved");
+  if (typeof playSfx === "function") playSfx("power");
+  drawGame();
+  v23UpdateShopUi();
+
+  // Lukk butikken etter teleport, ellers ser det ut som ingenting skjedde bak dialogen.
+  const modal = document.getElementById("shopModal");
+  if (modal && typeof modal.close === "function") modal.close();
+  else if (modal) modal.removeAttribute("open");
+  return true;
+}
+window.v30TeleportPlayer = v30TeleportPlayer;
+
+// Start singleplayer med ekte nedtelling uten å røre multiplayer-koden.
+const v32PreviousStartGame = startGame;
+startGame = function startGameV32Countdown() {
+  v32PreviousStartGame.apply(this, arguments);
+  if (onlineMode || !gameRunning) return;
+
+  paused = true;
+  clearInterval(enemyTimer);
+  clearTimeout(enemyTimer);
+  v30UpdatePlayUi();
+  messageBar.textContent = t("countdownReady");
+
+  v32ShowCountdown().then(() => {
+    if (!gameRunning || onlineMode) return;
+    paused = false;
+    levelStartTime = Date.now();
+    clearInterval(enemyTimer);
+    clearTimeout(enemyTimer);
+    enemyTimer = setTimeout(moveEnemies, getEnemyDelay());
+    messageBar.textContent = `Level ${levelIndex + 1}: ${(levels[levelIndex] && levels[levelIndex].name) || ""}`;
+    v30UpdatePlayUi();
+    drawGame();
+  });
+};
+window.startGame = startGame;
+
+// Hvis bruker går til meny eller taper mens nedtelling går, skal overlay bort.
+const v32PreviousGoToMainMenu = goToMainMenu;
+goToMainMenu = function goToMainMenuV32() {
+  const overlay = document.getElementById("countdownOverlay");
+  if (overlay) overlay.classList.add("hidden");
+  return v32PreviousGoToMainMenu.apply(this, arguments);
+};
+window.goToMainMenu = goToMainMenu;
+
+/* --------------------------------------------------------------------------
+   V33 CAMPAIGN + TELEPORT + WINNER RESULT PATCH
+   Viktig: Dette er kun SINGLEPLAYER-fiks/utvidelse.
+   - Multiplayer-kjernen er IKKE endret.
+   - Powerbutikk beholdes, men Nødteleport gjenopptar spillet riktig.
+   - Kampanjen låses til maks 35 level på alle vanskelighetsgrader.
+   - Når level 35 fullføres får spilleren gratulasjon og kan lagre navn i Top 10.
+   -------------------------------------------------------------------------- */
+(function v33CampaignWinnerPatch() {
+  const V33_MAX_LEVELS = 35;
+  const V33_WINNERS_KEY = "ragiJoyMazeWinnersV33";
+  document.title = "Ragish kutty 28 single Joys Maze";
+
+  Object.assign(translations.no, {
+    maxLevelInfo: "Maks level: 35",
+    levelGrandFinal: "Du klarte alle 35 levelene! 🔥",
+    winnerButton: "🏆 Vinnerresultat",
+    winnersTitle: "🏆 Top 10 vinnere",
+    winnersSubtitle: "Lagres lokalt i denne nettleseren. Fullfør level 35 for å komme på listen.",
+    winnersEmpty: "Ingen vinnere ennå. Fullfør level 35 og skriv inn navnet ditt.",
+    winnersClose: "Lukk",
+    championTitle: "🎉 Gratulerer!",
+    championText: "Du fullførte alle 35 levelene. Skriv inn navnet du vil vise på Top 10-listen.",
+    championNameLabel: "Navn på vinnerlisten",
+    championNamePlaceholder: "Skriv navn",
+    championSave: "✅ Lagre på Top 10",
+    championSkip: "Hopp over",
+    championSaved: "Vinnerresultat lagret! 🏆",
+    campaignFinishedSummary: "Legendarisk! Du fullførte hele kampanjen på 35 level.",
+    shopTeleportMoved: "🌀 Nødteleport brukt. Spillet fortsetter!",
+    levelCountLabel: "Level"
+  });
+
+  Object.assign(translations.en, {
+    maxLevelInfo: "Max level: 35",
+    levelGrandFinal: "You cleared all 35 levels! 🔥",
+    winnerButton: "🏆 Winner results",
+    winnersTitle: "🏆 Top 10 winners",
+    winnersSubtitle: "Saved locally in this browser. Complete level 35 to enter the list.",
+    winnersEmpty: "No winners yet. Complete level 35 and enter your name.",
+    winnersClose: "Close",
+    championTitle: "🎉 Congratulations!",
+    championText: "You completed all 35 levels. Enter the name you want shown on the Top 10 list.",
+    championNameLabel: "Winner list name",
+    championNamePlaceholder: "Enter name",
+    championSave: "✅ Save to Top 10",
+    championSkip: "Skip",
+    championSaved: "Winner result saved! 🏆",
+    campaignFinishedSummary: "Legendary! You completed the full 35-level campaign.",
+    shopTeleportMoved: "🌀 Emergency teleport used. Game continues!",
+    levelCountLabel: "Level"
+  });
+
+  // For alle andre språk: bruk engelsk fallback, ikke norsk tekst.
+  if (Array.isArray(languageOptions)) {
+    for (const language of languageOptions) {
+      if (language.code !== "no" && language.code !== "en") {
+        translations[language.code] = { ...translations.en, ...(translations[language.code] || {}) };
+        for (const key of [
+          "maxLevelInfo", "levelGrandFinal", "winnerButton", "winnersTitle", "winnersSubtitle",
+          "winnersEmpty", "winnersClose", "championTitle", "championText", "championNameLabel",
+          "championNamePlaceholder", "championSave", "championSkip", "championSaved",
+          "campaignFinishedSummary", "shopTeleportMoved", "levelCountLabel"
+        ]) {
+          if (!translations[language.code][key]) translations[language.code][key] = translations.en[key];
+        }
+      }
+    }
+  }
+
+  const v33Themes = ["neon", "candy", "electric", "sunset", "ocean", "forest", "lava"];
+  const v33Names = [
+    "Neon Gate", "Candy Loop", "Thunder Grid", "Sunset Spiral", "Ocean Switch",
+    "Forest Rush", "Lava Bridge", "Diamond Drift", "Turbo Smile", "Rocket Maze",
+    "Crystal Sprint", "Ghost Garden Pro", "Mirror Run", "Lightning Lanes", "Happy Storm",
+    "Portal Dance", "Star Collector", "Firefly Chase", "Blue Circuit", "Boss Alley",
+    "Rainbow Lock", "Energy Field", "Diamond Factory", "Ice Panic", "Laser Garden",
+    "Midnight Circuit", "Treasure Spiral", "Wild Blocks", "Portal Rush", "Chaos Candy",
+    "Turbo Temple", "Rocket Ring", "Electric Finale", "Diamond Crown", "Grand Joy Finale"
+  ];
+
+  function v33Seeded(levelNumber, salt = 0) {
+    let value = (levelNumber * 9301 + salt * 49297 + 233280) % 233280;
+    return () => {
+      value = (value * 9301 + 49297) % 233280;
+      return value / 233280;
+    };
+  }
+
+  function v33BuildCampaignMap(levelNumber) {
+    const width = 13;
+    const height = 11;
+    const pattern = levelNumber % 8;
+    const rnd = v33Seeded(levelNumber, pattern);
+    const grid = Array.from({ length: height }, (_, y) =>
+      Array.from({ length: width }, (_, x) => (x === 0 || y === 0 || x === width - 1 || y === height - 1 ? "1" : "2"))
+    );
+    const playerStart = levelNumber % 2 === 0 ? { x: 1, y: 9 } : { x: 1, y: 1 };
+    const center = { x: 6, y: 5 };
+
+    function setWall(x, y) {
+      if (x <= 0 || y <= 0 || x >= width - 1 || y >= height - 1) return;
+      if (Math.abs(x - playerStart.x) + Math.abs(y - playerStart.y) < 3) return;
+      if (Math.abs(x - center.x) + Math.abs(y - center.y) < 2) return;
+      grid[y][x] = "1";
+    }
+
+    if (pattern === 0) {
+      for (let y = 2; y < 9; y += 2) for (let x = 2; x < 11; x += 3) setWall(x, y);
+    } else if (pattern === 1) {
+      for (let x = 2; x < 11; x += 2) { setWall(x, 3); setWall(x, 7); }
+      for (let y = 2; y < 9; y += 2) { setWall(4, y); setWall(8, y); }
+    } else if (pattern === 2) {
+      for (let x = 2; x < 11; x++) if (![3, 6, 10].includes(x)) setWall(x, 2);
+      for (let x = 2; x < 11; x++) if (![2, 6, 9].includes(x)) setWall(x, 8);
+      for (let y = 3; y < 8; y++) if (![4, 5].includes(y)) { setWall(2, y); setWall(10, y); }
+    } else if (pattern === 3) {
+      for (let y = 2; y < 9; y++) if (y !== 5) { setWall(3, y); setWall(9, y); }
+      for (let x = 4; x < 9; x++) if (x !== 6) { setWall(x, 3); setWall(x, 7); }
+    } else if (pattern === 4) {
+      for (let i = 2; i < 10; i++) { setWall(i, i % 7 + 2); setWall(12 - i, i % 7 + 2); }
+    } else if (pattern === 5) {
+      for (let x = 2; x < 11; x++) if (x !== 6) setWall(x, 5);
+      for (let y = 2; y < 9; y++) if (![3, 7].includes(y)) setWall(6, y);
+    } else if (pattern === 6) {
+      for (let y = 2; y < 9; y += 2) for (let x = 2; x < 11; x++) if ((x + y + levelNumber) % 4 === 0) setWall(x, y);
+    } else {
+      for (let i = 0; i < 18; i++) setWall(1 + Math.floor(rnd() * 11), 1 + Math.floor(rnd() * 9));
+    }
+
+    // Ekstra åpninger og trygge ruter som hindrer irriterende låste brett.
+    [[center.x, center.y], [center.x - 1, center.y], [center.x + 1, center.y], [center.x, center.y - 1], [center.x, center.y + 1],
+     [playerStart.x, playerStart.y], [playerStart.x + 1, playerStart.y], [playerStart.x, Math.max(1, playerStart.y - 1)]].forEach(([x, y]) => {
+      if (grid[y] && grid[y][x]) grid[y][x] = "0";
+    });
+
+    // Power-ups og skjold plasseres variert, men alltid på gangbare ruter.
+    const bonusCandidates = [
+      { x: 2, y: 2 }, { x: 10, y: 2 }, { x: 2, y: 8 }, { x: 10, y: 8 },
+      { x: 5, y: 3 }, { x: 7, y: 7 }, { x: 4, y: 6 }, { x: 8, y: 4 }
+    ];
+    const power = bonusCandidates[levelNumber % bonusCandidates.length];
+    const shieldSpot = bonusCandidates[(levelNumber + 3) % bonusCandidates.length];
+    if (grid[power.y][power.x] !== "1") grid[power.y][power.x] = "3";
+    if (grid[shieldSpot.y][shieldSpot.x] !== "1") grid[shieldSpot.y][shieldSpot.x] = "4";
+
+    // Fjern diamanter fra start/portalområdet, ellers kan starten føles rotete.
+    grid[playerStart.y][playerStart.x] = "0";
+    grid[center.y][center.x] = "0";
+
+    // Sørg for at alle diamanter er mulig å nå fra spillerens start.
+    const seen = new Set();
+    const queue = [{ ...playerStart }];
+    const key = (x, y) => `${x},${y}`;
+    seen.add(key(playerStart.x, playerStart.y));
+    while (queue.length) {
+      const current = queue.shift();
+      for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]) {
+        const nx = current.x + dx;
+        const ny = current.y + dy;
+        if (!grid[ny] || grid[ny][nx] === undefined || grid[ny][nx] === "1") continue;
+        const k = key(nx, ny);
+        if (!seen.has(k)) {
+          seen.add(k);
+          queue.push({ x: nx, y: ny });
+        }
+      }
+    }
+    for (let y = 1; y < height - 1; y++) {
+      for (let x = 1; x < width - 1; x++) {
+        if (grid[y][x] !== "1" && !seen.has(key(x, y))) grid[y][x] = "1";
+      }
+    }
+
+    // Hvis et brett ble for tomt: legg tilbake noen diamanter på sikre ruter.
+    let diamonds = grid.flat().filter(v => v === "2").length;
+    if (diamonds < 28) {
+      for (let y = 1; y < height - 1 && diamonds < 34; y++) {
+        for (let x = 1; x < width - 1 && diamonds < 34; x++) {
+          if (grid[y][x] === "0" && !(x === center.x && y === center.y) && !(x === playerStart.x && y === playerStart.y)) {
+            grid[y][x] = "2";
+            diamonds++;
+          }
+        }
+      }
+    }
+
+    return grid.map(row => row.join(""));
+  }
+
+  function v33BuildCampaignLevels() {
+    const base = levels.slice(0, Math.min(10, levels.length)).map((level, index) => ({
+      ...level,
+      name: v33Names[index] || level.name,
+      speed: Math.max(470, 625 - index * 11),
+      theme: v33Themes[index % v33Themes.length]
+    }));
+
+    for (let i = base.length; i < V33_MAX_LEVELS; i++) {
+      const levelNumber = i + 1;
+      const player = levelNumber % 2 === 0 ? { x: 1, y: 9 } : { x: 1, y: 1 };
+      base.push({
+        name: v33Names[i] || `Joy Level ${levelNumber}`,
+        theme: v33Themes[i % v33Themes.length],
+        speed: Math.max(420, 580 - Math.floor(i * 3.6)),
+        enemies: [
+          { x: 11, y: 1 },
+          { x: 11, y: 9 },
+          { x: 6, y: i % 2 ? 1 : 9 },
+          { x: 1, y: i % 3 ? 5 : 9 }
+        ],
+        player,
+        map: v33BuildCampaignMap(levelNumber)
+      });
+    }
+    levels.splice(0, levels.length, ...base.slice(0, V33_MAX_LEVELS));
+  }
+  v33BuildCampaignLevels();
+
+  // V31 hadde random fiender; her balanseres antallet tydeligere for 35 level.
+  getEnemyCountRangeForLevel = function getEnemyCountRangeForLevelV33(index) {
+    const levelNumber = index + 1;
+    const growth = Math.floor(Math.max(0, levelNumber - 1) / 7);
+    const ranges = {
+      easy:    { min: 1, max: Math.min(3, 1 + growth) },
+      normal:  { min: 1, max: Math.min(4, 2 + growth) },
+      hard:    { min: 2, max: Math.min(5, 3 + growth) },
+      extreme: { min: 2, max: Math.min(6, 4 + growth) }
+    };
+    const range = ranges[selectedDifficulty] || ranges.normal;
+    return { min: range.min, max: Math.max(range.min, range.max) };
+  };
+
+  // Nødteleport skal ikke gjøre at spillet blir hengende i pause etter at butikken lukkes.
+  const v33PreviousTeleport = typeof v30TeleportPlayer === "function" ? v30TeleportPlayer : null;
+  if (v33PreviousTeleport) {
+    v30TeleportPlayer = function v30TeleportPlayerV33() {
+      const shouldResumeAfter = Boolean(gameRunning && !onlineMode && !v23ShopPausedBefore);
+      const result = v33PreviousTeleport.apply(this, arguments);
+      if (result && shouldResumeAfter) {
+        paused = false;
+        clearInterval(enemyTimer);
+        clearTimeout(enemyTimer);
+        enemyTimer = setTimeout(moveEnemies, getEnemyDelay());
+        if (messageBar) messageBar.textContent = t("shopTeleportMoved");
+        if (typeof v30UpdatePlayUi === "function") v30UpdatePlayUi();
+        drawGame();
+      }
+      return result;
+    };
+    window.v30TeleportPlayer = v30TeleportPlayer;
+  }
+
+  function v33LoadWinners() {
+    try {
+      const winners = JSON.parse(localStorage.getItem(V33_WINNERS_KEY) || "[]");
+      return Array.isArray(winners) ? winners.slice(0, 10) : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function v33SaveWinners(winners) {
+    localStorage.setItem(V33_WINNERS_KEY, JSON.stringify(winners.slice(0, 10)));
+  }
+
+  function v33AddWinner(name) {
+    const cleanName = String(name || "Player")
+      .replace(/[<>]/g, "")
+      .trim()
+      .slice(0, 18) || "Player";
+    const winners = v33LoadWinners();
+    winners.push({
+      name: cleanName,
+      score: Number(score) || 0,
+      difficulty: selectedDifficulty || "normal",
+      level: V33_MAX_LEVELS,
+      date: new Date().toLocaleDateString()
+    });
+    winners.sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0));
+    v33SaveWinners(winners);
+    return cleanName;
+  }
+
+  function v33EnsureWinnerUi() {
+    let showButton = document.getElementById("winnerBoardButton");
+    if (!showButton) {
+      showButton = document.createElement("button");
+      showButton.id = "winnerBoardButton";
+      showButton.type = "button";
+      showButton.className = "winner-board-button";
+      showButton.onclick = () => showWinnerBoard();
+      const customize = document.getElementById("customizeButton");
+      if (customize && customize.parentElement) customize.insertAdjacentElement("afterend", showButton);
+    }
+
+    let winnerDialog = document.getElementById("winnerBoardModal");
+    if (!winnerDialog) {
+      winnerDialog = document.createElement("dialog");
+      winnerDialog.id = "winnerBoardModal";
+      winnerDialog.className = "winner-modal";
+      winnerDialog.innerHTML = `
+        <div class="winner-card">
+          <button class="friend-modal-close" type="button" onclick="closeWinnerBoard()" aria-label="Close">✕</button>
+          <h2 id="winnersTitle"></h2>
+          <p id="winnersSubtitle" class="winner-subtitle"></p>
+          <ol id="winnerList" class="winner-list"></ol>
+          <button id="winnersCloseButton" class="winner-close-button" type="button" onclick="closeWinnerBoard()"></button>
+        </div>
+      `;
+      document.body.appendChild(winnerDialog);
+    }
+
+    let championDialog = document.getElementById("championModal");
+    if (!championDialog) {
+      championDialog = document.createElement("dialog");
+      championDialog.id = "championModal";
+      championDialog.className = "winner-modal champion-modal";
+      championDialog.innerHTML = `
+        <div class="winner-card champion-card">
+          <h2 id="championTitle"></h2>
+          <p id="championText" class="winner-subtitle"></p>
+          <label id="championNameLabel" class="champion-label" for="championNameInput"></label>
+          <input id="championNameInput" class="champion-input" maxlength="18" autocomplete="nickname" />
+          <div class="champion-actions">
+            <button id="championSaveButton" type="button" onclick="saveChampionWinner()"></button>
+            <button id="championSkipButton" type="button" onclick="closeChampionModal()"></button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(championDialog);
+    }
+    v33UpdateWinnerTexts();
+  }
+
+  function v33UpdateWinnerTexts() {
+    const set = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+    const placeholder = document.getElementById("championNameInput");
+    const showButton = document.getElementById("winnerBoardButton");
+    if (showButton) showButton.textContent = t("winnerButton");
+    set("winnersTitle", t("winnersTitle"));
+    set("winnersSubtitle", t("winnersSubtitle"));
+    set("winnersCloseButton", t("winnersClose"));
+    set("championTitle", t("championTitle"));
+    set("championText", t("championText"));
+    set("championNameLabel", t("championNameLabel"));
+    set("championSaveButton", t("championSave"));
+    set("championSkipButton", t("championSkip"));
+    if (placeholder) placeholder.placeholder = t("championNamePlaceholder");
+  }
+
+  function v33RenderWinners() {
+    const list = document.getElementById("winnerList");
+    if (!list) return;
+    const winners = v33LoadWinners();
+    if (!winners.length) {
+      list.innerHTML = `<li class="winner-empty">${t("winnersEmpty")}</li>`;
+      return;
+    }
+    list.innerHTML = winners.map((winner, index) => {
+      const diff = difficultySettings[winner.difficulty]?.labelKey ? t(difficultySettings[winner.difficulty].labelKey) : winner.difficulty;
+      return `
+        <li class="winner-row">
+          <span class="winner-rank">#${index + 1}</span>
+          <span class="winner-name"></span>
+          <span class="winner-meta">${diff} • ${t("levelCountLabel")} ${winner.level || V33_MAX_LEVELS}</span>
+          <strong class="winner-score">${Number(winner.score) || 0}</strong>
+        </li>`;
+    }).join("");
+    winners.forEach((winner, index) => {
+      const row = list.children[index];
+      const nameEl = row && row.querySelector(".winner-name");
+      if (nameEl) nameEl.textContent = winner.name || "Player";
+    });
+  }
+
+  window.showWinnerBoard = function showWinnerBoard() {
+    v33EnsureWinnerUi();
+    v33RenderWinners();
+    const dialog = document.getElementById("winnerBoardModal");
+    if (dialog && typeof dialog.showModal === "function") dialog.showModal();
+    else if (dialog) dialog.setAttribute("open", "open");
+  };
+
+  window.closeWinnerBoard = function closeWinnerBoard() {
+    const dialog = document.getElementById("winnerBoardModal");
+    if (dialog && typeof dialog.close === "function") dialog.close();
+    else if (dialog) dialog.removeAttribute("open");
+  };
+
+  window.closeChampionModal = function closeChampionModal() {
+    const dialog = document.getElementById("championModal");
+    if (dialog && typeof dialog.close === "function") dialog.close();
+    else if (dialog) dialog.removeAttribute("open");
+  };
+
+  window.saveChampionWinner = function saveChampionWinner() {
+    const input = document.getElementById("championNameInput");
+    const savedName = v33AddWinner(input ? input.value : "Player");
+    localStorage.setItem("ragiJoyLastWinnerName", savedName);
+    window.closeChampionModal();
+    if (messageBar) messageBar.textContent = t("championSaved");
+    window.showWinnerBoard();
+  };
+
+  function v33ShowChampionModal() {
+    v33EnsureWinnerUi();
+    const input = document.getElementById("championNameInput");
+    if (input) {
+      input.value = localStorage.getItem("ragiJoyLastWinnerName") || "";
+      setTimeout(() => input.focus(), 120);
+    }
+    const dialog = document.getElementById("championModal");
+    if (dialog && typeof dialog.showModal === "function") dialog.showModal();
+    else if (dialog) dialog.setAttribute("open", "open");
+  }
+
+  const v33PreviousApplyLanguage = applyLanguage;
+  applyLanguage = function applyLanguageV33() {
+    v33PreviousApplyLanguage.apply(this, arguments);
+    v33EnsureWinnerUi();
+    v33UpdateWinnerTexts();
+    v33RenderWinners();
+  };
+  window.applyLanguage = applyLanguage;
+
+  const v33PreviousEndGame = endGame;
+  endGame = function endGameV33(won) {
+    v33PreviousEndGame.apply(this, arguments);
+    const completedCampaign = Boolean(won && levelIndex >= V33_MAX_LEVELS - 1);
+    const endSummary = document.getElementById("endSummary");
+    if (completedCampaign && endSummary) endSummary.textContent = t("campaignFinishedSummary");
+    if (completedCampaign) {
+      if (messageBar) messageBar.textContent = t("levelGrandFinal");
+      setTimeout(v33ShowChampionModal, 650);
+    }
+    v33EnsureWinnerUi();
+  };
+  window.endGame = endGame;
+
+  const v33PreviousNextLevel = nextLevel;
+  nextLevel = function nextLevelV33() {
+    if (levelIndex >= V33_MAX_LEVELS - 1) {
+      score += 250 + (levelIndex + 1) * 100;
+      endGame(true);
+      return;
+    }
+    v33PreviousNextLevel.apply(this, arguments);
+  };
+  window.nextLevel = nextLevel;
+
+  const v33PreviousLoadLevel = loadLevel;
+  loadLevel = function loadLevelV33(index) {
+    if (index >= V33_MAX_LEVELS) {
+      levelIndex = V33_MAX_LEVELS - 1;
+      endGame(true);
+      return;
+    }
+    v33PreviousLoadLevel.apply(this, arguments);
+    if (messageBar && gameRunning && !onlineMode) {
+      const level = levels[levelIndex] || levels[0];
+      messageBar.textContent = `${t("levelCountLabel")} ${levelIndex + 1}/35: ${level.name}`;
+    }
+  };
+  window.loadLevel = loadLevel;
+
+  setTimeout(() => {
+    v33EnsureWinnerUi();
+    if (messageBar && !gameRunning) messageBar.textContent = `${t("messageStart")} • ${t("maxLevelInfo")}`;
+    if (typeof updateDifficultyScoreBadges === "function") updateDifficultyScoreBadges();
+  }, 0);
+})();
+
+/* --------------------------------------------------------------------------
+   V34 GUI + leaderboard polish
+   - Moderniserer startmeny-layout.
+   - Top 10 er nå basert på høyeste score, ikke bare fullført level 35.
+   - Ved god score kan spiller lagre navn på listen etter en kamp.
+   -------------------------------------------------------------------------- */
+(function v34GuiAndLeaderboardPatch() {
+  const BOARD_KEY = 'ragiJoyMazeLeaderboardV34';
+  const LEGACY_KEY = 'ragiJoyMazeWinnersV33';
+  const DEFAULT_NAME_KEY = 'ragiJoyMazePreferredNameV34';
+  const MAX_ENTRIES = 10;
+
+  Object.assign(translations.no, {
+    winnerButton: '🏆 Vinnerresultat',
+    winnersTitle: '🏆 Top 10 vinnerresultat',
+    winnersSubtitle: 'De høyeste poengene blir liggende øverst. Listen lagres lokalt i denne nettleseren.',
+    winnersEmpty: 'Ingen resultater ennå. Spill en kamp og lagre navnet ditt.',
+    championTitle: '🏆 Ny toppscore!',
+    championText: 'Du kom inn på Top 10. Skriv inn navnet du vil vise på listen.',
+    championSave: '✅ Lagre resultat',
+    championSaved: 'Resultatet ble lagret på Top 10! 🏆',
+    campaignFinishedSummary: 'Du fullførte hele kampanjen på 35 level. Fantastisk jobbet!',
+    leaderboardPromptWin: 'Du kom inn på Top 10. Skriv inn navnet ditt.',
+    leaderboardPromptChampion: 'Du fullførte alle 35 levelene og kom inn på Top 10. Skriv inn navnet ditt.',
+    leaderboardScope: 'Topplisten viser de 10 høyeste poengene – ikke bare spillere som har fullført level 35.'
+  });
+
+  Object.assign(translations.en, {
+    winnerButton: '🏆 Top scores',
+    winnersTitle: '🏆 Top 10 high scores',
+    winnersSubtitle: 'The highest scores stay at the top. The list is saved locally in this browser.',
+    winnersEmpty: 'No records yet. Finish a match and save your name.',
+    championTitle: '🏆 New top score!',
+    championText: 'You made it into the Top 10. Enter the name you want shown on the list.',
+    championSave: '✅ Save result',
+    championSaved: 'The result was saved to Top 10! 🏆',
+    campaignFinishedSummary: 'You completed the full 35-level campaign. Amazing job!',
+    leaderboardPromptWin: 'You made it into the Top 10. Enter your name.',
+    leaderboardPromptChampion: 'You cleared all 35 levels and made it into the Top 10. Enter your name.',
+    leaderboardScope: 'The leaderboard shows the 10 highest scores – not only players who finished level 35.'
+  });
+
+  if (Array.isArray(languageOptions)) {
+    for (const language of languageOptions) {
+      if (language.code !== 'no' && language.code !== 'en') {
+        translations[language.code] = { ...translations.en, ...(translations[language.code] || {}) };
+        for (const key of [
+          'winnerButton', 'winnersTitle', 'winnersSubtitle', 'winnersEmpty', 'championTitle',
+          'championText', 'championSave', 'championSaved', 'campaignFinishedSummary',
+          'leaderboardPromptWin', 'leaderboardPromptChampion', 'leaderboardScope'
+        ]) {
+          if (!translations[language.code][key]) translations[language.code][key] = translations.en[key];
+        }
+      }
+    }
+  }
+
+  function loadBoard() {
+    let data = [];
+    try {
+      data = JSON.parse(localStorage.getItem(BOARD_KEY) || '[]');
+    } catch (_) { data = []; }
+    if (!Array.isArray(data) || !data.length) {
+      try {
+        const legacy = JSON.parse(localStorage.getItem(LEGACY_KEY) || '[]');
+        if (Array.isArray(legacy) && legacy.length) {
+          data = legacy.map((entry, index) => ({
+            name: entry.name || 'Player',
+            score: Number(entry.score) || 0,
+            level: Number(entry.level) || 1,
+            difficulty: entry.difficulty || 'normal',
+            completedCampaign: Boolean((Number(entry.level) || 0) >= 35),
+            createdAt: entry.createdAt || Date.now() + index
+          }));
+          saveBoard(data);
+        }
+      } catch (_) { data = []; }
+    }
+    return Array.isArray(data) ? data.slice(0, MAX_ENTRIES) : [];
+  }
+
+  function saveBoard(entries) {
+    const sorted = (Array.isArray(entries) ? entries : [])
+      .filter(Boolean)
+      .sort((a, b) => {
+        const scoreDiff = (Number(b.score) || 0) - (Number(a.score) || 0);
+        if (scoreDiff !== 0) return scoreDiff;
+        const levelDiff = (Number(b.level) || 0) - (Number(a.level) || 0);
+        if (levelDiff !== 0) return levelDiff;
+        return (Number(a.createdAt) || 0) - (Number(b.createdAt) || 0);
+      })
+      .slice(0, MAX_ENTRIES);
+    localStorage.setItem(BOARD_KEY, JSON.stringify(sorted));
+  }
+
+  function qualifiesForBoard(value) {
+    const numeric = Number(value) || 0;
+    if (numeric <= 0) return false;
+    const current = loadBoard();
+    if (current.length < MAX_ENTRIES) return true;
+    const weakest = current[current.length - 1];
+    return numeric > (Number(weakest.score) || 0);
+  }
+
+  function addBoardEntry(name, completedCampaign) {
+    const cleanName = String(name || '').trim().slice(0, 18) || localStorage.getItem(DEFAULT_NAME_KEY) || 'Player';
+    localStorage.setItem(DEFAULT_NAME_KEY, cleanName);
+    const current = loadBoard();
+    current.push({
+      name: cleanName,
+      score: Number(score) || 0,
+      level: Math.max(1, Math.min(35, Number(levelIndex) + 1 || 1)),
+      difficulty: selectedDifficulty || 'normal',
+      completedCampaign: Boolean(completedCampaign),
+      createdAt: Date.now()
+    });
+    saveBoard(current);
+    return cleanName;
+  }
+
+  function ensureWinnerUiPlacement() {
+    const slot = document.getElementById('winnerButtonSlot');
+    const button = document.getElementById('winnerBoardButton');
+    if (slot && button && button.parentElement !== slot) slot.appendChild(button);
+  }
+
+  function setText(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  }
+
+  function updateWinnerTexts() {
+    ensureWinnerUiPlacement();
+    const btn = document.getElementById('winnerBoardButton');
+    if (btn) btn.textContent = t('winnerButton');
+    setText('winnersTitle', t('winnersTitle'));
+    setText('winnersSubtitle', `${t('winnersSubtitle')} ${t('leaderboardScope')}`);
+    setText('winnersCloseButton', t('winnersClose') || 'Close');
+  }
+
+  function renderBoard() {
+    updateWinnerTexts();
+    const list = document.getElementById('winnerList');
+    if (!list) return;
+    const data = loadBoard();
+    if (!data.length) {
+      list.innerHTML = `<li class="winner-empty">${t('winnersEmpty')}</li>`;
+      return;
+    }
+    list.innerHTML = data.map((entry, index) => {
+      const difficultyLabel = difficultySettings?.[entry.difficulty]?.labelKey ? t(difficultySettings[entry.difficulty].labelKey) : (entry.difficulty || '');
+      const crown = index === 0 ? ' 👑' : '';
+      return `
+        <li class="winner-row ${index === 0 ? 'top-rank' : ''}">
+          <span class="winner-rank">#${index + 1}</span>
+          <div>
+            <span class="winner-name">${escapeHtml(entry.name || 'Player')}${crown}</span>
+            <span class="winner-meta">${difficultyLabel} • ${t('levelCountLabel') || 'Level'} ${entry.level || 1}${entry.completedCampaign ? ' • 35/35' : ''}</span>
+          </div>
+          <strong class="winner-score">${Number(entry.score) || 0}</strong>
+        </li>`;
+    }).join('');
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function showDialogById(id) {
+    const dialog = document.getElementById(id);
+    if (!dialog) return;
+    if (typeof dialog.showModal === 'function') dialog.showModal();
+    else dialog.setAttribute('open', 'open');
+  }
+
+  function closeDialogById(id) {
+    const dialog = document.getElementById(id);
+    if (!dialog) return;
+    if (typeof dialog.close === 'function') dialog.close();
+    else dialog.removeAttribute('open');
+  }
+
+  window.showWinnerBoard = function showWinnerBoardV34() {
+    renderBoard();
+    showDialogById('winnerBoardModal');
+  };
+  window.closeWinnerBoard = function closeWinnerBoardV34() {
+    closeDialogById('winnerBoardModal');
+  };
+
+  let pendingBoardSave = false;
+  let pendingCampaignSave = false;
+
+  function openLeaderboardPrompt(isCampaignWin) {
+    pendingBoardSave = true;
+    pendingCampaignSave = Boolean(isCampaignWin);
+    const label = document.getElementById('championNameLabel');
+    const title = document.getElementById('championTitle');
+    const text = document.getElementById('championText');
+    const input = document.getElementById('championNameInput');
+    const saveButton = document.getElementById('championSaveButton');
+    const skipButton = document.getElementById('championSkipButton');
+    if (title) title.textContent = isCampaignWin ? '🎉 ' + (t('won') || 'You won!') : t('championTitle');
+    if (text) text.textContent = isCampaignWin ? t('leaderboardPromptChampion') : t('leaderboardPromptWin');
+    if (label) label.textContent = t('championNameLabel');
+    if (saveButton) saveButton.textContent = t('championSave');
+    if (skipButton) skipButton.textContent = t('championSkip') || 'Skip';
+    if (input) {
+      input.value = localStorage.getItem(DEFAULT_NAME_KEY) || '';
+      input.placeholder = t('championNamePlaceholder') || 'Enter name';
+    }
+    showDialogById('championModal');
+    if (input) setTimeout(() => input.focus(), 80);
+  }
+
+  window.saveChampionWinner = function saveChampionWinnerV34() {
+    if (!pendingBoardSave) {
+      closeDialogById('championModal');
+      return;
+    }
+    const input = document.getElementById('championNameInput');
+    addBoardEntry(input ? input.value : 'Player', pendingCampaignSave);
+    pendingBoardSave = false;
+    pendingCampaignSave = false;
+    closeDialogById('championModal');
+    renderBoard();
+    if (messageBar) messageBar.textContent = t('championSaved');
+    window.showWinnerBoard();
+  };
+
+  window.closeChampionModal = function closeChampionModalV34() {
+    pendingBoardSave = false;
+    pendingCampaignSave = false;
+    closeDialogById('championModal');
+  };
+
+  const previousApplyLanguageV34 = applyLanguage;
+  applyLanguage = function applyLanguageV34() {
+    previousApplyLanguageV34.apply(this, arguments);
+    ensureWinnerUiPlacement();
+    updateWinnerTexts();
+    renderBoard();
+  };
+  window.applyLanguage = applyLanguage;
+
+  const previousEndGameV34 = endGame;
+  endGame = function endGameV34(won) {
+    const completedCampaign = Boolean(!onlineMode && won && levelIndex >= 34);
+    previousEndGameV34.apply(this, arguments);
+    ensureWinnerUiPlacement();
+    if (!onlineMode && qualifiesForBoard(score)) {
+      setTimeout(() => openLeaderboardPrompt(completedCampaign), completedCampaign ? 760 : 280);
+    }
+  };
+  window.endGame = endGame;
+
+  setTimeout(() => {
+    ensureWinnerUiPlacement();
+    updateWinnerTexts();
+    renderBoard();
+  }, 60);
+})();
+
+/* --------------------------------------------------------------------------
+   V35 Player name registration fix
+   - Navn kan registreres direkte fra hovedmenyen før spillet starter.
+   - Samme navn fylles automatisk inn i Top 10-lagring etter kamp.
+   - Vinnerresultat-dialogen viser hvilket navn som er aktivt.
+   -------------------------------------------------------------------------- */
+(function v35PlayerNameRegistrationPatch() {
+  const DEFAULT_NAME_KEY = 'ragiJoyMazePreferredNameV34';
+  const MAX_NAME_LENGTH = 18;
+
+  const nameTexts = {
+    no: {
+      profileButtonEmpty: '👤 Registrer spillernavn',
+      profileButtonNamed: '👤 Spiller: {name}',
+      profileTitle: '👤 Spillernavn',
+      profileSubtitle: 'Velg navnet som skal brukes på Top 10-listen når du får høy score. Dette lagres kun i denne nettleseren.',
+      profileCurrentLabel: 'Aktivt navn',
+      profileNoName: 'Ikke valgt ennå',
+      profileNameLabel: 'Skriv ønsket navn',
+      profileNamePlaceholder: 'F.eks. Ragish',
+      profileSave: '✅ Lagre navn',
+      profileClear: 'Fjern navn',
+      profileSaved: 'Spillernavn lagret: {name}',
+      profileCleared: 'Spillernavn fjernet.',
+      profileNote: 'Tips: Du kan endre dette senere. Når du kommer inn på Top 10, blir dette navnet foreslått automatisk.',
+      winnerActiveName: 'Navn for nye resultater',
+      winnerChangeName: 'Endre navn'
+    },
+    en: {
+      profileButtonEmpty: '👤 Register player name',
+      profileButtonNamed: '👤 Player: {name}',
+      profileTitle: '👤 Player name',
+      profileSubtitle: 'Choose the name used on the Top 10 list when you get a high score. It is saved only in this browser.',
+      profileCurrentLabel: 'Active name',
+      profileNoName: 'Not chosen yet',
+      profileNameLabel: 'Enter preferred name',
+      profileNamePlaceholder: 'Example: Ragish',
+      profileSave: '✅ Save name',
+      profileClear: 'Remove name',
+      profileSaved: 'Player name saved: {name}',
+      profileCleared: 'Player name removed.',
+      profileNote: 'Tip: You can change this later. When you reach Top 10, this name is suggested automatically.',
+      winnerActiveName: 'Name for new scores',
+      winnerChangeName: 'Change name'
+    }
+  };
+
+  for (const [code, texts] of Object.entries(nameTexts)) {
+    translations[code] = { ...(translations[code] || translations.en), ...texts };
+  }
+  if (Array.isArray(languageOptions)) {
+    for (const language of languageOptions) {
+      if (!translations[language.code]) translations[language.code] = { ...translations.en };
+      const base = language.code === 'no' ? nameTexts.no : nameTexts.en;
+      for (const [key, value] of Object.entries(base)) {
+        if (!translations[language.code][key]) translations[language.code][key] = value;
+      }
+    }
+  }
+
+  function tr(key, vars = {}) {
+    let value = (translations[currentLanguage] && translations[currentLanguage][key]) || translations.en[key] || key;
+    for (const [name, replacement] of Object.entries(vars)) {
+      value = value.replaceAll(`{${name}}`, replacement);
+    }
+    return value;
+  }
+
+  function cleanName(value) {
+    return String(value || '')
+      .replace(/[<>]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, MAX_NAME_LENGTH);
+  }
+
+  function getProfileName() {
+    return cleanName(localStorage.getItem(DEFAULT_NAME_KEY) || localStorage.getItem('ragiJoyLastWinnerName') || '');
+  }
+
+  function setProfileName(value) {
+    const name = cleanName(value);
+    if (name) {
+      localStorage.setItem(DEFAULT_NAME_KEY, name);
+      localStorage.setItem('ragiJoyLastWinnerName', name);
+    } else {
+      localStorage.removeItem(DEFAULT_NAME_KEY);
+      localStorage.removeItem('ragiJoyLastWinnerName');
+    }
+    updateProfileTexts();
+    return name;
+  }
+
+  function showDialog(dialog) {
+    if (!dialog) return;
+    if (typeof dialog.showModal === 'function') dialog.showModal();
+    else dialog.setAttribute('open', 'open');
+  }
+
+  function closeDialog(dialog) {
+    if (!dialog) return;
+    if (typeof dialog.close === 'function') dialog.close();
+    else dialog.removeAttribute('open');
+  }
+
+  function ensureProfileButton() {
+    let slot = document.getElementById('profileButtonSlot');
+    if (!slot) {
+      slot = document.createElement('div');
+      slot.id = 'profileButtonSlot';
+      slot.className = 'profile-button-slot';
+      const customize = document.getElementById('customizeButton');
+      if (customize && customize.parentElement) customize.insertAdjacentElement('afterend', slot);
+    }
+    let button = document.getElementById('profileNameButton');
+    if (!button) {
+      button = document.createElement('button');
+      button.id = 'profileNameButton';
+      button.className = 'profile-name-button';
+      button.type = 'button';
+      button.onclick = () => window.showProfileNameModal();
+      slot.appendChild(button);
+    } else if (slot && button.parentElement !== slot) {
+      slot.appendChild(button);
+    }
+    return button;
+  }
+
+  function getPlayerAvatarMarkup() {
+    const image = localStorage.getItem('ragiJoyAvatarImage');
+    if (image) return `<img src="${image}" alt="" />`;
+    return (typeof playerEmoji !== 'undefined' && playerEmoji) || localStorage.getItem('ragiJoyPlayerEmoji') || '😄';
+  }
+
+  function ensureProfileDialog() {
+    let dialog = document.getElementById('profileNameModal');
+    if (!dialog) {
+      dialog = document.createElement('dialog');
+      dialog.id = 'profileNameModal';
+      dialog.className = 'winner-modal profile-name-modal';
+      dialog.innerHTML = `
+        <div class="winner-card profile-card">
+          <button class="friend-modal-close" type="button" onclick="closeProfileNameModal()" aria-label="Close">✕</button>
+          <p class="friend-kicker">PLAYER PROFILE</p>
+          <h2 id="profileTitle"></h2>
+          <p id="profileSubtitle" class="winner-subtitle"></p>
+          <div class="profile-preview-row">
+            <div id="profileAvatarBadge" class="profile-avatar-badge"></div>
+            <div>
+              <span id="profileCurrentLabel" class="profile-current-label"></span>
+              <strong id="profileCurrentName" class="profile-current-name"></strong>
+            </div>
+          </div>
+          <label id="profileNameLabel" class="profile-label" for="profileNameInput"></label>
+          <input id="profileNameInput" class="profile-input" maxlength="18" autocomplete="nickname" />
+          <p id="profileNote" class="profile-note"></p>
+          <div class="profile-actions">
+            <button id="profileSaveButton" class="profile-save-button" type="button" onclick="saveProfileNameFromModal()"></button>
+            <button id="profileClearButton" class="profile-clear-button" type="button" onclick="clearProfileNameFromModal()"></button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(dialog);
+      const input = dialog.querySelector('#profileNameInput');
+      if (input) {
+        input.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter') window.saveProfileNameFromModal();
+        });
+      }
+    }
+    return dialog;
+  }
+
+  function ensureWinnerProfileStrip() {
+    const modal = document.getElementById('winnerBoardModal');
+    const card = modal && modal.querySelector('.winner-card');
+    if (!card) return;
+    let strip = document.getElementById('winnerProfileStrip');
+    if (!strip) {
+      strip = document.createElement('div');
+      strip.id = 'winnerProfileStrip';
+      strip.className = 'winner-profile-strip';
+      strip.innerHTML = `
+        <div>
+          <span id="winnerActiveNameLabel"></span>
+          <strong id="winnerActiveNameValue"></strong>
+        </div>
+        <button id="winnerChangeNameButton" type="button" onclick="showProfileNameModal()"></button>
+      `;
+      const list = document.getElementById('winnerList');
+      if (list) card.insertBefore(strip, list);
+      else card.appendChild(strip);
+    }
+  }
+
+  function updateProfileTexts() {
+    const name = getProfileName();
+    const button = ensureProfileButton();
+    ensureProfileDialog();
+    ensureWinnerProfileStrip();
+
+    if (button) {
+      button.textContent = name ? tr('profileButtonNamed', { name }) : tr('profileButtonEmpty');
+      button.classList.toggle('has-name', Boolean(name));
+    }
+
+    const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+    setText('profileTitle', tr('profileTitle'));
+    setText('profileSubtitle', tr('profileSubtitle'));
+    setText('profileCurrentLabel', tr('profileCurrentLabel'));
+    setText('profileCurrentName', name || tr('profileNoName'));
+    setText('profileNameLabel', tr('profileNameLabel'));
+    setText('profileNote', tr('profileNote'));
+    setText('profileSaveButton', tr('profileSave'));
+    setText('profileClearButton', tr('profileClear'));
+    setText('winnerActiveNameLabel', tr('winnerActiveName'));
+    setText('winnerActiveNameValue', name || tr('profileNoName'));
+    setText('winnerChangeNameButton', tr('winnerChangeName'));
+
+    const input = document.getElementById('profileNameInput');
+    if (input) input.placeholder = tr('profileNamePlaceholder');
+    const badge = document.getElementById('profileAvatarBadge');
+    if (badge) badge.innerHTML = getPlayerAvatarMarkup();
+
+    const championInput = document.getElementById('championNameInput');
+    if (championInput && !championInput.value) championInput.value = name;
+  }
+
+  window.showProfileNameModal = function showProfileNameModal() {
+    const dialog = ensureProfileDialog();
+    updateProfileTexts();
+    const input = document.getElementById('profileNameInput');
+    if (input) input.value = getProfileName();
+    showDialog(dialog);
+    if (input) setTimeout(() => input.focus(), 80);
+  };
+
+  window.closeProfileNameModal = function closeProfileNameModal() {
+    closeDialog(document.getElementById('profileNameModal'));
+  };
+
+  window.saveProfileNameFromModal = function saveProfileNameFromModal() {
+    const input = document.getElementById('profileNameInput');
+    const name = setProfileName(input ? input.value : '');
+    closeDialog(document.getElementById('profileNameModal'));
+    if (messageBar) messageBar.textContent = name ? tr('profileSaved', { name }) : tr('profileCleared');
+  };
+
+  window.clearProfileNameFromModal = function clearProfileNameFromModal() {
+    const input = document.getElementById('profileNameInput');
+    if (input) input.value = '';
+    setProfileName('');
+    closeDialog(document.getElementById('profileNameModal'));
+    if (messageBar) messageBar.textContent = tr('profileCleared');
+  };
+
+  const previousShowWinnerBoardV35 = window.showWinnerBoard;
+  window.showWinnerBoard = function showWinnerBoardV35() {
+    if (typeof previousShowWinnerBoardV35 === 'function') previousShowWinnerBoardV35.apply(this, arguments);
+    ensureWinnerProfileStrip();
+    updateProfileTexts();
+  };
+
+  const previousApplyLanguageV35 = applyLanguage;
+  applyLanguage = function applyLanguageV35() {
+    previousApplyLanguageV35.apply(this, arguments);
+    updateProfileTexts();
+  };
+  window.applyLanguage = applyLanguage;
+
+  const previousShowCustomizeV35 = window.showCustomizeModal;
+  if (typeof previousShowCustomizeV35 === 'function') {
+    window.showCustomizeModal = function showCustomizeModalV35() {
+      previousShowCustomizeV35.apply(this, arguments);
+      updateProfileTexts();
+    };
+  }
+
+  setTimeout(updateProfileTexts, 80);
+})();
+
+
+/* --------------------------------------------------------------------------
+   V36 Safe player name and privacy guide patch
+   - Spillernavn er begrenset til 2–16 tegn.
+   - Kun bokstaver, tall, mellomrom, punktum, bindestrek og understrek tillates.
+   - Seksuelle, grove og hatefulle ord blokkeres før navnet lagres eller legges på Top 10.
+   - Quick guide forklarer at spilleren bør bruke kallenavn, ikke fullt navn/e-post/telefon.
+   -------------------------------------------------------------------------- */
+(function v36SafePlayerNameAndPrivacyPatch() {
+  const NAME_KEY = "ragiJoyMazePreferredNameV34";
+  const LAST_NAME_KEY = "ragiJoyLastWinnerName";
+  const WINNERS_KEY = "ragiJoyMazeWinnersV33";
+  const MIN_NAME_LENGTH = 2;
+  const MAX_NAME_LENGTH = 16;
+  const DEFAULT_SAFE_NAME = "Player";
+
+  const v36Texts = {
+    no: {
+      profileSafeTitle: "Navn og personvern",
+      profileSafeText: "Bruk kallenavn. Ikke bruk fullt navn, e-post, telefonnummer eller privat info. Navn må være 2–16 tegn og kan ikke inneholde seksuelle, grove eller hatefulle ord.",
+      profileInvalidEmpty: "Skriv inn et kallenavn først.",
+      profileInvalidShort: "Navnet må ha minst 2 tegn.",
+      profileInvalidLong: "Navnet kan maks ha 16 tegn.",
+      profileInvalidPrivate: "Ikke bruk e-post, telefonnummer eller privat informasjon som spillernavn.",
+      profileInvalidChars: "Bruk kun bokstaver, tall, mellomrom, punktum, bindestrek eller understrek.",
+      profileInvalidBlocked: "Dette navnet kan ikke brukes. Velg et hyggelig og trygt kallenavn.",
+      profileSavedSafe: "Spillernavn lagret: {name}",
+      profileRulesShort: "2–16 tegn · kallenavn · ingen privat info",
+      howToNameSafe: "Bruk trygt kallenavn. Top 10-navn lagres lokalt i nettleseren og støtende/seksuelle ord blokkeres.",
+      championNameHelp: "Navnet vises på Top 10. Bruk kallenavn, ikke privat info."
+    },
+    en: {
+      profileSafeTitle: "Name and privacy",
+      profileSafeText: "Use a nickname. Do not use full name, email, phone number or private information. Names must be 2–16 characters and cannot contain sexual, offensive or hateful words.",
+      profileInvalidEmpty: "Enter a nickname first.",
+      profileInvalidShort: "The name must be at least 2 characters.",
+      profileInvalidLong: "The name can be max 16 characters.",
+      profileInvalidPrivate: "Do not use email, phone number or private information as your player name.",
+      profileInvalidChars: "Use only letters, numbers, spaces, dot, hyphen or underscore.",
+      profileInvalidBlocked: "This name cannot be used. Choose a friendly and safe nickname.",
+      profileSavedSafe: "Player name saved: {name}",
+      profileRulesShort: "2–16 chars · nickname · no private info",
+      howToNameSafe: "Use a safe nickname. Top 10 names are stored locally in the browser, and offensive/sexual words are blocked.",
+      championNameHelp: "This name is shown on Top 10. Use a nickname, not private information."
+    },
+    de: {
+      profileSafeTitle: "Name und Datenschutz",
+      profileSafeText: "Nutze einen Spitznamen. Verwende keinen vollständigen Namen, keine E-Mail, Telefonnummer oder privaten Daten. Namen müssen 2–16 Zeichen haben und dürfen keine sexuellen, beleidigenden oder hasserfüllten Wörter enthalten.",
+      profileInvalidEmpty: "Gib zuerst einen Spitznamen ein.",
+      profileInvalidShort: "Der Name muss mindestens 2 Zeichen haben.",
+      profileInvalidLong: "Der Name darf maximal 16 Zeichen haben.",
+      profileInvalidPrivate: "Verwende keine E-Mail, Telefonnummer oder privaten Daten als Spielernamen.",
+      profileInvalidChars: "Nutze nur Buchstaben, Zahlen, Leerzeichen, Punkt, Bindestrich oder Unterstrich.",
+      profileInvalidBlocked: "Dieser Name kann nicht verwendet werden. Wähle einen freundlichen und sicheren Spitznamen.",
+      profileSavedSafe: "Spielername gespeichert: {name}",
+      profileRulesShort: "2–16 Zeichen · Spitzname · keine privaten Daten",
+      howToNameSafe: "Nutze einen sicheren Spitznamen. Top-10-Namen werden lokal im Browser gespeichert, und beleidigende/sexuelle Wörter werden blockiert.",
+      championNameHelp: "Dieser Name wird in den Top 10 angezeigt. Nutze einen Spitznamen, keine privaten Daten."
+    }
+  };
+
+  function v36T(key, vars = {}) {
+    const lang = (typeof currentLanguage !== "undefined" && currentLanguage) ? currentLanguage : "en";
+    const bucket = v36Texts[lang] || v36Texts.en;
+    let value = (bucket && bucket[key]) || v36Texts.en[key] || key;
+    for (const [name, replacement] of Object.entries(vars)) {
+      value = value.replaceAll(`{${name}}`, String(replacement));
+    }
+    return value;
+  }
+
+  if (typeof translations !== "undefined") {
+    const languageCodes = Array.isArray(languageOptions) ? languageOptions.map(language => language.code) : ["no", "en", "de"];
+    for (const code of languageCodes) {
+      const source = v36Texts[code] || (code === "no" ? v36Texts.no : v36Texts.en);
+      translations[code] = { ...(translations[code] || translations.en || {}), ...source };
+    }
+  }
+
+  const blockedNameParts = [
+    "sex", "porn", "porno", "xxx", "nude", "naked", "onlyfans",
+    "fuck", "fuk", "shit", "bitch", "cunt", "dick", "cock", "pussy", "asshole",
+    "fitte", "fitta", "kuk", "pikk", "hore", "jævel", "jaevel",
+    "nazi", "hitler", "terror", "isis", "kkk"
+  ];
+
+  function normalizeForSafety(value) {
+    return String(value || "")
+      .normalize("NFKD")
+      .toLowerCase()
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[æ]/g, "ae")
+      .replace(/[ø]/g, "o")
+      .replace(/[å]/g, "a")
+      .replace(/[áàâäã]/g, "a")
+      .replace(/[éèêë]/g, "e")
+      .replace(/[íìîï]/g, "i")
+      .replace(/[óòôöõ]/g, "o")
+      .replace(/[úùûü]/g, "u")
+      .replace(/[ýÿ]/g, "y")
+      .replace(/0/g, "o")
+      .replace(/[1!|]/g, "i")
+      .replace(/3/g, "e")
+      .replace(/4/g, "a")
+      .replace(/5|\$/g, "s")
+      .replace(/7/g, "t")
+      .replace(/@/g, "a")
+      .replace(/[^a-z0-9]/g, "");
+  }
+
+  function cleanVisibleName(value) {
+    return String(value || "")
+      .normalize("NFKC")
+      .replace(/[\u0000-\u001F\u007F<>]/g, "")
+      .replace(/[^\p{L}\p{N} ._-]/gu, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function hasPrivateInfo(value) {
+    const raw = String(value || "");
+    const compactDigits = raw.replace(/\D/g, "");
+    return /@/.test(raw) || /\bhttps?:\/\//i.test(raw) || /\bwww\./i.test(raw) || compactDigits.length >= 6;
+  }
+
+  function validatePlayerName(value) {
+    const visible = cleanVisibleName(value);
+    if (!String(value || "").trim()) return { ok: false, name: "", error: v36T("profileInvalidEmpty") };
+    if (hasPrivateInfo(value)) return { ok: false, name: visible.slice(0, MAX_NAME_LENGTH), error: v36T("profileInvalidPrivate") };
+    if (!visible) return { ok: false, name: "", error: v36T("profileInvalidChars") };
+    if (visible.length < MIN_NAME_LENGTH) return { ok: false, name: visible, error: v36T("profileInvalidShort") };
+    if (visible.length > MAX_NAME_LENGTH) return { ok: false, name: visible.slice(0, MAX_NAME_LENGTH), error: v36T("profileInvalidLong") };
+    const normalized = normalizeForSafety(visible);
+    if (blockedNameParts.some(part => normalized.includes(part))) {
+      return { ok: false, name: visible, error: v36T("profileInvalidBlocked") };
+    }
+    return { ok: true, name: visible, error: "" };
+  }
+
+  window.ragiValidatePlayerName = validatePlayerName;
+
+  function showNameError(inputId, message) {
+    const input = document.getElementById(inputId);
+    const errorId = `${inputId}Error`;
+    let error = document.getElementById(errorId);
+    if (!error && input) {
+      error = document.createElement("p");
+      error.id = errorId;
+      error.className = "profile-error";
+      input.insertAdjacentElement("afterend", error);
+    }
+    if (input) {
+      input.classList.toggle("invalid", Boolean(message));
+      input.setAttribute("aria-invalid", message ? "true" : "false");
+      input.setAttribute("aria-describedby", errorId);
+    }
+    if (error) {
+      error.textContent = message || "";
+      error.hidden = !message;
+    }
+  }
+
+  function enhanceNameInput(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    input.maxLength = MAX_NAME_LENGTH;
+    input.setAttribute("spellcheck", "false");
+    input.setAttribute("autocapitalize", "words");
+    input.setAttribute("autocomplete", "nickname");
+    input.setAttribute("placeholder", input.getAttribute("placeholder") || "Nickname");
+    input.addEventListener("input", () => showNameError(inputId, ""), { passive: true });
+  }
+
+  function ensureProfileSafetyUi() {
+    enhanceNameInput("profileNameInput");
+    const input = document.getElementById("profileNameInput");
+    if (!input) return;
+
+    if (!document.getElementById("profileNameInputError")) showNameError("profileNameInput", "");
+
+    let rules = document.getElementById("profileSafeRules");
+    if (!rules) {
+      rules = document.createElement("div");
+      rules.id = "profileSafeRules";
+      rules.className = "profile-safe-rules";
+      input.insertAdjacentElement("afterend", rules);
+    }
+    rules.innerHTML = `
+      <strong>🛡️ ${v36T("profileSafeTitle")}</strong>
+      <span>${v36T("profileSafeText")}</span>
+      <small>${v36T("profileRulesShort")}</small>
+    `;
+  }
+
+  function ensureChampionSafetyUi() {
+    enhanceNameInput("championNameInput");
+    const input = document.getElementById("championNameInput");
+    if (!input) return;
+
+    if (!document.getElementById("championNameInputError")) showNameError("championNameInput", "");
+
+    let help = document.getElementById("championNameHelp");
+    if (!help) {
+      help = document.createElement("p");
+      help.id = "championNameHelp";
+      help.className = "profile-note champion-name-help";
+      input.insertAdjacentElement("afterend", help);
+    }
+    help.textContent = v36T("championNameHelp");
+  }
+
+  function ensureHowToNameSafetyRow() {
+    const grid = document.querySelector("#howToModal .howto-grid");
+    if (!grid) return;
+    let row = document.getElementById("howToNameSafety");
+    if (!row) {
+      row = document.createElement("div");
+      row.id = "howToNameSafety";
+      row.className = "howto-safety-row";
+      row.innerHTML = `<strong>🛡️</strong><span id="howToNameSafeText"></span>`;
+      grid.appendChild(row);
+    }
+    const text = document.getElementById("howToNameSafeText");
+    if (text) text.textContent = v36T("howToNameSafe");
+  }
+
+  function updateProfileBadges() {
+    const name = localStorage.getItem(NAME_KEY) || localStorage.getItem(LAST_NAME_KEY) || "";
+    const activeName = document.getElementById("profileCurrentName");
+    const activeWinnerName = document.getElementById("winnerActiveNameValue");
+    if (activeName) activeName.textContent = name || (typeof t === "function" ? t("profileNoName") : "No name");
+    if (activeWinnerName) activeWinnerName.textContent = name || (typeof t === "function" ? t("profileNoName") : "No name");
+
+    const button = document.getElementById("profileNameButton");
+    if (button) {
+      const emptyText = (typeof t === "function" ? t("profileButtonEmpty") : "👤 Player name");
+      const namedText = (typeof t === "function" ? t("profileButtonNamed") : "👤 Player: {name}");
+      button.innerHTML = name ? namedText.replace("{name}", name) : emptyText;
+      button.title = v36T("profileRulesShort");
+    }
+  }
+
+  function saveSafeNameToStorage(name) {
+    localStorage.setItem(NAME_KEY, name);
+    localStorage.setItem(LAST_NAME_KEY, name);
+    updateProfileBadges();
+  }
+
+  const previousShowProfileModal = window.showProfileNameModal;
+  window.showProfileNameModal = function showProfileNameModalV36() {
+    if (typeof previousShowProfileModal === "function") previousShowProfileModal();
+    ensureProfileSafetyUi();
+    updateProfileBadges();
+    showNameError("profileNameInput", "");
+  };
+
+  window.saveProfileNameFromModal = function saveProfileNameFromModalV36() {
+    const input = document.getElementById("profileNameInput");
+    const result = validatePlayerName(input ? input.value : "");
+    if (!result.ok) {
+      showNameError("profileNameInput", result.error);
+      if (input) {
+        input.value = result.name || input.value;
+        input.focus();
+      }
+      return;
+    }
+    saveSafeNameToStorage(result.name);
+    const dialog = document.getElementById("profileNameModal");
+    if (dialog && typeof dialog.close === "function") dialog.close();
+    else if (dialog) dialog.removeAttribute("open");
+    if (typeof messageBar !== "undefined" && messageBar) messageBar.textContent = v36T("profileSavedSafe", { name: result.name });
+  };
+
+  const previousSaveChampionWinner = window.saveChampionWinner;
+  window.saveChampionWinner = function saveChampionWinnerV36() {
+    const input = document.getElementById("championNameInput");
+    const result = validatePlayerName(input ? input.value : "");
+    if (!result.ok) {
+      showNameError("championNameInput", result.error);
+      if (input) {
+        input.value = result.name || input.value;
+        input.focus();
+      }
+      return;
+    }
+    if (input) input.value = result.name;
+    saveSafeNameToStorage(result.name);
+    if (typeof previousSaveChampionWinner === "function") previousSaveChampionWinner();
+  };
+
+  const previousShowWinnerBoard = window.showWinnerBoard;
+  window.showWinnerBoard = function showWinnerBoardV36() {
+    scrubStoredWinnerNames();
+    if (typeof previousShowWinnerBoard === "function") previousShowWinnerBoard();
+    ensureChampionSafetyUi();
+    updateProfileBadges();
+  };
+
+  const previousShowHowToModal = window.showHowToModal;
+  window.showHowToModal = function showHowToModalV36() {
+    ensureHowToNameSafetyRow();
+    if (typeof previousShowHowToModal === "function") previousShowHowToModal();
+  };
+
+  if (typeof applyLanguage === "function") {
+    const previousApplyLanguage = applyLanguage;
+    applyLanguage = function applyLanguageV36() {
+      previousApplyLanguage();
+      ensureHowToNameSafetyRow();
+      ensureProfileSafetyUi();
+      ensureChampionSafetyUi();
+      updateProfileBadges();
+    };
+    window.applyLanguage = applyLanguage;
+  }
+
+  function scrubStoredWinnerNames() {
+    try {
+      const winners = JSON.parse(localStorage.getItem(WINNERS_KEY) || "[]");
+      if (!Array.isArray(winners)) return;
+      let changed = false;
+      const scrubbed = winners.map(entry => {
+        const result = validatePlayerName(entry && entry.name ? entry.name : DEFAULT_SAFE_NAME);
+        if (!result.ok) changed = true;
+        return { ...entry, name: result.ok ? result.name : DEFAULT_SAFE_NAME };
+      });
+      if (changed) localStorage.setItem(WINNERS_KEY, JSON.stringify(scrubbed.slice(0, 10)));
+    } catch (error) {
+      // Beholder spillet i gang selv om localStorage skulle være blokkert.
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    ensureHowToNameSafetyRow();
+    ensureProfileSafetyUi();
+    ensureChampionSafetyUi();
+    updateProfileBadges();
+    scrubStoredWinnerNames();
+  });
+
+  setTimeout(() => {
+    ensureHowToNameSafetyRow();
+    updateProfileBadges();
+    scrubStoredWinnerNames();
+  }, 500);
+})();
+

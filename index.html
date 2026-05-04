@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Ragi Joy Maze Deluxe</title>
+  <title>Ragish kutty 28 single Joys Maze</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="menu-state">
@@ -13,7 +13,7 @@
   <main class="app">
     <section class="hero">
       <p class="eyebrow">DELUXE VERSION</p>
-      <h1>🎮 Ragish kutty 28 single Joys Maze 🚀</h1>
+      <h1>🎮 Ragish 28 Joys Maze 🚀</h1>
       <p class="fun-tagline">Arcade battle • ulike brett • online multiplayer • full joy 😄✨</p>
       <p id="subtitle" class="subtitle">Samle diamanter, ta power-ups, overlev fiendene og kom deg gjennom alle nivåene.</p>
 
@@ -64,6 +64,8 @@
     <section id="messageBar" class="message-bar" aria-live="polite"></section>
 
     <section class="action-row top-actions" aria-label="Hurtigvalg">
+      <button id="pauseButton" class="pause-action-button mini-action-button" type="button" onclick="togglePause()">⏸️ Pause</button>
+      <button id="menuFromPauseButton" class="menu-from-pause-button mini-action-button" type="button" onclick="returnToMainMenuFromPause()">🏠 Hovedmeny</button>
       <button id="soundButton" class="sound-button" type="button" onclick="toggleGameSound()">🔊 Arcade sound: ON</button>
       <button id="shopButton" class="shop-button mini-action-button" type="button" onclick="openPowerShop()">🛒 Power-butikk</button>
     </section>
@@ -101,9 +103,13 @@
             <button class="difficulty-btn" data-difficulty="hard" type="button" onclick="setDifficulty('hard')">🔥 Vanskelig</button>
             <button class="difficulty-btn" data-difficulty="extreme" type="button" onclick="setDifficulty('extreme')">💀 Ekstrem</button>
           </div>
-          <button id="howToButton" class="howto-button" type="button" onclick="showHowToModal()">❔ Hvordan spille</button>
-          <button id="customizeButton" class="customize-button" type="button" onclick="showCustomizeModal()">🎨 Velg figur, emoji og musikk</button>
-          <div class="mode-buttons">
+          <div id="menuUtilityGrid" class="menu-utility-grid">
+            <button id="howToButton" class="howto-button" type="button" onclick="showHowToModal()">❔ Hvordan spille</button>
+            <button id="customizeButton" class="customize-button" type="button" onclick="showCustomizeModal()">🎨 Velg figur, emoji og musikk</button>
+            <div id="profileButtonSlot" class="profile-button-slot"></div>
+            <div id="winnerButtonSlot" class="winner-button-slot"></div>
+          </div>
+          <div class="mode-buttons menu-mode-grid">
             <button id="startButton" onclick="startGame()">🚀 Spill mot data</button>
             <button id="friendModeButton" type="button" onclick="showFriendLobby()">🌍 Spill mot venn</button>
           </div>
@@ -200,6 +206,14 @@
       <div class="custom-section">
         <h3 id="customizeEnemyTitle">3. Fiender</h3>
         <label class="toggle-row"><input id="randomEnemyToggle" type="checkbox" onchange="toggleRandomEnemies(this.checked)" /> <span id="randomEnemyLabel">Random fiende-emoji på hvert brett 👾💀😈🤡</span></label>
+        <p id="enemyStyleLabel" class="custom-note">Velg fiende-stil / animasjon</p>
+        <div class="enemy-style-grid" id="enemyStyleGrid" aria-label="Fiende-stil">
+          <button type="button" data-enemy-style="monsters" onclick="setEnemyStyle('monsters')">👾 Monsters</button>
+          <button type="button" data-enemy-style="fire" onclick="setEnemyStyle('fire')">🔥 Fire</button>
+          <button type="button" data-enemy-style="ghosts" onclick="setEnemyStyle('ghosts')">👻 Ghost</button>
+          <button type="button" data-enemy-style="boss" onclick="setEnemyStyle('boss')">🧟 Boss</button>
+          <button type="button" data-enemy-style="animals" onclick="setEnemyStyle('animals')">🦖 Beast</button>
+        </div>
       </div>
 
       <div class="custom-section">
@@ -266,6 +280,36 @@
           <strong id="shopSlowTitle">🧊 Slow motion</strong>
           <p id="shopSlowDesc">Gjør fiendene tregere i 12 sekunder.</p>
           <button id="buySlowButton" type="button" onclick="buyShopItem('slow')">Kjøp 800</button>
+        </article>
+
+        <article class="shop-item shop-item-fun">
+          <strong id="shopBombTitle">💣 Diamantbombe</strong>
+          <p id="shopBombDesc">Sender alle fiender tilbake til start og gir bonuspoeng.</p>
+          <button id="buyBombButton" type="button" onclick="buyShopItem('bomb')">Kjøp 1500</button>
+        </article>
+
+        <article class="shop-item shop-item-fun">
+          <strong id="shopFreezeTitle">❄️ Freeze blast</strong>
+          <p id="shopFreezeDesc">Fryser fiendene i noen sekunder så du kan rømme.</p>
+          <button id="buyFreezeButton" type="button" onclick="buyShopItem('freeze')">Kjøp 1100</button>
+        </article>
+
+        <article class="shop-item shop-item-fun">
+          <strong id="shopMagnetTitle">🧲 Diamantmagnet</strong>
+          <p id="shopMagnetDesc">Suger inn diamanter rundt deg mens du beveger deg.</p>
+          <button id="buyMagnetButton" type="button" onclick="buyShopItem('magnet')">Kjøp 900</button>
+        </article>
+
+        <article class="shop-item shop-item-fun">
+          <strong id="shopDoubleTitle">⭐ Dobbel score</strong>
+          <p id="shopDoubleDesc">Alle poeng dobles i 20 sekunder.</p>
+          <button id="buyDoubleButton" type="button" onclick="buyShopItem('double')">Kjøp 1300</button>
+        </article>
+
+        <article class="shop-item shop-item-fun">
+          <strong id="shopTeleportTitle">🌀 Nødteleport</strong>
+          <p id="shopTeleportDesc">Flytter deg til et trygt tilfeldig sted på brettet.</p>
+          <button id="buyTeleportButton" type="button" onclick="buyShopItem('teleport')">Kjøp 700</button>
         </article>
 
         <article class="shop-item shop-item-turret">
