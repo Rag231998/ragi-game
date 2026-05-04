@@ -8164,11 +8164,11 @@ window.goToMainMenu = goToMainMenu;
     fun:'Moro', design:'Design', perf:'Ytelse', anon:'Vis som anonym', masked:'Vis maskert navn',
     experience:'Hvordan var spillet?', liked:'Hva likte du best?', improve:'Hva bør forbedres?', issue:'Lagg, feil eller noe irriterende?',
     suggest:'Forslag', suggestAll:'✨ Lag forslag for alle felt', send:'Send feedback', sending:'Sender ...', sent:'Takk! Feedback sendt ✅',
-    fail:'Kunne ikke sende akkurat nå. Kommentaren er lagret midlertidig i nettleseren og vises lokalt.', short:'Skriv litt mer i minst ett felt først.', wait:'Vent litt før du sender ny feedback.',
-    suggestLimit:'Forslagsgrensen er nådd. Du ser samme forslag videre.', suggestCounter:'forslag igjen',
+    fail:'Kommentar lagret her. Synk prøves automatisk.', short:'Skriv litt mer i minst ett felt først.', wait:'Vent litt før du sender ny feedback.',
+    suggestLimit:'10 forslag er brukt. Generatoren går nå i loop med trygge forslag.', suggestCounter:'forslag igjen',
     refresh:'Oppdater', all:'Alle', top:'5 stjerner', low:'Lav score', bugs:'Feil/lagg', empty:'Ingen kommentarer ennå. Bli første som legger igjen feedback.', anonName:'Anonym spiller', chars:'tegn'
   };
-  const en = {...no, title:'Feedback and comment wall', sub:'Latest 20 comments are shown publicly as speech bubbles. Names are anonymous or masked.', form:'Write feedback', wall:'Comment wall', wallSub:'Latest 20 by day, month and year', rating:'How good was the game?', score:'Website score', fun:'Fun', perf:'Performance', anon:'Show as anonymous', masked:'Show masked name', experience:'How was the game?', liked:'What did you like most?', improve:'What should be improved?', issue:'Lag, bugs or anything annoying?', suggest:'Suggest', suggestAll:'✨ Generate suggestions for all fields', send:'Send feedback', sending:'Sending ...', sent:'Thanks! Feedback sent ✅', fail:'Could not send right now. The comment is saved temporarily in this browser and shown locally.', short:'Write a little more in at least one field first.', wait:'Wait a little before sending again.', suggestLimit:'Suggestion limit reached. The same suggestion will be shown from now on.', suggestCounter:'suggestions left', refresh:'Refresh', all:'All', top:'5 stars', low:'Low score', bugs:'Bugs/lag', empty:'No comments yet. Be the first to leave feedback.', anonName:'Anonymous player', chars:'chars'};
+  const en = {...no, title:'Feedback and comment wall', sub:'Latest 20 comments are shown publicly as speech bubbles. Names are anonymous or masked.', form:'Write feedback', wall:'Comment wall', wallSub:'Latest 20 by day, month and year', rating:'How good was the game?', score:'Website score', fun:'Fun', perf:'Performance', anon:'Show as anonymous', masked:'Show masked name', experience:'How was the game?', liked:'What did you like most?', improve:'What should be improved?', issue:'Lag, bugs or anything annoying?', suggest:'Suggest', suggestAll:'✨ Generate suggestions for all fields', send:'Send feedback', sending:'Sending ...', sent:'Thanks! Feedback sent ✅', fail:'Could not send right now. The comment is saved temporarily in this browser and shown locally.', short:'Write a little more in at least one field first.', wait:'Wait a little before sending again.', suggestLimit:'10 suggestions used. The generator now loops safe suggestions.', suggestCounter:'suggestions left', refresh:'Refresh', all:'All', top:'5 stars', low:'Low score', bugs:'Bugs/lag', empty:'No comments yet. Be the first to leave feedback.', anonName:'Anonymous player', chars:'chars'};
   function L(){ try { return currentLanguage === 'en' ? en : no; } catch(_) { return no; } }
   function clean(v, max=240){ return String(v||'').replace(/[<>]/g,'').replace(/\s+/g,' ').trim().slice(0,max); }
   function calcFeedbackScore(){ return Math.round(Math.max(0, Math.min(100, stars*10 + fun*1.7 + design*1.6 + perf*1.7))); }
@@ -8222,9 +8222,9 @@ window.goToMainMenu = goToMainMenu;
     return stars>=5 ? great : stars>=4 ? ok : low;
   }
   function nextSuggestionPack(){
-    if (suggestUses >= SUGGEST_LIMIT && lastSuggestionPack) return lastSuggestionPack;
     const list = suggestionVariants();
-    const pack = list[suggestUses % list.length] || list[0];
+    const index = list.length ? (suggestUses % list.length) : 0;
+    const pack = list[index] || list[0] || {};
     lastSuggestionPack = pack;
     suggestUses += 1;
     updateSuggestUi();
@@ -8235,7 +8235,7 @@ window.goToMainMenu = goToMainMenu;
     const t = L();
     const all = $('v47SuggestAll');
     if (all) {
-      all.textContent = left > 0 ? `${t.suggestAll} · ${left} ${t.suggestCounter}` : `${t.suggestAll} · 0`;
+      all.textContent = left > 0 ? `${t.suggestAll} · ${left} ${t.suggestCounter}` : `${t.suggestAll} · LOOP`;
       all.classList.toggle('limit-reached', left <= 0);
     }
     document.querySelectorAll('[data-v47-suggest]').forEach(btn => btn.classList.toggle('limit-reached', left <= 0));
@@ -8253,9 +8253,19 @@ window.goToMainMenu = goToMainMenu;
 
   function payload(){ const p={}; Object.keys(MAX).forEach(k=>p[k]=clean($('v47_'+k)?.value,MAX[k])); if(Object.values(p).join('').length<8) return null; let mode='computer'; try{ mode=onlineMode?'friend':'computer'; }catch(_){} return { id:'fb_'+Date.now()+'_'+Math.random().toString(36).slice(2,8), createdAt:Date.now(), dateKey:new Date().toISOString().slice(0,10), maskedName:publicName(), stars, fun, design, performance:perf, totalScore:calcFeedbackScore(), ...p, game:{ mode, level:Number(typeof levelIndex!=='undefined'?levelIndex+1:1)||1, score:Number(typeof score!=='undefined'?score:0)||0, difficulty:String(typeof selectedDifficulty!=='undefined'?selectedDifficulty:'normal'), language:String(typeof currentLanguage!=='undefined'?currentLanguage:'no') }, public:true }; }
   function localSave(p){ try{ const a=JSON.parse(localStorage.getItem(LOCAL_KEY)||'[]'); a.push(p); localStorage.setItem(LOCAL_KEY,JSON.stringify(a.slice(-LIMIT))); }catch(_){} }
-  function localRead(){ try{ const a=JSON.parse(localStorage.getItem(LOCAL_KEY)||'[]'); return Array.isArray(a)?a:[]; }catch(_){return [];} }
+  function localRead(){ try{ const cutoff=Date.now()-7*24*60*60*1000; const a=JSON.parse(localStorage.getItem(LOCAL_KEY)||'[]'); const list=Array.isArray(a)?a.filter(x=>Number(x.createdAt||0)>=cutoff):[]; localStorage.setItem(LOCAL_KEY,JSON.stringify(list.slice(-LIMIT))); return list; }catch(_){return [];} }
   async function writeRemote(p){ if(typeof restPut==='function') return restPut(`${PATH}/${p.id}`,p); const u=dbUrl(); if(!u) throw new Error('No database url'); const r=await fetch(`${u}/${PATH}/${p.id}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)}); if(!r.ok) throw new Error('write '+r.status); }
-  async function readRemote(){ const u=dbUrl(); if(!u) return []; const r=await fetch(`${u}/${PATH}.json?orderBy=%22createdAt%22&limitToLast=${LIMIT}`,{cache:'no-store'}); if(!r.ok) throw new Error('read '+r.status); const d=await r.json(); return d?Object.values(d).filter(Boolean):[]; }
+  async function readRemote(){
+    const u=dbUrl();
+    if(!u) return [];
+    const r=await fetch(`${u}/${PATH}.json?orderBy=%22createdAt%22&limitToLast=80`,{cache:'no-store'});
+    if(!r.ok) throw new Error('read '+r.status);
+    const d=await r.json();
+    const cutoff=Date.now()-7*24*60*60*1000;
+    const arr=d?Object.values(d).filter(Boolean):[];
+    arr.forEach(x=>{ if(x && x.id && Number(x.createdAt||0) < cutoff && typeof restDelete==='function') restDelete(`${PATH}/${x.id}`).catch(()=>{}); });
+    return arr.filter(x=>Number(x.createdAt||0) >= cutoff);
+  }
 
   window.sendPublicFeedback = async function(){ ensure(); const last=Number(localStorage.getItem(LAST_SEND_KEY)||0); if(Date.now()-last<25000){ $('v47Status').textContent=L().wait; return; } const p=payload(); if(!p){ $('v47Status').textContent=L().short; return; } $('v47Send').disabled=true; $('v47Status').textContent=L().sending; try{ await writeRemote(p); localStorage.setItem(LAST_SEND_KEY,String(Date.now())); $('v47Status').textContent=L().sent; }catch(e){ console.warn(e); $('v47Status').textContent=L().fail; } finally { localSave(p); cache=[p,...cache.filter(x=>x.id!==p.id)].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,LIMIT); renderWall(); Object.keys(MAX).forEach(k=>{ const e=$('v47_'+k); if(e) e.value=''; count(k); }); $('v47Send').disabled=false; try{spawnCenterBurst('💬 TAKK!');}catch(_){} setTimeout(loadPublicFeedback,800); } };
   window.loadPublicFeedback = async function(){ ensure(); try{ const remote=await readRemote(); const merged=[...remote,...localRead()]; const seen=new Set(); cache=merged.filter(x=>x&&x.id&&!seen.has(x.id)&&seen.add(x.id)).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,LIMIT); }catch(e){ console.warn(e); cache=localRead().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,LIMIT); } renderWall(); };
@@ -8267,4 +8277,331 @@ window.goToMainMenu = goToMainMenu;
 
   const oldApply = window.applyLanguage || globalThis.applyLanguage; if(typeof oldApply==='function'){ window.applyLanguage=globalThis.applyLanguage=function(){ const r=oldApply.apply(this,arguments); setTimeout(()=>{ensure();text();},0); return r; }; }
   document.addEventListener('DOMContentLoaded',()=>{ensure(); setTimeout(loadPublicFeedback,400);}); setTimeout(()=>{ensure(); loadPublicFeedback();},650);
+})();
+
+
+/* --------------------------------------------------------------------------
+   V49: Smart laser restore, random portal restore, active purchase HUD + sync polish
+   -------------------------------------------------------------------------- */
+(function v49SmartLasersRandomPortalAndHud(){
+  if (window.__v49SmartLasersRandomPortalAndHud) return;
+  window.__v49SmartLasersRandomPortalAndHud = true;
+
+  const SMART_COST_ONE = 1450;
+  const SMART_COST_THREE = 3800;
+  const SMART_LASER_MS = 45000;
+  const MANUAL_LASER_MS = 45000;
+  const HUD_TICK_MS = 500;
+  let hudTimer = null;
+
+  Object.assign(translations.no, {
+    shopSmartTurretTitle: '🤖 Smart laser',
+    shopSmartTurretDesc: 'Systemet velger gode ruter automatisk. Varer lenger enn vanlig laser.',
+    shopSmartTurretOne: '🤖 Kjøp smart laser',
+    shopSmartTurretThree: '🤖 Kjøp 3 smarte',
+    shopSmartTurretPlaced: '🤖 Smart laser plassert automatisk!',
+    shopSmartTurretPlacedMany: '🤖 Smarte lasere plassert automatisk:',
+    shopSmartNoSpot: 'Fant ikke en god ledig rute for smart laser akkurat nå.',
+    activeToolsTitle: 'Aktivt utstyr',
+    activeShield: 'Skjold klart',
+    activeSlow: 'Slow',
+    activeFreeze: 'Freeze',
+    activeMagnet: 'Magnet',
+    activeDouble: '2x score',
+    activeLasers: 'Laser',
+    activeInventory: 'Klar til plassering',
+    portalRandomOpen: '🌀 Portalen åpnet på et tilfeldig trygt sted!'
+  });
+  Object.assign(translations.en, {
+    shopSmartTurretTitle: '🤖 Smart laser',
+    shopSmartTurretDesc: 'The system chooses good tiles automatically. Lasts longer than normal lasers.',
+    shopSmartTurretOne: '🤖 Buy smart laser',
+    shopSmartTurretThree: '🤖 Buy 3 smart',
+    shopSmartTurretPlaced: '🤖 Smart laser placed automatically!',
+    shopSmartTurretPlacedMany: '🤖 Smart lasers placed automatically:',
+    shopSmartNoSpot: 'No good free tile for smart laser right now.',
+    activeToolsTitle: 'Active gear',
+    activeShield: 'Shield ready',
+    activeSlow: 'Slow',
+    activeFreeze: 'Freeze',
+    activeMagnet: 'Magnet',
+    activeDouble: '2x score',
+    activeLasers: 'Laser',
+    activeInventory: 'Ready to place',
+    portalRandomOpen: '🌀 Portal opened in a random safe spot!'
+  });
+  for (const language of languageOptions) {
+    translations[language.code] = translations[language.code] || { ...translations.en };
+    Object.keys(translations.en).forEach(key => {
+      if ((key.startsWith('shopSmart') || key.startsWith('active') || key === 'portalRandomOpen') && !translations[language.code][key]) {
+        translations[language.code][key] = translations.en[key];
+      }
+    });
+  }
+
+  function timeLeft(until) {
+    return Math.max(0, Math.ceil((Number(until || 0) - Date.now()) / 1000));
+  }
+
+  function ensureSmartShopButtons() {
+    if (document.getElementById('buySmartTurretButton')) return;
+    const turretArticle = document.querySelector('.shop-item-turret');
+    if (!turretArticle) return;
+    const smartBox = document.createElement('div');
+    smartBox.className = 'v49-smart-laser-box';
+    smartBox.innerHTML = `
+      <hr class="v49-shop-divider">
+      <strong id="shopSmartTurretTitle">🤖 Smart laser</strong>
+      <p id="shopSmartTurretDesc">Systemet velger gode ruter automatisk.</p>
+      <button id="buySmartTurretButton" class="v49-smart-button" type="button" onclick="buySmartLaser(1)">🤖 Smart laser ${SMART_COST_ONE}</button>
+      <button id="buySmartTurretPackButton" class="v49-smart-button v49-smart-pack" type="button" onclick="buySmartLaser(3)">🤖 3 smarte ${SMART_COST_THREE}</button>
+    `;
+    turretArticle.appendChild(smartBox);
+  }
+
+  function updateSmartShopButtons() {
+    ensureSmartShopButtons();
+    const one = document.getElementById('buySmartTurretButton');
+    const three = document.getElementById('buySmartTurretPackButton');
+    const notSingle = Boolean(onlineMode) || !gameRunning;
+    if (one) {
+      one.textContent = `${t('shopSmartTurretOne')} ${SMART_COST_ONE}`;
+      one.disabled = notSingle || score < SMART_COST_ONE;
+    }
+    if (three) {
+      three.textContent = `${t('shopSmartTurretThree')} ${SMART_COST_THREE}`;
+      three.disabled = notSingle || score < SMART_COST_THREE;
+    }
+    const title = document.getElementById('shopSmartTurretTitle');
+    const desc = document.getElementById('shopSmartTurretDesc');
+    if (title) title.textContent = t('shopSmartTurretTitle');
+    if (desc) desc.textContent = t('shopSmartTurretDesc');
+  }
+
+  function tileOpenForSmartLaser(x, y) {
+    if (!map[y] || map[y][x] === undefined) return false;
+    if (map[y][x] !== TILE.EMPTY) return false;
+    if (player.x === x && player.y === y) return false;
+    if (remotePlayer && remotePlayer.x === x && remotePlayer.y === y) return false;
+    if (enemies.some(enemy => enemy.x === x && enemy.y === y)) return false;
+    if (v23Turrets.some(turret => turret.x === x && turret.y === y)) return false;
+    return true;
+  }
+
+  function smartLaserScore(x, y) {
+    const width = map[0]?.length || 13;
+    const height = map.length || 11;
+    const center = Math.abs(x - width / 2) + Math.abs(y - height / 2);
+    const enemyNear = enemies.reduce((best, enemy) => Math.min(best, Math.abs(enemy.x - x) + Math.abs(enemy.y - y)), 99);
+    let corridors = 0;
+    [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy]) => {
+      const tx = x + dx, ty = y + dy;
+      if (map[ty] && map[ty][tx] !== undefined && map[ty][tx] !== TILE.WALL) corridors++;
+    });
+    let diamondsNearby = 0;
+    for (let yy = Math.max(1, y - 3); yy <= Math.min(height - 2, y + 3); yy++) {
+      for (let xx = Math.max(1, x - 3); xx <= Math.min(width - 2, x + 3); xx++) {
+        if (map[yy][xx] === TILE.DOT) diamondsNearby++;
+      }
+    }
+    return corridors * 18 + diamondsNearby * 2 + Math.max(0, 14 - center) + Math.max(0, 10 - enemyNear) * 3;
+  }
+
+  function bestSmartLaserTile(blocked = []) {
+    const blockedKey = new Set(blocked.map(p => `${p.x},${p.y}`));
+    const candidates = [];
+    for (let y = 1; y < map.length - 1; y++) {
+      for (let x = 1; x < map[y].length - 1; x++) {
+        if (blockedKey.has(`${x},${y}`)) continue;
+        if (!tileOpenForSmartLaser(x, y)) continue;
+        candidates.push({ x, y, score: smartLaserScore(x, y) + Math.random() * 4 });
+      }
+    }
+    candidates.sort((a, b) => b.score - a.score);
+    return candidates[0] || null;
+  }
+
+  function addSmartTurretAt(x, y) {
+    v23Turrets.push({
+      id: v23TurretId++,
+      x,
+      y,
+      expiresAt: Date.now() + SMART_LASER_MS,
+      lastShotAt: 0,
+      smart: true
+    });
+    spawnPop('🤖', x, y);
+  }
+
+  window.buySmartLaser = function buySmartLaser(count = 1) {
+    if (onlineMode || !gameRunning) return;
+    count = Number(count) === 3 ? 3 : 1;
+    const cost = count === 3 ? SMART_COST_THREE : SMART_COST_ONE;
+    if (score < cost) {
+      if (messageBar) messageBar.textContent = t('shopNotEnough');
+      playSfx('lose');
+      return;
+    }
+    const placed = [];
+    for (let i = 0; i < count; i++) {
+      const pos = bestSmartLaserTile(placed);
+      if (!pos) break;
+      placed.push(pos);
+      addSmartTurretAt(pos.x, pos.y);
+    }
+    if (!placed.length) {
+      if (messageBar) messageBar.textContent = t('shopSmartNoSpot');
+      playSfx('lose');
+      return;
+    }
+    score -= Math.round(cost * (placed.length / count));
+    v23StartTurretLoop();
+    spawnCenterBurst(count === 3 ? `🤖 x${placed.length}` : '🤖 LASER');
+    if (messageBar) messageBar.textContent = placed.length > 1 ? `${t('shopSmartTurretPlacedMany')} ${placed.length}` : t('shopSmartTurretPlaced');
+    playSfx('power');
+    drawGame();
+    v23UpdateShopUi();
+    updatePowerHud();
+  };
+
+  const oldPlaceTurretAt = v23PlaceTurretAt;
+  v23PlaceTurretAt = function v49PlaceTurretAt(x, y) {
+    const beforeIds = new Set(v23Turrets.map(turret => turret.id));
+    const result = oldPlaceTurretAt.apply(this, arguments);
+    if (result) {
+      const now = Date.now();
+      v23Turrets.forEach(turret => {
+        if (!beforeIds.has(turret.id)) turret.expiresAt = now + MANUAL_LASER_MS;
+      });
+      updatePowerHud();
+    }
+    return result;
+  };
+  window.v23PlaceTurretAt = v23PlaceTurretAt;
+
+  function bestRandomPortalTile() {
+    const candidates = [];
+    const fallback = [];
+    for (let y = 1; y < map.length - 1; y++) {
+      for (let x = 1; x < map[y].length - 1; x++) {
+        if (map[y][x] === TILE.WALL || map[y][x] === TILE.PORTAL) continue;
+        if (player.x === x && player.y === y) continue;
+        if (v23Turrets && v23Turrets.some(t => t.x === x && t.y === y)) continue;
+        const enemyDistance = enemies.reduce((best, enemy) => Math.min(best, Math.abs(enemy.x - x) + Math.abs(enemy.y - y)), 99);
+        const playerDistance = Math.abs(player.x - x) + Math.abs(player.y - y);
+        const item = { x, y, score: enemyDistance * 4 + playerDistance + Math.random() * 10 };
+        if (map[y][x] === TILE.EMPTY && enemyDistance >= 4 && playerDistance >= 3) candidates.push(item);
+        else if (map[y][x] !== TILE.WALL && enemyDistance >= 2) fallback.push(item);
+      }
+    }
+    const list = candidates.length ? candidates : fallback;
+    list.sort((a, b) => b.score - a.score);
+    return list[Math.floor(Math.random() * Math.min(8, list.length))] || list[0] || { x: 6, y: 5 };
+  }
+
+  openPortal = function v49OpenPortalRandom() {
+    portalOpen = true;
+    for (let y = 0; y < map.length; y++) {
+      for (let x = 0; x < map[y].length; x++) {
+        if (map[y][x] === TILE.PORTAL) map[y][x] = TILE.EMPTY;
+      }
+    }
+    const pos = bestRandomPortalTile();
+    if (map[pos.y] && map[pos.y][pos.x] !== undefined) map[pos.y][pos.x] = TILE.PORTAL;
+    if (messageBar) messageBar.textContent = t('portalRandomOpen');
+    spawnCenterBurst('🌀 PORTAL!');
+    spawnPop('🌀', pos.x, pos.y);
+    playSfx('portal');
+    drawGame();
+  };
+  window.openPortal = openPortal;
+
+  function ensurePowerHud() {
+    let hud = document.getElementById('v49PowerHud');
+    if (hud) return hud;
+    const wrapper = document.getElementById('game-wrapper');
+    if (!wrapper) return null;
+    hud = document.createElement('div');
+    hud.id = 'v49PowerHud';
+    hud.className = 'v49-power-hud hidden';
+    wrapper.appendChild(hud);
+    return hud;
+  }
+
+  function pill(icon, label, value) {
+    return `<span class="v49-tool-pill"><b>${icon}</b><span>${label}</span>${value ? `<em>${value}</em>` : ''}</span>`;
+  }
+
+  function updatePowerHud() {
+    const hud = ensurePowerHud();
+    if (!hud) return;
+    const items = [];
+    if (!onlineMode && gameRunning) {
+      if (shield) items.push(pill('🛡️', t('activeShield'), ''));
+      const slowLeft = timeLeft(v23SlowUntil);
+      const freezeLeft = typeof v30FreezeUntil !== 'undefined' ? timeLeft(v30FreezeUntil) : 0;
+      const magnetLeft = typeof v30MagnetUntil !== 'undefined' ? timeLeft(v30MagnetUntil) : 0;
+      const doubleLeft = typeof v30DoubleUntil !== 'undefined' ? timeLeft(v30DoubleUntil) : 0;
+      if (slowLeft) items.push(pill('🧊', t('activeSlow'), `${slowLeft}s`));
+      if (freezeLeft) items.push(pill('❄️', t('activeFreeze'), `${freezeLeft}s`));
+      if (magnetLeft) items.push(pill('🧲', t('activeMagnet'), `${magnetLeft}s`));
+      if (doubleLeft) items.push(pill('⭐', t('activeDouble'), `${doubleLeft}s`));
+      const activeLasers = v23Turrets.filter(turret => Date.now() < turret.expiresAt);
+      if (activeLasers.length) {
+        const maxLeft = Math.max(...activeLasers.map(turret => timeLeft(turret.expiresAt)));
+        items.push(pill('🔫', `${t('activeLasers')} x${activeLasers.length}`, `${maxLeft}s`));
+      }
+      if (v23TurretInventory > 0) items.push(pill('🎯', `${t('activeInventory')} x${v23TurretInventory}`, ''));
+    }
+    hud.classList.toggle('hidden', items.length === 0);
+    hud.innerHTML = items.length ? `<strong>${t('activeToolsTitle')}</strong><div>${items.join('')}</div>` : '';
+  }
+  window.updatePowerHud = updatePowerHud;
+
+  const oldUpdateShopUi = v23UpdateShopUi;
+  v23UpdateShopUi = function v49UpdateShopUi() {
+    oldUpdateShopUi.apply(this, arguments);
+    updateSmartShopButtons();
+    updatePowerHud();
+  };
+  window.v23UpdateShopUi = v23UpdateShopUi;
+
+  const oldDrawGame = drawGame;
+  drawGame = function v49DrawGame() {
+    oldDrawGame.apply(this, arguments);
+    updatePowerHud();
+  };
+  window.drawGame = drawGame;
+
+  const oldClearLevelTools = v23ClearLevelTools;
+  v23ClearLevelTools = function v49ClearLevelTools() {
+    oldClearLevelTools.apply(this, arguments);
+    updatePowerHud();
+  };
+  window.v23ClearLevelTools = v23ClearLevelTools;
+
+  const oldResetShopRun = v23ResetShopRun;
+  v23ResetShopRun = function v49ResetShopRun() {
+    oldResetShopRun.apply(this, arguments);
+    updatePowerHud();
+  };
+  window.v23ResetShopRun = v23ResetShopRun;
+
+  function startHudTimer() {
+    if (hudTimer) clearInterval(hudTimer);
+    hudTimer = setInterval(updatePowerHud, HUD_TICK_MS);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    ensureSmartShopButtons();
+    updateSmartShopButtons();
+    ensurePowerHud();
+    startHudTimer();
+  });
+  setTimeout(() => {
+    ensureSmartShopButtons();
+    updateSmartShopButtons();
+    ensurePowerHud();
+    startHudTimer();
+  }, 500);
 })();

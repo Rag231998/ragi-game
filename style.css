@@ -4465,3 +4465,131 @@ body:not(.paused-state) #endRunButton { display: none !important; }
 .v47-ranges{gap:6px!important;margin:6px 0 8px!important}.v47-ranges label{grid-template-columns:82px 1fr!important;gap:8px!important;font-size:.84rem!important}.v47-name{grid-template-columns:1fr 1fr!important;gap:7px!important;margin:8px 0!important}.v47-name label{padding:8px!important;font-size:.82rem!important}.v47-suggest-all{min-height:38px!important;font-size:.86rem!important}.v47-fields{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;margin-top:9px!important;min-height:0!important}.v47-field{padding:9px!important;border-radius:16px!important}.v47-field>div{gap:8px!important;margin-bottom:5px!important}.v47-field label{font-size:.84rem!important}.v47-field button{padding:6px 8px!important;font-size:.78rem!important}.v47-field textarea{min-height:62px!important;max-height:86px!important;resize:none!important;padding:8px 9px!important;font-size:.84rem!important}.v47-field small{margin-top:3px!important;font-size:.73rem!important}.v47-actions{margin-top:9px!important;grid-template-columns:auto 1fr!important}#v47Send{min-height:40px!important;padding:0 16px!important}#v47Status{font-size:.83rem!important;line-height:1.25!important}.v47-wall-top{padding:14px 16px 8px!important}.v47-filters{padding:0 16px 10px!important}.v47-list{padding:0 16px 16px!important;gap:11px!important}.v47-bubble{padding:12px 13px!important}.v47-suggest-all.limit-reached,.v47-field button.limit-reached{filter:saturate(.65);opacity:.72}
 @media(max-height:740px) and (min-width:901px){.v47-head{padding:10px 18px 8px!important}.v47-head span{display:none!important}.v47-grid{padding:9px!important;gap:9px!important}.v47-form{padding:10px!important}.v47-stars button{width:32px!important;height:32px!important}.v47-field textarea{min-height:56px!important;max-height:72px!important}.v47-ranges{gap:4px!important}.v47-name label{padding:7px!important}.v47-suggest-all{min-height:34px!important}#v47Send{min-height:36px!important}.v47-actions{margin-top:7px!important}}
 @media(max-width:900px){.v47-feedback-modal{width:100vw!important;height:100dvh!important;border-radius:0!important}.v47-grid{grid-template-columns:1fr!important;overflow:auto!important}.v47-form{overflow:visible!important}.v47-fields{grid-template-columns:1fr!important}.v47-wall{min-height:520px!important}}
+
+
+/* --------------------------------------------------------------------------
+   V49 smart laser buttons, active gear HUD and larger feedback text
+   -------------------------------------------------------------------------- */
+.v49-smart-laser-box {
+  display: grid;
+  gap: 7px;
+  margin-top: 10px;
+}
+.v49-smart-laser-box p {
+  margin: 0 0 2px;
+}
+.v49-shop-divider {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid rgba(255,255,255,.16);
+  margin: 4px 0 2px;
+}
+.v49-smart-button {
+  background: linear-gradient(135deg, #b8ff93, #7cf8ff) !important;
+  color: #07111c !important;
+  box-shadow: 0 8px 18px rgba(34,211,255,.16);
+}
+.v49-smart-pack {
+  background: linear-gradient(135deg, #ffd23f, #ff7bd5) !important;
+}
+.v49-power-hud {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+  z-index: 60;
+  width: min(calc(100% - 18px), 520px);
+  padding: 8px 10px;
+  border-radius: 16px;
+  background: rgba(4, 9, 28, .76);
+  border: 1px solid rgba(124,248,255,.28);
+  box-shadow: 0 12px 32px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.10);
+  backdrop-filter: blur(12px);
+  pointer-events: none;
+}
+.v49-power-hud.hidden {
+  display: none !important;
+}
+.v49-power-hud > strong {
+  display: block;
+  margin: 0 0 6px;
+  color: #7cf8ff;
+  font-size: .78rem;
+  font-weight: 1000;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.v49-power-hud > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+.v49-tool-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 27px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.13);
+  font-weight: 900;
+  font-size: .82rem;
+  line-height: 1;
+}
+.v49-tool-pill b {
+  font-size: 1rem;
+}
+.v49-tool-pill em {
+  color: #fff3b0;
+  font-style: normal;
+  font-weight: 1000;
+}
+.v47-feedback-modal {
+  width: 100vw !important;
+  height: 100dvh !important;
+  border-radius: 0 !important;
+}
+@media (min-width: 901px) {
+  .v47-head h2 { font-size: clamp(1.65rem, 2.4vw, 2.45rem) !important; }
+  .v47-head span { font-size: 1rem !important; }
+  .v47-card-title h3, .v47-wall-top h3 { font-size: 1.22rem !important; }
+  #v47LiveScore { font-size: .95rem !important; }
+  .v47-label, .v47-field label, .v47-name label, .v47-ranges label { font-size: .98rem !important; }
+  .v47-field textarea { font-size: 1rem !important; min-height: 74px !important; max-height: 92px !important; }
+  .v47-field button { font-size: .9rem !important; }
+  .v47-suggest-all { font-size: .98rem !important; }
+  #v47Send { font-size: 1rem !important; }
+  #v47Status { font-size: .95rem !important; }
+  .v47-bubble-head strong { font-size: 1.08rem !important; }
+  .v47-bubble-head span { font-size: .96rem !important; }
+  .v47-bubble p { font-size: .98rem !important; line-height: 1.42 !important; }
+  .v47-bubble small { font-size: .88rem !important; }
+}
+@media (max-height: 780px) and (min-width: 901px) {
+  .v47-head { padding: 10px 20px 8px !important; }
+  .v47-grid { padding: 9px !important; gap: 9px !important; }
+  .v47-field textarea { min-height: 58px !important; max-height: 68px !important; font-size: .95rem !important; }
+  .v47-field { padding: 8px !important; }
+  .v47-fields { gap: 8px !important; margin-top: 8px !important; }
+  .v47-label { margin: 7px 0 4px !important; }
+  .v47-stars { margin-bottom: 6px !important; }
+  .v47-ranges { gap: 4px !important; margin: 4px 0 6px !important; }
+  .v47-name { margin: 6px 0 !important; }
+}
+@media (max-width: 640px) {
+  .v49-power-hud {
+    bottom: 5px;
+    padding: 6px 7px;
+  }
+  .v49-power-hud > strong {
+    display: none;
+  }
+  .v49-tool-pill {
+    font-size: .75rem;
+    min-height: 24px;
+    padding: 3px 7px;
+  }
+}
