@@ -4593,3 +4593,11 @@ body:not(.paused-state) #endRunButton { display: none !important; }
     padding: 3px 7px;
   }
 }
+
+
+/* V51: Hide technical score-sync status from players.
+   Sync still runs in the background. */
+#v50ScoreSyncStatus,
+.v50-score-sync-status {
+  display: none !important;
+}
