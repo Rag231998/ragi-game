@@ -13,7 +13,7 @@
   <main class="app">
     <section class="hero">
       <p class="eyebrow">DELUXE VERSION</p>
-      <h1>🎮 Ragish 28 single Joys Maze 🚀</h1>
+      <h1>🎮 Ragish kutty 28 single Joys Maze 🚀</h1>
       <p class="fun-tagline">Arcade battle • ulike brett • online multiplayer • full joy 😄✨</p>
       <p id="subtitle" class="subtitle">Samle diamanter, ta power-ups, overlev fiendene og kom deg gjennom alle nivåene.</p>
 
@@ -46,7 +46,6 @@
 
     <section class="action-row" aria-label="Lyd og stemning">
       <button id="soundButton" class="sound-button" type="button" onclick="toggleGameSound()">🔊 Arcade sound: ON</button>
-      <button id="shopButton" class="sound-button shop-open-button" type="button" onclick="showShopModal()">🛒 Power Shop</button>
     </section>
 
     <section id="game-wrapper">
@@ -153,47 +152,6 @@
       </div>
 
       <button id="saveCustomizeButton" class="friend-primary" type="button" onclick="closeCustomizeModal()">✅ Lagre valg</button>
-    </div>
-  </dialog>
-
-
-  <!-- Power Shop: bruker opptjent score som valuta. Bevisst lokal og enkel, så spillet ikke lagger. -->
-  <dialog id="shopModal" class="shop-modal" aria-labelledby="shopTitle">
-    <div class="shop-card">
-      <button class="friend-modal-close" type="button" onclick="closeShopModal()" aria-label="Lukk">✕</button>
-      <p class="friend-kicker">POWER SHOP</p>
-      <h2 id="shopTitle">Kjøp power-ups</h2>
-      <p id="shopSubtitle" class="friend-subtitle">Bruk score-poeng som mynter. Kjøp hjelp når du står fast.</p>
-
-      <div class="shop-wallet">
-        <span>💰 Tilgjengelig score</span>
-        <strong id="shopScore">0</strong>
-      </div>
-
-      <div class="shop-grid">
-        <button class="shop-item" type="button" onclick="buyShopItem('life')">
-          <span class="shop-emoji">❤️</span>
-          <strong>Ekstra liv</strong>
-          <small>Koster 500</small>
-        </button>
-        <button class="shop-item" type="button" onclick="buyShopItem('shield')">
-          <span class="shop-emoji">🛡️</span>
-          <strong>Skjold</strong>
-          <small>Koster 300</small>
-        </button>
-        <button class="shop-item" type="button" onclick="buyShopItem('slow')">
-          <span class="shop-emoji">🐢</span>
-          <strong>Slow enemies</strong>
-          <small>Koster 450</small>
-        </button>
-        <button class="shop-item" type="button" onclick="buyShopItem('combo')">
-          <span class="shop-emoji">🔥</span>
-          <strong>Combo boost</strong>
-          <small>Koster 350</small>
-        </button>
-      </div>
-
-      <p id="shopMessage" class="shop-message">Tips: kjøp skjold før vanskelige brett.</p>
     </div>
   </dialog>
 
