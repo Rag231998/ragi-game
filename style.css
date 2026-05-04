@@ -1244,3 +1244,1200 @@ body[data-theme="fiesta"] .wall { background: linear-gradient(135deg, #ffe449, #
     width: 100% !important;
   }
 }
+
+/* V18: End screen + highscore per difficulty */
+.end-modal-box {
+  max-width: min(430px, 92vw);
+}
+.end-summary {
+  margin: 8px auto 12px;
+  color: rgba(255,255,255,.82);
+  font-weight: 800;
+  line-height: 1.35;
+}
+.end-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px auto 16px;
+}
+.end-stats div {
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 16px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,.09);
+  box-shadow: inset 0 0 20px rgba(255,255,255,.05);
+}
+.end-stats span {
+  display: block;
+  font-size: 11px;
+  color: rgba(255,255,255,.65);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.end-stats strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 24px;
+  color: #fff;
+}
+.end-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.secondary-action {
+  background: rgba(255,255,255,.12) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  box-shadow: 0 0 18px rgba(0,0,0,.25) !important;
+}
+.difficulty-btn {
+  display: grid;
+  gap: 3px;
+  align-content: center;
+  min-height: 58px;
+}
+.difficulty-main {
+  display: block;
+  line-height: 1.05;
+}
+.difficulty-best {
+  display: block;
+  font-size: 10px;
+  line-height: 1.05;
+  opacity: .78;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+.difficulty-btn.active .difficulty-best {
+  opacity: .92;
+}
+@media (max-width: 520px) {
+  .end-actions { grid-template-columns: 1fr; }
+  .end-stats strong { font-size: 21px; }
+  .difficulty-btn { min-height: 54px; }
+  .difficulty-best { font-size: 9px; }
+}
+
+/* --------------------------------------------------------------------------
+   V19 MULTIPLAYER PERFORMANCE UI
+   Synlig duellstatus + smooth remote overlay. Tema/design beholdes.
+   -------------------------------------------------------------------------- */
+#onlineBattlePanel.online-battle-panel {
+  width: min(680px, 96vw);
+  margin: 8px auto 10px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  align-items: stretch;
+  padding: 8px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(0,255,204,.12), rgba(130,82,255,.16));
+  border: 1px solid rgba(0,255,204,.28);
+  box-shadow: 0 0 20px rgba(0,255,204,.12), inset 0 0 18px rgba(255,255,255,.05);
+  backdrop-filter: blur(10px);
+}
+
+#onlineBattlePanel.hidden { display: none !important; }
+
+.online-battle-card,
+.online-battle-mid {
+  min-height: 58px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,.09);
+  border: 1px solid rgba(255,255,255,.12);
+}
+
+.online-battle-card strong {
+  color: #fff;
+  font-size: clamp(20px, 4vw, 30px);
+  line-height: 1;
+  text-shadow: 0 0 14px rgba(255,255,255,.28);
+}
+
+.online-battle-card small,
+.online-battle-mid small {
+  color: rgba(255,255,255,.78);
+  font-weight: 800;
+  margin-top: 4px;
+}
+
+.online-battle-card .battle-label {
+  color: #00ffcc;
+  font-size: 11px;
+  letter-spacing: .14em;
+  font-weight: 950;
+}
+
+.online-battle-mid {
+  padding: 0 14px;
+  min-width: 128px;
+  color: #ffd84d;
+  text-align: center;
+  text-shadow: 0 0 12px rgba(255,216,77,.35);
+}
+
+.online-battle-panel.duel-pulse {
+  animation: duelPanelPulse .36s ease-out;
+}
+
+@keyframes duelPanelPulse {
+  0% { transform: scale(1); filter: brightness(1); }
+  45% { transform: scale(1.025); filter: brightness(1.25); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+.remote-player-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 8;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: clamp(18px, 4vw, 30px);
+  background: radial-gradient(circle at 35% 25%, #fff6, #2d8cff 38%, #0048ff 100%);
+  border: 2px solid #8fd4ff;
+  box-shadow: 0 0 18px rgba(80,170,255,.75), inset 0 0 12px rgba(255,255,255,.35);
+  pointer-events: none;
+  will-change: transform;
+  transition: transform 70ms linear, filter 120ms ease;
+  transform: translate3d(0,0,0);
+}
+
+.remote-player-overlay.hidden { display: none !important; }
+
+.remote-player-overlay.has-avatar {
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+/* Romkodefeltet skal aldri klemmes. */
+#roomInfo .friend-input-row {
+  grid-template-columns: minmax(260px, 1fr) auto !important;
+}
+
+#roomCodeDisplay.room-code-display {
+  min-width: 260px !important;
+  width: 100% !important;
+  font-size: clamp(24px, 5vw, 34px) !important;
+  letter-spacing: clamp(5px, 1.25vw, 9px) !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+}
+
+@media (max-width: 560px) {
+  #onlineBattlePanel.online-battle-panel {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    width: min(430px, 94vw);
+    margin: 6px auto 8px;
+  }
+
+  .online-battle-card,
+  .online-battle-mid {
+    min-height: 46px;
+  }
+
+  .online-battle-mid {
+    order: -1;
+    min-width: 0;
+  }
+
+  #roomInfo .friend-input-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  #roomCodeDisplay.room-code-display {
+    min-width: 0 !important;
+    height: 64px !important;
+    font-size: 30px !important;
+    letter-spacing: 8px !important;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   V21 GUI CLEANUP
+   Startmenyen viser bare relevant oppsummering. Spill-HUD/statuslinje vises
+   først når kampen faktisk er i gang. Ikke legg tilbake "Trykk Start Game".
+   -------------------------------------------------------------------------- */
+.pre-game-summary {
+  width: min(760px, 96vw);
+  margin: 12px auto 8px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.summary-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  padding: 11px 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.07));
+  border: 1px solid rgba(255,255,255,.18);
+  box-shadow: 0 14px 34px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.12);
+  backdrop-filter: blur(10px);
+}
+.summary-card::after {
+  content: "";
+  position: absolute;
+  inset: -40% auto auto -40%;
+  width: 90%;
+  height: 90%;
+  background: radial-gradient(circle, rgba(0,255,204,.20), transparent 60%);
+  transform: rotate(18deg);
+}
+.summary-card span,
+.summary-card strong {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+.summary-card span {
+  color: #bffcff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+.summary-card strong {
+  margin-top: 4px;
+  color: #fff;
+  font-size: clamp(17px, 2.2vw, 24px);
+  text-shadow: 0 0 14px rgba(255,216,77,.38);
+}
+body.menu-state #gameHud,
+body.menu-state #messageBar,
+body.menu-state #onlineBattlePanel {
+  display: none !important;
+}
+body.playing-state #preGameSummary {
+  display: none !important;
+}
+body.playing-state #gameHud {
+  display: flex !important;
+}
+body.playing-state #messageBar {
+  display: block !important;
+}
+body.menu-state .top-actions {
+  margin: 8px auto 10px;
+}
+.top-actions {
+  gap: 9px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.mini-action-button,
+.howto-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 14px;
+  color: #07111c;
+  background: linear-gradient(135deg, #ffffff, #b9f8ff);
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 0 16px rgba(0,255,204,.22), inset 0 -3px 0 rgba(0,0,0,.14);
+}
+.howto-button {
+  width: min(310px, 92%);
+  margin: 8px auto 0;
+  display: block;
+  background: linear-gradient(135deg, #77f7ff, #13a8ff);
+}
+body.menu-state .message-bar {
+  min-height: 0 !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+}
+body.menu-state .modal-box {
+  transform: translateY(-2px);
+}
+.howto-modal {
+  border: 0;
+  padding: 0;
+  max-width: min(620px, 94vw);
+  background: transparent;
+  color: white;
+}
+.howto-modal::backdrop {
+  background: rgba(2,5,18,.72);
+  backdrop-filter: blur(5px);
+}
+.howto-card {
+  position: relative;
+  border-radius: 24px;
+  padding: 24px;
+  background: linear-gradient(145deg, rgba(15,20,55,.96), rgba(10,11,24,.96));
+  border: 1px solid rgba(0,255,204,.25);
+  box-shadow: 0 26px 80px rgba(0,0,0,.58), 0 0 35px rgba(0,255,204,.16);
+}
+.howto-card h2 {
+  margin: 4px 0 14px;
+  color: #ffd84d;
+  font-size: clamp(26px, 5vw, 38px);
+  text-shadow: 0 0 18px rgba(255,157,0,.5);
+}
+.howto-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0 18px;
+  text-align: left;
+}
+.howto-grid div {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 10px;
+  align-items: center;
+  min-height: 64px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+}
+.howto-grid strong {
+  font-size: 26px;
+  text-align: center;
+  filter: drop-shadow(0 0 10px rgba(0,255,204,.45));
+}
+.howto-grid span {
+  color: #edf5ff;
+  font-weight: 750;
+  line-height: 1.25;
+}
+#howToOkButton {
+  border: 0;
+  border-radius: 999px;
+  padding: 11px 22px;
+  background: linear-gradient(135deg, #ffe25f, #ff9f13);
+  color: #140900;
+  font-weight: 1000;
+  box-shadow: 0 0 18px rgba(255,204,0,.45), inset 0 -4px 0 rgba(0,0,0,.16);
+  cursor: pointer;
+}
+@media (max-width: 680px) {
+  .pre-game-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    margin-top: 8px;
+  }
+  .summary-card {
+    padding: 8px 7px;
+    border-radius: 14px;
+  }
+  .summary-card span { font-size: 10px; }
+  .summary-card strong { font-size: 17px; }
+  .howto-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .howto-card { padding: 20px 14px; }
+  .mini-action-button,
+  .howto-button,
+  .sound-button { font-size: 13px; padding: 8px 12px; }
+}
+
+
+/* --------------------------------------------------------------------------
+   V22 GUI FIX
+   Startmenyen skal være ren: ingen duplikat av Hvordan spille, ingen tipslinje
+   som ligger over menyen, og ingen status/action-rad som stjeler fokus før start.
+   -------------------------------------------------------------------------- */
+body.menu-state .top-actions {
+  display: none !important;
+}
+
+body.menu-state .tips {
+  display: none !important;
+}
+
+body.menu-state #startScreen .modal-box {
+  width: min(420px, 92vw);
+  padding: 22px 22px 18px;
+}
+
+body.menu-state #game-wrapper {
+  margin-top: 10px;
+}
+
+body.menu-state .difficulty-panel {
+  margin: 14px auto 10px;
+}
+
+body.menu-state .mode-buttons {
+  margin-top: 10px;
+}
+
+body.menu-state .howto-button,
+body.menu-state .customize-button {
+  margin-top: 8px;
+}
+
+/* Når spillet kjører er status, lydknapp og tips tilgjengelig igjen. */
+body.playing-state .top-actions {
+  display: flex !important;
+}
+
+body.playing-state .tips {
+  display: block !important;
+}
+
+/* --------------------------------------------------------------------------
+   V23 POWER SHOP + LASER-TÅRN
+   Kun aktivt i Spill mot data. Multiplayer/online-koden er ikke koblet til
+   dette systemet, slik at Spill mot venn ikke påvirkes.
+   -------------------------------------------------------------------------- */
+.shop-button {
+  background: linear-gradient(135deg, #ffe25f, #ff8b13) !important;
+  box-shadow: 0 0 18px rgba(255,190,0,.35), inset 0 -4px 0 rgba(0,0,0,.18) !important;
+}
+
+body.online-mode-active #shopButton {
+  display: none !important;
+}
+
+.shop-modal {
+  border: 0;
+  padding: 0;
+  width: min(760px, 95vw);
+  max-height: min(92dvh, 760px);
+  color: white;
+  background: transparent;
+  overflow: visible;
+}
+
+.shop-modal::backdrop {
+  background: rgba(0, 0, 0, .72);
+  backdrop-filter: blur(8px);
+}
+
+.shop-card {
+  position: relative;
+  max-height: min(92dvh, 760px);
+  overflow-y: auto;
+  padding: 26px;
+  border-radius: 28px;
+  text-align: left;
+  background:
+    radial-gradient(circle at top left, rgba(255,216,77,.28), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(0,255,204,.22), transparent 32%),
+    linear-gradient(180deg, rgba(25,31,74,.98), rgba(10,11,28,.98));
+  border: 1px solid rgba(255,255,255,.18);
+  box-shadow: 0 30px 90px rgba(0,0,0,.70), 0 0 42px rgba(255,216,77,.16);
+  -webkit-overflow-scrolling: touch;
+}
+
+.shop-card h2 {
+  margin: 0 44px 8px 0;
+  color: #ffd84d;
+  font-size: clamp(30px, 6vw, 48px);
+  text-shadow: 0 0 18px rgba(255,157,0,.65);
+}
+
+.shop-subtitle,
+.shop-hint {
+  color: #dfe7ff;
+  line-height: 1.35;
+  font-weight: 750;
+}
+
+.shop-wallet,
+.shop-inventory {
+  display: inline-grid;
+  gap: 4px;
+  min-width: 145px;
+  margin: 8px 8px 14px 0;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.15);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+}
+
+.shop-wallet span,
+.shop-inventory span {
+  color: #bffcff;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.shop-wallet strong,
+.shop-inventory strong {
+  color: #fff;
+  font-size: 26px;
+  text-shadow: 0 0 14px rgba(0,255,204,.32);
+}
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.shop-item {
+  position: relative;
+  overflow: hidden;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.09);
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+}
+
+.shop-item::before {
+  content: "";
+  position: absolute;
+  inset: -45% auto auto -30%;
+  width: 110px;
+  height: 110px;
+  background: radial-gradient(circle, rgba(0,255,204,.22), transparent 62%);
+  pointer-events: none;
+}
+
+.shop-item strong,
+.shop-item p,
+.shop-item button {
+  position: relative;
+  z-index: 1;
+}
+
+.shop-item strong {
+  display: block;
+  color: #fff;
+  font-size: 18px;
+  text-shadow: 0 0 12px rgba(255,255,255,.20);
+}
+
+.shop-item p {
+  min-height: 45px;
+  margin: 8px 0 12px;
+  color: rgba(255,255,255,.78);
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.shop-item button,
+.shop-place-button {
+  width: 100%;
+  margin: 0;
+  padding: 11px 14px;
+  font-size: 15px;
+}
+
+.shop-item button:disabled,
+.shop-place-button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  filter: grayscale(.6);
+}
+
+.shop-place-button {
+  margin-top: 14px;
+  background: linear-gradient(135deg, #00ffcc, #25a7ff) !important;
+  box-shadow: 0 8px 0 rgba(0,77,95,.78), 0 0 20px rgba(0,255,204,.32) !important;
+}
+
+.turret-cell {
+  outline: 2px solid rgba(255,216,77,.95);
+  box-shadow: 0 0 18px rgba(255,216,77,.65), inset 0 0 14px rgba(255,255,255,.22) !important;
+}
+
+.turret-cell::before {
+  content: attr(data-turret);
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: calc(var(--cell-size) * .68);
+  filter: drop-shadow(0 0 8px #ffd84d);
+  z-index: 3;
+  animation: turretPulse .75s ease-in-out infinite alternate;
+}
+
+body.turret-placement-active #game {
+  cursor: crosshair;
+  box-shadow: 0 0 42px rgba(255,216,77,.38), 0 0 0 3px rgba(255,216,77,.25);
+}
+
+@keyframes turretPulse {
+  from { transform: scale(.92) rotate(-3deg); }
+  to { transform: scale(1.12) rotate(3deg); }
+}
+
+@media (max-width: 620px) {
+  .shop-card { padding: 22px 15px; }
+  .shop-grid { grid-template-columns: 1fr; gap: 9px; }
+  .shop-wallet, .shop-inventory { width: 100%; margin-right: 0; }
+  .shop-item p { min-height: auto; }
+}
+
+/* --------------------------------------------------------------------------
+   V25 SAFE FIX: lydkort på startmeny + bedre laserflyt/laser-animasjon.
+   Endrer ikke multiplayer-kjernen.
+   -------------------------------------------------------------------------- */
+.summary-card.summary-sound-card {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid rgba(255,255,255,.18);
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+.summary-card.summary-sound-card:hover,
+.summary-card.summary-sound-card:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 42px rgba(0,0,0,.30), 0 0 24px rgba(0,255,204,.30), inset 0 1px 0 rgba(255,255,255,.16);
+  outline: none;
+}
+.summary-card.summary-sound-card:active {
+  transform: translateY(1px) scale(.99);
+}
+.summary-card.summary-sound-card strong::after {
+  content: "  🎚️";
+  font-size: .72em;
+  opacity: .9;
+}
+.shop-pack-button {
+  margin-top: 8px !important;
+  background: linear-gradient(135deg, #ff5fe7, #ffd84d) !important;
+  box-shadow: 0 8px 0 rgba(103,44,0,.70), 0 0 18px rgba(255,95,231,.28) !important;
+}
+.laser-beam-effect {
+  position: absolute;
+  left: var(--laser-x, 0px);
+  top: var(--laser-y, 0px);
+  width: var(--laser-length, 80px);
+  height: 6px;
+  transform-origin: 0 50%;
+  transform: rotate(var(--laser-angle, 0deg));
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 12;
+  background: linear-gradient(90deg, rgba(255,255,255,.95), rgba(0,255,255,.95), rgba(255,55,210,.95));
+  box-shadow:
+    0 0 9px rgba(255,255,255,.95),
+    0 0 18px rgba(0,255,255,.85),
+    0 0 30px rgba(255,43,214,.55);
+  animation: laserBeamFlash .24s ease-out forwards;
+}
+.laser-beam-effect::before,
+.laser-beam-effect::after {
+  content: "";
+  position: absolute;
+  inset: -5px 0;
+  border-radius: inherit;
+  background: inherit;
+  filter: blur(9px);
+  opacity: .72;
+}
+.laser-impact-effect {
+  position: absolute;
+  left: var(--impact-x, 0px);
+  top: var(--impact-y, 0px);
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 13;
+  background: radial-gradient(circle, #fff 0 12%, #ffeb3b 13% 28%, #ff3bdc 29% 48%, transparent 50%);
+  box-shadow: 0 0 22px rgba(255,255,255,.95), 0 0 36px rgba(255,60,210,.75);
+  animation: laserImpactPop .32s ease-out forwards;
+}
+body.turret-placement-active #game::after {
+  content: "Klikk tom rute for laser-tårn";
+  position: absolute;
+  left: 50%;
+  top: -34px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  color: #07111c;
+  background: linear-gradient(135deg, #fff, #00ffcc);
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-weight: 900;
+  box-shadow: 0 0 18px rgba(0,255,204,.35);
+  z-index: 14;
+}
+@keyframes laserBeamFlash {
+  0% { opacity: 0; transform: rotate(var(--laser-angle, 0deg)) scaleX(.10); filter: brightness(1.8); }
+  38% { opacity: 1; transform: rotate(var(--laser-angle, 0deg)) scaleX(1.04); }
+  100% { opacity: 0; transform: rotate(var(--laser-angle, 0deg)) scaleX(1); filter: brightness(1); }
+}
+@keyframes laserImpactPop {
+  0% { opacity: 0; transform: scale(.35) rotate(0deg); }
+  45% { opacity: 1; transform: scale(1.35) rotate(18deg); }
+  100% { opacity: 0; transform: scale(.20) rotate(55deg); }
+}
+
+/* --------------------------------------------------------------------------
+   V26: Music hub + copyright/privacy UI + extended campaign polish
+-------------------------------------------------------------------------- */
+.music-hub {
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid rgba(0, 245, 255, .26);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(0, 245, 255, .10), rgba(255, 208, 52, .08));
+  box-shadow: inset 0 0 22px rgba(0, 0, 0, .18);
+}
+
+.music-upload {
+  width: 100%;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 14px;
+  color: #fff;
+  background: rgba(7, 13, 40, .72);
+  border: 1px solid rgba(255,255,255,.18);
+}
+
+.music-upload-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  font-weight: 900;
+  color: #ffe66d;
+  text-shadow: 0 0 10px rgba(255, 208, 52, .35);
+}
+
+.music-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.music-controls button,
+.music-hub button {
+  min-height: 40px;
+  border: 0;
+  border-radius: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  background: linear-gradient(180deg, #ffd84e, #ffaf1b);
+  box-shadow: 0 6px 0 #b86b00, 0 0 16px rgba(255, 208, 52, .28);
+}
+
+.volume-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 10px;
+  font-weight: 900;
+  color: #dffbff;
+}
+
+.volume-row input { width: 100%; }
+
+.music-playlist-info {
+  margin-top: 8px;
+  padding: 9px 10px;
+  border-radius: 13px;
+  font-size: .84rem;
+  line-height: 1.35;
+  color: #dffbff;
+  background: rgba(255, 255, 255, .08);
+}
+
+.legal-footer {
+  width: min(720px, 94vw);
+  margin: 12px auto 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255,255,255,.72);
+  font-size: .82rem;
+}
+
+.legal-footer button {
+  border: 1px solid rgba(0,245,255,.35);
+  color: #dffbff;
+  background: rgba(0, 245, 255, .10);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.about-modal,
+.about-modal::backdrop {
+  background: rgba(0,0,0,.55);
+}
+
+.about-card {
+  width: min(560px, 92vw);
+  padding: 24px;
+  border-radius: 24px;
+  border: 1px solid rgba(0,245,255,.28);
+  color: #fff;
+  background: linear-gradient(145deg, rgba(18, 28, 70, .97), rgba(8, 10, 30, .98));
+  box-shadow: 0 25px 80px rgba(0,0,0,.55), 0 0 30px rgba(0,245,255,.14);
+  position: relative;
+}
+
+.about-card h2 {
+  color: #ffd84e;
+  margin: 6px 0 12px;
+  font-size: clamp(1.45rem, 4.2vw, 2.1rem);
+}
+
+.about-copy p {
+  margin: 10px 0;
+  color: rgba(255,255,255,.86);
+  line-height: 1.45;
+}
+
+.privacy-banner {
+  position: fixed;
+  left: max(14px, env(safe-area-inset-left));
+  right: max(14px, env(safe-area-inset-right));
+  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 9999;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(0,245,255,.30);
+  background: rgba(9, 13, 38, .94);
+  box-shadow: 0 18px 60px rgba(0,0,0,.45), 0 0 25px rgba(0,245,255,.12);
+  color: #fff;
+  backdrop-filter: blur(14px);
+}
+
+.privacy-banner p { margin: 4px 0 0; color: rgba(255,255,255,.78); }
+
+.privacy-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.privacy-actions button {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 12px;
+  font-weight: 900;
+  cursor: pointer;
+  background: linear-gradient(180deg, #6ff3ff, #20c5ff);
+  color: #061329;
+}
+
+.privacy-actions button:nth-child(2) {
+  background: linear-gradient(180deg, #ffd84e, #ffad1f);
+}
+
+@media (max-width: 680px) {
+  .music-controls { grid-template-columns: 1fr; }
+  .privacy-banner { grid-template-columns: 1fr; }
+  .privacy-actions { justify-content: stretch; }
+  .privacy-actions button { flex: 1 1 auto; }
+  .legal-footer { flex-direction: column; gap: 6px; }
+}
+
+/* --------------------------------------------------------------------------
+   V27 MUSIC DOCK + PERSONVERN-FIX
+-------------------------------------------------------------------------- */
+.music-dock {
+  width: min(760px, 94vw);
+  margin: 8px auto 12px;
+  padding: 9px 11px;
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto minmax(150px, .55fr);
+  gap: 10px;
+  align-items: center;
+  border-radius: 22px;
+  border: 1px solid rgba(0,245,255,.30);
+  background: linear-gradient(135deg, rgba(16, 29, 72, .86), rgba(4, 11, 30, .82));
+  box-shadow: 0 14px 44px rgba(0,0,0,.26), 0 0 28px rgba(0,245,255,.14);
+  color: #effcff;
+  backdrop-filter: blur(14px);
+}
+
+body.menu-state .music-dock { display: none !important; }
+body.playing-state .music-dock { display: grid !important; }
+
+.music-dock-now {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 10px;
+}
+
+.music-dock-now span:not(.music-eq) {
+  display: block;
+  font-size: .72rem;
+  font-weight: 900;
+  color: #77f7ff;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.music-dock-now strong {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #fff;
+  font-size: .96rem;
+}
+
+.music-eq {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: end;
+  justify-content: center;
+  gap: 3px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #00f5ff, #ffcf33);
+  box-shadow: 0 0 18px rgba(0,245,255,.35);
+  padding: 7px;
+}
+
+.music-eq i {
+  width: 5px;
+  height: 10px;
+  border-radius: 4px;
+  background: #071329;
+  animation: eqBounce .72s infinite ease-in-out;
+}
+.music-eq i:nth-child(2) { animation-delay: .12s; height: 18px; }
+.music-eq i:nth-child(3) { animation-delay: .24s; height: 13px; }
+@keyframes eqBounce { 0%,100% { transform: scaleY(.55); } 50% { transform: scaleY(1.25); } }
+
+.music-dock-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.music-dock-controls button {
+  border: 0;
+  border-radius: 999px;
+  min-height: 38px;
+  padding: 0 12px;
+  font-weight: 1000;
+  cursor: pointer;
+  color: #07111c;
+  background: linear-gradient(180deg, #fff477, #ffab18);
+  box-shadow: 0 5px 0 #9f5b00, 0 0 18px rgba(255,206,44,.25);
+}
+
+#musicDockPlay {
+  min-width: 112px;
+  background: linear-gradient(180deg, #83f7ff, #15c2ff);
+  box-shadow: 0 5px 0 #0676a3, 0 0 18px rgba(0,245,255,.32);
+}
+
+.music-dock-volume {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 8px;
+  font-weight: 900;
+  font-size: .86rem;
+  color: #dffbff;
+}
+
+.music-dock-volume input { width: 100%; accent-color: #00f5ff; }
+
+.about-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.privacy-current-choice {
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,245,255,.24);
+  background: rgba(0,245,255,.08);
+  font-weight: 800;
+}
+
+.privacy-banner {
+  width: min(1120px, calc(100vw - 28px));
+  left: 50%;
+  right: auto;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  grid-template-columns: minmax(300px, 1fr) auto;
+  padding: 12px 14px;
+}
+
+.privacy-copy strong {
+  color: #ffdf57;
+  font-size: 1rem;
+  text-shadow: 0 0 13px rgba(255, 223, 87, .26);
+}
+
+.privacy-copy p {
+  margin: 4px 0 2px;
+  line-height: 1.28;
+}
+
+.privacy-copy small {
+  display: block;
+  color: #93fff1;
+  font-weight: 800;
+}
+
+.privacy-actions button {
+  min-height: 42px;
+  white-space: nowrap;
+  box-shadow: inset 0 -4px 0 rgba(0,0,0,.14), 0 0 16px rgba(0,245,255,.16);
+}
+
+@media (max-width: 760px) {
+  .music-dock {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 18px;
+  }
+  .music-dock-controls button { flex: 1 1 auto; }
+  #musicDockPlay { min-width: 0; }
+  .privacy-banner {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 18px;
+  }
+  .privacy-actions { display: grid; grid-template-columns: 1fr; }
+  .about-actions { justify-content: stretch; }
+  .about-actions button { flex: 1 1 auto; }
+}
+
+/* --------------------------------------------------------------------------
+   V28: Privacy banner must actually disappear after a choice.
+   The generic .hidden rule was overridden by the later .privacy-banner display grid.
+-------------------------------------------------------------------------- */
+.privacy-banner.hidden {
+  display: none !important;
+}
+
+body.privacy-choice-saved .privacy-banner:not(.force-open) {
+  display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   V29: Clean compact music dock
+   - Removes the long song title from the game screen so controls cannot overlap.
+   - Keeps only a clear animated music icon, play/pause, previous/next and volume.
+-------------------------------------------------------------------------- */
+.music-dock {
+  width: min(560px, 94vw) !important;
+  margin: 8px auto 14px !important;
+  grid-template-columns: 44px auto minmax(120px, 1fr) !important;
+  gap: 8px !important;
+  padding: 8px 10px !important;
+  overflow: hidden !important;
+}
+
+.music-dock-now {
+  justify-content: center !important;
+  min-width: 44px !important;
+}
+
+.music-dock-now > div {
+  display: none !important;
+}
+
+.music-eq {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 14px !important;
+}
+
+body.music-paused .music-eq,
+body.sound-off .music-eq {
+  filter: grayscale(.75);
+  opacity: .62;
+  animation: none !important;
+}
+
+body.music-paused .music-eq i,
+body.sound-off .music-eq i {
+  animation-play-state: paused !important;
+  transform: scaleY(.55);
+}
+
+.music-dock-controls {
+  gap: 6px !important;
+  min-width: 0 !important;
+  flex-wrap: nowrap !important;
+}
+
+.music-dock-controls button {
+  min-width: 42px !important;
+  min-height: 36px !important;
+  padding: 0 10px !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+#musicDockPlay {
+  min-width: 52px !important;
+}
+
+.music-dock-volume {
+  grid-template-columns: 28px minmax(80px, 1fr) !important;
+  gap: 7px !important;
+  font-size: 0 !important;
+  min-width: 0 !important;
+}
+
+.music-dock-volume::before {
+  content: "🔉";
+  font-size: 18px;
+  line-height: 1;
+}
+
+.music-dock-volume input {
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+/* Keep the small player visible during a finished match until user returns to main menu. */
+body.music-session-active:not(.menu-state) .music-dock {
+  display: grid !important;
+}
+
+@media (max-width: 640px) {
+  .music-dock {
+    width: min(430px, 94vw) !important;
+    grid-template-columns: 40px auto !important;
+    grid-template-areas:
+      "icon controls"
+      "volume volume";
+  }
+  .music-dock-now { grid-area: icon; }
+  .music-dock-controls { grid-area: controls; justify-content: stretch !important; }
+  .music-dock-controls button { flex: 1 1 0 !important; min-width: 0 !important; }
+  .music-dock-volume { grid-area: volume; grid-template-columns: 28px 1fr !important; }
+}

@@ -8,7 +8,7 @@
   <title>Ragi Joy Maze Deluxe</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body class="menu-state">
   <div class="party-layer" aria-hidden="true"><span>💎</span><span>⚡</span><span>🎉</span><span>🚀</span><span>👾</span><span>🌀</span></div>
   <main class="app">
     <section class="hero">
@@ -34,18 +34,56 @@
       </div>
     </section>
 
-    <section class="hud" aria-label="Spillstatus">
-      <div class="hud-card"><span>Score</span><strong id="score">0</strong></div>
-      <div class="hud-card"><span>Highscore</span><strong id="highscore">0</strong></div>
-      <div class="hud-card"><span>Level</span><strong id="level">1</strong></div>
-      <div class="hud-card"><span>Lives</span><strong id="lives">❤️❤️❤️</strong></div>
-      <div class="hud-card"><span>Combo</span><strong id="combo">x1</strong></div>
+    <section id="preGameSummary" class="pre-game-summary" aria-label="Klar for spill">
+      <div class="summary-card">
+        <span id="summaryBestLabel">🏆 Best</span>
+        <strong id="summaryBestScore">0</strong>
+      </div>
+      <div class="summary-card">
+        <span id="summaryDifficultyLabel">🎯 Vanskelighet</span>
+        <strong id="summaryDifficulty">Middels</strong>
+      </div>
+      <div class="summary-card">
+        <span id="summaryAvatarLabel">🎨 Figur</span>
+        <strong id="summaryAvatar">😄</strong>
+      </div>
+      <button id="summarySoundCard" class="summary-card summary-sound-card" type="button" onclick="toggleGameSound()" aria-label="Slå lyd av eller på">
+        <span id="summarySoundLabel">🔊 Lyd</span>
+        <strong id="summarySound">ON</strong>
+      </button>
     </section>
 
-    <section id="messageBar" class="message-bar">Trykk Start Game</section>
+    <section id="gameHud" class="hud" aria-label="Spillstatus">
+      <div class="hud-card"><span id="scoreLabel">Score</span><strong id="score">0</strong></div>
+      <div class="hud-card"><span id="highscoreLabel">Highscore</span><strong id="highscore">0</strong></div>
+      <div class="hud-card"><span id="levelLabel">Level</span><strong id="level">1</strong></div>
+      <div class="hud-card"><span id="livesLabel">Lives</span><strong id="lives">❤️❤️❤️</strong></div>
+      <div class="hud-card"><span id="comboLabel">Combo</span><strong id="combo">x1</strong></div>
+    </section>
 
-    <section class="action-row" aria-label="Lyd og stemning">
+    <section id="messageBar" class="message-bar" aria-live="polite"></section>
+
+    <section class="action-row top-actions" aria-label="Hurtigvalg">
       <button id="soundButton" class="sound-button" type="button" onclick="toggleGameSound()">🔊 Arcade sound: ON</button>
+      <button id="shopButton" class="shop-button mini-action-button" type="button" onclick="openPowerShop()">🛒 Power-butikk</button>
+    </section>
+
+    <section id="musicDock" class="music-dock" aria-label="Musikkspiller">
+      <div class="music-dock-now">
+        <span class="music-eq" aria-hidden="true"><i></i><i></i><i></i></span>
+        <div>
+          <span id="musicDockLabel">Musikk</span>
+          <strong id="musicDockTitle">Arcade beat</strong>
+        </div>
+      </div>
+      <div class="music-dock-controls">
+        <button id="musicDockPrev" type="button" onclick="previousTrackSmart()">⏮️</button>
+        <button id="musicDockPlay" type="button" onclick="toggleMusicPlayback()">⏸️ Pause</button>
+        <button id="musicDockNext" type="button" onclick="nextTrackSmart()">⏭️</button>
+      </div>
+      <label id="musicDockVolumeLabel" class="music-dock-volume">Volum
+        <input id="musicDockVolume" type="range" min="0" max="100" value="65" oninput="setMusicVolume(this.value)" />
+      </label>
     </section>
 
     <section id="game-wrapper">
@@ -63,6 +101,7 @@
             <button class="difficulty-btn" data-difficulty="hard" type="button" onclick="setDifficulty('hard')">🔥 Vanskelig</button>
             <button class="difficulty-btn" data-difficulty="extreme" type="button" onclick="setDifficulty('extreme')">💀 Ekstrem</button>
           </div>
+          <button id="howToButton" class="howto-button" type="button" onclick="showHowToModal()">❔ Hvordan spille</button>
           <button id="customizeButton" class="customize-button" type="button" onclick="showCustomizeModal()">🎨 Velg figur, emoji og musikk</button>
           <div class="mode-buttons">
             <button id="startButton" onclick="startGame()">🚀 Spill mot data</button>
@@ -79,11 +118,17 @@
       </div>
 
       <div id="endScreen" class="overlay hidden">
-        <div class="modal-box">
+        <div class="modal-box end-modal-box">
           <h2 id="endTitle">GAME OVER</h2>
-          <p>Score: <span id="finalScore">0</span></p>
-          <p>Highscore: <span id="finalHighscore">0</span></p>
-          <button id="restartButton" onclick="restartGame()">Restart</button>
+          <p id="endSummary" class="end-summary">Kampen er ferdig.</p>
+          <div class="end-stats">
+            <div><span>Score</span><strong id="finalScore">0</strong></div>
+            <div><span>Best</span><strong id="finalHighscore">0</strong></div>
+          </div>
+          <div class="end-actions">
+            <button id="restartButton" onclick="restartGame()">Restart</button>
+            <button id="mainMenuButton" class="secondary-action" type="button" onclick="goToMainMenu()">🏠 Hovedmeny</button>
+          </div>
         </div>
       </div>
     </section>
@@ -101,6 +146,24 @@
       <strong id="tipsTitle">Tips:</strong> <span id="tipsText">Trykk <kbd>P</kbd> for pause. Ta ⚡ og jakt på fiender for bonuspoeng.</span>
     </section>
   </main>
+
+  <!-- Enkel instruksjon som kan åpnes før start uten å rote til hovedmenyen. -->
+  <dialog id="howToModal" class="howto-modal" aria-labelledby="howToTitle">
+    <div class="howto-card">
+      <button class="friend-modal-close" type="button" onclick="closeHowToModal()" aria-label="Lukk">✕</button>
+      <p id="howToKicker" class="friend-kicker">QUICK GUIDE</p>
+      <h2 id="howToTitle">Slik spiller du</h2>
+      <div class="howto-grid">
+        <div><strong>💎</strong><span id="howToDiamonds">Samle alle diamantene.</span></div>
+        <div><strong>⚡</strong><span id="howToPower">Ta power-up og spis fiender for bonus.</span></div>
+        <div><strong>🛡️</strong><span id="howToShield">Skjold redder deg én gang.</span></div>
+        <div><strong>🌀</strong><span id="howToPortal">Portalen åpnes når brettet er tomt.</span></div>
+        <div><strong>🔥</strong><span id="howToCombo">Combo gir mer poeng.</span></div>
+        <div><strong>🌍</strong><span id="howToOnline">Multiplayer handler om å samle mer enn vennen din.</span></div>
+      </div>
+      <button id="howToOkButton" type="button" onclick="closeHowToModal()">Skjønner ✅</button>
+    </div>
+  </dialog>
 
   <!-- Tilpass spilleren før start: emoji, eget bilde, random fiender og musikkspor. -->
   <dialog id="customizeModal" class="customize-modal" aria-labelledby="customizeTitle">
@@ -147,11 +210,74 @@
           <option value="turbo">Turbo chase</option>
           <option value="chill">Chill diamonds</option>
           <option value="boss">Boss mode</option>
+          <option value="uploaded">Min egen playlist</option>
         </select>
-        <button id="previewMusicButton" type="button" onclick="previewMusicTrack()">▶️ Test rytme</button>
+        <div class="music-hub">
+          <label id="musicUploadLabel" class="music-upload-label" for="musicUpload">🎵 Last opp egen musikk</label>
+          <input id="musicUpload" class="music-upload" type="file" accept="audio/*" multiple onchange="handleMusicUpload(event)" />
+          <div class="music-controls" aria-label="Musikk-kontroller">
+            <button id="prevTrackButton" type="button" onclick="previousUploadedTrack()">⏮️ Forrige</button>
+            <button id="previewMusicButton" type="button" onclick="previewMusicTrack()">▶️ Test rytme</button>
+            <button id="nextTrackButton" type="button" onclick="nextUploadedTrack()">⏭️ Neste</button>
+          </div>
+          <label id="musicVolumeLabel" class="volume-row">Volum
+            <input id="musicVolume" type="range" min="0" max="100" value="65" oninput="setMusicVolume(this.value)" />
+          </label>
+          <div id="musicPlaylistInfo" class="music-playlist-info">Ingen egen musikk valgt. Built-in musikk er WebAudio og trygg å bruke.</div>
+        </div>
       </div>
 
       <button id="saveCustomizeButton" class="friend-primary" type="button" onclick="closeCustomizeModal()">✅ Lagre valg</button>
+    </div>
+  </dialog>
+
+  <!-- V23: Power-butikk for spill mot data. Multiplayer-koden berøres ikke. -->
+  <dialog id="shopModal" class="shop-modal" aria-labelledby="shopTitle">
+    <div class="shop-card">
+      <button id="shopCloseButton" class="friend-modal-close" type="button" onclick="closePowerShop()" aria-label="Lukk">✕</button>
+      <p id="shopKicker" class="friend-kicker">SINGLEPLAYER POWER SHOP</p>
+      <h2 id="shopTitle">Power-butikk</h2>
+      <p id="shopSubtitle" class="shop-subtitle">Bruk poeng du har tjent i kampen. Butikken er kun for Spill mot data.</p>
+
+      <div class="shop-wallet">
+        <span id="shopWalletLabel">Saldo</span>
+        <strong id="shopWalletValue">0</strong>
+      </div>
+
+      <div id="shopInventory" class="shop-inventory">
+        <span id="shopInventoryLabel">Utstyr</span>
+        <strong id="shopInventoryValue">🔫 x0</strong>
+      </div>
+
+      <div class="shop-grid" aria-label="Kjøp utstyr">
+        <article class="shop-item">
+          <strong id="shopLifeTitle">❤️ Ekstra liv</strong>
+          <p id="shopLifeDesc">Få ett ekstra liv med en gang.</p>
+          <button id="buyLifeButton" type="button" onclick="buyShopItem('life')">Kjøp 1000</button>
+        </article>
+
+        <article class="shop-item">
+          <strong id="shopShieldTitle">🛡️ Skjold</strong>
+          <p id="shopShieldDesc">Redder deg én gang hvis fienden treffer deg.</p>
+          <button id="buyShieldButton" type="button" onclick="buyShopItem('shield')">Kjøp 650</button>
+        </article>
+
+        <article class="shop-item">
+          <strong id="shopSlowTitle">🧊 Slow motion</strong>
+          <p id="shopSlowDesc">Gjør fiendene tregere i 12 sekunder.</p>
+          <button id="buySlowButton" type="button" onclick="buyShopItem('slow')">Kjøp 800</button>
+        </article>
+
+        <article class="shop-item shop-item-turret">
+          <strong id="shopTurretTitle">🔫 Laser-tårn</strong>
+          <p id="shopTurretDesc">Kjøp ett tårn og plasser det på en tom rute. Skyter fiender en periode.</p>
+          <button id="buyTurretButton" type="button" onclick="buyShopItem('turret')">Kjøp 1200</button>
+          <button id="buyTurretPackButton" class="shop-pack-button" type="button" onclick="buyTurretPack()">Kjøp 3 laser 3300</button>
+        </article>
+      </div>
+
+      <button id="placeTurretButton" class="shop-place-button" type="button" onclick="activateTurretPlacement()">🎯 Plasser laser-tårn</button>
+      <p id="shopHint" class="shop-hint">Tips: Kjøp laser-tårn, trykk Plasser og velg en tom rute på brettet.</p>
     </div>
   </dialog>
 
@@ -208,6 +334,45 @@
     </div>
   </dialog>
 
+
+
+  <footer class="legal-footer">
+    <button id="aboutButton" type="button" onclick="showAboutModal()">© / Personvern</button>
+    <span>Ragi Joy Maze Deluxe</span>
+  </footer>
+
+  <dialog id="aboutModal" class="about-modal" aria-labelledby="aboutTitle">
+    <div class="about-card">
+      <button class="friend-modal-close" type="button" onclick="closeAboutModal()" aria-label="Lukk">✕</button>
+      <p id="aboutKicker" class="friend-kicker">ABOUT / PRIVACY</p>
+      <h2 id="aboutTitle">Copyright og personvern</h2>
+      <div class="about-copy">
+        <p id="aboutCopyright">© 2026 Ragish / Ragi Joy Maze Deluxe. All rights reserved.</p>
+        <p id="aboutMusic">Built-in arcade sounds are generated with WebAudio. Uploaded music is played locally from your own device and is not uploaded to Firebase or GitHub.</p>
+        <p id="aboutPrivacy">Multiplayer uses Firebase Realtime Database to sync room code, ready status, score and player positions. Do not share private information in room names/codes.</p>
+        <p id="aboutCookies">Necessary storage saves language, sound, avatar and highscores in this browser. Analytics is optional and is only enabled after consent.</p>
+        <p id="aboutCurrentChoice" class="privacy-current-choice">Current choice: not selected yet.</p>
+      </div>
+      <div class="about-actions">
+        <button id="aboutPrivacySettingsButton" class="mini-action-button" type="button" onclick="changePrivacyChoiceFromAbout()">Endre personvernvalg</button>
+        <button id="aboutOkButton" class="friend-primary" type="button" onclick="closeAboutModal()">OK ✅</button>
+      </div>
+    </div>
+  </dialog>
+
+  <section id="privacyBanner" class="privacy-banner hidden" aria-live="polite">
+    <div class="privacy-copy">
+      <strong id="privacyTitle">🍪 Personvernvalg</strong>
+      <p id="privacyText">Nødvendig lagring brukes til språk, lyd, figur og highscore. Analyse er valgfritt og hjelper utvikleren å se besøk og forbedre spillet.</p>
+      <small id="privacyStatus">Ingen valg er lagret ennå.</small>
+    </div>
+    <div class="privacy-actions">
+      <button id="privacyNecessaryButton" type="button" onclick="acceptPrivacyNecessary()">Kun nødvendige</button>
+      <button id="privacyAnalyticsButton" type="button" onclick="acceptPrivacyAnalytics()">Godta analyse</button>
+      <button id="privacyReadButton" type="button" onclick="showAboutModal()">Les mer</button>
+    </div>
+  </section>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
     import { getDatabase, ref, set, get, onValue, update, remove, onDisconnect, runTransaction } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
@@ -228,6 +393,36 @@
 
     // Gjør Firebase tilgjengelig for vanlig script.js uten npm/build tools.
     window.FirebaseGame = { database, ref, set, get, onValue, update, remove, onDisconnect, runTransaction };
+
+    // Analytics lastes IKKE før brukeren trykker "Godta analyse".
+    // Det gjør cookie/personvern-valget tydeligere og tryggere.
+    window.FirebaseAnalytics = { enabled: false, logEvent: () => {} };
+    window.enableOptionalAnalytics = async function enableOptionalAnalytics() {
+      try {
+        const analyticsSdk = await import("https://www.gstatic.com/firebasejs/12.12.1/firebase-analytics.js");
+        if (analyticsSdk.isSupported && !(await analyticsSdk.isSupported())) return false;
+        if (analyticsSdk.setConsent) {
+          analyticsSdk.setConsent({
+            analytics_storage: "granted",
+            ad_storage: "denied",
+            ad_user_data: "denied",
+            ad_personalization: "denied"
+          });
+        }
+        const analytics = analyticsSdk.getAnalytics(app);
+        window.FirebaseAnalytics = {
+          enabled: true,
+          analytics,
+          logEvent: (name, params = {}) => analyticsSdk.logEvent(analytics, name, params)
+        };
+        window.FirebaseAnalytics.logEvent("analytics_consent_granted");
+        return true;
+      } catch (error) {
+        console.warn("Analytics could not be enabled", error);
+        return false;
+      }
+    };
+
     window.dispatchEvent(new Event("firebase-ready"));
   </script>
 
