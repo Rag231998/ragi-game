@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Ragish kutty 28 single Joys Maze</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="menu-state">
+  <div class="party-layer" aria-hidden="true"><span>💎</span><span>⚡</span><span>🎉</span><span>🚀</span><span>👾</span><span>🌀</span></div>
+  <main class="app">
+    <section class="hero">
+      <p class="eyebrow">DELUXE VERSION</p>
+      <h1>🎮 Ragish 28 Joys Maze 🚀</h1>
+      <p class="fun-tagline">Arcade battle • ulike brett • online multiplayer • full joy 😄✨</p>
+      <p id="subtitle" class="subtitle">Samle diamanter, ta power-ups, overlev fiendene og kom deg gjennom alle nivåene.</p>
+
+      <div class="language-picker">
+        <button id="languageButton" class="language-button" type="button" onclick="toggleLanguagePanel()" aria-expanded="false">
+          <span id="currentLanguageFlag">🇳🇴</span>
+          <span id="currentLanguageName">Norsk</span>
+          <span class="language-arrow">⌄</span>
+        </button>
+
+        <div id="languagePanel" class="language-panel hidden" aria-label="Velg språk">
+          <div class="language-search-wrap">
+            <span>🔎</span>
+            <input id="languageSearch" type="text" placeholder="Søk språk eller land..." oninput="filterLanguageList()" />
+          </div>
+          <div id="languageList" class="language-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="preGameSummary" class="pre-game-summary" aria-label="Klar for spill">
+      <div class="summary-card">
+        <span id="summaryBestLabel">🏆 Best</span>
+        <strong id="summaryBestScore">0</strong>
+      </div>
+      <div class="summary-card">
+        <span id="summaryDifficultyLabel">🎯 Vanskelighet</span>
+        <strong id="summaryDifficulty">Middels</strong>
+      </div>
+      <div class="summary-card">
+        <span id="summaryAvatarLabel">🎨 Figur</span>
+        <strong id="summaryAvatar">😄</strong>
+      </div>
+      <button id="summarySoundCard" class="summary-card summary-sound-card" type="button" onclick="toggleGameSound()" aria-label="Slå lyd av eller på">
+        <span id="summarySoundLabel">🔊 Lyd</span>
+        <strong id="summarySound">ON</strong>
+      </button>
+    </section>
+
+    <section id="gameHud" class="hud" aria-label="Spillstatus">
+      <div class="hud-card"><span id="scoreLabel">Score</span><strong id="score">0</strong></div>
+      <div class="hud-card"><span id="highscoreLabel">Highscore</span><strong id="highscore">0</strong></div>
+      <div class="hud-card"><span id="levelLabel">Level</span><strong id="level">1</strong></div>
+      <div class="hud-card"><span id="livesLabel">Lives</span><strong id="lives">❤️❤️❤️</strong></div>
+      <div class="hud-card"><span id="comboLabel">Combo</span><strong id="combo">x1</strong></div>
+    </section>
+
+    <section id="messageBar" class="message-bar" aria-live="polite"></section>
+
+    <section class="action-row top-actions" aria-label="Hurtigvalg">
+      <button id="pauseButton" class="pause-action-button mini-action-button" type="button" onclick="togglePause()">⏸️ Pause</button>
+      <button id="menuFromPauseButton" class="menu-from-pause-button mini-action-button" type="button" onclick="returnToMainMenuFromPause()">🏠 Hovedmeny</button>
+      <button id="soundButton" class="sound-button" type="button" onclick="toggleGameSound()">🔊 Arcade sound: ON</button>
+      <button id="shopButton" class="shop-button mini-action-button" type="button" onclick="openPowerShop()">🛒 Power-butikk</button>
+    </section>
+
+    <section id="musicDock" class="music-dock" aria-label="Musikkspiller">
+      <div class="music-dock-now">
+        <span class="music-eq" aria-hidden="true"><i></i><i></i><i></i></span>
+        <div>
+          <span id="musicDockLabel">Musikk</span>
+          <strong id="musicDockTitle">Arcade beat</strong>
+        </div>
+      </div>
+      <div class="music-dock-controls">
+        <button id="musicDockPrev" type="button" onclick="previousTrackSmart()">⏮️</button>
+        <button id="musicDockPlay" type="button" onclick="toggleMusicPlayback()">⏸️ Pause</button>
+        <button id="musicDockNext" type="button" onclick="nextTrackSmart()">⏭️</button>
+      </div>
+      <label id="musicDockVolumeLabel" class="music-dock-volume">Volum
+        <input id="musicDockVolume" type="range" min="0" max="100" value="65" oninput="setMusicVolume(this.value)" />
+      </label>
+    </section>
+
+    <section id="game-wrapper">
+      <div id="game" aria-label="Spillbrett"></div>
+
+      <div id="startScreen" class="overlay">
+        <div class="modal-box">
+          <h2 id="startTitle">Ready?</h2>
+          <p id="startInstruction">Bruk piltastene på PC eller knappene under på mobil.</p>
+          <p id="powerInstruction">⚡ Power-up gjør fiender spiselige i noen sekunder.</p>
+          <p id="portalInstruction">🌀 Portal åpnes når alle diamanter er samlet.</p>
+          <div class="difficulty-panel" aria-label="Velg vanskelighetsgrad">
+            <button class="difficulty-btn" data-difficulty="easy" type="button" onclick="setDifficulty('easy')">😄 Enkel</button>
+            <button class="difficulty-btn" data-difficulty="normal" type="button" onclick="setDifficulty('normal')">😎 Middels</button>
+            <button class="difficulty-btn" data-difficulty="hard" type="button" onclick="setDifficulty('hard')">🔥 Vanskelig</button>
+            <button class="difficulty-btn" data-difficulty="extreme" type="button" onclick="setDifficulty('extreme')">💀 Ekstrem</button>
+          </div>
+          <div id="menuUtilityGrid" class="menu-utility-grid">
+            <button id="howToButton" class="howto-button" type="button" onclick="showHowToModal()">❔ Hvordan spille</button>
+            <button id="customizeButton" class="customize-button" type="button" onclick="showCustomizeModal()">🎨 Velg figur, emoji og musikk</button>
+            <div id="profileButtonSlot" class="profile-button-slot"></div>
+            <div id="winnerButtonSlot" class="winner-button-slot"></div>
+          </div>
+          <div class="mode-buttons menu-mode-grid">
+            <button id="startButton" onclick="startGame()">🚀 Spill mot data</button>
+            <button id="friendModeButton" type="button" onclick="showFriendLobby()">🌍 Spill mot venn</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="levelScreen" class="overlay hidden">
+        <div class="modal-box">
+          <h2 id="levelTitle">Level Complete!</h2>
+          <p id="levelDescription">Neste nivå starter straks.</p>
+        </div>
+      </div>
+
+      <div id="endScreen" class="overlay hidden">
+        <div class="modal-box end-modal-box">
+          <h2 id="endTitle">GAME OVER</h2>
+          <p id="endSummary" class="end-summary">Kampen er ferdig.</p>
+          <div class="end-stats">
+            <div><span>Score</span><strong id="finalScore">0</strong></div>
+            <div><span>Best</span><strong id="finalHighscore">0</strong></div>
+          </div>
+          <div class="end-actions">
+            <button id="restartButton" onclick="restartGame()">Restart</button>
+            <button id="mainMenuButton" class="secondary-action" type="button" onclick="goToMainMenu()">🏠 Hovedmeny</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls" aria-label="Mobilkontroller">
+      <button class="move-btn" data-dx="0" data-dy="-1" type="button" aria-label="Opp">⬆️</button>
+      <div>
+        <button class="move-btn" data-dx="-1" data-dy="0" type="button" aria-label="Venstre">⬅️</button>
+        <button class="move-btn" data-dx="1" data-dy="0" type="button" aria-label="Høyre">➡️</button>
+      </div>
+      <button class="move-btn" data-dx="0" data-dy="1" type="button" aria-label="Ned">⬇️</button>
+    </section>
+
+    <section class="tips">
+      <strong id="tipsTitle">Tips:</strong> <span id="tipsText">Trykk <kbd>P</kbd> for pause. Ta ⚡ og jakt på fiender for bonuspoeng.</span>
+    </section>
+  </main>
+
+  <!-- Enkel instruksjon som kan åpnes før start uten å rote til hovedmenyen. -->
+  <dialog id="howToModal" class="howto-modal" aria-labelledby="howToTitle">
+    <div class="howto-card">
+      <button class="friend-modal-close" type="button" onclick="closeHowToModal()" aria-label="Lukk">✕</button>
+      <p id="howToKicker" class="friend-kicker">QUICK GUIDE</p>
+      <h2 id="howToTitle">Slik spiller du</h2>
+      <div class="howto-grid">
+        <div><strong>💎</strong><span id="howToDiamonds">Samle alle diamantene.</span></div>
+        <div><strong>⚡</strong><span id="howToPower">Ta power-up og spis fiender for bonus.</span></div>
+        <div><strong>🛡️</strong><span id="howToShield">Skjold redder deg én gang.</span></div>
+        <div><strong>🌀</strong><span id="howToPortal">Portalen åpnes når brettet er tomt.</span></div>
+        <div><strong>🔥</strong><span id="howToCombo">Combo gir mer poeng.</span></div>
+        <div><strong>🌍</strong><span id="howToOnline">Multiplayer handler om å samle mer enn vennen din.</span></div>
+      </div>
+      <button id="howToOkButton" type="button" onclick="closeHowToModal()">Skjønner ✅</button>
+    </div>
+  </dialog>
+
+  <!-- Tilpass spilleren før start: emoji, eget bilde, random fiender og musikkspor. -->
+  <dialog id="customizeModal" class="customize-modal" aria-labelledby="customizeTitle">
+    <div class="customize-card">
+      <button id="customizeClose" class="friend-modal-close" type="button" onclick="closeCustomizeModal()" aria-label="Lukk">✕</button>
+      <p id="customizeKicker" class="friend-kicker">PLAYER STYLE</p>
+      <h2 id="customizeTitle">Gjør spillet ditt personlig</h2>
+      <p id="customizeSubtitle" class="friend-subtitle">Velg emoji, last opp eget bilde, slå på random fiender og velg musikkrytme før du starter.</p>
+
+      <div class="custom-section">
+        <h3 id="customizeEmojiTitle">1. Velg spiller-emoji</h3>
+        <div class="emoji-grid" id="playerEmojiGrid">
+          <button type="button" onclick="setPlayerEmoji('😄')">😄</button>
+          <button type="button" onclick="setPlayerEmoji('😎')">😎</button>
+          <button type="button" onclick="setPlayerEmoji('🚀')">🚀</button>
+          <button type="button" onclick="setPlayerEmoji('🐯')">🐯</button>
+          <button type="button" onclick="setPlayerEmoji('👑')">👑</button>
+          <button type="button" onclick="setPlayerEmoji('🔥')">🔥</button>
+          <button type="button" onclick="setPlayerEmoji('🤖')">🤖</button>
+          <button type="button" onclick="setPlayerEmoji('🦁')">🦁</button>
+        </div>
+      </div>
+
+      <div class="custom-section">
+        <h3 id="customizeImageTitle">2. Eller last opp eget bilde</h3>
+        <input id="avatarUpload" class="avatar-upload" type="file" accept="image/*" onchange="handleAvatarUpload(event)" />
+        <div class="avatar-preview-row">
+          <div id="avatarPreview" class="avatar-preview">😄</div>
+          <button id="clearAvatarButton" type="button" onclick="clearAvatarImage()">Fjern bilde</button>
+        </div>
+        <p id="avatarNote" class="custom-note">Bildet lagres kun i nettleseren din. Bruk et kvadratisk bilde for best resultat.</p>
+      </div>
+
+      <div class="custom-section">
+        <h3 id="customizeEnemyTitle">3. Fiender</h3>
+        <label class="toggle-row"><input id="randomEnemyToggle" type="checkbox" onchange="toggleRandomEnemies(this.checked)" /> <span id="randomEnemyLabel">Random fiende-emoji på hvert brett 👾💀😈🤡</span></label>
+        <p id="enemyStyleLabel" class="custom-note">Velg fiende-stil / animasjon</p>
+        <div class="enemy-style-grid" id="enemyStyleGrid" aria-label="Fiende-stil">
+          <button type="button" data-enemy-style="monsters" onclick="setEnemyStyle('monsters')">👾 Monsters</button>
+          <button type="button" data-enemy-style="fire" onclick="setEnemyStyle('fire')">🔥 Fire</button>
+          <button type="button" data-enemy-style="ghosts" onclick="setEnemyStyle('ghosts')">👻 Ghost</button>
+          <button type="button" data-enemy-style="boss" onclick="setEnemyStyle('boss')">🧟 Boss</button>
+          <button type="button" data-enemy-style="animals" onclick="setEnemyStyle('animals')">🦖 Beast</button>
+        </div>
+      </div>
+
+      <div class="custom-section">
+        <h3 id="customizeMusicTitle">4. Musikk / rytme</h3>
+        <select id="musicSelect" class="music-select" onchange="setMusicTrack(this.value)">
+          <option value="theme">Auto etter brett</option>
+          <option value="happy">Happy arcade</option>
+          <option value="turbo">Turbo chase</option>
+          <option value="chill">Chill diamonds</option>
+          <option value="boss">Boss mode</option>
+          <option value="uploaded">Min egen playlist</option>
+        </select>
+        <div class="music-hub">
+          <label id="musicUploadLabel" class="music-upload-label" for="musicUpload">🎵 Last opp egen musikk</label>
+          <input id="musicUpload" class="music-upload" type="file" accept="audio/*" multiple onchange="handleMusicUpload(event)" />
+          <div class="music-controls" aria-label="Musikk-kontroller">
+            <button id="prevTrackButton" type="button" onclick="previousUploadedTrack()">⏮️ Forrige</button>
+            <button id="previewMusicButton" type="button" onclick="previewMusicTrack()">▶️ Test rytme</button>
+            <button id="nextTrackButton" type="button" onclick="nextUploadedTrack()">⏭️ Neste</button>
+          </div>
+          <label id="musicVolumeLabel" class="volume-row">Volum
+            <input id="musicVolume" type="range" min="0" max="100" value="65" oninput="setMusicVolume(this.value)" />
+          </label>
+          <div id="musicPlaylistInfo" class="music-playlist-info">Ingen egen musikk valgt. Built-in musikk er WebAudio og trygg å bruke.</div>
+        </div>
+      </div>
+
+      <button id="saveCustomizeButton" class="friend-primary" type="button" onclick="closeCustomizeModal()">✅ Lagre valg</button>
+    </div>
+  </dialog>
+
+  <!-- V23: Power-butikk for spill mot data. Multiplayer-koden berøres ikke. -->
+  <dialog id="shopModal" class="shop-modal" aria-labelledby="shopTitle">
+    <div class="shop-card">
+      <button id="shopCloseButton" class="friend-modal-close" type="button" onclick="closePowerShop()" aria-label="Lukk">✕</button>
+      <p id="shopKicker" class="friend-kicker">SINGLEPLAYER POWER SHOP</p>
+      <h2 id="shopTitle">Power-butikk</h2>
+      <p id="shopSubtitle" class="shop-subtitle">Bruk poeng du har tjent i kampen. Butikken er kun for Spill mot data.</p>
+
+      <div class="shop-wallet">
+        <span id="shopWalletLabel">Saldo</span>
+        <strong id="shopWalletValue">0</strong>
+      </div>
+
+      <div id="shopInventory" class="shop-inventory">
+        <span id="shopInventoryLabel">Utstyr</span>
+        <strong id="shopInventoryValue">🔫 x0</strong>
+      </div>
+
+      <div class="shop-grid" aria-label="Kjøp utstyr">
+        <article class="shop-item">
+          <strong id="shopLifeTitle">❤️ Ekstra liv</strong>
+          <p id="shopLifeDesc">Få ett ekstra liv med en gang.</p>
+          <button id="buyLifeButton" type="button" onclick="buyShopItem('life')">Kjøp 1000</button>
+        </article>
+
+        <article class="shop-item">
+          <strong id="shopShieldTitle">🛡️ Skjold</strong>
+          <p id="shopShieldDesc">Redder deg én gang hvis fienden treffer deg.</p>
+          <button id="buyShieldButton" type="button" onclick="buyShopItem('shield')">Kjøp 650</button>
+        </article>
+
+        <article class="shop-item">
+          <strong id="shopSlowTitle">🧊 Slow motion</strong>
+          <p id="shopSlowDesc">Gjør fiendene tregere i 12 sekunder.</p>
+          <button id="buySlowButton" type="button" onclick="buyShopItem('slow')">Kjøp 800</button>
+        </article>
+
+        <article class="shop-item shop-item-fun">
+          <strong id="shopBombTitle">💣 Diamantbombe</strong>
+          <p id="shopBombDesc">Sender alle fiender tilbake til start og gir bonuspoeng.</p>
+          <button id="buyBombButton" type="button" onclick="buyShopItem('bomb')">Kjøp 1500</button>
+        </article>
+
+        <article class="shop-item shop-item-fun">
+          <strong id="shopFreezeTitle">❄️ Freeze blast</strong>
+          <p id="shopFreezeDesc">Fryser fiendene i noen sekunder så du kan rømme.</p>
+          <button id="buyFreezeButton" type="button" onclick="buyShopItem('freeze')">Kjøp 1100</button>
+        </article>
+
+        <article class="shop-item shop-item-fun">
+          <strong id="shopMagnetTitle">🧲 Diamantmagnet</strong>
+          <p id="shopMagnetDesc">Suger inn diamanter rundt deg mens du beveger deg.</p>
+          <button id="buyMagnetButton" type="button" onclick="buyShopItem('magnet')">Kjøp 900</button>
+        </article>
+
+        <article class="shop-item shop-item-fun">
+          <strong id="shopDoubleTitle">⭐ Dobbel score</strong>
+          <p id="shopDoubleDesc">Alle poeng dobles i 20 sekunder.</p>
+          <button id="buyDoubleButton" type="button" onclick="buyShopItem('double')">Kjøp 1300</button>
+        </article>
+
+        <article class="shop-item shop-item-fun">
+          <strong id="shopTeleportTitle">🌀 Nødteleport</strong>
+          <p id="shopTeleportDesc">Flytter deg til et trygt tilfeldig sted på brettet.</p>
+          <button id="buyTeleportButton" type="button" onclick="buyShopItem('teleport')">Kjøp 700</button>
+        </article>
+
+        <article class="shop-item shop-item-turret">
+          <strong id="shopTurretTitle">🔫 Laser-tårn</strong>
+          <p id="shopTurretDesc">Kjøp ett tårn og plasser det på en tom rute. Skyter fiender en periode.</p>
+          <button id="buyTurretButton" type="button" onclick="buyShopItem('turret')">Kjøp 1200</button>
+          <button id="buyTurretPackButton" class="shop-pack-button" type="button" onclick="buyTurretPack()">Kjøp 3 laser 3300</button>
+        </article>
+      </div>
+
+      <button id="placeTurretButton" class="shop-place-button" type="button" onclick="activateTurretPlacement()">🎯 Plasser laser-tårn</button>
+      <p id="shopHint" class="shop-hint">Tips: Kjøp laser-tårn, trykk Plasser og velg en tom rute på brettet.</p>
+    </div>
+  </dialog>
+
+  <!-- Egen proff boks for Spill mot venn. Den ligger utenfor spillbrettet så den ikke blir klemt/rotete. -->
+  <dialog id="friendModal" class="friend-modal" aria-labelledby="friendModalTitle">
+    <div class="friend-modal-card">
+      <button id="friendModalClose" class="friend-modal-close" type="button" aria-label="Lukk">✕</button>
+
+      <p class="friend-kicker">ONLINE MULTIPLAYER</p>
+      <h2 id="friendModalTitle">Spill mot venn</h2>
+      <p class="friend-subtitle">Lag et privat rom, send koden til kompisen din og start når begge er klare.</p>
+
+      <div class="friend-tabs" role="tablist" aria-label="Velg multiplayer handling">
+        <button id="friendTabCreate" class="friend-tab is-active" type="button" role="tab" aria-selected="true">Lag rom</button>
+        <button id="friendTabJoin" class="friend-tab" type="button" role="tab" aria-selected="false">Bli med</button>
+      </div>
+
+      <section id="createRoomPanel" class="friend-panel">
+        <button id="createRoomButton" class="friend-primary" type="button" onclick="createFriendRoom()">✨ Generer romkode</button>
+        <p class="friend-help">Koden vises her</p>
+      </section>
+
+      <section id="joinRoomPanel" class="friend-panel hidden" hidden>
+        <label class="friend-label" for="roomCodeInput">Skriv inn romkode fra vennen din</label>
+        <div class="friend-input-row">
+          <input id="roomCodeInput" class="friend-input" type="text" maxlength="6" placeholder="ABC123" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+          <button id="joinRoomButton" type="button" onclick="joinFriendRoom()">Bli med</button>
+        </div>
+      </section>
+
+      <section id="roomInfo" class="room-info hidden" hidden>
+        <label class="friend-label" for="roomCodeDisplay">Din romkode</label>
+        <div class="friend-input-row">
+          <input id="roomCodeDisplay" class="room-code-display" type="text" readonly value="" />
+          <button id="copyRoomButton" type="button" onclick="copyRoomCode()">Kopier</button>
+        </div>
+      </section>
+
+      <section id="lobbyPanel" class="lobby-panel hidden" hidden>
+        <div class="ready-grid">
+          <div class="ready-card">
+            <span>Du</span>
+            <strong id="readySelf">Ikke klar</strong>
+          </div>
+          <div class="ready-card">
+            <span>Venn</span>
+            <strong id="readyOther">Venter ...</strong>
+          </div>
+        </div>
+        <button id="readyButton" class="friend-primary" type="button" onclick="setPlayerReady()">✅ Jeg er klar</button>
+      </section>
+
+      <div id="onlineStatus" class="online-status" aria-live="polite">Velg Lag rom eller Bli med.</div>
+    </div>
+  </dialog>
+
+
+
+  <footer class="legal-footer">
+    <button id="aboutButton" type="button" onclick="showAboutModal()">© / Personvern</button>
+    <span>Ragi Joy Maze Deluxe</span>
+  </footer>
+
+  <dialog id="aboutModal" class="about-modal" aria-labelledby="aboutTitle">
+    <div class="about-card">
+      <button class="friend-modal-close" type="button" onclick="closeAboutModal()" aria-label="Lukk">✕</button>
+      <p id="aboutKicker" class="friend-kicker">ABOUT / PRIVACY</p>
+      <h2 id="aboutTitle">Copyright og personvern</h2>
+      <div class="about-copy">
+        <p id="aboutCopyright">© 2026 Ragish / Ragi Joy Maze Deluxe. All rights reserved.</p>
+        <p id="aboutMusic">Built-in arcade sounds are generated with WebAudio. Uploaded music is played locally from your own device and is not uploaded to Firebase or GitHub.</p>
+        <p id="aboutPrivacy">Multiplayer uses Firebase Realtime Database to sync room code, ready status, score and player positions. Do not share private information in room names/codes.</p>
+        <p id="aboutCookies">Necessary storage saves language, sound, avatar and highscores in this browser. Analytics is optional and is only enabled after consent.</p>
+        <p id="aboutCurrentChoice" class="privacy-current-choice">Current choice: not selected yet.</p>
+      </div>
+      <div class="about-actions">
+        <button id="aboutPrivacySettingsButton" class="mini-action-button" type="button" onclick="changePrivacyChoiceFromAbout()">Endre personvernvalg</button>
+        <button id="aboutOkButton" class="friend-primary" type="button" onclick="closeAboutModal()">OK ✅</button>
+      </div>
+    </div>
+  </dialog>
+
+  <section id="privacyBanner" class="privacy-banner hidden" aria-live="polite">
+    <div class="privacy-copy">
+      <strong id="privacyTitle">🍪 Personvernvalg</strong>
+      <p id="privacyText">Nødvendig lagring brukes til språk, lyd, figur og highscore. Analyse er valgfritt og hjelper utvikleren å se besøk og forbedre spillet.</p>
+      <small id="privacyStatus">Ingen valg er lagret ennå.</small>
+    </div>
+    <div class="privacy-actions">
+      <button id="privacyNecessaryButton" type="button" onclick="acceptPrivacyNecessary()">Kun nødvendige</button>
+      <button id="privacyAnalyticsButton" type="button" onclick="acceptPrivacyAnalytics()">Godta analyse</button>
+      <button id="privacyReadButton" type="button" onclick="showAboutModal()">Les mer</button>
+    </div>
+  </section>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+    import { getDatabase, ref, set, get, onValue, update, remove, onDisconnect, runTransaction } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCCU3cjdqYfwGv-Ztbt3ODj1pOM-8s4Xhs",
+      authDomain: "rag-game.firebaseapp.com",
+      databaseURL: "https://rag-game-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "rag-game",
+      storageBucket: "rag-game.firebasestorage.app",
+      messagingSenderId: "709645403858",
+      appId: "1:709645403858:web:0f01a8c59b46cb996f8f0b",
+      measurementId: "G-NL6SZDFTW5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    // Gjør Firebase tilgjengelig for vanlig script.js uten npm/build tools.
+    window.FirebaseGame = { database, ref, set, get, onValue, update, remove, onDisconnect, runTransaction };
+
+    // Analytics lastes IKKE før brukeren trykker "Godta analyse".
+    // Det gjør cookie/personvern-valget tydeligere og tryggere.
+    window.FirebaseAnalytics = { enabled: false, logEvent: () => {} };
+    window.enableOptionalAnalytics = async function enableOptionalAnalytics() {
+      try {
+        const analyticsSdk = await import("https://www.gstatic.com/firebasejs/12.12.1/firebase-analytics.js");
+        if (analyticsSdk.isSupported && !(await analyticsSdk.isSupported())) return false;
+        if (analyticsSdk.setConsent) {
+          analyticsSdk.setConsent({
+            analytics_storage: "granted",
+            ad_storage: "denied",
+            ad_user_data: "denied",
+            ad_personalization: "denied"
+          });
+        }
+        const analytics = analyticsSdk.getAnalytics(app);
+        window.FirebaseAnalytics = {
+          enabled: true,
+          analytics,
+          logEvent: (name, params = {}) => analyticsSdk.logEvent(analytics, name, params)
+        };
+        window.FirebaseAnalytics.logEvent("analytics_consent_granted");
+        return true;
+      } catch (error) {
+        console.warn("Analytics could not be enabled", error);
+        return false;
+      }
+    };
+
+    window.dispatchEvent(new Event("firebase-ready"));
+  </script>
+
+  <script src="script.js"></script>
+</body>
+</html>
