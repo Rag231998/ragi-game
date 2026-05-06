@@ -5136,7 +5136,7 @@ window.goToMainMenu = goToMainMenu;
 (function v33CampaignWinnerPatch() {
   const V33_MAX_LEVELS = 35;
   const V33_WINNERS_KEY = "ragiJoyMazeWinnersV33";
-  document.title = "Ragish kutty 28 single Joys Maze";
+  document.title = "Ragish 28 single Joys Maze";
 
   Object.assign(translations.no, {
     maxLevelInfo: "Maks level: 35",
