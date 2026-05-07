@@ -1352,7 +1352,7 @@ function switchFriendTab(tab) {
   }
 
   if (!firebaseReady()) {
-    setOnlineStatus("Nettspillserver kobler til ... Last siden på nytt hvis den ikke blir klar.");
+    setOnlineStatus("Tilkobling kobler til ... Last siden på nytt hvis den ikke blir klar.");
   } else {
     setOnlineStatus(createIsActive ? t("createRoomButton") : t("roomCodeLabel"));
   }
@@ -1368,7 +1368,7 @@ function showFriendLobby() {
   }
   setOnlineStatus(firebaseReady()
     ? t("onlineStatusStart")
-    : "Nettspillserver kobler til ... Last siden på nytt hvis dette ikke endrer seg."
+    : "Tilkobling kobler til ... Last siden på nytt hvis dette ikke endrer seg."
   );
 }
 
@@ -1388,8 +1388,8 @@ async function createFriendRoom() {
   try {
     const ready = await waitForFirebase();
     if (!ready) {
-      setOnlineStatus("Nettspillserveren ble ikke klar. Last siden på nytt og sjekk internett.");
-      alert("Nettspillserveren er ikke klar. Last siden på nytt og prøv igjen.");
+      setOnlineStatus("Tilkoblingen ble ikke klar. Last siden på nytt og sjekk internett.");
+      alert("Firebase er ikke klar. Last siden på nytt og prøv igjen.");
       return;
     }
 
@@ -1428,7 +1428,7 @@ async function createFriendRoom() {
       }
     };
 
-    setOnlineStatus("Lagrer rommet i skyen ...");
+    setOnlineStatus("Lagrer rommet i Firebase ...");
 
     // REST først gjør at rommet er synlig fra andre enheter med en gang.
     await restPut(roomPath(savedRoomCode), roomData);
@@ -1455,11 +1455,11 @@ async function createFriendRoom() {
     }
 
     listenToRoom();
-    setOnlineStatus(`Rommet er klart ✅ Kode: ${roomCode}. Hold denne siden åpen og send koden til vennen din.`);
+    setOnlineStatus(`Rommet er lagret i Firebase ✅ Kode: ${roomCode}. Hold denne siden åpen og send koden til vennen din.`);
   } catch (error) {
     console.error("Kunne ikke lage rom:", error);
-    setOnlineStatus("Kunne ikke lage rom. Sjekk internett og database-regler, og prøv igjen.");
-    alert("Kunne ikke lage rom. Sjekk internett og database-regler.");
+    setOnlineStatus("Kunne ikke lage rom. Sjekk Firebase Rules/Test mode og prøv igjen.");
+    alert("Kunne ikke lage rom. Sjekk Firebase Rules, internett og at databaseURL er riktig.");
   } finally {
     if (createRoomButton) createRoomButton.disabled = false;
   }
@@ -1487,8 +1487,8 @@ async function joinFriendRoom() {
   try {
     const ready = await waitForFirebase();
     if (!ready) {
-      setOnlineStatus("Nettspillserveren er ikke klar. Last siden på nytt og prøv igjen.");
-      alert("Nettspillserveren er ikke klar. Last siden på nytt og prøv igjen.");
+      setOnlineStatus("Firebase er ikke klar. Last siden på nytt og prøv igjen.");
+      alert("Firebase er ikke klar. Last siden på nytt og prøv igjen.");
       return;
     }
 
@@ -1517,8 +1517,8 @@ async function joinFriendRoom() {
     }
 
     if (!currentRoom) {
-      setOnlineStatus(`Fant ikke rommet ${typedCode}. Lag ny kode på PC-en og vent til rommet er klart.`);
-      alert(`Fant ikke rommet ${typedCode}. Sjekk at du skrev riktig kode, og at romkoden er opprettet riktig.`);
+      setOnlineStatus(`Fant ikke rommet ${typedCode}. Lag ny kode på PC-en og vent til det står lagret i Firebase.`);
+      alert(`Fant ikke rommet ${typedCode}. Sjekk at du skrev riktig kode, og se i Firebase → Realtime Database → Data → rooms om koden finnes.`);
       return;
     }
 
@@ -1575,7 +1575,7 @@ async function joinFriendRoom() {
     setOnlineStatus(`Du er koblet til som ${playerSlot === "p1" ? "Spiller 1" : "Spiller 2"}. Trykk klar når du er klar.`);
   } catch (error) {
     console.error("Kunne ikke bli med i rom:", error);
-    setOnlineStatus("Kunne ikke bli med i rommet. Sjekk internett og database-regler.");
+    setOnlineStatus("Kunne ikke bli med i rommet. Sjekk Firebase Rules og internett.");
     alert("Kunne ikke bli med i rommet. Sjekk F12/Console for feilmelding.");
   } finally {
     joinInProgress = false;
@@ -1793,7 +1793,7 @@ async function syncOnlinePlayer() {
 }
 
 window.addEventListener("firebase-ready", () => {
-  if (onlineStatus && !onlineMode) setOnlineStatus("Nettspillserver klar. Du kan lage eller bli med i rom.");
+  if (onlineStatus && !onlineMode) setOnlineStatus("Firebase klar. Du kan lage eller bli med i rom.");
 });
 
 if (friendTabCreate) friendTabCreate.addEventListener("click", () => switchFriendTab("create"));
@@ -3583,8 +3583,8 @@ Object.assign(translations.no, {
   aboutButton: "© / Personvern",
   aboutTitle: "Copyright og personvern",
   aboutCopyright: "© 2026 Ragish / Ragi Joy Maze Deluxe. Alle rettigheter forbeholdes.",
-  aboutMusic: "Built-in arcade-lyder er generert med WebAudio. Musikk du laster opp spilles lokalt fra din egen enhet og lastes ikke opp.",
-  aboutPrivacy: "Multiplayer bruker sky-sync til romkode, klar-status, score og spillerposisjon. Ikke del privat informasjon i romkode eller spillnavn.",
+  aboutMusic: "Built-in arcade-lyder er generert med WebAudio. Musikk du laster opp spilles lokalt fra din egen enhet og lastes ikke opp til Firebase eller GitHub.",
+  aboutPrivacy: "Multiplayer bruker Firebase Realtime Database til romkode, klar-status, score og spillerposisjon. Ikke del privat informasjon i romkode eller spillnavn.",
   aboutCookies: "Spillet bruker localStorage for innstillinger, highscore, avatarvalg og personvernvalg. Analyse skal bare brukes hvis du godtar det.",
   privacyTitle: "Personvern",
   privacyText: "Spillet bruker nødvendig lokal lagring for innstillinger og highscore. Analytics kan brukes kun hvis du godtar det.",
@@ -3603,8 +3603,8 @@ Object.assign(translations.en, {
   aboutButton: "© / Privacy",
   aboutTitle: "Copyright and privacy",
   aboutCopyright: "© 2026 Ragish / Ragi Joy Maze Deluxe. All rights reserved.",
-  aboutMusic: "Built-in arcade sounds are generated with WebAudio. Uploaded music is played locally from your own device and is not uploaded.",
-  aboutPrivacy: "Multiplayer uses cloud sync for room code, ready status, score and player positions. Do not share private information in room codes or game names.",
+  aboutMusic: "Built-in arcade sounds are generated with WebAudio. Uploaded music is played locally from your own device and is not uploaded to Firebase or GitHub.",
+  aboutPrivacy: "Multiplayer uses secure cloud sync to share room code, ready status, score and player positions. Do not share private information in room codes or game names.",
   aboutCookies: "The game uses localStorage for settings, highscores, avatar choices and privacy choice. Analytics should only run if you accept it.",
   privacyTitle: "Privacy",
   privacyText: "The game uses necessary local storage for settings and highscores. Analytics can be used only if you accept it.",
@@ -3787,7 +3787,7 @@ Object.assign(translations.no, {
   privacySavedNecessaryBurst: "✅ Kun nødvendige lagret",
   privacySavedAnalyticsBurst: "📊 Analyse godkjent",
   aboutPrivacySettings: "Endre personvernvalg",
-  aboutCurrentNecessary: "Gjeldende valg: kun nødvendige. Spillet lagrer lokale innstillinger/highscore og bruker sky-sync for multiplayer.",
+  aboutCurrentNecessary: "Gjeldende valg: kun nødvendige. Spillet lagrer bare lokale innstillinger/highscore og bruker Firebase for multiplayer.",
   aboutCurrentAnalytics: "Gjeldende valg: analyse godtatt. Utvikleren kan se anonym bruk som besøk, start av spill og valg av modus.",
   aboutCurrentNone: "Gjeldende valg: ikke valgt ennå.",
   aboutCookies: "Nødvendig localStorage lagrer språk, lyd, figur, musikkvalg, highscore og personvernvalg i denne nettleseren. Analyse er valgfritt og lastes bare hvis du trykker Godta analyse. Opplastet musikk lagres ikke og forsvinner ved refresh av sikkerhetsgrunner i nettleseren.",
@@ -8144,1562 +8144,6229 @@ window.goToMainMenu = goToMainMenu;
   setTimeout(polishAll, 1000);
 })();
 
-/* --------------------------------------------------------------------------
-   V47 Public feedback wall: full-screen comments + feedback form
-   -------------------------------------------------------------------------- */
-(function v47PublicFeedbackWall(){
-  if (window.__v47FeedbackWall) return; window.__v47FeedbackWall = true;
-  const PATH = 'feedback/public';
-  const LIMIT = 20;
-  const MAX = { experience:180, liked:160, improve:180, issue:160 };
-  const LOCAL_KEY = 'ragiJoyFeedbackPublicCacheV47';
-  const LAST_SEND_KEY = 'ragiJoyFeedbackLastSendV47';
-  let stars = 4, fun = 8, design = 8, perf = 8, filter = 'all', cache = [], refreshTimer = null, suggestUses = 0, lastSuggestionPack = null;
-  const SUGGEST_LIMIT = 10;
-
-  const $ = id => document.getElementById(id);
-  const no = {
-    btn:'💬 Feedback', title:'Feedback og kommentarvegg', sub:'Siste 20 kommentarer vises offentlig som snakkebobler. Navn vises anonymt eller maskert.',
-    form:'Skriv feedback', wall:'Kommentarvegg', wallSub:'Siste 20 etter dato, måned og år', rating:'Hvor bra var spillet?', score:'Nettside-score',
-    fun:'Moro', design:'Design', perf:'Ytelse', anon:'Vis som anonym', masked:'Vis maskert navn',
-    experience:'Hvordan var spillet?', liked:'Hva likte du best?', improve:'Hva bør forbedres?', issue:'Lagg, feil eller noe irriterende?',
-    suggest:'Forslag', suggestAll:'✨ Lag forslag for alle felt', send:'Send feedback', sending:'Sender ...', sent:'Takk! Feedback sendt ✅',
-    fail:'Kommentar lagret her. Synk prøves automatisk.', short:'Skriv litt mer i minst ett felt først.', wait:'Vent litt før du sender ny feedback.',
-    suggestLimit:'10 forslag er brukt. Generatoren går nå i loop med trygge forslag.', suggestCounter:'forslag igjen',
-    refresh:'Oppdater', all:'Alle', top:'5 stjerner', low:'Lav score', bugs:'Feil/lagg', empty:'Ingen kommentarer ennå. Bli første som legger igjen feedback.', anonName:'Anonym spiller', chars:'tegn'
-  };
-  const en = {...no, title:'Feedback and comment wall', sub:'Latest 20 comments are shown publicly as speech bubbles. Names are anonymous or masked.', form:'Write feedback', wall:'Comment wall', wallSub:'Latest 20 by day, month and year', rating:'How good was the game?', score:'Website score', fun:'Fun', perf:'Performance', anon:'Show as anonymous', masked:'Show masked name', experience:'How was the game?', liked:'What did you like most?', improve:'What should be improved?', issue:'Lag, bugs or anything annoying?', suggest:'Suggest', suggestAll:'✨ Generate suggestions for all fields', send:'Send feedback', sending:'Sending ...', sent:'Thanks! Feedback sent ✅', fail:'Could not send right now. The comment is saved temporarily in this browser and shown locally.', short:'Write a little more in at least one field first.', wait:'Wait a little before sending again.', suggestLimit:'10 suggestions used. The generator now loops safe suggestions.', suggestCounter:'suggestions left', refresh:'Refresh', all:'All', top:'5 stars', low:'Low score', bugs:'Bugs/lag', empty:'No comments yet. Be the first to leave feedback.', anonName:'Anonymous player', chars:'chars'};
-  function L(){ try { return currentLanguage === 'no' ? no : en; } catch(_) { return no; } }
-  function clean(v, max=240){ return String(v||'').replace(/[<>]/g,'').replace(/\s+/g,' ').trim().slice(0,max); }
-  function calcFeedbackScore(){ return Math.round(Math.max(0, Math.min(100, stars*10 + fun*1.7 + design*1.6 + perf*1.7))); }
-  function profileName(){ try { return clean(localStorage.getItem('ragiJoyMazePreferredNameV34') || localStorage.getItem('ragiJoyLastWinnerName') || '', 22); } catch(_) { return ''; } }
-  function maskName(n){ n = clean(n, 22); if(!n) return L().anonName; if(n.length <= 4) return n[0] + '•••'; return n.slice(0,3) + '••••' + n.slice(-2); }
-  function publicName(){ const anon = $('v47Anon')?.checked !== false; return anon ? L().anonName : maskName(profileName()); }
-  function dateText(ts){ let langCode='no'; try{ langCode=currentLanguage==='no'?'no':'en'; }catch(_){} return new Date(Number(ts)||Date.now()).toLocaleDateString(langCode==='en'?'en-GB':'nb-NO',{day:'2-digit',month:'2-digit',year:'numeric'}); }
-  function dbUrl(){ try { return typeof FIREBASE_DATABASE_URL === 'string' ? FIREBASE_DATABASE_URL : ''; } catch(_) { return ''; } }
-
-  function field(key){ return `<div class="v47-field"><div><label for="v47_${key}"></label><button type="button" data-v47-suggest="${key}"></button></div><textarea id="v47_${key}" maxlength="${MAX[key]}" rows="3"></textarea><small><span id="v47_${key}_count">0</span>/${MAX[key]} <span data-v47-chars></span></small></div>`; }
-
-  function ensure(){
-    if (!$('v47FeedbackOpen')) {
-      const b = document.createElement('button'); b.id='v47FeedbackOpen'; b.className='v47-feedback-open'; b.type='button'; b.onclick=openFeedbackWall; document.body.appendChild(b);
-    }
-    if (!$('v47FeedbackModal')) {
-      const d = document.createElement('dialog'); d.id='v47FeedbackModal'; d.className='v47-feedback-modal';
-      d.innerHTML = `<div class="v47-shell"><header class="v47-head"><div><p>PLAYER FEEDBACK</p><h2 id="v47Title"></h2><span id="v47Sub"></span></div><button type="button" onclick="closeFeedbackWall()">✕</button></header><main class="v47-grid"><section class="v47-card v47-form"><div class="v47-card-title"><h3 id="v47FormTitle"></h3><strong id="v47LiveScore"></strong></div><label class="v47-label" id="v47RatingLabel"></label><div id="v47Stars" class="v47-stars"></div><div class="v47-ranges"><label><span id="v47FunLabel"></span><input id="v47Fun" type="range" min="1" max="10" value="8"></label><label><span id="v47DesignLabel"></span><input id="v47Design" type="range" min="1" max="10" value="8"></label><label><span id="v47PerfLabel"></span><input id="v47Perf" type="range" min="1" max="10" value="8"></label></div><div class="v47-name"><label><input id="v47Anon" name="v47NameMode" type="radio" checked> <span id="v47AnonLabel"></span></label><label><input id="v47Masked" name="v47NameMode" type="radio"> <span id="v47MaskedLabel"></span></label></div><button id="v47SuggestAll" class="v47-suggest-all" type="button"></button><div class="v47-fields">${field('experience')}${field('liked')}${field('improve')}${field('issue')}</div><div class="v47-actions"><button id="v47Send" type="button" onclick="sendPublicFeedback()"></button><span id="v47Status"></span></div></section><section class="v47-card v47-wall"><div class="v47-wall-top"><div><h3 id="v47WallTitle"></h3><span id="v47WallSub"></span></div><button id="v47Refresh" type="button" onclick="loadPublicFeedback()"></button></div><div id="v47Filters" class="v47-filters"></div><div id="v47List" class="v47-list"></div></section></main></div>`;
-      document.body.appendChild(d); bind();
-    }
-    text();
-  }
-
-  function bind(){
-    ['v47Fun','v47Design','v47Perf'].forEach(id => $(id)?.addEventListener('input',()=>{ fun=+$('v47Fun').value; design=+$('v47Design').value; perf=+$('v47Perf').value; updateScore(); },{passive:true}));
-    Object.keys(MAX).forEach(k => { $("v47_"+k)?.addEventListener('input',()=>count(k),{passive:true}); document.querySelector(`[data-v47-suggest="${k}"]`)?.addEventListener('click',()=>suggest(k)); });
-    $('v47SuggestAll')?.addEventListener('click',suggestAll);
-  }
-
-  function text(){ const t=L(); $('v47FeedbackOpen').textContent=t.btn; $('v47Title').textContent=t.title; $('v47Sub').textContent=t.sub; $('v47FormTitle').textContent=t.form; $('v47RatingLabel').textContent=t.rating; $('v47FunLabel').textContent=t.fun; $('v47DesignLabel').textContent=t.design; $('v47PerfLabel').textContent=t.perf; $('v47AnonLabel').textContent=t.anon; $('v47MaskedLabel').textContent=`${t.masked} (${maskName(profileName())})`; $('v47Send').textContent=t.send; $('v47WallTitle').textContent=t.wall; $('v47WallSub').textContent=t.wallSub; $('v47Refresh').textContent='↻ '+t.refresh; Object.keys(MAX).forEach(k=>{ const lab=document.querySelector(`label[for="v47_${k}"]`); if(lab) lab.textContent=t[k]; const btn=document.querySelector(`[data-v47-suggest="${k}"]`); if(btn) btn.textContent=t.suggest; }); document.querySelectorAll('[data-v47-chars]').forEach(e=>e.textContent=t.chars); updateSuggestUi(); renderStars(); renderFilters(); updateScore(); renderWall(); }
-  function updateScore(){ const el=$('v47LiveScore'); if(el) el.textContent=`${L().score}: ${calcFeedbackScore()}/100`; }
-  function count(k){ const e=$('v47_'+k), c=$('v47_'+k+'_count'); if(e&&c) c.textContent=e.value.length; }
-  function renderStars(){ const row=$('v47Stars'); if(!row) return; row.innerHTML=''; for(let i=1;i<=5;i++){ const b=document.createElement('button'); b.type='button'; b.textContent=i<=stars?'★':'☆'; b.className=i<=stars?'active':''; b.onclick=()=>{stars=i;renderStars();updateScore();}; row.appendChild(b);} }
-  function renderFilters(){ const row=$('v47Filters'); if(!row) return; row.innerHTML=''; [['all',L().all],['top',L().top],['low',L().low],['bugs',L().bugs]].forEach(([k,v])=>{ const b=document.createElement('button'); b.type='button'; b.className=k===filter?'active':''; b.textContent=v; b.onclick=()=>{filter=k;renderFilters();renderWall();}; row.appendChild(b); }); }
-
-  function suggestionVariants(){
-    const great = [
-      {experience:'Spillet var veldig morsomt, raskt og lett å forstå.',liked:'Jeg likte power-ups, laser, freeze og at brettene føltes levende.',improve:'Forklar coins og butikken enda tydeligere for nye spillere.',issue:'Jeg merket ikke store feil, men små forklaringer kan gjøre det enda bedre.'},
-      {experience:'Det var lett å komme i gang, og rundene hadde fin fart.',liked:'Jeg likte at man kan kjøpe hjelp og få litt kaos på brettet.',improve:'Vis enda tydeligere hva hver power-up gjør før man kjøper den.',issue:'Ingen stor feil, men noen knapper kan være enda mer synlige.'},
-      {experience:'Spillet føltes lekent, raskt og mer avhengighetsskapende enn forventet.',liked:'Coins, diamanter og fiender gjorde at jeg ville prøve én runde til.',improve:'Legg inn flere små belønninger når man klarer et nivå.',issue:'Jeg opplevde ikke lagg, men mobilvisningen bør alltid testes.'}
-    ];
-    const ok = [
-      {experience:'Spillet var gøy og hadde bra tempo, men noen ting kan forklares bedre.',liked:'Jeg likte variasjonen, ikonene og at man kan kjøpe hjelp underveis.',improve:'Gjør Power-butikken og coins-systemet enda mer tydelig.',issue:'Det fungerte stort sett bra, men noen menyer kan bli mer oversiktlige.'},
-      {experience:'Spillet var underholdende, men det tok litt tid å skjønne alt.',liked:'Jeg likte ideen med power-ups og at brettet endrer seg.',improve:'Gi en kort forklaring på coins, laser og freeze første gang.',issue:'Noen valg på skjermen kan føles litt tett sammen.'},
-      {experience:'Spillet har mye bra, spesielt når tempoet øker.',liked:'Jeg likte jakten, lydene og små overraskelser underveis.',improve:'Lag en tydeligere startside som forklarer målet på 10 sekunder.',issue:'Det kan bli litt mye informasjon samtidig.'}
-    ];
-    const low = [
-      {experience:'Spillet har gode ideer, men det kan bli mer ryddig.',liked:'Jeg likte konseptet med diamanter, nivåer og power-ups.',improve:'Forenkle menyene og gjør målet tydeligere før start.',issue:'Det kan bli litt mye på skjermen, og lagg/feil bør testes mer.'},
-      {experience:'Jeg skjønte deler av spillet, men trengte mer forklaring.',liked:'Jeg likte at det finnes coins og hjelpemidler.',improve:'Start roligere og vis en kort guide før første runde.',issue:'Noen elementer kan oppleves for små eller uklare.'}
-    ];
-    return stars>=5 ? great : stars>=4 ? ok : low;
-  }
-  function nextSuggestionPack(){
-    const list = suggestionVariants();
-    const index = list.length ? (suggestUses % list.length) : 0;
-    const pack = list[index] || list[0] || {};
-    lastSuggestionPack = pack;
-    suggestUses += 1;
-    updateSuggestUi();
-    return pack;
-  }
-  function updateSuggestUi(){
-    const left = Math.max(0, SUGGEST_LIMIT - suggestUses);
-    const t = L();
-    const all = $('v47SuggestAll');
-    if (all) {
-      all.textContent = left > 0 ? `${t.suggestAll} · ${left} ${t.suggestCounter}` : `${t.suggestAll} · LOOP`;
-      all.classList.toggle('limit-reached', left <= 0);
-    }
-    document.querySelectorAll('[data-v47-suggest]').forEach(btn => btn.classList.toggle('limit-reached', left <= 0));
-  }
-  function suggest(k){
-    const e=$('v47_'+k), pack=nextSuggestionPack(), s=pack&&pack[k];
-    if(e&&s){ e.value=clean(s,MAX[k]); count(k); }
-    if (suggestUses >= SUGGEST_LIMIT) $('v47Status').textContent = L().suggestLimit;
-  }
-  function suggestAll(){
-    const pack = nextSuggestionPack();
-    Object.keys(MAX).forEach(k=>{ const e=$('v47_'+k), s=pack&&pack[k]; if(e&&s){ e.value=clean(s,MAX[k]); count(k); } });
-    if (suggestUses >= SUGGEST_LIMIT) $('v47Status').textContent = L().suggestLimit;
-  }
-
-  function payload(){ const p={}; Object.keys(MAX).forEach(k=>p[k]=clean($('v47_'+k)?.value,MAX[k])); if(Object.values(p).join('').length<8) return null; let mode='computer'; try{ mode=onlineMode?'friend':'computer'; }catch(_){} return { id:'fb_'+Date.now()+'_'+Math.random().toString(36).slice(2,8), createdAt:Date.now(), dateKey:new Date().toISOString().slice(0,10), maskedName:publicName(), stars, fun, design, performance:perf, totalScore:calcFeedbackScore(), ...p, game:{ mode, level:Number(typeof levelIndex!=='undefined'?levelIndex+1:1)||1, score:Number(typeof score!=='undefined'?score:0)||0, difficulty:String(typeof selectedDifficulty!=='undefined'?selectedDifficulty:'normal'), language:String(typeof currentLanguage!=='undefined'?currentLanguage:'no') }, public:true }; }
-  function localSave(p){ try{ const a=JSON.parse(localStorage.getItem(LOCAL_KEY)||'[]'); a.push(p); localStorage.setItem(LOCAL_KEY,JSON.stringify(a.slice(-LIMIT))); }catch(_){} }
-  function localRead(){ try{ const cutoff=Date.now()-7*24*60*60*1000; const a=JSON.parse(localStorage.getItem(LOCAL_KEY)||'[]'); const list=Array.isArray(a)?a.filter(x=>Number(x.createdAt||0)>=cutoff):[]; localStorage.setItem(LOCAL_KEY,JSON.stringify(list.slice(-LIMIT))); return list; }catch(_){return [];} }
-  async function writeRemote(p){ if(typeof restPut==='function') return restPut(`${PATH}/${p.id}`,p); const u=dbUrl(); if(!u) throw new Error('No database url'); const r=await fetch(`${u}/${PATH}/${p.id}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)}); if(!r.ok) throw new Error('write '+r.status); }
-  async function readRemote(){
-    const u=dbUrl();
-    if(!u) return [];
-    const r=await fetch(`${u}/${PATH}.json?orderBy=%22createdAt%22&limitToLast=80`,{cache:'no-store'});
-    if(!r.ok) throw new Error('read '+r.status);
-    const d=await r.json();
-    const cutoff=Date.now()-7*24*60*60*1000;
-    const arr=d?Object.values(d).filter(Boolean):[];
-    arr.forEach(x=>{ if(x && x.id && Number(x.createdAt||0) < cutoff && typeof restDelete==='function') restDelete(`${PATH}/${x.id}`).catch(()=>{}); });
-    return arr.filter(x=>Number(x.createdAt||0) >= cutoff);
-  }
-
-  window.sendPublicFeedback = async function(){ ensure(); const last=Number(localStorage.getItem(LAST_SEND_KEY)||0); if(Date.now()-last<25000){ $('v47Status').textContent=L().wait; return; } const p=payload(); if(!p){ $('v47Status').textContent=L().short; return; } $('v47Send').disabled=true; $('v47Status').textContent=L().sending; try{ await writeRemote(p); localStorage.setItem(LAST_SEND_KEY,String(Date.now())); $('v47Status').textContent=L().sent; }catch(e){ console.warn(e); $('v47Status').textContent=L().fail; } finally { localSave(p); cache=[p,...cache.filter(x=>x.id!==p.id)].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,LIMIT); renderWall(); Object.keys(MAX).forEach(k=>{ const e=$('v47_'+k); if(e) e.value=''; count(k); }); $('v47Send').disabled=false; try{spawnCenterBurst('💬 TAKK!');}catch(_){} setTimeout(loadPublicFeedback,800); } };
-  window.loadPublicFeedback = async function(){ ensure(); try{ const remote=await readRemote(); const merged=[...remote,...localRead()]; const seen=new Set(); cache=merged.filter(x=>x&&x.id&&!seen.has(x.id)&&seen.add(x.id)).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,LIMIT); }catch(e){ console.warn(e); cache=localRead().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,LIMIT); } renderWall(); };
-  function filtered(){ return cache.filter(x=> filter==='top' ? +x.stars>=5 : filter==='low' ? (+x.totalScore<60||+x.stars<=2) : filter==='bugs' ? /lagg|treg|feil|bug|problem|slow|error|freeze/i.test((x.issue||'')+' '+(x.improve||'')) : true); }
-  function line(parent,label,value){ value=clean(value,240); if(!value) return; const p=document.createElement('p'); const b=document.createElement('b'); b.textContent=label+': '; p.appendChild(b); p.appendChild(document.createTextNode(value)); parent.appendChild(p); }
-  function renderWall(){ const list=$('v47List'); if(!list) return; const items=filtered(); list.innerHTML=''; if(!items.length){ const e=document.createElement('div'); e.className='v47-empty'; e.textContent=L().empty; list.appendChild(e); return; } items.forEach(x=>{ const a=document.createElement('article'); a.className='v47-bubble'; const h=document.createElement('div'); h.className='v47-bubble-head'; const n=document.createElement('strong'); n.textContent=x.maskedName||L().anonName; const m=document.createElement('span'); m.textContent=`${'★'.repeat(Math.max(1,+x.stars||1))} · ${+x.totalScore||0}/100 · ${dateText(x.createdAt)}`; h.append(n,m); const body=document.createElement('div'); line(body,L().experience,x.experience); line(body,L().liked,x.liked); line(body,L().improve,x.improve); line(body,L().issue,x.issue); const f=document.createElement('small'); const g=x.game||{}; f.textContent=`Level ${g.level||1} · ${g.difficulty||'normal'} · ${g.mode||'computer'} · Score ${g.score||0}`; a.append(h,body,f); list.appendChild(a); }); }
-  window.openFeedbackWall = function(){ ensure(); loadPublicFeedback(); const d=$('v47FeedbackModal'); if(d.showModal&&!d.open)d.showModal(); else d.setAttribute('open','open'); clearInterval(refreshTimer); refreshTimer=setInterval(()=>{ if(d.open) loadPublicFeedback(); },60000); };
-  window.closeFeedbackWall = function(){ clearInterval(refreshTimer); const d=$('v47FeedbackModal'); if(d?.close)d.close(); else d?.removeAttribute('open'); };
-
-  const oldApply = window.applyLanguage || globalThis.applyLanguage; if(typeof oldApply==='function'){ window.applyLanguage=globalThis.applyLanguage=function(){ const r=oldApply.apply(this,arguments); setTimeout(()=>{ensure();text();},0); return r; }; }
-  document.addEventListener('DOMContentLoaded',()=>{ensure(); setTimeout(loadPublicFeedback,400);}); setTimeout(()=>{ensure(); loadPublicFeedback();},650);
-})();
-
 
 /* --------------------------------------------------------------------------
-   V49: Smart laser restore, random portal restore, active purchase HUD + sync polish
+   V62: shop coach placement + hit feedback polish
+   - Shop hint bubble is anchored next to Power-shop button.
+   - Losing a life gives subtle audio/visual feedback outside the board.
    -------------------------------------------------------------------------- */
-(function v49SmartLasersRandomPortalAndHud(){
-  if (window.__v49SmartLasersRandomPortalAndHud) return;
-  window.__v49SmartLasersRandomPortalAndHud = true;
+(function v62ShopCoachAndHitFeedback(){
+  if (window.__ragiJoyV62Patch) return;
+  window.__ragiJoyV62Patch = true;
 
-  const SMART_COST_ONE = 1450;
-  const SMART_COST_THREE = 3800;
-  const SMART_LASER_MS = 45000;
-  const MANUAL_LASER_MS = 45000;
-  const HUD_TICK_MS = 500;
-  let hudTimer = null;
+  function v62No(){
+    try { return currentLanguage !== 'en'; } catch(_) { return true; }
+  }
+  function v62Text(no, en){ return v62No() ? no : en; }
 
-  Object.assign(translations.no, {
-    shopSmartTurretTitle: '🤖 Smart laser',
-    shopSmartTurretDesc: 'Systemet velger gode ruter automatisk. Varer lenger enn vanlig laser.',
-    shopSmartTurretOne: '🤖 Kjøp smart laser',
-    shopSmartTurretThree: '🤖 Kjøp 3 smarte',
-    shopSmartTurretPlaced: '🤖 Smart laser plassert automatisk!',
-    shopSmartTurretPlacedMany: '🤖 Smarte lasere plassert automatisk:',
-    shopSmartNoSpot: 'Fant ikke en god ledig rute for smart laser akkurat nå.',
-    activeToolsTitle: 'Aktivt utstyr',
-    activeShield: 'Skjold klart',
-    activeSlow: 'Slow',
-    activeFreeze: 'Freeze',
-    activeMagnet: 'Magnet',
-    activeDouble: '2x score',
-    activeLasers: 'Laser',
-    activeInventory: 'Klar til plassering',
-    portalRandomOpen: '🌀 Portalen åpnet på et tilfeldig trygt sted!'
-  });
-  Object.assign(translations.en, {
-    shopSmartTurretTitle: '🤖 Smart laser',
-    shopSmartTurretDesc: 'The system chooses good tiles automatically. Lasts longer than normal lasers.',
-    shopSmartTurretOne: '🤖 Buy smart laser',
-    shopSmartTurretThree: '🤖 Buy 3 smart',
-    shopSmartTurretPlaced: '🤖 Smart laser placed automatically!',
-    shopSmartTurretPlacedMany: '🤖 Smart lasers placed automatically:',
-    shopSmartNoSpot: 'No good free tile for smart laser right now.',
-    activeToolsTitle: 'Active gear',
-    activeShield: 'Shield ready',
-    activeSlow: 'Slow',
-    activeFreeze: 'Freeze',
-    activeMagnet: 'Magnet',
-    activeDouble: '2x score',
-    activeLasers: 'Laser',
-    activeInventory: 'Ready to place',
-    portalRandomOpen: '🌀 Portal opened in a random safe spot!'
-  });
-  for (const language of languageOptions) {
-    translations[language.code] = translations[language.code] || { ...translations.en };
-    Object.keys(translations.en).forEach(key => {
-      if ((key.startsWith('shopSmart') || key.startsWith('active') || key === 'portalRandomOpen') && !translations[language.code][key]) {
-        translations[language.code][key] = translations.en[key];
-      }
-    });
+  function v62EnsureShopCoach(){
+    let coach = document.getElementById('v62ShopCoach');
+    if (coach) return coach;
+    coach = document.createElement('div');
+    coach.id = 'v62ShopCoach';
+    coach.className = 'v62-shop-coach hidden';
+    coach.setAttribute('aria-hidden', 'true');
+    coach.innerHTML = `
+      <div class="v62-shop-coach-bubble">
+        <strong class="v62-shop-coach-title"></strong>
+        <span class="v62-shop-coach-text"></span>
+      </div>`;
+    document.body.appendChild(coach);
+    return coach;
   }
 
-  function timeLeft(until) {
-    return Math.max(0, Math.ceil((Number(until || 0) - Date.now()) / 1000));
+  function v62UpdateShopCoachText(){
+    const coach = v62EnsureShopCoach();
+    const title = coach.querySelector('.v62-shop-coach-title');
+    const text = coach.querySelector('.v62-shop-coach-text');
+    if (title) title.textContent = v62Text('🛒 Power-tips', '🛒 Power tip');
+    if (text) text.textContent = v62Text(
+      'Du har nok poeng! Kjøp noe i Power-butikken og vinn lettere 🚀',
+      'You have enough points! Buy something in the Power shop and make the run easier 🚀'
+    );
   }
 
-  function ensureSmartShopButtons() {
-    if (document.getElementById('buySmartTurretButton')) return;
-    const turretArticle = document.querySelector('.shop-item-turret');
-    if (!turretArticle) return;
-    const smartBox = document.createElement('div');
-    smartBox.className = 'v49-smart-laser-box';
-    smartBox.innerHTML = `
-      <hr class="v49-shop-divider">
-      <strong id="shopSmartTurretTitle">🤖 Smart laser</strong>
-      <p id="shopSmartTurretDesc">Systemet velger gode ruter automatisk.</p>
-      <button id="buySmartTurretButton" class="v49-smart-button" type="button" onclick="buySmartLaser(1)">🤖 Smart laser ${SMART_COST_ONE}</button>
-      <button id="buySmartTurretPackButton" class="v49-smart-button v49-smart-pack" type="button" onclick="buySmartLaser(3)">🤖 3 smarte ${SMART_COST_THREE}</button>
-    `;
-    turretArticle.appendChild(smartBox);
-  }
+  function v62PositionShopCoach(){
+    const coach = v62EnsureShopCoach();
+    const shopButton = document.getElementById('shopButton');
+    if (!coach || !shopButton || coach.classList.contains('hidden')) return;
+    const rect = shopButton.getBoundingClientRect();
+    const bubble = coach.firstElementChild || coach;
+    const bubbleRect = bubble.getBoundingClientRect();
+    let left = rect.left - bubbleRect.width - 14;
+    let top = rect.top + (rect.height - bubbleRect.height) / 2;
+    let sideClass = 'left';
 
-  function updateSmartShopButtons() {
-    ensureSmartShopButtons();
-    const one = document.getElementById('buySmartTurretButton');
-    const three = document.getElementById('buySmartTurretPackButton');
-    const notSingle = Boolean(onlineMode) || !gameRunning;
-    if (one) {
-      one.textContent = `${t('shopSmartTurretOne')} ${SMART_COST_ONE}`;
-      one.disabled = notSingle || score < SMART_COST_ONE;
+    if (left < 12) {
+      left = rect.right + 14;
+      sideClass = 'right';
     }
-    if (three) {
-      three.textContent = `${t('shopSmartTurretThree')} ${SMART_COST_THREE}`;
-      three.disabled = notSingle || score < SMART_COST_THREE;
+    if (left + bubbleRect.width > window.innerWidth - 12) {
+      left = Math.max(12, window.innerWidth - bubbleRect.width - 12);
+      top = rect.bottom + 10;
+      sideClass = 'bottom';
     }
-    const title = document.getElementById('shopSmartTurretTitle');
-    const desc = document.getElementById('shopSmartTurretDesc');
-    if (title) title.textContent = t('shopSmartTurretTitle');
-    if (desc) desc.textContent = t('shopSmartTurretDesc');
+    top = Math.max(12, Math.min(top, window.innerHeight - bubbleRect.height - 12));
+
+    coach.classList.remove('v62-side-left', 'v62-side-right', 'v62-side-bottom');
+    coach.classList.add(`v62-side-${sideClass}`);
+    coach.style.left = `${Math.round(left)}px`;
+    coach.style.top = `${Math.round(top)}px`;
   }
 
-  function tileOpenForSmartLaser(x, y) {
-    if (!map[y] || map[y][x] === undefined) return false;
-    if (map[y][x] !== TILE.EMPTY) return false;
-    if (player.x === x && player.y === y) return false;
-    if (remotePlayer && remotePlayer.x === x && remotePlayer.y === y) return false;
-    if (enemies.some(enemy => enemy.x === x && enemy.y === y)) return false;
-    if (v23Turrets.some(turret => turret.x === x && turret.y === y)) return false;
-    return true;
+  function v62ShouldShowShopCoach(){
+    const shopButton = document.getElementById('shopButton');
+    const shopModal = document.getElementById('shopModal');
+    if (!shopButton || shopButton.hidden || shopButton.disabled) return false;
+    if (!gameRunning || paused || onlineMode) return false;
+    if (shopModal && (shopModal.open || shopModal.hasAttribute('open'))) return false;
+    const threshold = typeof V23_SHOP_COSTS === 'object' ? Math.min(...Object.values(V23_SHOP_COSTS)) : 650;
+    return Number(score || 0) >= Number(threshold || 650);
   }
 
-  function smartLaserScore(x, y) {
-    const width = map[0]?.length || 13;
-    const height = map.length || 11;
-    const center = Math.abs(x - width / 2) + Math.abs(y - height / 2);
-    const enemyNear = enemies.reduce((best, enemy) => Math.min(best, Math.abs(enemy.x - x) + Math.abs(enemy.y - y)), 99);
-    let corridors = 0;
-    [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy]) => {
-      const tx = x + dx, ty = y + dy;
-      if (map[ty] && map[ty][tx] !== undefined && map[ty][tx] !== TILE.WALL) corridors++;
-    });
-    let diamondsNearby = 0;
-    for (let yy = Math.max(1, y - 3); yy <= Math.min(height - 2, y + 3); yy++) {
-      for (let xx = Math.max(1, x - 3); xx <= Math.min(width - 2, x + 3); xx++) {
-        if (map[yy][xx] === TILE.DOT) diamondsNearby++;
-      }
+  function v62RefreshShopCoach(){
+    const coach = v62EnsureShopCoach();
+    const shopButton = document.getElementById('shopButton');
+    if (!coach || !shopButton) return;
+    v62UpdateShopCoachText();
+    const show = v62ShouldShowShopCoach();
+    coach.classList.toggle('hidden', !show);
+    shopButton.classList.toggle('v62-shop-button-pulse', show);
+    if (show) {
+      coach.setAttribute('aria-hidden', 'false');
+      v62PositionShopCoach();
+    } else {
+      coach.setAttribute('aria-hidden', 'true');
     }
-    return corridors * 18 + diamondsNearby * 2 + Math.max(0, 14 - center) + Math.max(0, 10 - enemyNear) * 3;
   }
 
-  function bestSmartLaserTile(blocked = []) {
-    const blockedKey = new Set(blocked.map(p => `${p.x},${p.y}`));
-    const candidates = [];
-    for (let y = 1; y < map.length - 1; y++) {
-      for (let x = 1; x < map[y].length - 1; x++) {
-        if (blockedKey.has(`${x},${y}`)) continue;
-        if (!tileOpenForSmartLaser(x, y)) continue;
-        candidates.push({ x, y, score: smartLaserScore(x, y) + Math.random() * 4 });
-      }
-    }
-    candidates.sort((a, b) => b.score - a.score);
-    return candidates[0] || null;
-  }
-
-  function addSmartTurretAt(x, y) {
-    v23Turrets.push({
-      id: v23TurretId++,
-      x,
-      y,
-      expiresAt: Date.now() + SMART_LASER_MS,
-      lastShotAt: 0,
-      smart: true
-    });
-    spawnPop('🤖', x, y);
-  }
-
-  window.buySmartLaser = function buySmartLaser(count = 1) {
-    if (onlineMode || !gameRunning) return;
-    count = Number(count) === 3 ? 3 : 1;
-    const cost = count === 3 ? SMART_COST_THREE : SMART_COST_ONE;
-    if (score < cost) {
-      if (messageBar) messageBar.textContent = t('shopNotEnough');
-      playSfx('lose');
-      return;
-    }
-    const placed = [];
-    for (let i = 0; i < count; i++) {
-      const pos = bestSmartLaserTile(placed);
-      if (!pos) break;
-      placed.push(pos);
-      addSmartTurretAt(pos.x, pos.y);
-    }
-    if (!placed.length) {
-      if (messageBar) messageBar.textContent = t('shopSmartNoSpot');
-      playSfx('lose');
-      return;
-    }
-    score -= Math.round(cost * (placed.length / count));
-    v23StartTurretLoop();
-    spawnCenterBurst(count === 3 ? `🤖 x${placed.length}` : '🤖 LASER');
-    if (messageBar) messageBar.textContent = placed.length > 1 ? `${t('shopSmartTurretPlacedMany')} ${placed.length}` : t('shopSmartTurretPlaced');
-    playSfx('power');
-    drawGame();
-    v23UpdateShopUi();
-    updatePowerHud();
-  };
-
-  const oldPlaceTurretAt = v23PlaceTurretAt;
-  v23PlaceTurretAt = function v49PlaceTurretAt(x, y) {
-    const beforeIds = new Set(v23Turrets.map(turret => turret.id));
-    const result = oldPlaceTurretAt.apply(this, arguments);
-    if (result) {
-      const now = Date.now();
-      v23Turrets.forEach(turret => {
-        if (!beforeIds.has(turret.id)) turret.expiresAt = now + MANUAL_LASER_MS;
+  function v62PlayHitJingle(){
+    try {
+      if (!soundEnabled || typeof tone !== 'function') return;
+      const steps = [
+        [330, 0.07, 'square', 0.030],
+        [247, 0.08, 'triangle', 0.028],
+        [196, 0.10, 'sawtooth', 0.030],
+        [147, 0.14, 'sine', 0.025]
+      ];
+      steps.forEach(([freq, dur, type, gain], i) => {
+        setTimeout(() => tone(freq, dur, type, gain * (typeof musicVolume === 'number' ? Math.max(0.45, musicVolume) : 1)), i * 85);
       });
-      updatePowerHud();
-    }
-    return result;
-  };
-  window.v23PlaceTurretAt = v23PlaceTurretAt;
-
-  function bestRandomPortalTile() {
-    const candidates = [];
-    const fallback = [];
-    for (let y = 1; y < map.length - 1; y++) {
-      for (let x = 1; x < map[y].length - 1; x++) {
-        if (map[y][x] === TILE.WALL || map[y][x] === TILE.PORTAL) continue;
-        if (player.x === x && player.y === y) continue;
-        if (v23Turrets && v23Turrets.some(t => t.x === x && t.y === y)) continue;
-        const enemyDistance = enemies.reduce((best, enemy) => Math.min(best, Math.abs(enemy.x - x) + Math.abs(enemy.y - y)), 99);
-        const playerDistance = Math.abs(player.x - x) + Math.abs(player.y - y);
-        const item = { x, y, score: enemyDistance * 4 + playerDistance + Math.random() * 10 };
-        if (map[y][x] === TILE.EMPTY && enemyDistance >= 4 && playerDistance >= 3) candidates.push(item);
-        else if (map[y][x] !== TILE.WALL && enemyDistance >= 2) fallback.push(item);
-      }
-    }
-    const list = candidates.length ? candidates : fallback;
-    list.sort((a, b) => b.score - a.score);
-    return list[Math.floor(Math.random() * Math.min(8, list.length))] || list[0] || { x: 6, y: 5 };
+    } catch(_) {}
   }
 
-  openPortal = function v49OpenPortalRandom() {
-    portalOpen = true;
-    for (let y = 0; y < map.length; y++) {
-      for (let x = 0; x < map[y].length; x++) {
-        if (map[y][x] === TILE.PORTAL) map[y][x] = TILE.EMPTY;
-      }
+  function v62CapturePlayerSnapshot(){
+    try {
+      return {
+        x: Number(player?.x || 0),
+        y: Number(player?.y || 0),
+        emoji: (typeof selectedPlayerEmoji === 'string' && selectedPlayerEmoji) ? selectedPlayerEmoji : '😵',
+        image: (typeof selectedPlayerImage === 'string' && selectedPlayerImage) ? selectedPlayerImage : ''
+      };
+    } catch(_) {
+      return { x: 0, y: 0, emoji: '😵', image: '' };
     }
-    const pos = bestRandomPortalTile();
-    if (map[pos.y] && map[pos.y][pos.x] !== undefined) map[pos.y][pos.x] = TILE.PORTAL;
-    if (messageBar) messageBar.textContent = t('portalRandomOpen');
-    spawnCenterBurst('🌀 PORTAL!');
-    spawnPop('🌀', pos.x, pos.y);
-    playSfx('portal');
-    drawGame();
-  };
-  window.openPortal = openPortal;
+  }
 
-  function ensurePowerHud() {
-    let hud = document.getElementById('v49PowerHud');
-    if (hud) return hud;
+  function v62SpawnFloatingHeart(index){
+    const anchor = document.getElementById('lives') || document.getElementById('livesLabel');
+    if (!anchor) return;
+    const rect = anchor.getBoundingClientRect();
+    const heart = document.createElement('div');
+    heart.className = 'v62-life-heart';
+    heart.textContent = '❤️';
+    heart.style.left = `${rect.left + rect.width * 0.35 + index * 18}px`;
+    heart.style.top = `${rect.top + rect.height * 0.3}px`;
+    heart.style.animationDelay = `${index * 70}ms`;
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 1500);
+  }
+
+  function v62SpawnPlayerHitEcho(snapshot){
+    const board = document.getElementById('game');
+    if (!board || !snapshot) return;
+    const rect = board.getBoundingClientRect();
+    const cols = Math.max(1, Array.isArray(map) && map[0] ? map[0].length : 13);
+    const rows = Math.max(1, Array.isArray(map) ? map.length : 11);
+    const cellW = rect.width / cols;
+    const cellH = rect.height / rows;
+    const echo = document.createElement('div');
+    echo.className = 'v62-player-hit-echo';
+    if (snapshot.image) {
+      echo.classList.add('v62-player-hit-image');
+      echo.style.backgroundImage = `url(${snapshot.image})`;
+    } else {
+      echo.textContent = snapshot.emoji || '😵';
+    }
+    echo.style.left = `${rect.left + snapshot.x * cellW + cellW * 0.5}px`;
+    echo.style.top = `${rect.top + snapshot.y * cellH + cellH * 0.5}px`;
+    document.body.appendChild(echo);
+    setTimeout(() => echo.remove(), 950);
+  }
+
+  function v62ShowLostLifeToast(){
+    const toast = document.createElement('div');
+    toast.className = 'v62-hit-toast';
+    toast.textContent = v62Text('💔 Oi! Du mistet et liv', '💔 Ouch! You lost a life');
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => toast.classList.remove('show'), 1100);
+    setTimeout(() => toast.remove(), 1600);
+  }
+
+  function v62TriggerHitFeedback(snapshot){
     const wrapper = document.getElementById('game-wrapper');
-    if (!wrapper) return null;
-    hud = document.createElement('div');
-    hud.id = 'v49PowerHud';
-    hud.className = 'v49-power-hud hidden';
-    wrapper.appendChild(hud);
-    return hud;
+    const livesEl = document.getElementById('lives');
+    const livesCard = livesEl ? livesEl.closest('.hud-card') : null;
+    wrapper?.classList.remove('v62-hit-shake');
+    livesCard?.classList.remove('v62-life-card-hit');
+    void wrapper?.offsetWidth;
+    void livesCard?.offsetWidth;
+    wrapper?.classList.add('v62-hit-shake');
+    livesCard?.classList.add('v62-life-card-hit');
+    setTimeout(() => wrapper?.classList.remove('v62-hit-shake'), 720);
+    setTimeout(() => livesCard?.classList.remove('v62-life-card-hit'), 780);
+    v62PlayHitJingle();
+    v62SpawnPlayerHitEcho(snapshot);
+    v62ShowLostLifeToast();
+    [0,1,2].forEach(v62SpawnFloatingHeart);
   }
 
-  function pill(icon, label, value) {
-    return `<span class="v49-tool-pill"><b>${icon}</b><span>${label}</span>${value ? `<em>${value}</em>` : ''}</span>`;
-  }
-
-  function updatePowerHud() {
-    const hud = ensurePowerHud();
-    if (!hud) return;
-    const items = [];
-    if (!onlineMode && gameRunning) {
-      if (shield) items.push(pill('🛡️', t('activeShield'), ''));
-      const slowLeft = timeLeft(v23SlowUntil);
-      const freezeLeft = typeof v30FreezeUntil !== 'undefined' ? timeLeft(v30FreezeUntil) : 0;
-      const magnetLeft = typeof v30MagnetUntil !== 'undefined' ? timeLeft(v30MagnetUntil) : 0;
-      const doubleLeft = typeof v30DoubleUntil !== 'undefined' ? timeLeft(v30DoubleUntil) : 0;
-      if (slowLeft) items.push(pill('🧊', t('activeSlow'), `${slowLeft}s`));
-      if (freezeLeft) items.push(pill('❄️', t('activeFreeze'), `${freezeLeft}s`));
-      if (magnetLeft) items.push(pill('🧲', t('activeMagnet'), `${magnetLeft}s`));
-      if (doubleLeft) items.push(pill('⭐', t('activeDouble'), `${doubleLeft}s`));
-      const activeLasers = v23Turrets.filter(turret => Date.now() < turret.expiresAt);
-      if (activeLasers.length) {
-        const maxLeft = Math.max(...activeLasers.map(turret => timeLeft(turret.expiresAt)));
-        items.push(pill('🔫', `${t('activeLasers')} x${activeLasers.length}`, `${maxLeft}s`));
+  function v62InstallLoseLifeWrapper(){
+    const currentLoseLife = window.loseLife || (typeof loseLife === 'function' ? loseLife : null);
+    if (typeof currentLoseLife !== 'function' || currentLoseLife.__v62Wrapped) return;
+    const wrappedLoseLife = function v62LoseLifeWrapper(){
+      const beforeLives = Number(lives || 0);
+      const snapshot = v62CapturePlayerSnapshot();
+      const result = currentLoseLife.apply(this, arguments);
+      if (Number(lives || 0) < beforeLives) {
+        setTimeout(() => v62TriggerHitFeedback(snapshot), 20);
       }
-      if (v23TurretInventory > 0) items.push(pill('🎯', `${t('activeInventory')} x${v23TurretInventory}`, ''));
-    }
-    hud.classList.toggle('hidden', items.length === 0);
-    hud.innerHTML = items.length ? `<strong>${t('activeToolsTitle')}</strong><div>${items.join('')}</div>` : '';
+      return result;
+    };
+    wrappedLoseLife.__v62Wrapped = true;
+    window.loseLife = wrappedLoseLife;
+    try { loseLife = wrappedLoseLife; } catch(_) {}
   }
-  window.updatePowerHud = updatePowerHud;
 
-  const oldUpdateShopUi = v23UpdateShopUi;
-  v23UpdateShopUi = function v49UpdateShopUi() {
-    oldUpdateShopUi.apply(this, arguments);
-    updateSmartShopButtons();
-    updatePowerHud();
-  };
-  window.v23UpdateShopUi = v23UpdateShopUi;
-
-  const oldDrawGame = drawGame;
-  drawGame = function v49DrawGame() {
-    oldDrawGame.apply(this, arguments);
-    updatePowerHud();
-  };
-  window.drawGame = drawGame;
-
-  const oldClearLevelTools = v23ClearLevelTools;
-  v23ClearLevelTools = function v49ClearLevelTools() {
-    oldClearLevelTools.apply(this, arguments);
-    updatePowerHud();
-  };
-  window.v23ClearLevelTools = v23ClearLevelTools;
-
-  const oldResetShopRun = v23ResetShopRun;
-  v23ResetShopRun = function v49ResetShopRun() {
-    oldResetShopRun.apply(this, arguments);
-    updatePowerHud();
-  };
-  window.v23ResetShopRun = v23ResetShopRun;
-
-  function startHudTimer() {
-    if (hudTimer) clearInterval(hudTimer);
-    hudTimer = setInterval(updatePowerHud, HUD_TICK_MS);
+  function v62HookLanguageRefresh(){
+    const previousApplyLanguage = window.applyLanguage || (typeof applyLanguage === 'function' ? applyLanguage : null);
+    if (typeof previousApplyLanguage !== 'function' || previousApplyLanguage.__v62Wrapped) return;
+    const wrappedApply = function v62ApplyLanguageWrapper(){
+      const result = previousApplyLanguage.apply(this, arguments);
+      v62RefreshShopCoach();
+      return result;
+    };
+    wrappedApply.__v62Wrapped = true;
+    window.applyLanguage = wrappedApply;
+    try { applyLanguage = wrappedApply; } catch(_) {}
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    ensureSmartShopButtons();
-    updateSmartShopButtons();
-    ensurePowerHud();
-    startHudTimer();
+    v62EnsureShopCoach();
+    v62InstallLoseLifeWrapper();
+    v62HookLanguageRefresh();
+    v62RefreshShopCoach();
+    setTimeout(v62RefreshShopCoach, 400);
   });
-  setTimeout(() => {
-    ensureSmartShopButtons();
-    updateSmartShopButtons();
-    ensurePowerHud();
-    startHudTimer();
-  }, 500);
+
+  v62EnsureShopCoach();
+  v62InstallLoseLifeWrapper();
+  v62HookLanguageRefresh();
+  setInterval(v62RefreshShopCoach, 1200);
+  window.addEventListener('resize', v62PositionShopCoach, { passive: true });
+  window.addEventListener('scroll', v62PositionShopCoach, { passive: true });
 })();
 
+
 /* --------------------------------------------------------------------------
-   V50: Cloud score/highscore sync
-   - Fikser at Top 10, dagsrekord og best-score ikke bare ligger i én nettleser.
-   - Leser/skriver Firebase Realtime Database via REST fallback, slik at Chrome/Edge/GitHub Pages ser samme score.
-   - Faller tilbake til localStorage hvis regler/internett mangler.
+   V63: Player image lock + real enemy generator
+   - When an uploaded image is active, point 1 emoji buttons are truly locked.
+   - "Fjern bilde" clears preview, storage and file input immediately.
+   - Enemy generator creates NEW enemy choice buttons, not just switching old ones.
    -------------------------------------------------------------------------- */
-(function v50CloudScoreSync(){
-  if (window.__ragiJoyV50CloudScoreSync) return;
-  window.__ragiJoyV50CloudScoreSync = true;
+(function v63AvatarLockAndRealEnemyGenerator(){
+  if (window.__ragiJoyV63AvatarEnemyPatch) return;
+  window.__ragiJoyV63AvatarEnemyPatch = true;
 
-  const BOARD_KEY = 'ragiJoyMazeLeaderboardV34';
-  const DAILY_KEY = 'ragiJoyMazeDailyTop10V41';
-  const BEST_KEY = 'ragiJoyBestByDifficulty';
-  const CLOUD_BASE = 'scores/public';
-  const CLOUD_ALLTIME = `${CLOUD_BASE}/alltime`;
-  const CLOUD_DAILY = `${CLOUD_BASE}/daily`;
-  const CLOUD_BESTS = `${CLOUD_BASE}/bests`;
-  const DAILY_TTL = 24 * 60 * 60 * 1000;
-  const MAX_LOCAL_ENTRIES = 10;
-  const MAX_CLOUD_READ = 80;
-  let cloudBusy = false;
-  let lastCloudOk = false;
-  let firstCloudPullDone = false;
+  const PLAYER_EMOJI_SETS_V63 = [
+    ['😄','😎','🚀','🐯','👑','🔥','🤖','🦁'],
+    ['🥷','🧙','🦸','🐉','⚡','🍕','🎯','💎'],
+    ['🐵','🦊','🐼','🐸','🦄','🛸','🎮','🏆'],
+    ['🤠','🥳','🦅','🐲','🦝','🚁','🌟','💥'],
+    ['😺','🐺','🦖','👽','🧠','🕹️','🌈','🍀'],
+    ['🐱','🐺','🦂','👽','🧠','🕹️','🌈','☘️'],
+    ['🦹','🧛','🧟','👻','🤡','💀','👾','🦇']
+  ];
 
-  Object.assign(translations.no, {
-    winnersSubtitle: 'Topplisten viser de høyeste poengene. Klarer du å slå rekorden?',
-    leaderboardScope: 'Score lagres lokalt først og deles i skyen automatisk.',
-    cloudSyncOn: '',
-    cloudSyncLocal: '💾 Lokal score – sjekk internett hvis nettlesere viser ulikt',
-    cloudSyncUpdating: '',
-    dailyTopInfo: 'Dagslisten synkes mellom nettlesere og lokale resultater ryddes etter 24 timer.'
-  });
-  Object.assign(translations.en, {
-    winnersSubtitle: 'The leaderboard shows the highest scores. Can you beat the record?',
-    leaderboardScope: 'Scores are saved locally first and shared to the cloud automatically.',
-    cloudSyncOn: '',
-    cloudSyncLocal: '💾 Local score – check internet if browsers differ',
-    cloudSyncUpdating: '',
-    dailyTopInfo: 'The daily list syncs between browsers and local daily results clear after 24 hours.'
-  });
-  try {
-    for (const language of languageOptions || []) {
-      translations[language.code] = translations[language.code] || { ...translations.en };
-      for (const key of ['cloudSyncOn','cloudSyncLocal','cloudSyncUpdating']) {
-        if (!translations[language.code][key]) translations[language.code][key] = translations.en[key];
-      }
-    }
-  } catch (_) {}
+  const ENEMY_PRESET_POOLS_V63 = [
+    { label: '🧪 Mutant Mix', pool: ['🧬','🦠','🧪','👽','🤢','☣️','🧟','🧌'] },
+    { label: '🤖 Robot Army', pool: ['🤖','🦾','🛸','⚙️','🔩','🛰️','👾','💣'] },
+    { label: '🐉 Dragon Cave', pool: ['🐉','🐲','🦖','🔥','🌋','☄️','👺','🧌'] },
+    { label: '🧊 Ice Squad', pool: ['🥶','❄️','🧊','👻','💎','🌨️','☃️','🦭'] },
+    { label: '🦈 Sea Panic', pool: ['🦈','🐙','🪼','🦑','🐡','🌊','⚓','👾'] },
+    { label: '🎃 Horror Night', pool: ['🎃','👻','🧛','🧟','🦇','🕷️','💀','🪦'] },
+    { label: '🐝 Bug Swarm', pool: ['🐝','🪲','🦂','🕷️','🪳','🦟','🐜','🦠'] },
+    { label: '👑 Boss Rush', pool: ['👑','🦹','👺','🧌','🐲','🤖','💀','⚔️'] },
+    { label: '🌪️ Chaos Pack', pool: ['🌪️','💥','⚡','☄️','🌀','👽','🤡','😈'] },
+    { label: '🧟 Zombie Crew', pool: ['🧟','🧟‍♂️','🧟‍♀️','💀','🪦','👻','🦴','😵'] }
+  ];
 
-  function tr50(key) {
-    return (translations[currentLanguage] && translations[currentLanguage][key]) || (translations.en && translations.en[key]) || key;
+  function v63IsNo(){
+    try { return currentLanguage !== 'en'; } catch(_) { return true; }
   }
 
-  function readArray(key) {
+  function v63T(no, en){
+    return v63IsNo() ? no : en;
+  }
+
+  function v63StorageSet(key, value){
+    try { localStorage.setItem(key, value); } catch(_) {}
+  }
+
+  function v63StorageRemove(key){
+    try { localStorage.removeItem(key); } catch(_) {}
+  }
+
+  function v63HasImage(){
+    try { return Boolean(selectedPlayerImage || localStorage.getItem('ragiJoyPlayerImage')); }
+    catch(_) { return Boolean(typeof selectedPlayerImage !== 'undefined' && selectedPlayerImage); }
+  }
+
+  function v63Status(text){
+    let status = document.getElementById('v63AvatarStatus') || document.getElementById('v61AvatarStatus');
+    if (!status) {
+      const imageSection = document.getElementById('avatarUpload')?.closest('.custom-section');
+      if (imageSection) {
+        status = document.createElement('p');
+        status.id = 'v63AvatarStatus';
+        status.className = 'custom-note v63-avatar-status';
+        imageSection.appendChild(status);
+      }
+    }
+    if (status && text) status.textContent = text;
+  }
+
+  function v63ClearFileInput(){
+    const input = document.getElementById('avatarUpload');
+    if (input) {
+      try { input.value = ''; } catch(_) {}
+    }
+  }
+
+  function v63UpdatePreview(){
+    const preview = document.getElementById('avatarPreview');
+    if (!preview) return;
+    if (v63HasImage()) {
+      const img = selectedPlayerImage || localStorage.getItem('ragiJoyPlayerImage') || '';
+      preview.textContent = '';
+      preview.style.backgroundImage = `url(${img})`;
+      preview.classList.add('v63-image-active');
+    } else {
+      preview.style.backgroundImage = '';
+      preview.textContent = selectedPlayerEmoji || '😄';
+      preview.classList.remove('v63-image-active');
+    }
+  }
+
+  function v63SetEmojiLock(){
+    const locked = v63HasImage();
+    const emojiGrid = document.getElementById('playerEmojiGrid');
+    const section = emojiGrid?.closest('.custom-section');
+    if (section) section.classList.toggle('v63-emoji-locked-section', locked);
+    document.body.classList.toggle('v63-avatar-image-active', locked);
+
+    if (emojiGrid) {
+      emojiGrid.querySelectorAll('button').forEach(btn => {
+        btn.disabled = locked;
+        btn.setAttribute('aria-disabled', locked ? 'true' : 'false');
+        btn.title = locked
+          ? v63T('Fjern bildet først for å velge emoji.', 'Remove the image first to choose an emoji.')
+          : '';
+      });
+    }
+
+    const generator = document.getElementById('v63GeneratePlayerEmojis') || document.getElementById('v61GeneratePlayerEmojis');
+    if (generator) {
+      generator.disabled = locked;
+      generator.setAttribute('aria-disabled', locked ? 'true' : 'false');
+      generator.title = locked
+        ? v63T('Fjern bildet først for å generere nye emojier.', 'Remove the image first to generate new emojis.')
+        : '';
+    }
+
+    v63UpdatePreview();
+
+    if (locked) {
+      v63Status(v63T(
+        'Bilde er aktivt. Emoji-valg er låst til du trykker «Fjern bilde».',
+        'Image is active. Emoji choice is locked until you press “Remove image”.'
+      ));
+    }
+  }
+
+  const v63OriginalSetPlayerEmoji = window.setPlayerEmoji || (typeof setPlayerEmoji === 'function' ? setPlayerEmoji : null);
+  window.setPlayerEmoji = function setPlayerEmojiV63(emoji){
+    if (v63HasImage()) {
+      v63Status(v63T(
+        'Du har lastet opp bilde. Trykk «Fjern bilde» før du velger emoji.',
+        'You uploaded an image. Press “Remove image” before choosing an emoji.'
+      ));
+      try { playSfx('select'); } catch(_) {}
+      v63SetEmojiLock();
+      return;
+    }
+
+    selectedPlayerEmoji = emoji || '😄';
+    selectedPlayerImage = '';
+    v63StorageSet('ragiJoyPlayerEmoji', selectedPlayerEmoji);
+    v63StorageRemove('ragiJoyPlayerImage');
+    v63ClearFileInput();
+
+    if (typeof v63OriginalSetPlayerEmoji === 'function') {
+      try { v63OriginalSetPlayerEmoji.call(this, selectedPlayerEmoji); }
+      catch(_) {
+        try { updateCustomizerUi(); drawGame(); playSfx('select'); } catch(__) {}
+      }
+    } else {
+      try { updateCustomizerUi(); drawGame(); playSfx('select'); } catch(_) {}
+    }
+
+    v63SetEmojiLock();
+  };
+  try { setPlayerEmoji = window.setPlayerEmoji; } catch(_) {}
+
+  window.clearAvatarImage = function clearAvatarImageV63(){
+    selectedPlayerImage = '';
+    v63StorageRemove('ragiJoyPlayerImage');
+    v63ClearFileInput();
+    v63Status(v63T('Bildet er fjernet. Emoji-valg er åpnet igjen.', 'Image removed. Emoji choice is open again.'));
+    v63UpdatePreview();
+    v63SetEmojiLock();
+    try { updateCustomizerUi(); } catch(_) {}
+    try { drawGame(); } catch(_) {}
+    try { playSfx('select'); } catch(_) {}
+  };
+  try { clearAvatarImage = window.clearAvatarImage; } catch(_) {}
+
+  window.handleAvatarUpload = function handleAvatarUploadV63(event){
+    const input = event?.target || document.getElementById('avatarUpload');
+    const file = input?.files && input.files[0];
+    if (!file) return;
+
+    if (!file.type || !file.type.startsWith('image/')) {
+      v63Status(v63T('Velg en vanlig bildefil.', 'Choose a normal image file.'));
+      alert(v63T('Velg en vanlig bildefil.', 'Choose a normal image file.'));
+      v63ClearFileInput();
+      return;
+    }
+
+    if (file.size > 4 * 1024 * 1024) {
+      v63Status(v63T('Bildet er for stort. Bruk maks 4 MB.', 'Image is too large. Use max 4 MB.'));
+      alert(v63T('Bildet er for stort. Bruk maks 4 MB.', 'Image is too large. Use max 4 MB.'));
+      v63ClearFileInput();
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const data = String(reader.result || '');
+      const img = new Image();
+      img.onload = () => {
+        selectedPlayerImage = data;
+        v63StorageSet('ragiJoyPlayerImage', selectedPlayerImage);
+        v63Status(v63T(
+          'Bilde er aktivt. Emoji-valg er låst til du fjerner bildet.',
+          'Image is active. Emoji choice is locked until you remove the image.'
+        ));
+        v63UpdatePreview();
+        v63SetEmojiLock();
+        try { updateCustomizerUi(); } catch(_) {}
+        try { drawGame(); } catch(_) {}
+        try { playSfx('level'); } catch(_) {}
+      };
+      img.onerror = () => {
+        v63Status(v63T('Kunne ikke lese bildet.', 'Could not read the image.'));
+        v63ClearFileInput();
+      };
+      img.src = data;
+    };
+    reader.onerror = () => {
+      v63Status(v63T('Kunne ikke lese filen.', 'Could not read the file.'));
+      v63ClearFileInput();
+    };
+    reader.readAsDataURL(file);
+  };
+  try { handleAvatarUpload = window.handleAvatarUpload; } catch(_) {}
+
+  function v63RenderPlayerEmojiSet(set){
+    const grid = document.getElementById('playerEmojiGrid');
+    if (!grid) return;
+    grid.innerHTML = set.map(emoji => `<button type="button" data-emoji="${emoji}" onclick="setPlayerEmoji('${emoji}')">${emoji}</button>`).join('');
+    v63SetEmojiLock();
+  }
+
+  window.generatePlayerEmojis = function generatePlayerEmojisV63(){
+    if (v63HasImage()) {
+      v63Status(v63T(
+        'Fjern bildet først hvis du vil bytte til emoji.',
+        'Remove the image first if you want to switch to emoji.'
+      ));
+      v63SetEmojiLock();
+      return;
+    }
+    const index = (Number(localStorage.getItem('ragiJoyPlayerEmojiSetV63') || '0') + 1) % PLAYER_EMOJI_SETS_V63.length;
+    v63StorageSet('ragiJoyPlayerEmojiSetV63', String(index));
+    v63RenderPlayerEmojiSet(PLAYER_EMOJI_SETS_V63[index]);
+    try { updateCustomizerUi(); playSfx('coin'); } catch(_) {}
+  };
+
+  function v63AddPlayerGenerator(){
+    const section = document.getElementById('playerEmojiGrid')?.closest('.custom-section');
+    if (!section || document.getElementById('v63GeneratePlayerEmojis')) return;
+
+    // Remove older generator if it exists, so only one button is shown.
+    const old = document.getElementById('v61GeneratePlayerEmojis');
+    if (old) old.remove();
+
+    const btn = document.createElement('button');
+    btn.id = 'v63GeneratePlayerEmojis';
+    btn.type = 'button';
+    btn.className = 'v63-generate-button';
+    btn.textContent = v63T('🎲 Generer nye emojier', '🎲 Generate new emojis');
+    btn.onclick = window.generatePlayerEmojis;
+    section.appendChild(btn);
+  }
+
+  function v63LoadGeneratedEnemyStyles(){
+    try { return JSON.parse(localStorage.getItem('ragiJoyGeneratedEnemyStylesV63') || '[]'); }
+    catch(_) { return []; }
+  }
+
+  function v63SaveGeneratedEnemyStyles(items){
+    try { localStorage.setItem('ragiJoyGeneratedEnemyStylesV63', JSON.stringify(items.slice(-12))); }
+    catch(_) {}
+  }
+
+  function v63EnsureEnemyStyle(key, label, pool){
+    if (!key || !Array.isArray(pool) || !pool.length) return;
+    try { v30EnemyPools[key] = pool; } catch(_) {}
+
+    const grid = document.getElementById('enemyStyleGrid');
+    if (!grid || grid.querySelector(`[data-enemy-style="${key}"]`)) return;
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.dataset.enemyStyle = key;
+    btn.className = 'v63-generated-enemy-button';
+    btn.textContent = label;
+    btn.onclick = () => setEnemyStyle(key);
+    const generator = document.getElementById('v63GenerateEnemyEmojis') || document.getElementById('v61GenerateEnemyEmojis');
+    if (generator) grid.insertBefore(btn, generator);
+    else grid.appendChild(btn);
+  }
+
+  function v63RestoreGeneratedEnemyStyles(){
+    const saved = v63LoadGeneratedEnemyStyles();
+    saved.forEach(item => v63EnsureEnemyStyle(item.key, item.label, item.pool));
+  }
+
+  window.generateEnemyEmojis = function generateEnemyEmojisV63(){
+    const existing = v63LoadGeneratedEnemyStyles();
+    const preset = ENEMY_PRESET_POOLS_V63[existing.length % ENEMY_PRESET_POOLS_V63.length];
+    const key = `generated_${Date.now()}_${Math.floor(Math.random() * 9999)}`;
+    const label = `${preset.label} #${existing.length + 1}`;
+    const pool = [...preset.pool].sort(() => Math.random() - 0.5);
+
+    const item = { key, label, pool };
+    const updated = [...existing, item].slice(-12);
+    v63SaveGeneratedEnemyStyles(updated);
+    v63EnsureEnemyStyle(key, label, pool);
+
+    try { setEnemyStyle(key); } catch(_) {}
+    try {
+      enemies.forEach(enemy => enemy.face = getEnemyFace());
+      updateCustomizerUi();
+      drawGame();
+      playSfx('enemy');
+    } catch(_) {}
+  };
+
+  function v63AddEnemyGenerator(){
+    const grid = document.getElementById('enemyStyleGrid');
+    const section = grid?.closest('.custom-section');
+    if (!grid || !section || document.getElementById('v63GenerateEnemyEmojis')) return;
+
+    const old = document.getElementById('v61GenerateEnemyEmojis');
+    if (old) old.remove();
+
+    const btn = document.createElement('button');
+    btn.id = 'v63GenerateEnemyEmojis';
+    btn.type = 'button';
+    btn.className = 'v63-generate-button v63-enemy-generator';
+    btn.textContent = v63T('🎲 Legg til ny fiende-pakke', '🎲 Add new enemy pack');
+    btn.onclick = window.generateEnemyEmojis;
+    section.appendChild(btn);
+  }
+
+  const v63PreviousUpdateCustomizerUi = window.updateCustomizerUi || (typeof updateCustomizerUi === 'function' ? updateCustomizerUi : null);
+  if (typeof v63PreviousUpdateCustomizerUi === 'function' && !v63PreviousUpdateCustomizerUi.__v63Wrapped) {
+    const wrapped = function updateCustomizerUiV63(){
+      const result = v63PreviousUpdateCustomizerUi.apply(this, arguments);
+      v63SetEmojiLock();
+      v63RestoreGeneratedEnemyStyles();
+      return result;
+    };
+    wrapped.__v63Wrapped = true;
+    window.updateCustomizerUi = wrapped;
+    try { updateCustomizerUi = wrapped; } catch(_) {}
+  }
+
+  function v63Init(){
+    v63AddPlayerGenerator();
+    v63AddEnemyGenerator();
+    v63RestoreGeneratedEnemyStyles();
+    v63SetEmojiLock();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    v63Init();
+    setTimeout(v63Init, 250);
+  });
+  setTimeout(v63Init, 500);
+})();
+
+
+/* --------------------------------------------------------------------------
+   V64: anonymous player save + level countdown + live winners + 7-day feedback
+   - Fixes no-name play: player can continue as anonymous and still appear on Top 10.
+   - Quit run is shown as ended run, not "no lives/game over".
+   - Level transition shows 3-2-1-GO before next board starts.
+   - Winner list refreshes while open and can sync through the existing cloud endpoint.
+   - Feedback/comments are stored for 7 days and show an info box.
+   -------------------------------------------------------------------------- */
+(function v64AnonymousFeedbackAndWinnerFix() {
+  if (window.__ragiJoyV64AnonymousFeedbackAndWinnerFix) return;
+  window.__ragiJoyV64AnonymousFeedbackAndWinnerFix = true;
+
+  const NAME_KEY = 'ragiJoyMazePreferredNameV34';
+  const LAST_NAME_KEY = 'ragiJoyLastWinnerName';
+  const BOARD_KEY = 'ragiJoyMazeLeaderboardV34';
+  const DAILY_KEY = 'ragiJoyMazeDailyTop10V41';
+  const FEEDBACK_KEY = 'ragiJoyMazeFeedbackPublicV64';
+  const COMMENT_TTL = 7 * 24 * 60 * 60 * 1000;
+  const MAX_COMMENTS = 20;
+  const SCORE_CLOUD_PATH = 'scores/public';
+  const FEEDBACK_CLOUD_PATH = 'feedback/public/comments';
+  let endingReason = '';
+  let winnerRefreshTimer = null;
+  let lastCloudScoreSync = 0;
+  let lastCloudFeedbackSync = 0;
+
+  const texts = {
+    no: {
+      anonTitle: 'Spill uten spillerkort?',
+      anonText: 'Du kan spille som anonym. Da lagres scoren som et anonymt navn på vinnerlisten.',
+      anonPlay: '🎮 Spill anonymt',
+      anonCreate: '👤 Lag spillerkort',
+      anonCancel: 'Avbryt',
+      anonActivated: 'Spiller anonymt som {name}',
+      quitTitle: 'Kamp avsluttet',
+      quitSummary: 'Du avsluttet kampen selv. Scoren kan fortsatt lagres hvis den er høy nok.',
+      championAnon: 'Lagre anonymt',
+      championNoNameText: 'Du kan lagre med anonymt navn, eller lage spillerkort først.',
+      countdownGo: 'GOOO!',
+      winnerInfoTitle: 'Slik fungerer Top 10',
+      winnerInfoText: 'Listen sorteres etter høyest score. Ved lik score teller høyeste level først. Listen oppdateres automatisk når vinduet står åpent.',
+      winnerRefresh: '↻ Oppdaterer automatisk',
+      feedbackButton: '💬 Feedback',
+      feedbackTitle: 'Feedback og kommentarer',
+      feedbackIntro: 'Skriv kort hva du synes. De siste 20 kommentarene vises offentlig i 7 dager.',
+      feedbackInfoTitle: 'Lagring',
+      feedbackInfoText: 'Kommentarer lagres lokalt i nettleseren og synkes til kommentarfeltet hvis sky-lagring er aktiv. Gamle kommentarer ryddes automatisk etter 7 dager.',
+      feedbackName: 'Navn / alias',
+      feedbackNamePlaceholder: 'Anonym spiller',
+      feedbackRating: 'Hvor bra var spillet?',
+      feedbackCategory: 'Hva gjelder det?',
+      feedbackFun: '🎮 Moro',
+      feedbackDesign: '🎨 Design',
+      feedbackPerformance: '⚡ Ytelse',
+      feedbackLiked: 'Hva likte du best?',
+      feedbackImprove: 'Hva bør forbedres?',
+      feedbackBug: 'Feil, lagg eller noe irriterende?',
+      feedbackPlaceholder: 'Skriv her ...',
+      feedbackSend: 'Send feedback',
+      feedbackSaved: 'Takk! Kommentaren er lagt inn.',
+      feedbackEmpty: 'Skriv minst én kommentar før du sender.',
+      feedbackWall: 'Siste kommentarer',
+      feedbackNoComments: 'Ingen kommentarer ennå.',
+      feedbackClose: 'Lukk',
+      feedbackGenerate: 'Forslag'
+    },
+    en: {
+      anonTitle: 'Play without a player card?',
+      anonText: 'You can play anonymously. The score will be saved with an anonymous name on the winner list.',
+      anonPlay: '🎮 Play anonymous',
+      anonCreate: '👤 Create player card',
+      anonCancel: 'Cancel',
+      anonActivated: 'Playing anonymously as {name}',
+      quitTitle: 'Run ended',
+      quitSummary: 'You ended the run yourself. The score can still be saved if it is high enough.',
+      championAnon: 'Save anonymously',
+      championNoNameText: 'You can save anonymously, or create a player card first.',
+      countdownGo: 'GOOO!',
+      winnerInfoTitle: 'How Top 10 works',
+      winnerInfoText: 'The list is sorted by highest score. If scores match, highest level is ranked first. The list refreshes automatically while this window is open.',
+      winnerRefresh: '↻ Auto-refreshing',
+      feedbackButton: '💬 Feedback',
+      feedbackTitle: 'Feedback and comments',
+      feedbackIntro: 'Write briefly what you think. The latest 20 comments are public for 7 days.',
+      feedbackInfoTitle: 'Storage',
+      feedbackInfoText: 'Comments are stored locally in the browser and synced to the comment wall if cloud storage is active. Old comments are removed automatically after 7 days.',
+      feedbackName: 'Name / alias',
+      feedbackNamePlaceholder: 'Anonymous player',
+      feedbackRating: 'How good was the game?',
+      feedbackCategory: 'What is it about?',
+      feedbackFun: '🎮 Fun',
+      feedbackDesign: '🎨 Design',
+      feedbackPerformance: '⚡ Performance',
+      feedbackLiked: 'What did you like best?',
+      feedbackImprove: 'What should be improved?',
+      feedbackBug: 'Bugs, lag or something annoying?',
+      feedbackPlaceholder: 'Write here ...',
+      feedbackSend: 'Send feedback',
+      feedbackSaved: 'Thanks! Your comment is posted.',
+      feedbackEmpty: 'Write at least one comment before sending.',
+      feedbackWall: 'Latest comments',
+      feedbackNoComments: 'No comments yet.',
+      feedbackClose: 'Close',
+      feedbackGenerate: 'Suggest'
+    }
+  };
+
+  function installTranslations() {
+    try {
+      for (const [code, value] of Object.entries(texts)) translations[code] = { ...(translations[code] || translations.en || {}), ...value };
+      if (Array.isArray(languageOptions)) {
+        for (const language of languageOptions) {
+          translations[language.code] = { ...(translations.en || {}), ...(translations[language.code] || {}) };
+          for (const [key, value] of Object.entries(texts.en)) if (!translations[language.code][key]) translations[language.code][key] = value;
+        }
+      }
+    } catch (_) {}
+  }
+
+  function tr(key, vars = {}) {
+    const dict = (typeof translations !== 'undefined' && translations[currentLanguage]) || texts.no;
+    let value = (dict && dict[key]) || (texts.en && texts.en[key]) || key;
+    for (const [name, replacement] of Object.entries(vars)) value = String(value).replaceAll(`{${name}}`, replacement);
+    return value;
+  }
+
+  function escapeHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function readJsonArray(key) {
     try {
       const parsed = JSON.parse(localStorage.getItem(key) || '[]');
       return Array.isArray(parsed) ? parsed : [];
     } catch (_) { return []; }
   }
 
-  function writeArray(key, rows) {
-    try { localStorage.setItem(key, JSON.stringify(Array.isArray(rows) ? rows : [])); } catch (_) {}
+  function writeJsonArray(key, entries) {
+    try { localStorage.setItem(key, JSON.stringify(Array.isArray(entries) ? entries : [])); } catch (_) {}
   }
 
-  function readBests() {
-    try {
-      return { easy:0, normal:0, hard:0, extreme:0, ...(JSON.parse(localStorage.getItem(BEST_KEY) || '{}') || {}) };
-    } catch (_) { return { easy:0, normal:0, hard:0, extreme:0 }; }
+  function activePlayerName() {
+    return String(localStorage.getItem(NAME_KEY) || localStorage.getItem(LAST_NAME_KEY) || '').trim();
   }
 
-  function writeBests(bests) {
-    const normalized = { easy:0, normal:0, hard:0, extreme:0, ...(bests || {}) };
-    for (const key of Object.keys(normalized)) normalized[key] = Math.max(0, Number(normalized[key]) || 0);
-    try { localStorage.setItem(BEST_KEY, JSON.stringify(normalized)); } catch (_) {}
-    return normalized;
+  function newAnonymousName() {
+    const animals = ['Fox', 'Tiger', 'Koala', 'Panda', 'Wolf', 'Owl', 'Duck', 'Bee', 'Cat', 'Otter'];
+    return `Anonym${animals[Math.floor(Math.random() * animals.length)]}-${Math.floor(1000 + Math.random() * 9000)}`;
   }
 
-  function idSafe(value) {
-    return String(value || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 80);
+  function setPlayerName(name) {
+    const clean = String(name || '').trim().replace(/[^A-Za-z0-9ÆØÅæøå_-]/g, '').slice(0, 18) || newAnonymousName();
+    localStorage.setItem(NAME_KEY, clean);
+    localStorage.setItem(LAST_NAME_KEY, clean);
+    try { if (typeof applyLanguage === 'function') applyLanguage(); } catch (_) {}
+    try { if (typeof window.v30UpdateMenuLayout === 'function') window.v30UpdateMenuLayout(); } catch (_) {}
+    try { if (typeof drawGame === 'function') drawGame(); } catch (_) {}
+    if (typeof messageBar !== 'undefined' && messageBar) messageBar.textContent = tr('anonActivated', { name: clean });
+    return clean;
   }
 
-  function makeId(prefix = 'score') {
-    return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
+  function createDialog(id, className) {
+    let dialog = document.getElementById(id);
+    if (!dialog) {
+      dialog = document.createElement('dialog');
+      dialog.id = id;
+      dialog.className = className;
+      document.body.appendChild(dialog);
+    }
+    return dialog;
   }
 
-  function cleanName(value) {
-    return String(value || 'Player')
-      .replace(/[<>]/g, '')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .slice(0, 18) || 'Player';
+  function openDialog(dialog) {
+    if (!dialog) return;
+    try { if (typeof dialog.showModal === 'function') dialog.showModal(); else dialog.setAttribute('open', ''); }
+    catch (_) { dialog.setAttribute('open', ''); }
   }
 
-  function normalizeEntry(entry, source = 'alltime') {
-    if (!entry || typeof entry !== 'object') return null;
-    const numericScore = Math.floor(Number(entry.score) || 0);
-    if (numericScore <= 0) return null;
-    const createdAt = Number(entry.createdAt) || Date.now();
-    const difficulty = ['easy','normal','hard','extreme'].includes(entry.difficulty) ? entry.difficulty : (selectedDifficulty || 'normal');
-    return {
-      id: idSafe(entry.id) || makeId(source),
-      name: cleanName(entry.name),
-      score: numericScore,
-      level: Math.max(1, Math.min(35, Number(entry.level) || 1)),
-      difficulty,
-      completedCampaign: Boolean(entry.completedCampaign || Number(entry.level) >= 35),
-      createdAt,
-      source: 'cloud'
-    };
+  function closeDialog(dialog) {
+    if (!dialog) return;
+    try { if (dialog.open && typeof dialog.close === 'function') dialog.close(); } catch (_) {}
+    dialog.removeAttribute('open');
   }
 
-  function sortEntries(entries, limit = MAX_LOCAL_ENTRIES) {
-    const seen = new Set();
-    return (Array.isArray(entries) ? entries : [])
-      .map(item => normalizeEntry(item))
-      .filter(Boolean)
-      .filter(item => {
-        const key = `${item.id}:${item.score}`;
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      })
-      .sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0) || (Number(b.level) || 0) - (Number(a.level) || 0) || (Number(a.createdAt) || 0) - (Number(b.createdAt) || 0))
-      .slice(0, limit);
-  }
-
-  function sortDaily(entries, limit = MAX_LOCAL_ENTRIES) {
-    const now = Date.now();
-    return sortEntries(entries, MAX_CLOUD_READ)
-      .filter(item => now - Number(item.createdAt || 0) < DAILY_TTL)
-      .slice(0, limit);
-  }
-
-  function objectToEntries(data) {
-    if (!data) return [];
-    if (Array.isArray(data)) return data;
-    return Object.entries(data).map(([id, value]) => ({ ...(value || {}), id: value && value.id ? value.id : id }));
-  }
-
-  function ensureEntryIds(key, daily = false) {
-    const local = readArray(key);
-    const normalized = (daily ? sortDaily(local, MAX_CLOUD_READ) : sortEntries(local, MAX_CLOUD_READ)).map(entry => ({ ...entry, id: idSafe(entry.id) || makeId(daily ? 'daily' : 'score') }));
-    writeArray(key, normalized.slice(0, MAX_LOCAL_ENTRIES));
-    return normalized;
-  }
-
-  async function cloudGet(path) {
-    if (typeof restGet === 'function') return restGet(path);
-    const response = await fetch(`${FIREBASE_DATABASE_URL}/${path}.json`, { cache: 'no-store' });
-    if (!response.ok) throw new Error(`Cloud GET ${response.status}`);
-    return response.json();
-  }
-
-  async function cloudPut(path, data) {
-    if (typeof restPut === 'function') return restPut(path, data);
-    const response = await fetch(`${FIREBASE_DATABASE_URL}/${path}.json`, {
-      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+  function showAnonymousStartPrompt(startCallback) {
+    const dialog = createDialog('v64AnonymousPrompt', 'v64-anon-dialog');
+    dialog.innerHTML = `
+      <div class="v64-anon-card">
+        <button class="friend-modal-close" type="button" data-v64-anon-close aria-label="Close">✕</button>
+        <p class="friend-kicker">PLAYER</p>
+        <h2>${escapeHtml(tr('anonTitle'))}</h2>
+        <p>${escapeHtml(tr('anonText'))}</p>
+        <div class="v64-anon-actions">
+          <button type="button" data-v64-play-anon>${escapeHtml(tr('anonPlay'))}</button>
+          <button type="button" data-v64-create-card>${escapeHtml(tr('anonCreate'))}</button>
+          <button type="button" data-v64-anon-close>${escapeHtml(tr('anonCancel'))}</button>
+        </div>
+      </div>`;
+    dialog.querySelector('[data-v64-play-anon]').addEventListener('click', () => {
+      setPlayerName(newAnonymousName());
+      closeDialog(dialog);
+      startCallback();
     });
-    if (!response.ok) throw new Error(`Cloud PUT ${response.status}`);
-    return response.json();
-  }
-
-  async function cloudDelete(path) {
-    if (typeof restDelete === 'function') return restDelete(path);
-    const response = await fetch(`${FIREBASE_DATABASE_URL}/${path}.json`, { method: 'DELETE' });
-    if (!response.ok) throw new Error(`Cloud DELETE ${response.status}`);
-  }
-
-  async function uploadEntries(path, entries) {
-    for (const entry of entries) {
-      const clean = normalizeEntry(entry, path.includes('daily') ? 'daily' : 'score');
-      if (!clean) continue;
-      await cloudPut(`${path}/${clean.id}`, clean);
-    }
-  }
-
-  async function syncBestsWithCloud() {
-    const local = readBests();
-    let remote = {};
-    try { remote = await cloudGet(CLOUD_BESTS) || {}; } catch (error) { throw error; }
-    const merged = { easy:0, normal:0, hard:0, extreme:0 };
-    for (const key of Object.keys(merged)) merged[key] = Math.max(Number(local[key]) || 0, Number(remote[key]) || 0);
-    writeBests(merged);
-    await cloudPut(CLOUD_BESTS, { ...merged, updatedAt: Date.now() });
-    return merged;
-  }
-
-  async function syncBoardsWithCloud() {
-    const localAll = ensureEntryIds(BOARD_KEY, false);
-    const localDaily = ensureEntryIds(DAILY_KEY, true);
-
-    if (localAll.length) await uploadEntries(CLOUD_ALLTIME, localAll);
-    if (localDaily.length) await uploadEntries(CLOUD_DAILY, localDaily);
-
-    const [cloudAllRaw, cloudDailyRaw] = await Promise.all([
-      cloudGet(CLOUD_ALLTIME).catch(() => null),
-      cloudGet(CLOUD_DAILY).catch(() => null)
-    ]);
-
-    const mergedAll = sortEntries([...objectToEntries(cloudAllRaw), ...localAll], MAX_LOCAL_ENTRIES);
-    const mergedDaily = sortDaily([...objectToEntries(cloudDailyRaw), ...localDaily], MAX_LOCAL_ENTRIES);
-    writeArray(BOARD_KEY, mergedAll);
-    writeArray(DAILY_KEY, mergedDaily);
-
-    // Lett opprydding: dagsresultater eldre enn 24 timer fjernes fra skyen når noen åpner spillet.
-    const now = Date.now();
-    for (const old of objectToEntries(cloudDailyRaw).filter(item => Number(item.createdAt) && now - Number(item.createdAt) >= DAILY_TTL).slice(0, 25)) {
-      const oldId = idSafe(old.id);
-      if (oldId) cloudDelete(`${CLOUD_DAILY}/${oldId}`).catch(() => {});
-    }
-
-    return { all: mergedAll, daily: mergedDaily };
-  }
-
-  function setCloudStatus(mode) {
-    // V55: hidden from players. Score sync continues silently.
-    return;
-  }
-
-  function refreshScoreUi() {
-    try { updateDifficultyScoreBadges && updateDifficultyScoreBadges(); } catch (_) {}
-    try { updateCurrentHighscoreHud && updateCurrentHighscoreHud(); } catch (_) {}
-    try { updateStartSummary && updateStartSummary(); } catch (_) {}
-    // V55: do not repaint/reopen the winner board during background sync; it caused visible jumping.
-  }
-
-  async function syncScores(reason = 'auto') {
-    if (cloudBusy) return false;
-    cloudBusy = true;
-    setCloudStatus('loading');
-    try {
-      await syncBestsWithCloud();
-      await syncBoardsWithCloud();
-      lastCloudOk = true;
-      firstCloudPullDone = true;
-      refreshScoreUi();
-      setCloudStatus('ok');
-      return true;
-    } catch (error) {
-      console.warn('Score-sync gikk lokalt fordi Firebase-regler/internett stoppet sky-sync:', error);
-      lastCloudOk = false;
-      setCloudStatus('local');
-      return false;
-    } finally {
-      cloudBusy = false;
-    }
-  }
-
-  window.syncScoresNow = function syncScoresNowV50() {
-    return syncScores('manual');
-  };
-
-  // Best-score per vanskelighetsgrad: lagres lokalt umiddelbart og forsøkes dyttet til skyen.
-  const oldSaveDifficultyBest = typeof saveDifficultyBest === 'function' ? saveDifficultyBest : null;
-  if (oldSaveDifficultyBest) {
-    saveDifficultyBest = function saveDifficultyBestV50(mode, value) {
-      const changed = oldSaveDifficultyBest.apply(this, arguments);
-      const bests = readBests();
-      if (Number(value) > (Number(bests[mode]) || 0)) {
-        bests[mode] = Number(value) || 0;
-        writeBests(bests);
-      }
-      setTimeout(() => syncScores('best'), 250);
-      return changed;
-    };
-    window.saveDifficultyBest = saveDifficultyBest;
-  }
-
-  // Når spilleren lagrer Top 10-navnet, sendes resultatet til skyen også.
-  const oldSaveChampionWinner = window.saveChampionWinner;
-  if (typeof oldSaveChampionWinner === 'function') {
-    window.saveChampionWinner = function saveChampionWinnerV50() {
-      const result = oldSaveChampionWinner.apply(this, arguments);
-      setTimeout(() => syncScores('champion-save'), 350);
-      return result;
-    };
-    try { eval('saveChampionWinner = window.saveChampionWinner'); } catch (_) {}
-  }
-
-  // Når en kamp avsluttes, synces dagsliste + highscore. Current score i selve kampen nullstilles fortsatt som normalt.
-  const oldEndGame = window.endGame || (typeof endGame === 'function' ? endGame : null);
-  if (typeof oldEndGame === 'function' && !oldEndGame.__v50Wrapped) {
-    const wrapped = function endGameV50(won) {
-      const result = oldEndGame.apply(this, arguments);
-      setTimeout(() => syncScores('end-game'), 900);
-      return result;
-    };
-    wrapped.__v50Wrapped = true;
-    window.endGame = globalThis.endGame = wrapped;
-    try { endGame = wrapped; } catch (_) {}
-  }
-
-  const oldShowWinnerBoard = window.showWinnerBoard;
-  if (typeof oldShowWinnerBoard === 'function') {
-    window.showWinnerBoard = function showWinnerBoardV50() {
-      const result = oldShowWinnerBoard.apply(this, arguments);
-      setCloudStatus(firstCloudPullDone ? 'ok' : 'loading');
-      syncScores('open-board').then(() => setTimeout(() => {
-        try { oldShowWinnerBoard.apply(this, arguments); } catch (_) {}
-        setCloudStatus(lastCloudOk ? 'ok' : 'local');
-      }, 80));
-      return result;
-    };
-    try { eval('showWinnerBoard = window.showWinnerBoard'); } catch (_) {}
-  }
-
-  window.addEventListener('firebase-ready', () => setTimeout(() => syncScores('firebase-ready'), 500));
-  window.addEventListener('focus', () => setTimeout(() => syncScores('focus'), 250));
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) setTimeout(() => syncScores('visible'), 250);
-  });
-  document.addEventListener('DOMContentLoaded', () => setTimeout(() => syncScores('dom'), 900));
-  setTimeout(() => syncScores('boot'), 1200);
-})();
-
-
-/* --------------------------------------------------------------------------
-   V52: Score sync hardening + hidden technical status
-   - Bruker Firebase REST direkte på /scores/public.
-   - Synker Top 10, dagens Top 10 og best-score mellom Chrome/Edge/mobil.
-   - Oppdaterer lokalt først, så spillet aldri stopper hvis Firebase er treg.
-   - Ingen teknisk "score-sync aktiv"-tekst vises til spillere.
-   -------------------------------------------------------------------------- */
-(function v52ScoreSyncHardening(){
-  if (window.__ragiJoyV52ScoreSyncHardening) return;
-  window.__ragiJoyV52ScoreSyncHardening = true;
-
-  const BOARD_KEY = 'ragiJoyMazeLeaderboardV34';
-  const DAILY_KEY = 'ragiJoyMazeDailyTop10V41';
-  const BEST_KEY = 'ragiJoyBestByDifficulty';
-  const CLOUD_BASE = 'scores/public';
-  const CLOUD_ALLTIME = `${CLOUD_BASE}/alltime`;
-  const CLOUD_DAILY = `${CLOUD_BASE}/daily`;
-  const CLOUD_BESTS = `${CLOUD_BASE}/bests`;
-  const DAILY_TTL = 24 * 60 * 60 * 1000;
-  const ALLTIME_LIMIT = 10;
-  const CLOUD_KEEP = 40;
-  const DIFFICULTIES = ['easy','normal','hard','extreme'];
-
-  let busy = false;
-  let queued = false;
-  let lastSync = 0;
-
-  function now(){ return Date.now(); }
-
-  function firebaseUrl(path) {
-    try {
-      if (typeof firebaseRestUrl === 'function') return firebaseRestUrl(path);
-    } catch (_) {}
-    try {
-      if (typeof FIREBASE_DATABASE_URL === 'string' && FIREBASE_DATABASE_URL) {
-        return `${FIREBASE_DATABASE_URL}/${path}.json`;
-      }
-    } catch (_) {}
-    return `https://rag-game-default-rtdb.europe-west1.firebasedatabase.app/${path}.json`;
-  }
-
-  async function cloudGet(path) {
-    try {
-      if (typeof restGet === 'function') return await restGet(path);
-    } catch (_) {}
-    const res = await fetch(firebaseUrl(path), { cache: 'no-store' });
-    if (!res.ok) throw new Error(`Firebase read failed ${res.status}`);
-    return await res.json();
-  }
-
-  async function cloudPatch(path, data) {
-    try {
-      if (typeof restPatch === 'function') return await restPatch(path, data);
-    } catch (_) {}
-    const res = await fetch(firebaseUrl(path), {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+    dialog.querySelector('[data-v64-create-card]').addEventListener('click', () => {
+      closeDialog(dialog);
+      try { if (typeof window.showProfileNameModal === 'function') window.showProfileNameModal(); }
+      catch (_) {}
     });
-    if (!res.ok) throw new Error(`Firebase write failed ${res.status}`);
-    return await res.json();
+    dialog.querySelectorAll('[data-v64-anon-close]').forEach(button => button.addEventListener('click', () => closeDialog(dialog)));
+    openDialog(dialog);
   }
 
-  function readJson(key, fallback) {
-    try {
-      const parsed = JSON.parse(localStorage.getItem(key) || '');
-      return parsed ?? fallback;
-    } catch (_) {
-      return fallback;
-    }
-  }
-
-  function writeJson(key, value) {
-    try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) {}
-  }
-
-  function safeText(value, max = 28) {
-    return String(value || '')
-      .replace(/[<>]/g, '')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .slice(0, max) || 'Player';
-  }
-
-  function safeDifficulty(value) {
-    return DIFFICULTIES.includes(value) ? value : 'normal';
-  }
-
-  function base64Id(text) {
-    try {
-      return btoa(unescape(encodeURIComponent(text)))
-        .replace(/=+$/g, '')
-        .replace(/[^A-Za-z0-9_-]/g, '')
-        .slice(0, 42);
-    } catch (_) {
-      return String(Math.abs(hashCode(text)));
-    }
-  }
-
-  function hashCode(text) {
-    let h = 0;
-    for (let i = 0; i < text.length; i++) h = ((h << 5) - h + text.charCodeAt(i)) | 0;
-    return h;
-  }
-
-  function entryId(entry, source) {
-    const raw = [
-      source || 'score',
-      safeText(entry.name, 24),
-      Math.floor(Number(entry.score) || 0),
-      Math.max(1, Math.min(35, Number(entry.level) || 1)),
-      safeDifficulty(entry.difficulty),
-      Number(entry.createdAt) || 0
-    ].join('|');
-    return `v52_${base64Id(raw)}`;
-  }
-
-  function normalizeEntry(entry, source = 'score') {
-    if (!entry || typeof entry !== 'object') return null;
-    const scoreValue = Math.floor(Number(entry.score) || 0);
-    if (scoreValue <= 0) return null;
-    const createdAt = Number(entry.createdAt) || now();
-    const out = {
-      id: String(entry.id || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 55),
-      name: safeText(entry.name || entry.playerName || 'Player', 28),
-      score: scoreValue,
-      level: Math.max(1, Math.min(35, Number(entry.level) || 1)),
-      difficulty: safeDifficulty(entry.difficulty),
-      completedCampaign: Boolean(entry.completedCampaign || Number(entry.level) >= 35),
-      createdAt,
-      source: 'cloud'
+  function installAnonymousStart() {
+    const previousStartGame = window.startGame || (typeof startGame === 'function' ? startGame : null);
+    if (typeof previousStartGame !== 'function' || previousStartGame.__v64AnonymousWrapped) return;
+    const wrapped = function startGameV64Anonymous() {
+      const args = arguments;
+      if (!activePlayerName() && !onlineMode) {
+        showAnonymousStartPrompt(() => previousStartGame.apply(this, args));
+        return;
+      }
+      return previousStartGame.apply(this, args);
     };
-    if (!out.id) out.id = entryId(out, source);
-    return out;
+    wrapped.__v64AnonymousWrapped = true;
+    window.startGame = globalThis.startGame = wrapped;
+    try { startGame = wrapped; } catch (_) {}
   }
 
-  function rawToArray(raw, source) {
-    if (!raw) return [];
-    const values = Array.isArray(raw) ? raw : Object.values(raw);
-    return values.map(item => normalizeEntry(item, source)).filter(Boolean);
+  function addEntryToBoard(entry) {
+    const clean = {
+      id: entry.id || `score_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      name: String(entry.name || activePlayerName() || newAnonymousName()).slice(0, 18),
+      score: Number(entry.score) || 0,
+      level: Math.max(1, Math.min(35, Number(entry.level) || 1)),
+      difficulty: entry.difficulty || selectedDifficulty || 'normal',
+      completedCampaign: Boolean(entry.completedCampaign),
+      createdAt: Number(entry.createdAt) || Date.now()
+    };
+    if (!clean.score) return null;
+    const merged = mergeScoreEntries([...readJsonArray(BOARD_KEY), clean]);
+    writeJsonArray(BOARD_KEY, merged);
+    return clean;
   }
 
-  function sortScores(entries, limit = ALLTIME_LIMIT) {
+  function mergeScoreEntries(entries) {
     const map = new Map();
-    for (const entry of entries.map(e => normalizeEntry(e, 'merge')).filter(Boolean)) {
-      const id = entry.id || entryId(entry, 'merge');
-      const old = map.get(id);
-      if (!old || Number(entry.score) > Number(old.score)) map.set(id, { ...entry, id });
+    for (const item of Array.isArray(entries) ? entries : []) {
+      if (!item || Number(item.score) <= 0) continue;
+      const id = item.id || `${item.name || 'Player'}_${item.score}_${item.createdAt || ''}_${item.level || 1}`;
+      const existing = map.get(id);
+      if (!existing || Number(item.score) > Number(existing.score)) map.set(id, { ...item, id });
     }
-    return [...map.values()]
-      .sort((a, b) =>
-        (Number(b.score) || 0) - (Number(a.score) || 0) ||
-        (Number(b.level) || 0) - (Number(a.level) || 0) ||
-        (Number(a.createdAt) || 0) - (Number(b.createdAt) || 0)
-      )
-      .slice(0, limit);
+    return Array.from(map.values())
+      .sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0) || (Number(b.level) || 0) - (Number(a.level) || 0) || (Number(a.createdAt) || 0) - (Number(b.createdAt) || 0))
+      .slice(0, 10);
   }
 
-  function cleanDaily(entries) {
-    const cutoff = now() - DAILY_TTL;
-    return sortScores(entries, 20)
-      .filter(entry => Number(entry.createdAt) >= cutoff)
-      .slice(0, ALLTIME_LIMIT);
+  async function pushScoreToCloud(entry) {
+    if (!entry || typeof restPut !== 'function') return;
+    try { await restPut(`${SCORE_CLOUD_PATH}/${entry.id}`, entry); }
+    catch (_) {}
   }
 
-  function localBoard() {
-    return sortScores(readJson(BOARD_KEY, []), ALLTIME_LIMIT);
-  }
-
-  function localDaily() {
-    return cleanDaily(readJson(DAILY_KEY, []));
-  }
-
-  function localBests() {
-    const raw = readJson(BEST_KEY, {});
-    const out = { easy:0, normal:0, hard:0, extreme:0 };
-    for (const key of DIFFICULTIES) out[key] = Math.max(0, Math.floor(Number(raw[key]) || 0));
-    return out;
-  }
-
-  function mergeBests(a, b) {
-    const out = { easy:0, normal:0, hard:0, extreme:0 };
-    for (const key of DIFFICULTIES) out[key] = Math.max(Number(a?.[key]) || 0, Number(b?.[key]) || 0);
-    return out;
-  }
-
-  function scoresPayload(entries) {
-    const payload = {};
-    for (const entry of entries.slice(0, CLOUD_KEEP)) payload[entry.id] = entry;
-    return payload;
-  }
-
-  function updateBestHud(bests) {
+  async function syncScoresFromCloud(force = false) {
+    if (!force && Date.now() - lastCloudScoreSync < 7000) return;
+    lastCloudScoreSync = Date.now();
+    if (typeof restGet !== 'function') return;
     try {
-      const mode = safeDifficulty(typeof selectedDifficulty !== 'undefined' ? selectedDifficulty : 'normal');
-      if (typeof highscoreText !== 'undefined' && highscoreText) {
-        highscoreText.textContent = String(Math.max(0, Number(bests[mode]) || 0));
-      }
-      if (typeof updateCurrentHighscoreHud === 'function') updateCurrentHighscoreHud();
-      if (typeof updateDifficultyScoreBadges === 'function') updateDifficultyScoreBadges();
+      const cloud = await restGet(SCORE_CLOUD_PATH);
+      const cloudEntries = Object.values(cloud || {}).filter(Boolean);
+      if (cloudEntries.length) writeJsonArray(BOARD_KEY, mergeScoreEntries([...readJsonArray(BOARD_KEY), ...cloudEntries]));
+      refreshWinnerInfoOnly();
     } catch (_) {}
   }
 
-  function hideTechnicalStatus() {
-    const status = document.getElementById('v50ScoreSyncStatus');
-    if (status) {
-      status.textContent = '';
-      status.setAttribute('hidden', 'hidden');
-      status.style.display = 'none';
+  function installChampionAnonymousSave() {
+    const previousSave = window.saveChampionWinner;
+    if (typeof previousSave === 'function' && !previousSave.__v64AnonymousSaveWrapped) {
+      const wrappedSave = function saveChampionWinnerV64() {
+        if (!activePlayerName()) setPlayerName(newAnonymousName());
+        const before = readJsonArray(BOARD_KEY);
+        const result = previousSave.apply(this, arguments);
+        setTimeout(() => {
+          const after = readJsonArray(BOARD_KEY);
+          const created = after.find(item => !before.some(old => old.id === item.id || (old.name === item.name && old.score === item.score && old.createdAt === item.createdAt)));
+          if (created) pushScoreToCloud(created);
+          syncScoresFromCloud(true);
+          refreshWinnerInfoOnly();
+        }, 120);
+        return result;
+      };
+      wrappedSave.__v64AnonymousSaveWrapped = true;
+      window.saveChampionWinner = globalThis.saveChampionWinner = wrappedSave;
+      try { saveChampionWinner = wrappedSave; } catch (_) {}
+    }
+
+    const observer = new MutationObserver(() => patchChampionDialog());
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['open'] });
+  }
+
+  function patchChampionDialog() {
+    const dialog = document.getElementById('championModal');
+    if (!dialog || !dialog.open) return;
+    const noName = !activePlayerName();
+    const text = document.getElementById('championText');
+    if (noName && text) text.textContent = tr('championNoNameText');
+    const actions = dialog.querySelector('.champion-actions, .v38-champion-actions');
+    if (!actions || document.getElementById('championAnonSaveButton')) return;
+    if (noName) {
+      const btn = document.createElement('button');
+      btn.id = 'championAnonSaveButton';
+      btn.type = 'button';
+      btn.textContent = tr('championAnon');
+      btn.addEventListener('click', () => {
+        setPlayerName(newAnonymousName());
+        try { window.saveChampionWinner(); } catch (_) {}
+      });
+      actions.insertBefore(btn, actions.firstChild);
     }
   }
 
-  async function syncScores(reason = 'auto', force = false) {
-    hideTechnicalStatus();
+  function installQuitReasonFix() {
+    window.finishRunAndSave = function finishRunAndSaveV64() {
+      try { if (typeof window.closeEndRunDialog === 'function') window.closeEndRunDialog(); } catch (_) {}
+      if (!gameRunning) return;
+      if (!activePlayerName()) setPlayerName(newAnonymousName());
+      endingReason = 'quit';
+      paused = false;
+      try { if (typeof window.v30UpdatePlayUi === 'function') window.v30UpdatePlayUi(); } catch (_) {}
+      endGame(false);
+    };
+    try { finishRunAndSave = window.finishRunAndSave; } catch (_) {}
 
-    const elapsed = now() - lastSync;
-    if (!force && elapsed < 2500) {
-      if (!queued) {
-        queued = true;
-        setTimeout(() => { queued = false; syncScores('queued', true); }, 2600);
+    const previousEndGame = window.endGame || (typeof endGame === 'function' ? endGame : null);
+    if (typeof previousEndGame === 'function' && !previousEndGame.__v64QuitReasonWrapped) {
+      const wrappedEndGame = function endGameV64Reason(won) {
+        const reason = endingReason;
+        const result = previousEndGame.apply(this, arguments);
+        if (reason === 'quit') {
+          const title = document.getElementById('endTitle');
+          const summary = document.getElementById('endSummary') || document.querySelector('#endScreen p, #endScreen .end-summary');
+          if (title) title.textContent = tr('quitTitle');
+          if (summary) summary.textContent = tr('quitSummary');
+          if (typeof messageBar !== 'undefined' && messageBar) messageBar.textContent = tr('quitSummary');
+        }
+        endingReason = '';
+        setTimeout(() => syncScoresFromCloud(true), 450);
+        return result;
+      };
+      wrappedEndGame.__v64QuitReasonWrapped = true;
+      window.endGame = globalThis.endGame = wrappedEndGame;
+      try { endGame = wrappedEndGame; } catch (_) {}
+    }
+  }
+
+  function showLevelCountdown() {
+    return new Promise(resolve => {
+      let overlay = document.getElementById('v64LevelCountdown');
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'v64LevelCountdown';
+        overlay.className = 'v64-level-countdown hidden';
+        document.body.appendChild(overlay);
       }
-      return false;
-    }
-    if (busy) {
-      queued = true;
-      return false;
-    }
+      const steps = ['3', '2', '1', tr('countdownGo')];
+      let i = 0;
+      overlay.classList.remove('hidden');
+      const tick = () => {
+        overlay.innerHTML = `<div class="v64-countdown-bubble">${escapeHtml(steps[i])}</div>`;
+        i += 1;
+        if (i >= steps.length) {
+          setTimeout(() => {
+            overlay.classList.add('hidden');
+            resolve();
+          }, 520);
+        } else {
+          setTimeout(tick, 620);
+        }
+      };
+      tick();
+    });
+  }
 
-    busy = true;
-    lastSync = now();
-
-    try {
-      const localAll = localBoard();
-      const localDay = localDaily();
-      const localBest = localBests();
-
-      const [remoteAllRaw, remoteDayRaw, remoteBestRaw] = await Promise.all([
-        cloudGet(CLOUD_ALLTIME).catch(() => null),
-        cloudGet(CLOUD_DAILY).catch(() => null),
-        cloudGet(CLOUD_BESTS).catch(() => null)
-      ]);
-
-      const remoteAll = rawToArray(remoteAllRaw, 'alltime');
-      const remoteDay = rawToArray(remoteDayRaw, 'daily');
-      const mergedAll = sortScores([...localAll, ...remoteAll], ALLTIME_LIMIT);
-      const mergedDay = cleanDaily([...localDay, ...remoteDay]);
-      const mergedBest = mergeBests(localBest, remoteBestRaw || {});
-
-      writeJson(BOARD_KEY, mergedAll);
-      writeJson(DAILY_KEY, mergedDay);
-      writeJson(BEST_KEY, mergedBest);
-      updateBestHud(mergedBest);
-
-      const oldDailyDeletes = {};
-      if (remoteDayRaw && typeof remoteDayRaw === 'object' && !Array.isArray(remoteDayRaw)) {
-        const cutoff = now() - DAILY_TTL;
-        Object.entries(remoteDayRaw).forEach(([id, entry]) => {
-          if (!entry || Number(entry.createdAt) < cutoff) oldDailyDeletes[id] = null;
+  function installLevelTransitionCountdown() {
+    const previousNextLevel = window.nextLevel || (typeof nextLevel === 'function' ? nextLevel : null);
+    if (typeof previousNextLevel !== 'function' || previousNextLevel.__v64CountdownWrapped) return;
+    const wrapped = function nextLevelV64Countdown() {
+      try { clearInterval(enemyTimer); clearTimeout(powerTimer); } catch (_) {}
+      score += 250 + (Number(levelIndex) + 1) * 100;
+      const maxLevel = Math.min(Array.isArray(levels) ? levels.length : 35, 35);
+      if (levelIndex >= maxLevel - 1) {
+        endGame(true);
+        return;
+      }
+      gameRunning = false;
+      paused = true;
+      try {
+        if (levelTitle) levelTitle.textContent = `Level ${Number(levelIndex) + 1} ${typeof t === 'function' ? t('levelComplete') : 'complete'}`;
+        if (levelDescription) levelDescription.textContent = typeof t === 'function' ? t('levelDoneDesc') : 'Next level starts soon.';
+        if (levelScreen) levelScreen.classList.remove('hidden');
+        if (typeof spawnCenterBurst === 'function') spawnCenterBurst('🎉 LEVEL UP!');
+        if (typeof playSfx === 'function') playSfx('level');
+      } catch (_) {}
+      setTimeout(() => {
+        levelIndex++;
+        if (levelScreen) levelScreen.classList.add('hidden');
+        loadLevel(levelIndex);
+        gameRunning = true;
+        paused = true;
+        drawGame();
+        showLevelCountdown().then(() => {
+          paused = false;
+          gameRunning = true;
+          try { clearInterval(enemyTimer); enemyTimer = setInterval(moveEnemies, getEnemyDelay()); } catch (_) {}
+          try { if (typeof window.v30UpdatePlayUi === 'function') window.v30UpdatePlayUi(); } catch (_) {}
         });
-      }
-
-      await Promise.all([
-        cloudPatch(CLOUD_ALLTIME, scoresPayload(sortScores([...mergedAll, ...localAll], CLOUD_KEEP))).catch(err => { throw err; }),
-        cloudPatch(CLOUD_DAILY, { ...oldDailyDeletes, ...scoresPayload(mergedDay) }).catch(err => { throw err; }),
-        cloudPatch(CLOUD_BESTS, mergedBest).catch(err => { throw err; })
-      ]);
-
-      try {
-        localStorage.setItem('ragiJoyLastScoreSyncOkV52', String(now()));
-        localStorage.setItem('ragiJoyLastScoreSyncReasonV52', reason);
-      } catch (_) {}
-
-      return true;
-    } catch (error) {
-      try {
-        console.warn('[Ragi Joy Maze] Score sync failed:', error);
-        localStorage.setItem('ragiJoyLastScoreSyncErrorV52', String(error?.message || error));
-      } catch (_) {}
-      return false;
-    } finally {
-      busy = false;
-      hideTechnicalStatus();
-      if (queued) {
-        queued = false;
-        setTimeout(() => syncScores('queued-final', true), 500);
-      }
-    }
-  }
-
-  window.syncScoresNow = function syncScoresNowV52(){ return syncScores('manual', true); };
-  window.ragiJoyForceScoreSync = window.syncScoresNow;
-
-  const oldSaveDifficultyBest = typeof saveDifficultyBest === 'function' ? saveDifficultyBest : null;
-  if (oldSaveDifficultyBest && !oldSaveDifficultyBest.__v52Wrapped) {
-    const wrappedSaveDifficultyBest = function saveDifficultyBestV52(mode, value) {
-      const result = oldSaveDifficultyBest.apply(this, arguments);
-      const bests = localBests();
-      const safeMode = safeDifficulty(mode);
-      if (Number(value) > (Number(bests[safeMode]) || 0)) {
-        bests[safeMode] = Math.floor(Number(value) || 0);
-        writeJson(BEST_KEY, bests);
-        updateBestHud(bests);
-      }
-      setTimeout(() => syncScores('difficulty-best', true), 250);
-      return result;
+      }, 650);
     };
-    wrappedSaveDifficultyBest.__v52Wrapped = true;
-    try { saveDifficultyBest = wrappedSaveDifficultyBest; } catch (_) {}
-    window.saveDifficultyBest = wrappedSaveDifficultyBest;
+    wrapped.__v64CountdownWrapped = true;
+    window.nextLevel = globalThis.nextLevel = wrapped;
+    try { nextLevel = wrapped; } catch (_) {}
   }
 
-  const oldSaveChampionWinner = window.saveChampionWinner;
-  if (typeof oldSaveChampionWinner === 'function' && !oldSaveChampionWinner.__v52Wrapped) {
-    const wrappedSaveChampionWinner = function saveChampionWinnerV52() {
-      const result = oldSaveChampionWinner.apply(this, arguments);
-      setTimeout(() => syncScores('champion-save', true), 350);
-      return result;
-    };
-    wrappedSaveChampionWinner.__v52Wrapped = true;
-    window.saveChampionWinner = wrappedSaveChampionWinner;
-    try { saveChampionWinner = wrappedSaveChampionWinner; } catch (_) {}
-  }
-
-  const oldEndGame = typeof endGame === 'function' ? endGame : window.endGame;
-  if (typeof oldEndGame === 'function' && !oldEndGame.__v52Wrapped) {
-    const wrappedEndGame = function endGameV52(won) {
-      const runScore = Math.floor(Number(typeof score !== 'undefined' ? score : 0) || 0);
-      const runDifficulty = safeDifficulty(typeof selectedDifficulty !== 'undefined' ? selectedDifficulty : 'normal');
-      const result = oldEndGame.apply(this, arguments);
-      if (runScore > 0) {
-        const bests = localBests();
-        if (runScore > (Number(bests[runDifficulty]) || 0)) {
-          bests[runDifficulty] = runScore;
-          writeJson(BEST_KEY, bests);
-          updateBestHud(bests);
+  function refreshWinnerInfoOnly() {
+    try {
+      if (typeof window.showWinnerBoard === 'function' && document.getElementById('winnerBoardModal')?.open) {
+        const list = document.getElementById('winnerList');
+        if (list && typeof window.showWinnerBoard === 'function') {
+          const dialog = document.getElementById('winnerBoardModal');
+          window.showWinnerBoard();
+          if (dialog && !dialog.open) openDialog(dialog);
         }
       }
-      setTimeout(() => syncScores('end-game', true), 500);
+    } catch (_) {}
+    injectWinnerInfoBox();
+  }
+
+  function injectWinnerInfoBox() {
+    const dialog = document.getElementById('winnerBoardModal');
+    if (!dialog) return;
+    const card = dialog.querySelector('.winner-card') || dialog;
+    if (!card) return;
+    let info = document.getElementById('v64WinnerInfoBox');
+    if (!info) {
+      info = document.createElement('section');
+      info.id = 'v64WinnerInfoBox';
+      info.className = 'v64-winner-info';
+      const list = document.getElementById('winnerList') || card.querySelector('.winner-list');
+      if (list && list.parentElement) list.parentElement.insertBefore(info, list);
+      else card.prepend(info);
+    }
+    info.innerHTML = `<strong>${escapeHtml(tr('winnerInfoTitle'))}</strong><span>${escapeHtml(tr('winnerInfoText'))}</span><em>${escapeHtml(tr('winnerRefresh'))}</em>`;
+  }
+
+  function installWinnerAutoRefresh() {
+    const previousShowWinnerBoard = window.showWinnerBoard;
+    if (typeof previousShowWinnerBoard === 'function' && !previousShowWinnerBoard.__v64AutoRefreshWrapped) {
+      const wrapped = function showWinnerBoardV64() {
+        const result = previousShowWinnerBoard.apply(this, arguments);
+        setTimeout(() => { injectWinnerInfoBox(); syncScoresFromCloud(true); }, 80);
+        clearInterval(winnerRefreshTimer);
+        winnerRefreshTimer = setInterval(() => {
+          const dialog = document.getElementById('winnerBoardModal');
+          if (!dialog || !dialog.open) {
+            clearInterval(winnerRefreshTimer);
+            winnerRefreshTimer = null;
+            return;
+          }
+          syncScoresFromCloud(true);
+          injectWinnerInfoBox();
+        }, 12000);
+        return result;
+      };
+      wrapped.__v64AutoRefreshWrapped = true;
+      window.showWinnerBoard = globalThis.showWinnerBoard = wrapped;
+      try { showWinnerBoard = wrapped; } catch (_) {}
+    }
+    document.addEventListener('close', event => {
+      if (event.target && event.target.id === 'winnerBoardModal') {
+        clearInterval(winnerRefreshTimer);
+        winnerRefreshTimer = null;
+      }
+    }, true);
+  }
+
+  function maskName(name) {
+    const clean = String(name || '').trim();
+    if (!clean) return currentLanguage === 'no' ? 'Anonym spiller' : 'Anonymous player';
+    if (clean.length <= 4) return clean[0] + '***';
+    return `${clean.slice(0, 3)}***${clean.slice(-2)}`;
+  }
+
+  function loadComments() {
+    const now = Date.now();
+    const clean = readJsonArray(FEEDBACK_KEY)
+      .filter(item => item && Number(item.createdAt) && now - Number(item.createdAt) < COMMENT_TTL)
+      .sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0))
+      .slice(0, MAX_COMMENTS);
+    writeJsonArray(FEEDBACK_KEY, clean);
+    return clean;
+  }
+
+  function saveCommentLocal(entry) {
+    const clean = { ...entry, id: entry.id || `fb_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`, createdAt: entry.createdAt || Date.now() };
+    writeJsonArray(FEEDBACK_KEY, [clean, ...loadComments()].slice(0, MAX_COMMENTS));
+    return clean;
+  }
+
+  async function pushCommentToCloud(entry) {
+    if (!entry || typeof restPut !== 'function') return;
+    try { await restPut(`${FEEDBACK_CLOUD_PATH}/${entry.id}`, entry); } catch (_) {}
+  }
+
+  async function syncCommentsFromCloud(force = false) {
+    if (!force && Date.now() - lastCloudFeedbackSync < 9000) return;
+    lastCloudFeedbackSync = Date.now();
+    if (typeof restGet !== 'function') return;
+    try {
+      const cloud = await restGet(FEEDBACK_CLOUD_PATH);
+      const values = Object.values(cloud || {}).filter(Boolean);
+      if (values.length) {
+        const merged = new Map();
+        [...loadComments(), ...values].forEach(item => {
+          if (!item || !item.id) return;
+          if (Date.now() - Number(item.createdAt || 0) < COMMENT_TTL) merged.set(item.id, item);
+        });
+        writeJsonArray(FEEDBACK_KEY, Array.from(merged.values()).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0)).slice(0, MAX_COMMENTS));
+        renderFeedbackWall();
+      }
+    } catch (_) {}
+  }
+
+  function feedbackSuggestions(field) {
+    const suggestions = {
+      liked: [
+        'Spillet var gøy, raskt og lett å forstå.',
+        'Jeg likte brettet, ikonene og at power-ups gjør spillet mer spennende.',
+        'Det var morsomt å jakte poeng og komme videre til neste level.'
+      ],
+      improve: [
+        'Gjør butikken enda tydeligere når jeg har nok poeng.',
+        'Legg inn flere morsomme brett og enda tydeligere belønninger.',
+        'Fiendene kan gjerne få flere animasjoner og overraskelser.'
+      ],
+      bug: [
+        'Jeg merket litt lagg når mye skjedde samtidig.',
+        'Noen knapper kan bli enda større på mobil.',
+        'Jeg ønsker tydeligere beskjed når scoren er lagret.'
+      ]
+    };
+    const list = suggestions[field] || suggestions.liked;
+    return list[Math.floor(Math.random() * list.length)];
+  }
+
+  function ensureFeedbackUi() {
+    let button = document.getElementById('v64FeedbackButton');
+    if (!button) {
+      button = document.createElement('button');
+      button.id = 'v64FeedbackButton';
+      button.type = 'button';
+      button.className = 'v64-feedback-button';
+      button.addEventListener('click', showFeedbackDialog);
+      document.body.appendChild(button);
+    }
+    button.textContent = tr('feedbackButton');
+
+    let dialog = document.getElementById('v64FeedbackDialog');
+    if (!dialog) {
+      dialog = document.createElement('dialog');
+      dialog.id = 'v64FeedbackDialog';
+      dialog.className = 'v64-feedback-dialog';
+      document.body.appendChild(dialog);
+      dialog.addEventListener('cancel', event => { event.preventDefault(); closeDialog(dialog); });
+      dialog.addEventListener('keydown', event => {
+        if (event.target && /^(TEXTAREA|INPUT|SELECT)$/.test(event.target.tagName)) event.stopPropagation();
+      }, true);
+      dialog.addEventListener('input', event => {
+        const area = event.target.closest('textarea[data-max]');
+        if (area) {
+          const max = Number(area.dataset.max) || 180;
+          if (area.value.length > max) area.value = area.value.slice(0, max);
+          const counter = dialog.querySelector(`[data-count-for="${area.id}"]`);
+          if (counter) counter.textContent = `${area.value.length}/${max}`;
+        }
+      });
+    }
+  }
+
+  function renderFeedbackDialog() {
+    const dialog = document.getElementById('v64FeedbackDialog');
+    if (!dialog) return;
+    const active = activePlayerName();
+    dialog.innerHTML = `
+      <div class="v64-feedback-card">
+        <button class="friend-modal-close" type="button" data-v64-feedback-close aria-label="Close">✕</button>
+        <p class="friend-kicker">PLAYER FEEDBACK</p>
+        <h2>${escapeHtml(tr('feedbackTitle'))}</h2>
+        <p class="v64-feedback-intro">${escapeHtml(tr('feedbackIntro'))}</p>
+        <section class="v64-feedback-info"><strong>${escapeHtml(tr('feedbackInfoTitle'))}</strong><span>${escapeHtml(tr('feedbackInfoText'))}</span></section>
+        <div class="v64-feedback-grid">
+          <form id="v64FeedbackForm" class="v64-feedback-form">
+            <label>${escapeHtml(tr('feedbackName'))}<input id="v64FeedbackName" maxlength="18" placeholder="${escapeHtml(tr('feedbackNamePlaceholder'))}" value="${escapeHtml(active)}"></label>
+            <div class="v64-rating-wrap"><span>${escapeHtml(tr('feedbackRating'))}</span><div class="v64-stars" role="radiogroup" aria-label="rating">
+              ${[1,2,3,4,5].map(n => `<button type="button" data-rating="${n}" class="${n <= 5 ? 'active' : ''}">★</button>`).join('')}
+            </div></div>
+            <input type="hidden" id="v64FeedbackRating" value="5">
+            <div class="v64-category-wrap"><span>${escapeHtml(tr('feedbackCategory'))}</span><div class="v64-category-buttons">
+              <button type="button" class="active" data-category="fun">${escapeHtml(tr('feedbackFun'))}</button>
+              <button type="button" data-category="design">${escapeHtml(tr('feedbackDesign'))}</button>
+              <button type="button" data-category="performance">${escapeHtml(tr('feedbackPerformance'))}</button>
+            </div></div>
+            <input type="hidden" id="v64FeedbackCategory" value="fun">
+            ${[
+              ['liked', tr('feedbackLiked')],
+              ['improve', tr('feedbackImprove')],
+              ['bug', tr('feedbackBug')]
+            ].map(([id, label]) => `
+              <label class="v64-textarea-label"><span>${escapeHtml(label)}</span><button type="button" data-suggest="${id}">${escapeHtml(tr('feedbackGenerate'))}</button>
+                <textarea id="v64Fb_${id}" data-max="180" maxlength="180" placeholder="${escapeHtml(tr('feedbackPlaceholder'))}"></textarea>
+                <small data-count-for="v64Fb_${id}">0/180</small>
+              </label>`).join('')}
+            <button type="submit" class="v64-submit-feedback">${escapeHtml(tr('feedbackSend'))}</button>
+            <p id="v64FeedbackMessage" class="v64-feedback-message"></p>
+          </form>
+          <section class="v64-feedback-wall"><h3>${escapeHtml(tr('feedbackWall'))}</h3><div id="v64FeedbackWallList"></div></section>
+        </div>
+      </div>`;
+
+    dialog.querySelectorAll('[data-v64-feedback-close]').forEach(button => button.addEventListener('click', () => closeDialog(dialog)));
+    dialog.querySelectorAll('[data-rating]').forEach(button => button.addEventListener('click', () => {
+      const value = Number(button.dataset.rating) || 5;
+      dialog.querySelector('#v64FeedbackRating').value = String(value);
+      dialog.querySelectorAll('[data-rating]').forEach(star => star.classList.toggle('active', Number(star.dataset.rating) <= value));
+    }));
+    dialog.querySelectorAll('[data-category]').forEach(button => button.addEventListener('click', () => {
+      dialog.querySelector('#v64FeedbackCategory').value = button.dataset.category;
+      dialog.querySelectorAll('[data-category]').forEach(item => item.classList.toggle('active', item === button));
+    }));
+    dialog.querySelectorAll('[data-suggest]').forEach(button => button.addEventListener('click', () => {
+      const field = button.dataset.suggest;
+      const area = dialog.querySelector(`#v64Fb_${field}`);
+      if (area) {
+        area.value = feedbackSuggestions(field);
+        area.dispatchEvent(new Event('input', { bubbles: true }));
+        area.focus();
+      }
+    }));
+    const form = dialog.querySelector('#v64FeedbackForm');
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const liked = dialog.querySelector('#v64Fb_liked').value.trim();
+      const improve = dialog.querySelector('#v64Fb_improve').value.trim();
+      const bug = dialog.querySelector('#v64Fb_bug').value.trim();
+      const message = dialog.querySelector('#v64FeedbackMessage');
+      if (!liked && !improve && !bug) {
+        if (message) message.textContent = tr('feedbackEmpty');
+        return;
+      }
+      const entry = saveCommentLocal({
+        name: maskName(dialog.querySelector('#v64FeedbackName').value || activePlayerName()),
+        rating: Number(dialog.querySelector('#v64FeedbackRating').value) || 5,
+        category: dialog.querySelector('#v64FeedbackCategory').value || 'fun',
+        liked,
+        improve,
+        bug,
+        level: Math.max(1, Number(levelIndex) + 1 || 1),
+        score: Number(score) || 0,
+        createdAt: Date.now()
+      });
+      pushCommentToCloud(entry);
+      renderFeedbackWall();
+      if (message) message.textContent = tr('feedbackSaved');
+      form.reset();
+      dialog.querySelector('#v64FeedbackRating').value = '5';
+      dialog.querySelector('#v64FeedbackCategory').value = 'fun';
+      dialog.querySelectorAll('[data-rating]').forEach(star => star.classList.add('active'));
+      dialog.querySelectorAll('[data-category]').forEach((item, index) => item.classList.toggle('active', index === 0));
+      dialog.querySelectorAll('textarea[data-max]').forEach(area => area.dispatchEvent(new Event('input', { bubbles: true })));
+    });
+    renderFeedbackWall();
+  }
+
+  function renderFeedbackWall() {
+    const list = document.getElementById('v64FeedbackWallList');
+    if (!list) return;
+    const comments = loadComments();
+    if (!comments.length) {
+      list.innerHTML = `<p class="v64-no-comments">${escapeHtml(tr('feedbackNoComments'))}</p>`;
+      return;
+    }
+    list.innerHTML = comments.map(item => {
+      const date = new Date(Number(item.createdAt) || Date.now()).toLocaleString(currentLanguage === 'no' ? 'nb-NO' : undefined, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      const cat = item.category === 'design' ? tr('feedbackDesign') : item.category === 'performance' ? tr('feedbackPerformance') : tr('feedbackFun');
+      return `<article class="v64-comment-bubble">
+        <header><strong>${escapeHtml(item.name || 'Anonym')}</strong><span>${'★'.repeat(Math.max(1, Math.min(5, Number(item.rating) || 5)))}</span></header>
+        <small>${escapeHtml(cat)} · ${escapeHtml(date)}</small>
+        ${item.liked ? `<p><b>${escapeHtml(tr('feedbackLiked'))}</b> ${escapeHtml(item.liked)}</p>` : ''}
+        ${item.improve ? `<p><b>${escapeHtml(tr('feedbackImprove'))}</b> ${escapeHtml(item.improve)}</p>` : ''}
+        ${item.bug ? `<p><b>${escapeHtml(tr('feedbackBug'))}</b> ${escapeHtml(item.bug)}</p>` : ''}
+      </article>`;
+    }).join('');
+  }
+
+  function showFeedbackDialog() {
+    ensureFeedbackUi();
+    renderFeedbackDialog();
+    openDialog(document.getElementById('v64FeedbackDialog'));
+    syncCommentsFromCloud(true);
+  }
+
+  function installTypingFix() {
+    document.addEventListener('keydown', event => {
+      const target = event.target;
+      if (!target) return;
+      if (target.closest && target.closest('#v64FeedbackDialog, #championModal, #profileNameModal, .customize-modal')) {
+        if (/^(TEXTAREA|INPUT|SELECT)$/.test(target.tagName) || target.isContentEditable) event.stopPropagation();
+      }
+    }, true);
+  }
+
+  function refreshUiTexts() {
+    const fb = document.getElementById('v64FeedbackButton');
+    if (fb) fb.textContent = tr('feedbackButton');
+    injectWinnerInfoBox();
+    renderFeedbackWall();
+  }
+
+  function installLanguageRefresh() {
+    const previousApply = window.applyLanguage || (typeof applyLanguage === 'function' ? applyLanguage : null);
+    if (typeof previousApply === 'function' && !previousApply.__v64RefreshWrapped) {
+      const wrapped = function applyLanguageV64() {
+        const result = previousApply.apply(this, arguments);
+        setTimeout(refreshUiTexts, 0);
+        return result;
+      };
+      wrapped.__v64RefreshWrapped = true;
+      window.applyLanguage = globalThis.applyLanguage = wrapped;
+      try { applyLanguage = wrapped; } catch (_) {}
+    }
+  }
+
+  installTranslations();
+  installAnonymousStart();
+  installChampionAnonymousSave();
+  installQuitReasonFix();
+  installLevelTransitionCountdown();
+  installWinnerAutoRefresh();
+  installTypingFix();
+  installLanguageRefresh();
+
+  document.addEventListener('DOMContentLoaded', () => {
+    installTranslations();
+    ensureFeedbackUi();
+    syncScoresFromCloud(true);
+    syncCommentsFromCloud(true);
+    refreshUiTexts();
+  });
+  setTimeout(() => {
+    ensureFeedbackUi();
+    syncScoresFromCloud(true);
+    syncCommentsFromCloud(true);
+    refreshUiTexts();
+  }, 500);
+})();
+
+/* --------------------------------------------------------------------------
+   V65: targeted repair patch
+   Fixes only the reported issues: enemy generator duplicates, winner modal
+   side-by-side layout, champion popup empty width, right-side shop bubble,
+   safer anonymous save, and reliable level countdown.
+   -------------------------------------------------------------------------- */
+(function v65TargetedRepair(){
+  if (window.__ragiJoyV65Patch) return;
+  window.__ragiJoyV65Patch = true;
+
+  const NAME_KEY = 'ragiJoyMazePreferredNameV34';
+  const LAST_NAME_KEY = 'ragiJoyLastWinnerName';
+  const GENERATED_KEY = 'ragiJoyGeneratedEnemyStylesV63';
+  const COUNTER_KEY = 'ragiJoyGeneratedEnemyCounterV65';
+
+  function isNorwegian(){
+    try { return currentLanguage !== 'en'; } catch(_) { return true; }
+  }
+  function txt(no, en){ return isNorwegian() ? no : en; }
+  function esc(value){
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+  function readArray(key){
+    try { const parsed = JSON.parse(localStorage.getItem(key) || '[]'); return Array.isArray(parsed) ? parsed : []; }
+    catch(_) { return []; }
+  }
+  function writeArray(key, items){
+    try { localStorage.setItem(key, JSON.stringify(Array.isArray(items) ? items : [])); } catch(_) {}
+  }
+  function currentSafeName(){
+    return String(localStorage.getItem(NAME_KEY) || localStorage.getItem(LAST_NAME_KEY) || '').trim();
+  }
+  function createAnonName(){
+    let name = currentSafeName();
+    if (name && name.toLowerCase() !== 'spiller' && name.toLowerCase() !== 'player') return name;
+    name = `Anonym-${Math.floor(1000 + Math.random() * 9000)}`;
+    try {
+      localStorage.setItem(NAME_KEY, name);
+      localStorage.setItem(LAST_NAME_KEY, name);
+    } catch(_) {}
+    return name;
+  }
+
+  /* ----------------------- Enemy generator real fix ----------------------- */
+  const V65_ENEMY_PRESETS = [
+    { base: '🧪 Mutant Lab', pool: ['🧬','🦠','🧪','👽','🤢','☣️','🧟','🧌'] },
+    { base: '🤖 Robot Army', pool: ['🤖','🦾','🛸','⚙️','🔩','🛰️','👾','💣'] },
+    { base: '🐉 Dragon Cave', pool: ['🐉','🐲','🦖','🔥','🌋','☄️','👺','🧌'] },
+    { base: '🧊 Ice Squad', pool: ['🥶','❄️','🧊','👻','💎','🌨️','☃️','🦭'] },
+    { base: '🦈 Sea Panic', pool: ['🦈','🐙','🪼','🦑','🐡','🌊','⚓','👾'] },
+    { base: '🎃 Horror Night', pool: ['🎃','👻','🧛','🧟','🦇','🕷️','💀','🪦'] },
+    { base: '🐝 Bug Swarm', pool: ['🐝','🪲','🦂','🕷️','🪳','🦟','🐜','🦠'] },
+    { base: '👑 Boss Rush', pool: ['👑','🦹','👺','🧌','🐲','🤖','💀','⚔️'] },
+    { base: '🌪️ Chaos Pack', pool: ['🌪️','💥','⚡','☄️','🌀','👽','🤡','😈'] },
+    { base: '🧟 Zombie Crew', pool: ['🧟','🧟‍♂️','🧟‍♀️','💀','🪦','👻','🦴','😵'] },
+    { base: '🛸 Alien Raid', pool: ['🛸','👽','🪐','☄️','🚀','🔮','👾','⚡'] },
+    { base: '🧛 Vampire Alley', pool: ['🧛','🦇','🌙','🩸','👻','💀','🕯️','🕷️'] },
+    { base: '🦴 Bone Yard', pool: ['🦴','💀','🪦','👻','🧟','🕷️','⚰️','😵'] },
+    { base: '🎪 Clown Attack', pool: ['🤡','🎪','🎈','😈','👺','💣','🃏','👻'] },
+    { base: '⚡ Storm Crew', pool: ['⚡','🌩️','🌪️','☄️','🔥','🌀','💥','👾'] },
+    { base: '🏴‍☠️ Pirate Bay', pool: ['🏴‍☠️','☠️','⚓','🦜','🦈','💣','🗡️','🌊'] }
+  ];
+
+  function normaliseGeneratedEnemyItems(){
+    const seen = new Set();
+    const cleaned = [];
+    readArray(GENERATED_KEY).forEach((item) => {
+      if (!item || !item.key || !item.label || !Array.isArray(item.pool) || !item.pool.length) return;
+      const signature = `${String(item.label).trim().toLowerCase()}|${item.pool.join('')}`;
+      if (seen.has(signature)) return;
+      seen.add(signature);
+      cleaned.push({ key: String(item.key), label: String(item.label), pool: item.pool.slice(0, 12) });
+    });
+    const latest = cleaned.slice(-8);
+    writeArray(GENERATED_KEY, latest);
+    return latest;
+  }
+
+  function maxGeneratedNumber(items){
+    let max = Number(localStorage.getItem(COUNTER_KEY) || 0) || 0;
+    items.forEach(item => {
+      const m = String(item.label || '').match(/#(\d+)\s*$/);
+      if (m) max = Math.max(max, Number(m[1]) || 0);
+    });
+    return max;
+  }
+
+  function registerGeneratedPool(item){
+    if (!item || !item.key || !Array.isArray(item.pool)) return;
+    try { v30EnemyPools[item.key] = item.pool.slice(); } catch(_) {}
+  }
+
+  function renderGeneratedEnemyButtons(){
+    const grid = document.getElementById('enemyStyleGrid');
+    if (!grid) return;
+    const generator = document.getElementById('v63GenerateEnemyEmojis') || document.getElementById('v61GenerateEnemyEmojis');
+
+    grid.querySelectorAll('button.v63-generated-enemy-button, button[data-v65-generated="1"]').forEach(btn => btn.remove());
+
+    const items = normaliseGeneratedEnemyItems();
+    items.forEach(item => {
+      registerGeneratedPool(item);
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.dataset.enemyStyle = item.key;
+      btn.dataset.v65Generated = '1';
+      btn.className = 'v63-generated-enemy-button';
+      btn.textContent = item.label;
+      btn.addEventListener('click', () => {
+        registerGeneratedPool(item);
+        if (typeof window.setEnemyStyle === 'function') window.setEnemyStyle(item.key);
+      });
+      if (generator && generator.parentElement === grid) grid.insertBefore(btn, generator);
+      else grid.appendChild(btn);
+    });
+
+    if (generator) {
+      generator.textContent = txt('🎲 Generer ny fiende-pakke', '🎲 Generate new enemy pack');
+      generator.onclick = window.generateEnemyEmojis;
+    }
+
+    try {
+      const selected = String(localStorage.getItem('ragiJoyEnemyStyle') || selectedEnemyStyle || 'monsters');
+      document.querySelectorAll('#enemyStyleGrid button').forEach(btn => {
+        btn.classList.toggle('active-choice', btn.dataset.enemyStyle === selected);
+      });
+    } catch(_) {}
+  }
+
+  window.generateEnemyEmojis = function generateEnemyEmojisV65(){
+    const existing = normaliseGeneratedEnemyItems();
+    const nextNo = maxGeneratedNumber(existing) + 1;
+    try { localStorage.setItem(COUNTER_KEY, String(nextNo)); } catch(_) {}
+    const preset = V65_ENEMY_PRESETS[(nextNo - 1) % V65_ENEMY_PRESETS.length];
+    const key = `generated_v65_${nextNo}_${Date.now().toString(36)}`;
+    const pool = preset.pool.slice().sort(() => Math.random() - 0.5);
+    const item = { key, label: `${preset.base} #${nextNo}`, pool };
+    writeArray(GENERATED_KEY, [...existing, item].slice(-8));
+    registerGeneratedPool(item);
+    renderGeneratedEnemyButtons();
+    try { if (typeof window.setEnemyStyle === 'function') window.setEnemyStyle(key); } catch(_) {}
+    try {
+      if (Array.isArray(enemies)) enemies.forEach(enemy => { enemy.face = typeof getEnemyFace === 'function' ? getEnemyFace() : pool[0]; });
+      if (typeof updateCustomizerUi === 'function') updateCustomizerUi();
+      if (typeof drawGame === 'function') drawGame();
+      if (typeof playSfx === 'function') playSfx('enemy');
+    } catch(_) {}
+  };
+
+  function installEnemyGeneratorFix(){
+    normaliseGeneratedEnemyItems().forEach(registerGeneratedPool);
+    renderGeneratedEnemyButtons();
+    const generator = document.getElementById('v63GenerateEnemyEmojis') || document.getElementById('v61GenerateEnemyEmojis');
+    if (generator) generator.onclick = window.generateEnemyEmojis;
+  }
+
+  /* ----------------------- Top 10 side-by-side layout ---------------------- */
+  function ensureDailyPanelExists(card){
+    let panel = document.getElementById('dailyTopPanel');
+    if (!panel && card) {
+      panel = document.createElement('section');
+      panel.id = 'dailyTopPanel';
+      panel.className = 'v41-daily-panel v42-daily-panel';
+      panel.innerHTML = `<h3>${txt('⏱️ Dagens Top 10', '⏱️ Today Top 10')}</h3><p>${txt('Daglisten oppdateres automatisk.', 'The daily list updates automatically.')}</p>`;
+      card.appendChild(panel);
+    }
+    return panel;
+  }
+
+  function layoutWinnerBoardV65(){
+    const dialog = document.getElementById('winnerBoardModal');
+    if (!dialog) return;
+    const card = dialog.querySelector('.winner-card') || dialog;
+    const list = document.getElementById('winnerList');
+    const panel = ensureDailyPanelExists(card);
+    if (!card || !list || !panel) return;
+
+    let grid = card.querySelector('.v65-winner-grid');
+    if (!grid) {
+      grid = document.createElement('div');
+      grid.className = 'v65-winner-grid';
+      card.insertBefore(grid, list);
+    }
+    if (list.parentElement !== grid) grid.appendChild(list);
+    if (panel.parentElement !== grid) grid.appendChild(panel);
+    dialog.style.width = 'min(1120px, calc(100vw - 26px))';
+    dialog.style.maxWidth = 'min(1120px, calc(100vw - 26px))';
+    dialog.style.overflow = 'hidden';
+  }
+
+  function wrapWinnerBoard(){
+    const previous = window.showWinnerBoard;
+    if (typeof previous === 'function' && !previous.__v65Wrapped) {
+      const wrapped = function showWinnerBoardV65(){
+        const result = previous.apply(this, arguments);
+        [0, 60, 180, 600].forEach(delay => setTimeout(layoutWinnerBoardV65, delay));
+        return result;
+      };
+      wrapped.__v65Wrapped = true;
+      window.showWinnerBoard = globalThis.showWinnerBoard = wrapped;
+      try { showWinnerBoard = wrapped; } catch(_) {}
+    }
+    setInterval(() => {
+      const dialog = document.getElementById('winnerBoardModal');
+      if (dialog && (dialog.open || dialog.hasAttribute('open'))) layoutWinnerBoardV65();
+    }, 12000);
+  }
+
+  /* -------------------- Champion popup width hard-fix ---------------------- */
+  function compactChampionPopup(){
+    const dialog = document.getElementById('championModal');
+    if (!dialog) return;
+    dialog.style.width = 'min(500px, calc(100vw - 28px))';
+    dialog.style.maxWidth = 'min(500px, calc(100vw - 28px))';
+    dialog.style.minWidth = '0';
+    dialog.style.padding = '0';
+    dialog.style.margin = 'auto';
+    dialog.style.background = 'transparent';
+    dialog.style.border = '0';
+    dialog.style.overflow = 'visible';
+    const card = dialog.querySelector('.winner-card, .champion-card, .v38-champion-card');
+    if (card) {
+      card.style.width = '100%';
+      card.style.maxWidth = '100%';
+      card.style.minWidth = '0';
+      card.style.margin = '0';
+      card.style.boxSizing = 'border-box';
+      card.style.overflow = 'hidden';
+    }
+  }
+
+  function installChampionCompactWatcher(){
+    compactChampionPopup();
+    const dialog = document.getElementById('championModal');
+    if (dialog && !dialog.dataset.v65CompactWatcher) {
+      dialog.dataset.v65CompactWatcher = '1';
+      new MutationObserver(() => setTimeout(compactChampionPopup, 0)).observe(dialog, { attributes: true, childList: true, subtree: true });
+    }
+    const prevClose = window.closeChampionModal;
+    if (typeof prevClose === 'function' && !prevClose.__v65Wrapped) {
+      const wrappedClose = function closeChampionModalV65(){
+        return prevClose.apply(this, arguments);
+      };
+      wrappedClose.__v65Wrapped = true;
+      window.closeChampionModal = globalThis.closeChampionModal = wrappedClose;
+      try { closeChampionModal = wrappedClose; } catch(_) {}
+    }
+  }
+
+  /* ----------------------- Anonymous score saving -------------------------- */
+  function installAnonymousSaveFallback(){
+    const previousSave = window.saveChampionWinner;
+    if (typeof previousSave === 'function' && !previousSave.__v65AnonWrapped) {
+      const wrapped = function saveChampionWinnerV65(){
+        if (!currentSafeName()) createAnonName();
+        compactChampionPopup();
+        return previousSave.apply(this, arguments);
+      };
+      wrapped.__v65AnonWrapped = true;
+      window.saveChampionWinner = globalThis.saveChampionWinner = wrapped;
+      try { saveChampionWinner = wrapped; } catch(_) {}
+    }
+  }
+
+  /* ----------------------- Level countdown hard-fix ------------------------- */
+  function ensureCountdownElement(){
+    let overlay = document.getElementById('v64LevelCountdown');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'v64LevelCountdown';
+      overlay.className = 'v64-level-countdown hidden';
+      overlay.innerHTML = '<div class="v64-countdown-bubble">3</div>';
+      document.body.appendChild(overlay);
+    }
+    return overlay;
+  }
+
+  function showLevelCountdownV65(done){
+    const overlay = ensureCountdownElement();
+    const bubble = overlay.querySelector('.v64-countdown-bubble') || overlay;
+    const sequence = ['3', '2', '1', 'GO!'];
+    overlay.classList.remove('hidden');
+    let index = 0;
+    const step = () => {
+      bubble.textContent = sequence[index];
+      bubble.style.animation = 'none';
+      void bubble.offsetWidth;
+      bubble.style.animation = '';
+      try { if (typeof playSfx === 'function') playSfx(index < 3 ? 'coin' : 'power'); } catch(_) {}
+      index += 1;
+      if (index < sequence.length) setTimeout(step, 560);
+      else setTimeout(() => {
+        overlay.classList.add('hidden');
+        if (typeof done === 'function') done();
+      }, 430);
+    };
+    step();
+  }
+
+  function installLevelCountdownHardfix(){
+    if (typeof window.nextLevel !== 'function') return;
+    const previousNext = window.nextLevel;
+    if (previousNext.__v65Hardfix) return;
+
+    const wrapped = function nextLevelV65(){
+      try {
+        if (window.__v65LevelTransitionBusy) return;
+        window.__v65LevelTransitionBusy = true;
+
+        if (typeof levelIndex === 'number' && Array.isArray(levels) && levelIndex >= levels.length - 1) {
+          window.__v65LevelTransitionBusy = false;
+          if (typeof endGame === 'function') endGame(true);
+          return;
+        }
+
+        try { score += 500 + (levelIndex + 1) * 75; } catch(_) {}
+        try { gameRunning = false; paused = true; } catch(_) {}
+        try { clearInterval(enemyTimer); } catch(_) {}
+        try { if (typeof stopEnemyLoop === 'function') stopEnemyLoop(); } catch(_) {}
+        try {
+          if (levelScreen) {
+            levelScreen.hidden = false;
+            levelScreen.textContent = txt('Neste level starter ...', 'Next level starts ...');
+          }
+        } catch(_) {}
+        try { if (typeof updateHud === 'function') updateHud(); } catch(_) {}
+        try { if (typeof playSfx === 'function') playSfx('level'); } catch(_) {}
+
+        setTimeout(() => {
+          try { levelIndex += 1; } catch(_) {}
+          try { if (levelScreen) levelScreen.hidden = true; } catch(_) {}
+          try { if (typeof loadLevel === 'function') loadLevel(levelIndex); } catch(_) {}
+          try { paused = true; gameRunning = false; } catch(_) {}
+          try { if (typeof drawGame === 'function') drawGame(); } catch(_) {}
+          showLevelCountdownV65(() => {
+            try {
+              paused = false;
+              gameRunning = true;
+              window.__v65LevelTransitionBusy = false;
+              if (typeof startTimers === 'function') startTimers();
+              if (typeof startEnemyLoop === 'function') startEnemyLoop();
+              else { try { clearInterval(enemyTimer); enemyTimer = setTimeout(moveEnemies, getEnemyDelay()); } catch(_) {} }
+              if (typeof updateHud === 'function') updateHud();
+              if (typeof updatePlayUi === 'function') updatePlayUi();
+              if (typeof syncOnlinePlayer === 'function' && typeof onlineMode !== 'undefined' && onlineMode) syncOnlinePlayer(true);
+            } catch(_) {
+              window.__v65LevelTransitionBusy = false;
+            }
+          });
+        }, 300);
+      } catch(error) {
+        window.__v65LevelTransitionBusy = false;
+        return previousNext.apply(this, arguments);
+      }
+    };
+    wrapped.__v65Hardfix = true;
+    window.nextLevel = globalThis.nextLevel = wrapped;
+    try { nextLevel = wrapped; } catch(_) {}
+  }
+
+  /* ----------------------- Shop coach RIGHT placement ----------------------- */
+  function positionShopCoachRightV65(){
+    const coach = document.getElementById('v62ShopCoach');
+    const shopButton = document.getElementById('shopButton');
+    if (!coach || !shopButton || coach.classList.contains('hidden')) return;
+    const rect = shopButton.getBoundingClientRect();
+    const bubble = coach.firstElementChild || coach;
+    const bubbleRect = bubble.getBoundingClientRect();
+    let left = rect.right + 14;
+    let top = rect.top + (rect.height - bubbleRect.height) / 2;
+    let side = 'right';
+
+    if (left + bubbleRect.width > window.innerWidth - 12) {
+      left = Math.max(12, window.innerWidth - bubbleRect.width - 12);
+      top = rect.bottom + 10;
+      side = 'bottom';
+    }
+    top = Math.max(12, Math.min(top, window.innerHeight - bubbleRect.height - 12));
+    coach.classList.remove('v62-side-left', 'v62-side-right', 'v62-side-bottom', 'v65-side-right');
+    coach.classList.add(side === 'right' ? 'v62-side-right' : 'v62-side-bottom', 'v65-force-right');
+    if (side === 'right') coach.classList.add('v65-side-right');
+    coach.style.left = `${Math.round(left)}px`;
+    coach.style.top = `${Math.round(top)}px`;
+  }
+
+  function installShopCoachRightPlacement(){
+    setInterval(positionShopCoachRightV65, 180);
+    window.addEventListener('resize', () => setTimeout(positionShopCoachRightV65, 0), { passive: true });
+    window.addEventListener('scroll', () => setTimeout(positionShopCoachRightV65, 0), { passive: true });
+  }
+
+  /* ----------------------- Feedback visibility + language ------------------- */
+  function ensureFeedbackButtonVisible(){
+    const button = document.getElementById('v64FeedbackButton');
+    if (button) {
+      button.style.display = 'inline-flex';
+      button.style.alignItems = 'center';
+      button.style.justifyContent = 'center';
+      button.style.zIndex = '1600';
+      button.textContent = txt('💬 Feedback', '💬 Feedback');
+    }
+    const info = document.querySelector('.v64-feedback-info span');
+    if (info) info.textContent = txt(
+      'Kommentarer lagres lokalt i nettleseren og kan synkes til kommentarveggen. Gamle kommentarer slettes automatisk etter 7 dager.',
+      'Comments are stored locally in the browser and can sync to the comment wall. Old comments are removed automatically after 7 days.'
+    );
+  }
+
+  function initV65(){
+    installEnemyGeneratorFix();
+    wrapWinnerBoard();
+    layoutWinnerBoardV65();
+    compactChampionPopup();
+    installChampionCompactWatcher();
+    installAnonymousSaveFallback();
+    installLevelCountdownHardfix();
+    positionShopCoachRightV65();
+    ensureFeedbackButtonVisible();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initV65();
+    [150, 450, 900, 1600].forEach(delay => setTimeout(initV65, delay));
+  });
+  [250, 800, 1800].forEach(delay => setTimeout(initV65, delay));
+  installShopCoachRightPlacement();
+})();
+
+/* --------------------------------------------------------------------------
+   V70: Stability/cleanup pass requested 2026-05-06
+   - Reliable How-to popup
+   - Pause -> main menu confirmation instead of fake game-over
+   - Anonymous player prompt before singleplayer starts
+   - Power shop compact/no-scroll desktop layout + extra items
+   - Auto-placed laser turrets + active countdown under board
+   - Leaderboard country/language badges, no "unknown" fallback
+   - Feedback/comment persistence reinforcement
+   - De-duplicate repeated shop sounds
+   -------------------------------------------------------------------------- */
+(function v70RagiJoyHardFixes() {
+  if (window.__ragiJoyV70HardFixes) return;
+  window.__ragiJoyV70HardFixes = true;
+
+  const NAME_KEY = 'ragiJoyMazePreferredNameV34';
+  const LAST_NAME_KEY = 'ragiJoyLastWinnerName';
+  const BOARD_KEY = 'ragiJoyMazeLeaderboardV34';
+  const LEGACY_BOARD_KEY = 'ragiJoyMazeWinnersV33';
+  const DAILY_KEY = 'ragiJoyMazeDailyTop10V41';
+  const FEEDBACK_KEY = 'ragiJoyMazeFeedbackPublicV64';
+  const FEEDBACK_BACKUP_KEY = 'ragiJoyMazeFeedbackBackupV70';
+  const COMMENT_TTL_V70 = 30 * 24 * 60 * 60 * 1000;
+  const MAX_COMMENTS_V70 = 30;
+  let v70WinnerRefreshTimer = null;
+  let v70HudTimer = null;
+  let v70StartingFromAnonPrompt = false;
+
+  const text = (no, en) => (typeof currentLanguage !== 'undefined' && currentLanguage === 'no') ? no : en;
+  const htmlEscape = value => String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
+  function safeReadArray(key) {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (_) { return []; }
+  }
+
+  function safeWriteArray(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(Array.isArray(value) ? value : [])); } catch (_) {}
+  }
+
+  function safeOpenDialog(dialog) {
+    if (!dialog) return;
+    try {
+      if (dialog.open) return;
+      if (typeof dialog.showModal === 'function') dialog.showModal();
+      else dialog.setAttribute('open', 'open');
+    } catch (_) {
+      dialog.setAttribute('open', 'open');
+    }
+  }
+
+  function safeCloseDialog(dialog) {
+    if (!dialog) return;
+    try {
+      if (dialog.open && typeof dialog.close === 'function') dialog.close();
+      else dialog.removeAttribute('open');
+    } catch (_) { dialog.removeAttribute('open'); }
+  }
+
+  function setNameRaw(name) {
+    const fallback = text('Anonym spiller', 'Anonymous player');
+    const clean = String(name || fallback).trim().replace(/[^A-Za-z0-9ÆØÅæøå_-]/g, '').slice(0, 18) || fallback.replace(/\s+/g, '');
+    try {
+      localStorage.setItem(NAME_KEY, clean);
+      localStorage.setItem(LAST_NAME_KEY, clean);
+    } catch (_) {}
+    return clean;
+  }
+
+  function getActiveName() {
+    try { return String(localStorage.getItem(NAME_KEY) || localStorage.getItem(LAST_NAME_KEY) || '').trim(); }
+    catch (_) { return ''; }
+  }
+
+  function makeAnonName() {
+    return `${text('Anonym', 'Anon')}-${Math.floor(1000 + Math.random() * 9000)}`;
+  }
+
+  function countryFromLanguage() {
+    let lang = 'no';
+    try { lang = currentLanguage || localStorage.getItem('ragiJoyLanguage') || 'no'; } catch (_) {}
+    const option = (Array.isArray(languageOptions) ? languageOptions : []).find(item => item && item.code === lang);
+    if (option) return { flag: option.flag || '🌍', country: option.country || option.name || 'Global', source: text('språkvalg', 'language setting') };
+    return { flag: '🌍', country: text('Global spiller', 'Global player'), source: text('språkvalg', 'language setting') };
+  }
+
+  function addCountry(entry) {
+    const country = countryFromLanguage();
+    return {
+      ...entry,
+      countryFlag: entry.countryFlag || country.flag,
+      country: entry.country || country.country,
+      countrySource: entry.countrySource || country.source
+    };
+  }
+
+  function enrichStoredBoards() {
+    [BOARD_KEY, LEGACY_BOARD_KEY, DAILY_KEY].forEach(key => {
+      const list = safeReadArray(key);
+      if (!list.length) return;
+      const updated = list.map(addCountry);
+      if (JSON.stringify(list) !== JSON.stringify(updated)) safeWriteArray(key, updated);
+    });
+  }
+
+  try {
+    const nativeSetItem = Storage.prototype.setItem;
+    if (!nativeSetItem.__v70CountryWrapped) {
+      Storage.prototype.setItem = function setItemV70(key, value) {
+        if ([BOARD_KEY, LEGACY_BOARD_KEY, DAILY_KEY].includes(String(key))) {
+          try {
+            const parsed = JSON.parse(String(value));
+            if (Array.isArray(parsed)) return nativeSetItem.call(this, key, JSON.stringify(parsed.map(addCountry)));
+          } catch (_) {}
+        }
+        return nativeSetItem.call(this, key, value);
+      };
+      Storage.prototype.setItem.__v70CountryWrapped = true;
+    }
+  } catch (_) {}
+
+  /* -------------------- 1) Reliable "Hvordan spille" -------------------- */
+  function setHowToTexts() {
+    const set = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+    set('howToKicker', 'QUICK GUIDE');
+    set('howToTitle', text('Slik spiller du', 'How to play'));
+    set('howToDiamonds', text('Samle alle diamantene på brettet.', 'Collect all diamonds on the board.'));
+    set('howToPower', text('Ta ⚡ for power-mode. Da kan du spise fiender for bonus.', 'Grab ⚡ for power mode. Then you can eat enemies for bonus.'));
+    set('howToShield', text('🛡️ Skjold redder deg én gang hvis en fiende treffer deg.', '🛡️ Shield saves you once if an enemy hits you.'));
+    set('howToPortal', text('Når alle diamanter er tatt åpnes 🌀 portal til neste level.', 'When all diamonds are collected, the 🌀 portal opens to the next level.'));
+    set('howToCombo', text('Combo gir mer poeng. Power-butikk kan hjelpe deg videre.', 'Combo gives more points. The power shop can help you progress.'));
+    set('howToOnline', text('Mot venn handler det om å samle mest mulig og overleve lengst.', 'Against a friend, collect the most and survive the longest.'));
+    set('howToOkButton', text('Skjønner ✅', 'Got it ✅'));
+  }
+
+  const showHowToFixed = function showHowToModalV70() {
+    setHowToTexts();
+    safeOpenDialog(document.getElementById('howToModal'));
+  };
+  window.showHowToModal = globalThis.showHowToModal = showHowToFixed;
+  try { showHowToModal = showHowToFixed; } catch (_) {}
+  const closeHowToFixed = function closeHowToModalV70() { safeCloseDialog(document.getElementById('howToModal')); };
+  window.closeHowToModal = globalThis.closeHowToModal = closeHowToFixed;
+  try { closeHowToModal = closeHowToFixed; } catch (_) {}
+
+  /* -------------------- 2) Pause -> main menu confirm -------------------- */
+  function ensureQuitConfirmDialog() {
+    let dialog = document.getElementById('v70QuitConfirmDialog');
+    if (dialog) return dialog;
+    dialog = document.createElement('dialog');
+    dialog.id = 'v70QuitConfirmDialog';
+    dialog.className = 'v70-confirm-dialog';
+    dialog.innerHTML = `
+      <div class="v70-confirm-card">
+        <button class="friend-modal-close" type="button" data-v70-cancel aria-label="Close">✕</button>
+        <p class="friend-kicker">${htmlEscape(text('AVSLUTT KAMP', 'LEAVE GAME'))}</p>
+        <h2>${htmlEscape(text('Forlate spillet?', 'Leave the game?'))}</h2>
+        <p>${htmlEscape(text('Du forlater nå kampen. Hvis du velger ja, går du tilbake til hovedmenyen og må starte på nytt fra level 1.', 'You are leaving the run. If you choose yes, you return to the main menu and must start again from level 1.'))}</p>
+        <div class="v70-confirm-actions">
+          <button type="button" data-v70-confirm>${htmlEscape(text('Ja, gå til hovedmeny', 'Yes, go to main menu'))}</button>
+          <button type="button" class="secondary-action" data-v70-cancel>${htmlEscape(text('Nei, fortsett pause', 'No, stay paused'))}</button>
+        </div>
+      </div>`;
+    document.body.appendChild(dialog);
+    dialog.addEventListener('cancel', event => { event.preventDefault(); safeCloseDialog(dialog); });
+    dialog.querySelectorAll('[data-v70-cancel]').forEach(btn => btn.addEventListener('click', () => {
+      safeCloseDialog(dialog);
+      try { paused = true; if (typeof window.v30UpdatePlayUi === 'function') window.v30UpdatePlayUi(); } catch (_) {}
+    }));
+    dialog.querySelector('[data-v70-confirm]').addEventListener('click', () => {
+      safeCloseDialog(dialog);
+      try { paused = false; gameRunning = false; } catch (_) {}
+      try { clearInterval(enemyTimer); clearTimeout(enemyTimer); clearTimeout(powerTimer); } catch (_) {}
+      try { if (typeof stopMusic === 'function') stopMusic(); } catch (_) {}
+      try { if (typeof v23ResetShopRun === 'function') v23ResetShopRun(); } catch (_) {}
+      try { if (typeof goToMainMenu === 'function') goToMainMenu(); } catch (_) {
+        startScreen?.classList.remove('hidden');
+        endScreen?.classList.add('hidden');
+        levelScreen?.classList.add('hidden');
+      }
+      try {
+        if (messageBar) messageBar.textContent = text('Du forlot kampen. Start ny kamp når du er klar.', 'You left the run. Start a new game when ready.');
+        if (typeof window.v30UpdatePlayUi === 'function') window.v30UpdatePlayUi();
+      } catch (_) {}
+    });
+    return dialog;
+  }
+
+  const returnMenuFixed = function returnToMainMenuFromPauseV70() {
+    try {
+      if (!gameRunning) { if (typeof goToMainMenu === 'function') goToMainMenu(); return; }
+      paused = true;
+      if (messageBar) messageBar.textContent = text('Pause aktivert. Bekreft om du vil forlate kampen.', 'Paused. Confirm if you want to leave the run.');
+      if (typeof window.v30UpdatePlayUi === 'function') window.v30UpdatePlayUi();
+      safeOpenDialog(ensureQuitConfirmDialog());
+    } catch (_) { safeOpenDialog(ensureQuitConfirmDialog()); }
+  };
+  window.returnToMainMenuFromPause = globalThis.returnToMainMenuFromPause = returnMenuFixed;
+  try { returnToMainMenuFromPause = returnMenuFixed; } catch (_) {}
+
+  function fixPauseButtonText() {
+    try {
+      const pauseButton = document.getElementById('pauseButton');
+      if (pauseButton && gameRunning && !paused) pauseButton.textContent = text('⏸️ Pause', '⏸️ Pause');
+      const menuButton = document.getElementById('menuFromPauseButton');
+      if (menuButton) menuButton.textContent = text('🏠 Hovedmeny', '🏠 Main menu');
+    } catch (_) {}
+  }
+
+  /* -------------------- 3) Anonymous start prompt -------------------- */
+  function ensureAnonDialog() {
+    let dialog = document.getElementById('v70AnonDialog');
+    if (dialog) return dialog;
+    dialog = document.createElement('dialog');
+    dialog.id = 'v70AnonDialog';
+    dialog.className = 'v70-anon-dialog';
+    dialog.innerHTML = `
+      <div class="v70-anon-card">
+        <button class="friend-modal-close" type="button" data-v70-anon-cancel aria-label="Close">✕</button>
+        <p class="friend-kicker">PLAYER NAME</p>
+        <h2>${htmlEscape(text('Spille med navn eller anonymt?', 'Play with name or anonymously?'))}</h2>
+        <p>${htmlEscape(text('Du kan skrive et navn, eller spille anonymt. Vinnerlisten vil da vise anonymt spillernavn og landprofil fra språkvalget ditt.', 'You can enter a name or play anonymously. The leaderboard will then show an anonymous player name and country profile from your language setting.'))}</p>
+        <input id="v70AnonNameInput" maxlength="18" placeholder="${htmlEscape(text('Valgfritt spillernavn', 'Optional player name'))}">
+        <div class="v70-anon-actions">
+          <button type="button" data-v70-name>${htmlEscape(text('Start med navn', 'Start with name'))}</button>
+          <button type="button" data-v70-anon>${htmlEscape(text('Spill anonymt', 'Play anonymously'))}</button>
+        </div>
+      </div>`;
+    document.body.appendChild(dialog);
+    const startWith = (name) => {
+      safeCloseDialog(dialog);
+      setNameRaw(name || makeAnonName());
+      v70StartingFromAnonPrompt = true;
+      try { window.startGame(); } finally { setTimeout(() => { v70StartingFromAnonPrompt = false; }, 0); }
+    };
+    dialog.querySelector('[data-v70-name]').addEventListener('click', () => {
+      const input = dialog.querySelector('#v70AnonNameInput');
+      startWith(input && input.value.trim() ? input.value.trim() : makeAnonName());
+    });
+    dialog.querySelector('[data-v70-anon]').addEventListener('click', () => startWith(makeAnonName()));
+    dialog.querySelector('[data-v70-anon-cancel]').addEventListener('click', () => safeCloseDialog(dialog));
+    dialog.querySelector('#v70AnonNameInput').addEventListener('keydown', event => {
+      if (event.key === 'Enter') dialog.querySelector('[data-v70-name]').click();
+    });
+    return dialog;
+  }
+
+  const previousStartGameV70 = window.startGame || (typeof startGame === 'function' ? startGame : null);
+  if (typeof previousStartGameV70 === 'function') {
+    const startGameFixed = function startGameV70() {
+      if (!v70StartingFromAnonPrompt && !getActiveName() && !window.onlineMode) {
+        safeOpenDialog(ensureAnonDialog());
+        return;
+      }
+      const result = previousStartGameV70.apply(this, arguments);
+      setTimeout(() => { fixPauseButtonText(); updateLaserHud(); hideAvatarSummaryIfNoImage(); }, 60);
       return result;
     };
-    wrappedEndGame.__v52Wrapped = true;
-    try { endGame = wrappedEndGame; } catch (_) {}
-    window.endGame = wrappedEndGame;
+    window.startGame = globalThis.startGame = startGameFixed;
+    try { startGame = startGameFixed; } catch (_) {}
   }
 
-  const oldShowWinnerBoard = window.showWinnerBoard;
-  if (typeof oldShowWinnerBoard === 'function' && !oldShowWinnerBoard.__v52Wrapped) {
-    const wrappedShowWinnerBoard = function showWinnerBoardV52() {
-      syncScores('open-board', true).finally(() => oldShowWinnerBoard.apply(this, arguments));
-    };
-    wrappedShowWinnerBoard.__v52Wrapped = true;
-    window.showWinnerBoard = wrappedShowWinnerBoard;
-    try { showWinnerBoard = wrappedShowWinnerBoard; } catch (_) {}
+  /* -------------------- 4) Power shop: extra products + auto turrets -------------------- */
+  const V70_COSTS = {
+    overdrive: 1500,
+    cleaner: 950,
+    heartpack: 2200,
+    chaos: 1350
+  };
+
+  function hasScore(cost) { try { return Number(score) >= Number(cost); } catch (_) { return false; } }
+  function spend(cost) { try { if (!hasScore(cost)) return false; score -= cost; return true; } catch (_) { return false; } }
+
+  function addRandomTiles(tile, count) {
+    try {
+      const empty = [];
+      for (let y = 1; y < map.length - 1; y++) {
+        for (let x = 1; x < map[y].length - 1; x++) {
+          if (map[y][x] === TILE.EMPTY && !(player.x === x && player.y === y) && !enemies.some(e => e.x === x && e.y === y)) empty.push({ x, y });
+        }
+      }
+      let placed = 0;
+      while (empty.length && placed < count) {
+        const idx = Math.floor(Math.random() * empty.length);
+        const cell = empty.splice(idx, 1)[0];
+        map[cell.y][cell.x] = tile;
+        placed++;
+      }
+      return placed;
+    } catch (_) { return 0; }
   }
 
-  window.addEventListener('storage', event => {
-    if (event && [BOARD_KEY, DAILY_KEY, BEST_KEY].includes(event.key)) {
-      setTimeout(() => syncScores('storage', true), 150);
+  function collectRandomDiamonds(maxCount) {
+    try {
+      const dots = [];
+      for (let y = 0; y < map.length; y++) for (let x = 0; x < map[y].length; x++) if (map[y][x] === TILE.DOT) dots.push({ x, y });
+      let taken = 0;
+      while (dots.length && taken < maxCount) {
+        const idx = Math.floor(Math.random() * dots.length);
+        const dot = dots.splice(idx, 1)[0];
+        map[dot.y][dot.x] = TILE.EMPTY;
+        diamondsLeft = Math.max(0, diamondsLeft - 1);
+        score += 10 * Math.max(1, combo || 1);
+        taken++;
+        try { spawnPop('💎', dot.x, dot.y); } catch (_) {}
+      }
+      if (diamondsLeft === 0 && !portalOpen && typeof openPortal === 'function') openPortal();
+      return taken;
+    } catch (_) { return 0; }
+  }
+
+  function findTurretTiles() {
+    const tiles = [];
+    try {
+      for (let y = 1; y < map.length - 1; y++) {
+        for (let x = 1; x < map[y].length - 1; x++) {
+          const ok = (typeof v23CanPlaceTurret === 'function') ? v23CanPlaceTurret(x, y) : (map[y][x] !== TILE.WALL && !(player.x === x && player.y === y));
+          if (ok) tiles.push({ x, y });
+        }
+      }
+    } catch (_) {}
+    return tiles;
+  }
+
+  function autoPlaceTurretsV70(limit = 99) {
+    let placed = 0;
+    try {
+      const tiles = findTurretTiles();
+      while (tiles.length && typeof v23TurretInventory !== 'undefined' && v23TurretInventory > 0 && placed < limit) {
+        const idx = Math.floor(Math.random() * tiles.length);
+        const tile = tiles.splice(idx, 1)[0];
+        if (typeof v23PlaceTurretAt === 'function' && v23PlaceTurretAt(tile.x, tile.y)) placed++;
+      }
+      if (placed && messageBar) messageBar.textContent = text(`🤖 ${placed} laser(e) er auto-plassert på brettet.`, `🤖 ${placed} laser(s) auto-placed on the board.`);
+    } catch (_) {}
+    updateLaserHud();
+    return placed;
+  }
+  window.v70AutoPlaceTurrets = autoPlaceTurretsV70;
+
+  function ensureExtraShopItems() {
+    const grid = document.querySelector('#shopModal .shop-grid');
+    if (!grid || document.getElementById('v70ShopOverdrive')) return;
+    const items = [
+      ['overdrive', '⚡', text('Overdrive', 'Overdrive'), text('Power-mode i 10 sekunder. Perfekt når fiendene presser.', 'Power mode for 10 seconds. Perfect when enemies pressure you.')],
+      ['cleaner', '💎', text('Diamant-støvsuger', 'Diamond vacuum'), text('Fjerner opptil 14 tilfeldige diamanter og gir poeng.', 'Clears up to 14 random diamonds and gives points.')],
+      ['heartpack', '❤️', text('Ekstra liv-pakke', 'Extra life pack'), text('Gir deg 3 ekstra liv i denne kampen.', 'Gives 3 extra lives in this run.')],
+      ['chaos', '🎲', text('Kaos-drop', 'Chaos drop'), text('Legger ut nye power-ups/skjold på tilfeldige trygge ruter.', 'Drops new power-ups/shields on random safe tiles.')]
+    ];
+    for (const [id, icon, title, desc] of items) {
+      const article = document.createElement('article');
+      article.className = 'shop-item shop-item-fun v70-shop-item';
+      article.id = `v70Shop${id[0].toUpperCase()}${id.slice(1)}`;
+      article.innerHTML = `<strong>${icon} ${htmlEscape(title)}</strong><p>${htmlEscape(desc)}</p><button type="button" data-v70-buy="${id}"></button>`;
+      grid.appendChild(article);
     }
-  });
+    grid.addEventListener('click', event => {
+      const btn = event.target.closest('[data-v70-buy]');
+      if (!btn) return;
+      event.preventDefault();
+      event.stopPropagation();
+      window.buyShopItem(btn.dataset.v70Buy);
+    });
+    refreshShopUiV70();
+  }
 
-  window.addEventListener('focus', () => setTimeout(() => syncScores('focus'), 250));
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) setTimeout(() => syncScores('visible'), 250);
-  });
+  function refreshShopUiV70() {
+    try {
+      ensureExtraShopItems();
+      Object.entries(V70_COSTS).forEach(([key, cost]) => {
+        const btn = document.querySelector(`[data-v70-buy="${key}"]`);
+        if (!btn) return;
+        btn.textContent = text(`Kjøp (${cost})`, `Buy (${cost})`);
+        btn.disabled = Boolean(window.onlineMode) || !hasScore(cost);
+      });
+      const placeBtn = document.getElementById('shopPlaceTurretButton');
+      if (placeBtn) placeBtn.textContent = text('🎯 Plasser laser selv', '🎯 Place laser manually');
+      let autoBtn = document.getElementById('v70AutoPlaceTurretButton');
+      const card = document.querySelector('#shopModal .shop-card');
+      if (card && !autoBtn) {
+        autoBtn = document.createElement('button');
+        autoBtn.id = 'v70AutoPlaceTurretButton';
+        autoBtn.type = 'button';
+        autoBtn.className = 'shop-place-button v70-auto-place-button';
+        autoBtn.addEventListener('click', () => autoPlaceTurretsV70());
+        const after = document.getElementById('shopPlaceTurretButton');
+        if (after) after.insertAdjacentElement('afterend', autoBtn);
+        else card.appendChild(autoBtn);
+      }
+      if (autoBtn) {
+        const inv = (typeof v23TurretInventory !== 'undefined') ? Number(v23TurretInventory) : 0;
+        autoBtn.textContent = text(`🤖 Auto-plasser laser (${inv})`, `🤖 Auto-place lasers (${inv})`);
+        autoBtn.disabled = !inv || Boolean(window.onlineMode);
+      }
+    } catch (_) {}
+  }
+
+  const previousOpenPowerShopV70 = window.openPowerShop || (typeof openPowerShop === 'function' ? openPowerShop : null);
+  if (typeof previousOpenPowerShopV70 === 'function') {
+    const openShopFixed = function openPowerShopV70() {
+      const result = previousOpenPowerShopV70.apply(this, arguments);
+      setTimeout(() => { ensureExtraShopItems(); refreshShopUiV70(); updateLaserHud(); }, 40);
+      return result;
+    };
+    window.openPowerShop = globalThis.openPowerShop = openShopFixed;
+    try { openPowerShop = openShopFixed; } catch (_) {}
+  }
+
+  const previousBuyShopItemV70 = window.buyShopItem || (typeof buyShopItem === 'function' ? buyShopItem : null);
+  if (typeof previousBuyShopItemV70 === 'function') {
+    const buyFixed = function buyShopItemV70(item) {
+      const key = String(item || '');
+      if (V70_COSTS[key]) {
+        const cost = V70_COSTS[key];
+        if (!spend(cost)) {
+          if (messageBar) messageBar.textContent = text('Ikke nok score til dette produktet.', 'Not enough score for this item.');
+          try { playSfx('lose'); } catch (_) {}
+          refreshShopUiV70();
+          return false;
+        }
+        if (key === 'overdrive') {
+          try {
+            powerMode = true;
+            clearTimeout(powerTimer);
+            powerTimer = setTimeout(() => { powerMode = false; combo = 1; if (messageBar) messageBar.textContent = text('Overdrive ferdig.', 'Overdrive ended.'); drawGame(); }, 10000);
+          } catch (_) {}
+          if (messageBar) messageBar.textContent = text('⚡ Overdrive aktivert i 10 sekunder!', '⚡ Overdrive active for 10 seconds!');
+        }
+        if (key === 'cleaner') {
+          const taken = collectRandomDiamonds(14);
+          if (messageBar) messageBar.textContent = text(`💎 Støvsuger tok ${taken} diamanter!`, `💎 Vacuum cleared ${taken} diamonds!`);
+        }
+        if (key === 'heartpack') {
+          try { lives = Math.min(12, Number(lives || 0) + 3); } catch (_) {}
+          if (messageBar) messageBar.textContent = text('❤️ Du fikk 3 ekstra liv!', '❤️ You got 3 extra lives!');
+        }
+        if (key === 'chaos') {
+          const p = addRandomTiles(TILE.POWER, 2);
+          const s = addRandomTiles(TILE.SHIELD, 2);
+          if (messageBar) messageBar.textContent = text(`🎲 Kaos-drop: ${p} power-ups og ${s} skjold lagt ut.`, `🎲 Chaos drop: ${p} power-ups and ${s} shields added.`);
+        }
+        try { playSfx('power'); } catch (_) {}
+        try { drawGame(); } catch (_) {}
+        try { if (typeof v23UpdateShopUi === 'function') v23UpdateShopUi(); } catch (_) {}
+        refreshShopUiV70();
+        updateLaserHud();
+        return true;
+      }
+
+      const beforeInventory = (() => { try { return Number(v23TurretInventory || 0); } catch (_) { return 0; } })();
+      const result = previousBuyShopItemV70.apply(this, arguments);
+      const afterInventory = (() => { try { return Number(v23TurretInventory || 0); } catch (_) { return 0; } })();
+      if (key === 'turret' && afterInventory > beforeInventory) setTimeout(() => autoPlaceTurretsV70(afterInventory - beforeInventory), 60);
+      setTimeout(() => { refreshShopUiV70(); updateLaserHud(); }, 80);
+      return result;
+    };
+    window.buyShopItem = globalThis.buyShopItem = buyFixed;
+    try { buyShopItem = buyFixed; } catch (_) {}
+  }
+
+  const previousBuyTurretPackV70 = window.buyTurretPack || (typeof buyTurretPack === 'function' ? buyTurretPack : null);
+  if (typeof previousBuyTurretPackV70 === 'function') {
+    const buyPackFixed = function buyTurretPackV70() {
+      const beforeInventory = (() => { try { return Number(v23TurretInventory || 0); } catch (_) { return 0; } })();
+      const result = previousBuyTurretPackV70.apply(this, arguments);
+      const afterInventory = (() => { try { return Number(v23TurretInventory || 0); } catch (_) { return 0; } })();
+      if (afterInventory > beforeInventory) setTimeout(() => autoPlaceTurretsV70(afterInventory - beforeInventory), 60);
+      setTimeout(() => { refreshShopUiV70(); updateLaserHud(); }, 80);
+      return result;
+    };
+    window.buyTurretPack = globalThis.buyTurretPack = buyPackFixed;
+    try { buyTurretPack = buyPackFixed; } catch (_) {}
+  }
+
+  /* -------------------- 5) Laser countdown HUD -------------------- */
+  function ensureLaserHud() {
+    let hud = document.getElementById('v70LaserHud');
+    if (hud) return hud;
+    hud = document.createElement('div');
+    hud.id = 'v70LaserHud';
+    hud.className = 'v70-laser-hud hidden';
+    const wrapper = document.getElementById('game-wrapper') || document.querySelector('.game-wrapper') || document.getElementById('gameContainer');
+    if (wrapper && wrapper.parentElement) wrapper.insertAdjacentElement('afterend', hud);
+    else document.body.appendChild(hud);
+    return hud;
+  }
+
+  function updateLaserHud() {
+    const hud = ensureLaserHud();
+    try {
+      const now = Date.now();
+      const turrets = (typeof v23Turrets !== 'undefined' && Array.isArray(v23Turrets)) ? v23Turrets.filter(t => Number(t.expiresAt) > now) : [];
+      const longest = turrets.length ? Math.max(...turrets.map(t => Number(t.expiresAt) - now)) : 0;
+      const seconds = Math.max(0, Math.ceil(longest / 1000));
+      if (!gameRunning || !turrets.length) {
+        hud.classList.add('hidden');
+        hud.innerHTML = '';
+        return;
+      }
+      hud.classList.remove('hidden');
+      hud.innerHTML = `<span>🔫 ${htmlEscape(text('Aktive lasere', 'Active lasers'))}: <b>${turrets.length}</b></span><span>⏳ ${htmlEscape(text('varer ca.', 'about'))} <b>${seconds}s</b></span><small>${htmlEscape(text('Laserne skyter automatisk og forsvinner når tiden går ut.', 'Lasers shoot automatically and disappear when time runs out.'))}</small>`;
+    } catch (_) {
+      hud.classList.add('hidden');
+    }
+  }
+
+  /* -------------------- 6) Leaderboard country badges + info -------------------- */
+  function decorateWinnerRows() {
+    enrichStoredBoards();
+    const country = countryFromLanguage();
+    const board = safeReadArray(BOARD_KEY).map(addCountry);
+    const rows = Array.from(document.querySelectorAll('#winnerList .winner-row, #dailyTopPanel li, .v42-daily-list li, .v41-daily-list li'));
+    rows.forEach((row, index) => {
+      if (!row || row.querySelector('.v70-country-badge')) return;
+      const entry = board[index] || {};
+      const flag = entry.countryFlag || country.flag;
+      const name = entry.country || country.country;
+      const badge = document.createElement('span');
+      badge.className = 'v70-country-badge';
+      badge.title = text(`Landprofil fra ${entry.countrySource || country.source}`, `Country profile from ${entry.countrySource || country.source}`);
+      badge.textContent = `${flag} ${name}`;
+      const target = row.querySelector('.winner-meta, .v42-player-cell small, small') || row.querySelector('.winner-name') || row;
+      if (target) target.appendChild(badge);
+    });
+  }
+
+  function injectWinnerInfoV70() {
+    const dialog = document.getElementById('winnerBoardModal');
+    if (!dialog) return;
+    const card = dialog.querySelector('.winner-card') || dialog;
+    let info = document.getElementById('v70WinnerInfoBox');
+    if (!info) {
+      info = document.createElement('section');
+      info.id = 'v70WinnerInfoBox';
+      info.className = 'v70-winner-info';
+      const list = document.getElementById('winnerList') || card.querySelector('.winner-list');
+      if (list && list.parentElement) list.parentElement.insertBefore(info, list);
+      else card.prepend(info);
+    }
+    info.innerHTML = `<strong>${htmlEscape(text('Hvordan vinnerlisten sorteres', 'How the leaderboard is sorted'))}</strong><span>${htmlEscape(text('Listen viser beste poengsum først. Ved lik score rangeres høyeste level foran. Landmerket er basert på spillerens språk/landprofil, derfor vises aldri "ukjent".', 'The list shows highest score first. If scores tie, highest level ranks first. The country badge is based on the player language/country profile, so it never shows "unknown".'))}</span><em>${htmlEscape(text('Oppdateres automatisk ca. hvert 10. sekund når vinduet er åpent.', 'Auto-refreshes about every 10 seconds while open.'))}</em>`;
+    decorateWinnerRows();
+  }
+
+  const previousShowWinnerBoardV70 = window.showWinnerBoard || (typeof showWinnerBoard === 'function' ? showWinnerBoard : null);
+  if (typeof previousShowWinnerBoardV70 === 'function') {
+    const showWinnerFixed = function showWinnerBoardV70() {
+      enrichStoredBoards();
+      const result = previousShowWinnerBoardV70.apply(this, arguments);
+      setTimeout(() => { injectWinnerInfoV70(); decorateWinnerRows(); }, 80);
+      clearInterval(v70WinnerRefreshTimer);
+      v70WinnerRefreshTimer = setInterval(() => {
+        const dialog = document.getElementById('winnerBoardModal');
+        if (!dialog || !dialog.open) { clearInterval(v70WinnerRefreshTimer); v70WinnerRefreshTimer = null; return; }
+        injectWinnerInfoV70();
+        decorateWinnerRows();
+      }, 10000);
+      return result;
+    };
+    window.showWinnerBoard = globalThis.showWinnerBoard = showWinnerFixed;
+    try { showWinnerBoard = showWinnerFixed; } catch (_) {}
+  }
+
+  const previousSaveChampionV70 = window.saveChampionWinner;
+  if (typeof previousSaveChampionV70 === 'function') {
+    window.saveChampionWinner = function saveChampionWinnerV70() {
+      if (!getActiveName()) setNameRaw(makeAnonName());
+      const result = previousSaveChampionV70.apply(this, arguments);
+      setTimeout(() => { enrichStoredBoards(); injectWinnerInfoV70(); }, 150);
+      return result;
+    };
+  }
+
+  /* -------------------- 7) Feedback storage reinforcement -------------------- */
+  function saveFeedbackBackupFromDialog() {
+    const dialog = document.getElementById('v64FeedbackDialog');
+    if (!dialog) return;
+    const liked = dialog.querySelector('#v64Fb_liked')?.value?.trim() || '';
+    const improve = dialog.querySelector('#v64Fb_improve')?.value?.trim() || '';
+    const bug = dialog.querySelector('#v64Fb_bug')?.value?.trim() || '';
+    if (!liked && !improve && !bug) return;
+    const entry = {
+      id: `fbv70_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      createdAt: Date.now(),
+      name: (dialog.querySelector('#v64FeedbackName')?.value || getActiveName() || text('Anonym spiller', 'Anonymous player')).slice(0, 18),
+      rating: Number(dialog.querySelector('#v64FeedbackRating')?.value || 5),
+      category: dialog.querySelector('#v64FeedbackCategory')?.value || 'fun',
+      liked, improve, bug,
+      score: Number(typeof score !== 'undefined' ? score : 0) || 0,
+      level: Number(typeof levelIndex !== 'undefined' ? levelIndex + 1 : 1) || 1
+    };
+    const now = Date.now();
+    const backup = [entry, ...safeReadArray(FEEDBACK_BACKUP_KEY)]
+      .filter(item => item && now - Number(item.createdAt || 0) < COMMENT_TTL_V70)
+      .slice(0, MAX_COMMENTS_V70);
+    safeWriteArray(FEEDBACK_BACKUP_KEY, backup);
+    // Also mirror into the original wall key so the existing UI sees it immediately.
+    const wall = [entry, ...safeReadArray(FEEDBACK_KEY)]
+      .filter(item => item && now - Number(item.createdAt || 0) < COMMENT_TTL_V70)
+      .slice(0, MAX_COMMENTS_V70);
+    safeWriteArray(FEEDBACK_KEY, wall);
+  }
+
+  function mergeFeedbackBackupToWall() {
+    const now = Date.now();
+    const merged = new Map();
+    [...safeReadArray(FEEDBACK_KEY), ...safeReadArray(FEEDBACK_BACKUP_KEY)]
+      .filter(item => item && now - Number(item.createdAt || 0) < COMMENT_TTL_V70)
+      .forEach(item => merged.set(item.id || `${item.createdAt}_${item.name}`, item));
+    const list = Array.from(merged.values()).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0)).slice(0, MAX_COMMENTS_V70);
+    safeWriteArray(FEEDBACK_KEY, list);
+    const wall = document.getElementById('v64FeedbackWallList');
+    if (!wall) return;
+    if (!list.length) return;
+    wall.innerHTML = list.map(item => {
+      const date = new Date(Number(item.createdAt) || Date.now()).toLocaleString((typeof currentLanguage !== 'undefined' && currentLanguage === 'no') ? 'nb-NO' : undefined, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+      const stars = '★'.repeat(Math.max(1, Math.min(5, Number(item.rating) || 5)));
+      return `<article class="v64-comment-bubble"><header><strong>${htmlEscape(item.name || text('Anonym', 'Anonymous'))}</strong><span>${stars}</span></header><small>${htmlEscape(date)} · ${htmlEscape(text('lagres i opptil 30 dager', 'stored up to 30 days'))}</small>${item.liked ? `<p><b>${htmlEscape(text('Likte:', 'Liked:'))}</b> ${htmlEscape(item.liked)}</p>` : ''}${item.improve ? `<p><b>${htmlEscape(text('Forbedring:', 'Improve:'))}</b> ${htmlEscape(item.improve)}</p>` : ''}${item.bug ? `<p><b>${htmlEscape(text('Feil:', 'Bug:'))}</b> ${htmlEscape(item.bug)}</p>` : ''}</article>`;
+    }).join('');
+  }
+
+  document.addEventListener('submit', event => {
+    if (event.target && event.target.id === 'v64FeedbackForm') {
+      saveFeedbackBackupFromDialog();
+      setTimeout(mergeFeedbackBackupToWall, 80);
+    }
+  }, true);
+
+  function updateFeedbackInfoText() {
+    const info = document.querySelector('.v64-feedback-info span');
+    if (info) info.textContent = text('Kommentarer lagres lokalt i nettleseren i opptil 30 dager og vises i kommentarfeltet. Hvis sky-lagring er aktiv, forsøker spillet også å synke dem.', 'Comments are stored locally in the browser for up to 30 days and shown in the comment wall. If cloud storage is active, the game also tries to sync them.');
+    mergeFeedbackBackupToWall();
+  }
+
+  /* -------------------- 8) Hide avatar summary card if no uploaded image -------------------- */
+  function hideAvatarSummaryIfNoImage() {
+    try {
+      const avatar = document.getElementById('summaryAvatar');
+      const card = avatar?.closest('.summary-card');
+      const summary = document.getElementById('preGameSummary');
+      const hasImage = Boolean(typeof selectedPlayerImage !== 'undefined' && selectedPlayerImage);
+      if (card) card.classList.toggle('v70-hide-no-image', !hasImage);
+      if (summary) summary.classList.toggle('v70-summary-three', !hasImage);
+    } catch (_) {}
+  }
+
+  /* -------------------- 9) De-dupe repeated sounds -------------------- */
+  const previousPlaySfxV70 = window.playSfx || (typeof playSfx === 'function' ? playSfx : null);
+  if (typeof previousPlaySfxV70 === 'function') {
+    const last = new Map();
+    const playSfxFixed = function playSfxV70(type) {
+      const now = performance.now ? performance.now() : Date.now();
+      const key = String(type || 'default');
+      if (now - Number(last.get(key) || 0) < 90) return;
+      last.set(key, now);
+      return previousPlaySfxV70.apply(this, arguments);
+    };
+    window.playSfx = globalThis.playSfx = playSfxFixed;
+    try { playSfx = playSfxFixed; } catch (_) {}
+  }
+
+  /* -------------------- 10) Level transition state repair -------------------- */
+  const previousNextLevelV70 = window.nextLevel || (typeof nextLevel === 'function' ? nextLevel : null);
+  if (typeof previousNextLevelV70 === 'function') {
+    const nextLevelFixed = function nextLevelV70() {
+      const result = previousNextLevelV70.apply(this, arguments);
+      [400, 1200, 2500, 3600].forEach(delay => setTimeout(() => {
+        try {
+          const countdownVisible = document.querySelector('.countdown-overlay:not(.hidden), #v64LevelCountdown:not(.hidden)');
+          if (gameRunning && !countdownVisible && !document.getElementById('shopModal')?.open && !document.getElementById('v70QuitConfirmDialog')?.open) {
+            paused = false;
+            fixPauseButtonText();
+            if (typeof window.v30UpdatePlayUi === 'function') window.v30UpdatePlayUi();
+          }
+          updateLaserHud();
+        } catch (_) {}
+      }, delay));
+      return result;
+    };
+    window.nextLevel = globalThis.nextLevel = nextLevelFixed;
+    try { nextLevel = nextLevelFixed; } catch (_) {}
+  }
+
+  function initV70() {
+    setHowToTexts();
+    ensureQuitConfirmDialog();
+    ensureAnonDialog();
+    ensureExtraShopItems();
+    refreshShopUiV70();
+    enrichStoredBoards();
+    injectWinnerInfoV70();
+    updateFeedbackInfoText();
+    hideAvatarSummaryIfNoImage();
+    updateLaserHud();
+    fixPauseButtonText();
+    if (!v70HudTimer) v70HudTimer = setInterval(() => {
+      refreshShopUiV70();
+      updateLaserHud();
+      updateFeedbackInfoText();
+      hideAvatarSummaryIfNoImage();
+      decorateWinnerRows();
+      fixPauseButtonText();
+    }, 700);
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
-    hideTechnicalStatus();
-    setTimeout(() => syncScores('dom', true), 900);
+    initV70();
+    [150, 500, 1200].forEach(delay => setTimeout(initV70, delay));
+  });
+  [200, 650, 1500].forEach(delay => setTimeout(initV70, delay));
+})();
+
+/* --------------------------------------------------------------------------
+   V71: PC-safe winner flags
+   Windows/desktop browsers often render emoji flags as regional letters like
+   "NO". The leaderboard now uses real flag images with country-name fallback,
+   so the result is the same on PC and phone.
+   -------------------------------------------------------------------------- */
+(function v71PcSafeWinnerFlags() {
+  if (window.__ragiJoyV71PcSafeWinnerFlags) return;
+  window.__ragiJoyV71PcSafeWinnerFlags = true;
+
+  const BOARD_KEY = 'ragiJoyMazeLeaderboardV34';
+  const LEGACY_BOARD_KEY = 'ragiJoyMazeWinnersV33';
+  const DAILY_KEY = 'ragiJoyMazeDailyTop10V41';
+
+  const LANGUAGE_COUNTRY = {
+    no: { code: 'no', country: 'Norge' },
+    en: { code: 'gb', country: 'United Kingdom' },
+    ta: { code: 'lk', country: 'Sri Lanka' },
+    si: { code: 'lk', country: 'Sri Lanka' },
+    de: { code: 'de', country: 'Deutschland' },
+    fr: { code: 'fr', country: 'France' },
+    es: { code: 'es', country: 'España' },
+    it: { code: 'it', country: 'Italia' },
+    pt: { code: 'pt', country: 'Portugal' },
+    nl: { code: 'nl', country: 'Nederland' },
+    sv: { code: 'se', country: 'Sverige' },
+    da: { code: 'dk', country: 'Danmark' },
+    fi: { code: 'fi', country: 'Finland' },
+    pl: { code: 'pl', country: 'Polska' },
+    tr: { code: 'tr', country: 'Türkiye' },
+    ar: { code: 'sa', country: 'Saudi Arabia' },
+    hi: { code: 'in', country: 'India' },
+    ur: { code: 'pk', country: 'Pakistan' },
+    bn: { code: 'bd', country: 'Bangladesh' },
+    zh: { code: 'cn', country: 'China' },
+    ja: { code: 'jp', country: 'Japan' },
+    ko: { code: 'kr', country: 'South Korea' },
+    ru: { code: 'ru', country: 'Russia' },
+    uk: { code: 'ua', country: 'Ukraine' },
+    ro: { code: 'ro', country: 'România' },
+    cs: { code: 'cz', country: 'Czechia' },
+    el: { code: 'gr', country: 'Greece' },
+    id: { code: 'id', country: 'Indonesia' },
+    th: { code: 'th', country: 'Thailand' },
+    vi: { code: 'vn', country: 'Vietnam' }
+  };
+
+  const COUNTRY_NAMES = Object.entries(LANGUAGE_COUNTRY).reduce((acc, [, value]) => {
+    acc[value.code] = value.country;
+    return acc;
+  }, {
+    no: 'Norge', gb: 'United Kingdom', uk: 'Ukraine', us: 'United States', lk: 'Sri Lanka'
   });
 
-  setTimeout(() => syncScores('boot', true), 900);
-  setInterval(() => syncScores('interval'), 45000);
+  const COUNTRY_ALIASES = {
+    norge: 'no', norway: 'no', norsk: 'no', no: 'no', nor: 'no',
+    'united kingdom': 'gb', england: 'gb', britain: 'gb', greatbritain: 'gb', gb: 'gb', uk: 'gb',
+    'sri lanka': 'lk', srilanka: 'lk', lanka: 'lk', lk: 'lk',
+    deutschland: 'de', germany: 'de', de: 'de',
+    france: 'fr', fr: 'fr',
+    espana: 'es', españa: 'es', spain: 'es', es: 'es',
+    italia: 'it', italy: 'it', it: 'it',
+    portugal: 'pt', pt: 'pt',
+    nederland: 'nl', netherlands: 'nl', holland: 'nl', nl: 'nl',
+    sverige: 'se', sweden: 'se', se: 'se', sv: 'se',
+    danmark: 'dk', denmark: 'dk', dk: 'dk', da: 'dk',
+    finland: 'fi', suomi: 'fi', fi: 'fi',
+    polska: 'pl', poland: 'pl', pl: 'pl',
+    türkiye: 'tr', turkiye: 'tr', turkey: 'tr', tr: 'tr',
+    'saudi arabia': 'sa', arabia: 'sa', sa: 'sa',
+    india: 'in', in: 'in',
+    pakistan: 'pk', pk: 'pk',
+    bangladesh: 'bd', bd: 'bd',
+    china: 'cn', cn: 'cn',
+    japan: 'jp', jp: 'jp',
+    korea: 'kr', 'south korea': 'kr', kr: 'kr',
+    russia: 'ru', ru: 'ru',
+    ukraine: 'ua', ua: 'ua',
+    romania: 'ro', românia: 'ro', ro: 'ro',
+    czechia: 'cz', 'czech republic': 'cz', cz: 'cz',
+    greece: 'gr', gr: 'gr',
+    indonesia: 'id', id: 'id',
+    thailand: 'th', th: 'th',
+    vietnam: 'vn', vi: 'vn', vn: 'vn'
+  };
+
+  const escapeHtmlV71 = value => String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
+  function isNorwegianUi() {
+    try { return (typeof currentLanguage !== 'undefined' ? currentLanguage : localStorage.getItem('ragiJoyLanguage')) === 'no'; }
+    catch (_) { return true; }
+  }
+
+  function textV71(no, en) {
+    return isNorwegianUi() ? no : en;
+  }
+
+  function readArrayV71(key) {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (_) { return []; }
+  }
+
+  function writeArrayV71(key, list) {
+    try { localStorage.setItem(key, JSON.stringify(Array.isArray(list) ? list : [])); } catch (_) {}
+  }
+
+  function normalizePlain(value) {
+    return String(value || '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[_-]/g, ' ')
+      .replace(/\s+/g, ' ');
+  }
+
+  function codeFromEmojiFlag(value) {
+    const chars = Array.from(String(value || ''));
+    if (chars.length < 2) return '';
+    const letters = chars.slice(0, 2).map(char => {
+      const codePoint = char.codePointAt(0);
+      if (codePoint < 0x1F1E6 || codePoint > 0x1F1FF) return '';
+      return String.fromCharCode(97 + codePoint - 0x1F1E6);
+    }).join('');
+    return /^[a-z]{2}$/.test(letters) ? letters : '';
+  }
+
+  function normalizeCountryCode(value) {
+    if (!value) return '';
+    const emojiCode = codeFromEmojiFlag(value);
+    if (emojiCode) return emojiCode;
+    const raw = String(value).trim();
+    if (/^[A-Z]{2}$/.test(raw) || /^[a-z]{2}$/.test(raw)) {
+      const lower = raw.toLowerCase();
+      if (lower === 'uk') return 'gb';
+      return COUNTRY_ALIASES[lower] || lower;
+    }
+    const plain = normalizePlain(raw);
+    return COUNTRY_ALIASES[plain] || COUNTRY_ALIASES[plain.replace(/\s/g, '')] || '';
+  }
+
+  function getLanguageProfileV71() {
+    let lang = 'no';
+    try { lang = (typeof currentLanguage !== 'undefined' && currentLanguage) || localStorage.getItem('ragiJoyLanguage') || 'no'; } catch (_) {}
+    const fromMap = LANGUAGE_COUNTRY[lang];
+    if (fromMap) return { ...fromMap, source: textV71('språkvalg', 'language setting') };
+    try {
+      const option = (Array.isArray(languageOptions) ? languageOptions : []).find(item => item && item.code === lang);
+      const code = normalizeCountryCode(option?.country || option?.flag || option?.code) || 'no';
+      return { code, country: option?.country || COUNTRY_NAMES[code] || textV71('Norge', 'Norway'), source: textV71('språkvalg', 'language setting') };
+    } catch (_) {
+      return { code: 'no', country: 'Norge', source: textV71('språkvalg', 'language setting') };
+    }
+  }
+
+  function countryForEntryV71(entry) {
+    const profile = getLanguageProfileV71();
+    const code = normalizeCountryCode(entry?.countryCode)
+      || normalizeCountryCode(entry?.isoCountry)
+      || normalizeCountryCode(entry?.countryFlag)
+      || normalizeCountryCode(entry?.country)
+      || normalizeCountryCode(entry?.languageCode)
+      || normalizeCountryCode(entry?.lang)
+      || normalizeCountryCode(entry?.locale)
+      || profile.code;
+    const rawCountry = String(entry?.country || '').trim();
+    const countryIsOnlyCode = /^[A-Z]{2}$/.test(rawCountry) || /^[a-z]{2}$/.test(rawCountry);
+    const country = rawCountry && !countryIsOnlyCode && !codeFromEmojiFlag(rawCountry)
+      ? rawCountry
+      : (COUNTRY_NAMES[code] || profile.country || 'Global');
+    return {
+      code,
+      country,
+      source: entry?.countrySource || profile.source
+    };
+  }
+
+  function flagImageUrl(code, size) {
+    const safeCode = normalizeCountryCode(code) || 'no';
+    return `https://flagcdn.com/w${size}/${safeCode}.png`;
+  }
+
+  function enrichEntryV71(entry) {
+    const info = countryForEntryV71(entry || {});
+    return {
+      ...(entry || {}),
+      countryCode: info.code,
+      country: info.country,
+      countrySource: info.source,
+      // Keep this empty on purpose. Desktop Windows can show emoji flags as "NO".
+      // The UI renders image flags instead.
+      countryFlag: ''
+    };
+  }
+
+  function enrichBoardsV71() {
+    [BOARD_KEY, LEGACY_BOARD_KEY, DAILY_KEY].forEach(key => {
+      const oldList = readArrayV71(key);
+      if (!oldList.length) return;
+      const newList = oldList.map(enrichEntryV71);
+      if (JSON.stringify(oldList) !== JSON.stringify(newList)) writeArrayV71(key, newList);
+    });
+  }
+
+  function sortedBoardV71() {
+    return readArrayV71(BOARD_KEY)
+      .map(enrichEntryV71)
+      .filter(entry => entry && Number(entry.score) > 0)
+      .sort((a, b) => {
+        const scoreDiff = (Number(b.score) || 0) - (Number(a.score) || 0);
+        if (scoreDiff !== 0) return scoreDiff;
+        const levelDiff = (Number(b.level) || 0) - (Number(a.level) || 0);
+        if (levelDiff !== 0) return levelDiff;
+        return (Number(a.createdAt) || 0) - (Number(b.createdAt) || 0);
+      })
+      .slice(0, 10);
+  }
+
+  function sortedDailyV71() {
+    return readArrayV71(DAILY_KEY)
+      .map(enrichEntryV71)
+      .filter(entry => entry && Number(entry.score) > 0)
+      .sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0))
+      .slice(0, 10);
+  }
+
+  function renderFlagBadgeV71(badge, info) {
+    const country = info.country || COUNTRY_NAMES[info.code] || 'Global';
+    const code = normalizeCountryCode(info.code) || 'no';
+    badge.className = 'v70-country-badge v71-country-badge';
+    badge.dataset.countryCode = code;
+    badge.title = textV71(`Landprofil: ${country}`, `Country profile: ${country}`);
+    badge.innerHTML = `
+      <img class="v71-flag-img" src="${flagImageUrl(code, 40)}" srcset="${flagImageUrl(code, 80)} 2x" alt="${escapeHtmlV71(country)} flagg" loading="lazy" decoding="async">
+      <span>${escapeHtmlV71(country)}</span>`;
+    const img = badge.querySelector('img');
+    if (img) {
+      img.addEventListener('error', () => {
+        badge.classList.add('v71-flag-failed');
+        img.remove();
+        if (!badge.querySelector('.v71-fallback-globe')) {
+          const fallback = document.createElement('span');
+          fallback.className = 'v71-fallback-globe';
+          fallback.textContent = '🌐';
+          badge.prepend(fallback);
+        }
+      }, { once: true });
+    }
+  }
+
+  function decorateRowV71(row, entry) {
+    if (!row) return;
+    const info = countryForEntryV71(entry || {});
+    const existing = Array.from(row.querySelectorAll('.v70-country-badge, .v71-country-badge'));
+    const badge = existing.shift() || document.createElement('span');
+    existing.forEach(extra => extra.remove());
+    renderFlagBadgeV71(badge, info);
+    const target = row.querySelector('.v42-player-cell small')
+      || row.querySelector('.winner-meta')
+      || row.querySelector('.winner-name')
+      || row.querySelector('small')
+      || row;
+    if (target && badge.parentElement !== target) target.appendChild(badge);
+  }
+
+  function decorateWinnerRowsV71() {
+    enrichBoardsV71();
+    const boardEntries = sortedBoardV71();
+    const dailyEntries = sortedDailyV71();
+    Array.from(document.querySelectorAll('#winnerList .winner-row')).forEach((row, index) => decorateRowV71(row, boardEntries[index]));
+    Array.from(document.querySelectorAll('#dailyTopPanel li, .v42-daily-list li, .v41-daily-list li')).forEach((row, index) => decorateRowV71(row, dailyEntries[index] || boardEntries[index]));
+  }
+
+  function updateWinnerInfoV71() {
+    const info = document.getElementById('v70WinnerInfoBox');
+    if (info) {
+      info.innerHTML = `<strong>${escapeHtmlV71(textV71('Hvordan vinnerlisten sorteres', 'How the leaderboard is sorted'))}</strong><span>${escapeHtmlV71(textV71('Listen viser høyeste score først. Ved lik score rangeres høyeste level foran. Flagg vises som bilde slik at PC ikke viser landkode som NO.', 'The list shows highest score first. If scores tie, highest level ranks first. Flags are shown as images so desktop PCs do not show country codes like NO.'))}</span><em>${escapeHtmlV71(textV71('Landprofilen hentes fra språk/land-valget ditt og fungerer likt på PC og telefon.', 'The country profile comes from your language/country setting and works the same on PC and phone.'))}</em>`;
+    }
+  }
+
+  // Store future results with countryCode immediately, even when older save-functions run.
+  try {
+    const previousSetItem = Storage.prototype.setItem;
+    if (!previousSetItem.__v71WinnerFlagWrapped) {
+      Storage.prototype.setItem = function setItemV71(key, value) {
+        if ([BOARD_KEY, LEGACY_BOARD_KEY, DAILY_KEY].includes(String(key))) {
+          try {
+            const parsed = JSON.parse(String(value));
+            if (Array.isArray(parsed)) return previousSetItem.call(this, key, JSON.stringify(parsed.map(enrichEntryV71)));
+          } catch (_) {}
+        }
+        return previousSetItem.call(this, key, value);
+      };
+      Storage.prototype.setItem.__v71WinnerFlagWrapped = true;
+    }
+  } catch (_) {}
+
+  const previousShowWinnerBoardV71 = window.showWinnerBoard || (typeof showWinnerBoard === 'function' ? showWinnerBoard : null);
+  if (typeof previousShowWinnerBoardV71 === 'function') {
+    const showWinnerBoardV71 = function showWinnerBoardV71() {
+      enrichBoardsV71();
+      const result = previousShowWinnerBoardV71.apply(this, arguments);
+      [0, 60, 180, 500].forEach(delay => setTimeout(() => {
+        updateWinnerInfoV71();
+        decorateWinnerRowsV71();
+      }, delay));
+      return result;
+    };
+    window.showWinnerBoard = globalThis.showWinnerBoard = showWinnerBoardV71;
+    try { showWinnerBoard = showWinnerBoardV71; } catch (_) {}
+  }
+
+  window.ragiJoyFixWinnerFlagsNow = function ragiJoyFixWinnerFlagsNow() {
+    enrichBoardsV71();
+    updateWinnerInfoV71();
+    decorateWinnerRowsV71();
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    enrichBoardsV71();
+    [100, 400, 1000].forEach(delay => setTimeout(() => {
+      updateWinnerInfoV71();
+      decorateWinnerRowsV71();
+    }, delay));
+  });
+  setInterval(() => {
+    const dialog = document.getElementById('winnerBoardModal');
+    if (dialog && dialog.open) {
+      updateWinnerInfoV71();
+      decorateWinnerRowsV71();
+    }
+  }, 1500);
 })();
 
 
+
 /* --------------------------------------------------------------------------
-   V53: Front page live date/time + visit timer
-   - Shows real-time date/month/year/clock on the front page.
-   - Shows how long the current visit has lasted. Resets on page refresh.
-   - Uses current language: Norwegian when Norsk is selected, English fallback otherwise.
+   V72: stable inline shop coach + hide feedback during gameplay +
+   reliable auto laser placement button.
    -------------------------------------------------------------------------- */
-(function v53FrontPageClockAndVisitTimer(){
-  if (window.__ragiJoyV53ClockTimer) return;
-  window.__ragiJoyV53ClockTimer = true;
+(function v72GameplayPolish(){
+  if (window.__ragiJoyV72Patch) return;
+  window.__ragiJoyV72Patch = true;
 
-  const startedAt = Date.now();
-  let timer = null;
+  function v72No(){
+    try { return String(currentLanguage || 'no').toLowerCase().startsWith('no'); }
+    catch(_) { return true; }
+  }
+  function v72Text(no, en){ return v72No() ? no : en; }
+  function v72Esc(v){
+    return String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  }
 
-  const copy = {
-    no: {
-      kicker: 'LIVE STATUS',
-      nowLabel: 'Dato og klokke',
-      visitLabel: 'Tid på nettsiden',
-      visitHelp: 'nullstilles ved refresh',
-      nowPrefix: 'Nå'
-    },
-    en: {
-      kicker: 'LIVE STATUS',
-      nowLabel: 'Date and time',
-      visitLabel: 'Time on site',
-      visitHelp: 'resets on refresh',
-      nowPrefix: 'Now'
+  function v72EnsureInlineCoach(){
+    let coach = document.getElementById('v72InlineShopCoach');
+    const shopButton = document.getElementById('shopButton');
+    if (!shopButton) return null;
+    const row = shopButton.closest('.top-actions') || shopButton.parentElement;
+    if (!row) return null;
+    if (!coach) {
+      coach = document.createElement('div');
+      coach.id = 'v72InlineShopCoach';
+      coach.className = 'v72-inline-shop-coach hidden';
+      coach.setAttribute('aria-hidden', 'true');
+      coach.innerHTML = '<div class="v72-inline-shop-coach-bubble"><strong class="v72-inline-shop-coach-title"></strong><span class="v72-inline-shop-coach-text"></span></div>';
     }
-  };
-
-  function lang() {
-    try { return currentLanguage === 'no' ? 'no' : 'en'; } catch (_) { return 'no'; }
+    if (coach.parentElement !== row) {
+      const after = shopButton.nextElementSibling;
+      if (after) after.insertAdjacentElement('afterend', coach);
+      else row.appendChild(coach);
+    }
+    return coach;
   }
 
-  function t(key) {
-    const l = lang();
-    return (copy[l] && copy[l][key]) || copy.en[key] || key;
+  function v72ShouldShowCoach(){
+    try {
+      const shopButton = document.getElementById('shopButton');
+      const shopModal = document.getElementById('shopModal');
+      if (!shopButton || shopButton.hidden || shopButton.disabled) return false;
+      if (!gameRunning || paused || onlineMode) return false;
+      if (shopModal && (shopModal.open || shopModal.hasAttribute('open'))) return false;
+      const threshold = (typeof V23_SHOP_COSTS === 'object' && V23_SHOP_COSTS)
+        ? Math.min(...Object.values(V23_SHOP_COSTS).filter(v => Number.isFinite(Number(v))))
+        : 650;
+      return Number(score || 0) >= Number(threshold || 650);
+    } catch(_) {
+      return false;
+    }
   }
 
-  function locale() {
-    return lang() === 'no' ? 'nb-NO' : 'en-GB';
+  function v72RefreshInlineCoach(){
+    const legacy = document.getElementById('v62ShopCoach');
+    if (legacy) legacy.classList.add('hidden');
+    const coach = v72EnsureInlineCoach();
+    if (!coach) return;
+    const title = coach.querySelector('.v72-inline-shop-coach-title');
+    const text = coach.querySelector('.v72-inline-shop-coach-text');
+    if (title) title.textContent = v72Text('🛒 POWER-TIPS', '🛒 POWER TIPS');
+    if (text) text.textContent = v72Text(
+      'Du har nok poeng! Kjøp noe i Power-butikken og vinn lettere 🚀',
+      'You have enough points! Buy something in the Power shop and make the run easier 🚀'
+    );
+    const show = v72ShouldShowCoach();
+    coach.classList.toggle('hidden', !show);
+    coach.setAttribute('aria-hidden', show ? 'false' : 'true');
   }
 
-  function pad(value) {
-    return String(value).padStart(2, '0');
+  function v72SyncFeedbackVisibility(){
+    const button = document.getElementById('v64FeedbackButton');
+    if (!button) return;
+    const endScreen = document.getElementById('endScreen');
+    const endVisible = !!(endScreen && !endScreen.classList.contains('hidden'));
+    const shouldHide = Boolean(gameRunning && !paused && !endVisible);
+    button.hidden = shouldHide;
+    if (shouldHide) {
+      const dialog = document.getElementById('v64FeedbackDialog');
+      if (dialog && (dialog.open || dialog.hasAttribute('open'))) {
+        try { dialog.close(); } catch(_) { dialog.removeAttribute('open'); }
+      }
+    }
   }
 
-  function duration(ms) {
+  function v72EnsureAutoTurretButton(){
+    const shopCard = document.querySelector('#shopModal .shop-card');
+    if (!shopCard) return null;
+    let btn = document.getElementById('v72AutoPlaceTurretButton');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.id = 'v72AutoPlaceTurretButton';
+      btn.type = 'button';
+      btn.className = 'shop-place-button v70-auto-place-button';
+      btn.addEventListener('click', () => {
+        try {
+          const inv = Number(v23TurretInventory || 0);
+          if (inv <= 0) {
+            if (messageBar) messageBar.textContent = v72Text('Du må kjøpe laser først.', 'You need to buy lasers first.');
+            return;
+          }
+          const placed = (typeof v70AutoPlaceTurrets === 'function') ? v70AutoPlaceTurrets(inv) : 0;
+          if (!placed && messageBar) messageBar.textContent = v72Text('Fant ingen trygg tom rute for auto-plassering akkurat nå.', 'No safe empty tile was found for auto placement right now.');
+        } catch(_) {}
+        setTimeout(v72RefreshAutoTurretButton, 60);
+        if (typeof updateLaserHud === 'function') setTimeout(updateLaserHud, 70);
+      });
+    }
+    const manual = document.getElementById('placeTurretButton') || document.getElementById('shopPlaceTurretButton');
+    if (manual) {
+      if (btn.parentElement !== manual.parentElement || btn.previousElementSibling !== manual) {
+        manual.insertAdjacentElement('afterend', btn);
+      }
+      manual.textContent = v72Text('🎯 Plasser laser selv', '🎯 Place laser manually');
+    } else if (btn.parentElement !== shopCard) {
+      shopCard.appendChild(btn);
+    }
+    return btn;
+  }
+
+  function v72RefreshAutoTurretButton(){
+    const btn = v72EnsureAutoTurretButton();
+    if (!btn) return;
+    const inv = Number((typeof v23TurretInventory !== 'undefined' ? v23TurretInventory : 0) || 0);
+    btn.textContent = v72Text(`🤖 Auto-plasser laser (${inv})`, `🤖 Auto-place lasers (${inv})`);
+    btn.disabled = Boolean(onlineMode) || !gameRunning || inv <= 0;
+    btn.hidden = Boolean(onlineMode);
+  }
+
+  function v72PatchShopOpeners(){
+    const prevOpen = window.openPowerShop || (typeof openPowerShop === 'function' ? openPowerShop : null);
+    if (typeof prevOpen === 'function' && !prevOpen.__v72Wrapped) {
+      const wrappedOpen = function openPowerShopV72(){
+        const result = prevOpen.apply(this, arguments);
+        setTimeout(() => { v72EnsureAutoTurretButton(); v72RefreshAutoTurretButton(); v72RefreshInlineCoach(); }, 40);
+        return result;
+      };
+      wrappedOpen.__v72Wrapped = true;
+      window.openPowerShop = globalThis.openPowerShop = wrappedOpen;
+      try { openPowerShop = wrappedOpen; } catch(_) {}
+    }
+
+    const prevClose = window.closePowerShop || (typeof closePowerShop === 'function' ? closePowerShop : null);
+    if (typeof prevClose === 'function' && !prevClose.__v72Wrapped) {
+      const wrappedClose = function closePowerShopV72(){
+        const result = prevClose.apply(this, arguments);
+        setTimeout(v72RefreshInlineCoach, 30);
+        return result;
+      };
+      wrappedClose.__v72Wrapped = true;
+      window.closePowerShop = globalThis.closePowerShop = wrappedClose;
+      try { closePowerShop = wrappedClose; } catch(_) {}
+    }
+  }
+
+  function v72PatchTurretBuyers(){
+    const prevBuy = window.buyShopItem || (typeof buyShopItem === 'function' ? buyShopItem : null);
+    if (typeof prevBuy === 'function' && !prevBuy.__v72Wrapped) {
+      const wrappedBuy = function buyShopItemV72(item){
+        const before = Number((typeof v23TurretInventory !== 'undefined' ? v23TurretInventory : 0) || 0);
+        const result = prevBuy.apply(this, arguments);
+        const key = String(item || '').toLowerCase();
+        if (key === 'turret') {
+          const tryAuto = (attempt = 0) => {
+            const after = Number((typeof v23TurretInventory !== 'undefined' ? v23TurretInventory : 0) || 0);
+            const delta = Math.max(0, after - before);
+            if (delta > 0 && typeof v70AutoPlaceTurrets === 'function') {
+              v70AutoPlaceTurrets(delta);
+            } else if (attempt < 5) {
+              setTimeout(() => tryAuto(attempt + 1), 80);
+            }
+            v72RefreshAutoTurretButton();
+            if (typeof updateLaserHud === 'function') updateLaserHud();
+          };
+          setTimeout(() => tryAuto(0), 70);
+        } else {
+          setTimeout(v72RefreshAutoTurretButton, 70);
+        }
+        return result;
+      };
+      wrappedBuy.__v72Wrapped = true;
+      window.buyShopItem = globalThis.buyShopItem = wrappedBuy;
+      try { buyShopItem = wrappedBuy; } catch(_) {}
+    }
+
+    const prevPack = window.buyTurretPack || (typeof buyTurretPack === 'function' ? buyTurretPack : null);
+    if (typeof prevPack === 'function' && !prevPack.__v72Wrapped) {
+      const wrappedPack = function buyTurretPackV72(){
+        const before = Number((typeof v23TurretInventory !== 'undefined' ? v23TurretInventory : 0) || 0);
+        const result = prevPack.apply(this, arguments);
+        const tryAuto = (attempt = 0) => {
+          const after = Number((typeof v23TurretInventory !== 'undefined' ? v23TurretInventory : 0) || 0);
+          const delta = Math.max(0, after - before);
+          if (delta > 0 && typeof v70AutoPlaceTurrets === 'function') {
+            v70AutoPlaceTurrets(delta);
+          } else if (attempt < 5) {
+            setTimeout(() => tryAuto(attempt + 1), 90);
+          }
+          v72RefreshAutoTurretButton();
+          if (typeof updateLaserHud === 'function') updateLaserHud();
+        };
+        setTimeout(() => tryAuto(0), 80);
+        return result;
+      };
+      wrappedPack.__v72Wrapped = true;
+      window.buyTurretPack = globalThis.buyTurretPack = wrappedPack;
+      try { buyTurretPack = wrappedPack; } catch(_) {}
+    }
+  }
+
+  function v72Install(){
+    v72EnsureInlineCoach();
+    v72EnsureAutoTurretButton();
+    v72RefreshInlineCoach();
+    v72RefreshAutoTurretButton();
+    v72SyncFeedbackVisibility();
+  }
+
+  v72PatchShopOpeners();
+  v72PatchTurretBuyers();
+  document.addEventListener('DOMContentLoaded', v72Install);
+  setTimeout(v72Install, 350);
+  setInterval(() => {
+    v72RefreshInlineCoach();
+    v72RefreshAutoTurretButton();
+    v72SyncFeedbackVisibility();
+  }, 700);
+})();
+
+
+
+/* --------------------------------------------------------------------------
+   V73: winner board layout repair
+   - no inner scrolling in the winner list
+   - winner list placed first, daily list below
+   - modal itself scrolls if content is taller than viewport
+   -------------------------------------------------------------------------- */
+(function v73WinnerBoardRepair(){
+  if (window.__ragiJoyV73Patch) return;
+  window.__ragiJoyV73Patch = true;
+
+  function v73EnsureDailyPanel(card){
+    let panel = document.getElementById('dailyTopPanel');
+    if (!panel && card) {
+      panel = document.createElement('section');
+      panel.id = 'dailyTopPanel';
+      panel.className = 'v41-daily-panel v42-daily-panel';
+      card.appendChild(panel);
+    }
+    return panel;
+  }
+
+  function v73LayoutWinnerBoard(){
+    const dialog = document.getElementById('winnerBoardModal');
+    if (!dialog) return;
+    const card = dialog.querySelector('.winner-card') || dialog;
+    const list = document.getElementById('winnerList') || card.querySelector('.winner-list');
+    const panel = v73EnsureDailyPanel(card);
+    if (!card || !list || !panel) return;
+
+    let layout = card.querySelector('.v73-winner-layout');
+    if (!layout) {
+      layout = document.createElement('div');
+      layout.className = 'v73-winner-layout';
+      const info70 = document.getElementById('v70WinnerInfoBox');
+      const info64 = document.getElementById('v64WinnerInfoBox');
+      const anchor = info70 || info64;
+      if (anchor && anchor.parentElement === card) anchor.insertAdjacentElement('afterend', layout);
+      else if (list.parentElement === card) card.insertBefore(layout, list);
+      else card.appendChild(layout);
+    }
+
+    if (list.parentElement !== layout) layout.appendChild(list);
+    if (panel.parentElement !== layout) layout.appendChild(panel);
+
+    dialog.style.overflow = 'auto';
+    card.style.overflow = 'visible';
+    card.style.maxHeight = 'none';
+    list.style.maxHeight = 'none';
+    list.style.overflow = 'visible';
+    panel.style.maxHeight = 'none';
+    panel.style.overflow = 'visible';
+  }
+
+  const prevShow = window.showWinnerBoard || (typeof showWinnerBoard === 'function' ? showWinnerBoard : null);
+  if (typeof prevShow === 'function' && !prevShow.__v73Wrapped) {
+    const wrapped = function showWinnerBoardV73(){
+      const result = prevShow.apply(this, arguments);
+      [0, 60, 180, 450].forEach(delay => setTimeout(v73LayoutWinnerBoard, delay));
+      return result;
+    };
+    wrapped.__v73Wrapped = true;
+    window.showWinnerBoard = globalThis.showWinnerBoard = wrapped;
+    try { showWinnerBoard = wrapped; } catch(_) {}
+  }
+
+  document.addEventListener('DOMContentLoaded', () => setTimeout(v73LayoutWinnerBoard, 250));
+  setInterval(() => {
+    const dialog = document.getElementById('winnerBoardModal');
+    if (dialog && (dialog.open || dialog.hasAttribute('open'))) v73LayoutWinnerBoard();
+  }, 1500);
+})();
+
+
+
+/* --------------------------------------------------------------------------
+   V74: focused fixes requested by user only
+   - pause layout stable
+   - power shop duplicate auto buttons removed and positioned correctly
+   - portal (blue next-level tile) placed randomly again
+   - restore time-on-site and current-date summary boxes
+   -------------------------------------------------------------------------- */
+(function v74FocusedFix(){
+  if (window.__ragiJoyV74Patch) return;
+  window.__ragiJoyV74Patch = true;
+
+  function v74No(){
+    try { return String(currentLanguage || 'no').toLowerCase().startsWith('no'); }
+    catch(_) { return true; }
+  }
+  function v74Text(no, en){ return v74No() ? no : en; }
+
+  /* ---------- 1) Random portal placement ---------- */
+  function v74FindPortalSpot(){
+    const empty = [];
+    try {
+      for (let y = 1; y < map.length - 1; y++) {
+        for (let x = 1; x < map[y].length - 1; x++) {
+          if (!map[y]) continue;
+          if (map[y][x] !== TILE.EMPTY) continue;
+          if (player && player.x === x && player.y === y) continue;
+          if (Array.isArray(enemies) && enemies.some(e => e.x === x && e.y === y)) continue;
+          empty.push({ x, y });
+        }
+      }
+    } catch(_) {}
+    if (!empty.length) return { x: 6, y: 5 };
+    return empty[Math.floor(Math.random() * empty.length)];
+  }
+
+  function v74OpenPortal(){
+    try {
+      for (let y = 0; y < map.length; y++) {
+        for (let x = 0; x < map[y].length; x++) {
+          if (map[y][x] === TILE.PORTAL) map[y][x] = TILE.EMPTY;
+        }
+      }
+      portalOpen = true;
+      const spot = v74FindPortalSpot();
+      if (!map[spot.y]) map[spot.y] = [];
+      map[spot.y][spot.x] = TILE.PORTAL;
+      if (messageBar) messageBar.textContent = t('portalOpen');
+      if (typeof spawnPop === 'function') spawnPop('🌀', spot.x, spot.y);
+      if (typeof spawnCenterBurst === 'function') spawnCenterBurst('🌀 PORTAL!');
+      if (typeof playSfx === 'function') playSfx('portal');
+      if (typeof drawGame === 'function') drawGame();
+    } catch(_) {}
+  }
+  window.openPortal = globalThis.openPortal = v74OpenPortal;
+  try { openPortal = v74OpenPortal; } catch(_) {}
+
+  /* ---------- 2) Clean power shop action buttons ---------- */
+  function v74CleanupShopButtons(){
+    const modal = document.getElementById('shopModal');
+    const card = modal && modal.querySelector('.shop-card');
+    if (!card) return;
+
+    const manual = document.getElementById('placeTurretButton') || document.getElementById('shopPlaceTurretButton');
+    const hint = document.getElementById('shopHint');
+
+    const oldButtons = Array.from(card.querySelectorAll('#v70AutoPlaceTurretButton, #v72AutoPlaceTurretButton, #v74AutoPlaceTurretButton'));
+    let canonical = oldButtons.find(btn => btn.id === 'v74AutoPlaceTurretButton') || oldButtons[0] || null;
+
+    if (!canonical) {
+      canonical = document.createElement('button');
+      canonical.type = 'button';
+      canonical.id = 'v74AutoPlaceTurretButton';
+      canonical.className = 'shop-place-button v74-auto-place-button';
+      canonical.addEventListener('click', () => {
+        try {
+          const inv = Number(v23TurretInventory || 0);
+          if (inv <= 0) {
+            if (messageBar) messageBar.textContent = v74Text('Du må kjøpe laser først.', 'You need to buy lasers first.');
+            return;
+          }
+          if (typeof v70AutoPlaceTurrets === 'function') v70AutoPlaceTurrets(inv);
+          if (typeof updateLaserHud === 'function') updateLaserHud();
+        } catch(_) {}
+        setTimeout(v74CleanupShopButtons, 40);
+      });
+    }
+
+    oldButtons.forEach(btn => { if (btn !== canonical) btn.remove(); });
+    canonical.id = 'v74AutoPlaceTurretButton';
+
+    let actionRow = card.querySelector('.shop-action-row');
+    if (!actionRow) {
+      actionRow = document.createElement('div');
+      actionRow.className = 'shop-action-row';
+      if (hint) card.insertBefore(actionRow, hint);
+      else card.appendChild(actionRow);
+    }
+
+    if (manual) {
+      manual.textContent = v74Text('🎯 Plasser laser selv', '🎯 Place laser manually');
+      if (manual.parentElement !== actionRow) actionRow.appendChild(manual);
+    }
+    canonical.textContent = v74Text(`🤖 Auto-plasser laser (${Number(v23TurretInventory || 0)})`, `🤖 Auto-place lasers (${Number(v23TurretInventory || 0)})`);
+    canonical.disabled = Boolean(onlineMode) || !gameRunning || Number(v23TurretInventory || 0) <= 0;
+    if (canonical.parentElement !== actionRow) actionRow.appendChild(canonical);
+
+    if (hint && hint.parentElement !== card) card.appendChild(hint);
+  }
+
+  const v74PrevOpenShop = window.openPowerShop || (typeof openPowerShop === 'function' ? openPowerShop : null);
+  if (typeof v74PrevOpenShop === 'function' && !v74PrevOpenShop.__v74Wrapped) {
+    const wrappedOpen = function openPowerShopV74(){
+      const result = v74PrevOpenShop.apply(this, arguments);
+      [20, 80, 180].forEach(delay => setTimeout(v74CleanupShopButtons, delay));
+      return result;
+    };
+    wrappedOpen.__v74Wrapped = true;
+    window.openPowerShop = globalThis.openPowerShop = wrappedOpen;
+    try { openPowerShop = wrappedOpen; } catch(_) {}
+  }
+
+  /* ---------- 3) Restore time and date cards on menu ---------- */
+  let v74VisitStartedAt = Date.now();
+
+  function v74EnsureSummaryBadges(){
+    const summary = document.getElementById('preGameSummary') || document.querySelector('.pre-game-summary');
+    if (!summary) return {};
+
+    let timeBadge = document.getElementById('v74SessionBadge');
+    if (!timeBadge) {
+      timeBadge = document.createElement('div');
+      timeBadge.id = 'v74SessionBadge';
+      timeBadge.className = 'summary-card v74-session-badge';
+      summary.appendChild(timeBadge);
+    }
+
+    let dateBadge = document.getElementById('v74DateBadge');
+    if (!dateBadge) {
+      dateBadge = document.createElement('div');
+      dateBadge.id = 'v74DateBadge';
+      dateBadge.className = 'summary-card v74-date-badge';
+      summary.appendChild(dateBadge);
+    }
+    return { summary, timeBadge, dateBadge };
+  }
+
+  function v74FormatDuration(ms){
     const total = Math.max(0, Math.floor(ms / 1000));
     const h = Math.floor(total / 3600);
     const m = Math.floor((total % 3600) / 60);
     const s = total % 60;
-    return h > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
+    if (h > 0) return `${h}t ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+    return `${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
   }
 
-  function formattedNow() {
-    const d = new Date();
-    try {
-      return d.toLocaleString(locale(), {
-        weekday: 'short',
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      });
-    } catch (_) {
-      return d.toLocaleString();
-    }
+  function v74RefreshSummaryBadges(){
+    const bits = v74EnsureSummaryBadges();
+    if (!bits.timeBadge || !bits.dateBadge) return;
+    const now = new Date();
+    bits.timeBadge.innerHTML = `<span>${v74Text('⏳ På nettsiden', '⏳ Time on site')}</span><strong>${v74FormatDuration(Date.now() - v74VisitStartedAt)}</strong>`;
+    bits.dateBadge.innerHTML = `<span>${v74Text('📅 Dagens dato', '📅 Today')}</span><strong>${now.toLocaleDateString(v74No() ? 'nb-NO' : undefined, { day: '2-digit', month: 'long', year: 'numeric' })}</strong>`;
   }
 
-  function ensurePanel() {
-    let panel = document.getElementById('v53MenuStatusPanel');
-    if (panel) return panel;
-
-    const hero = document.querySelector('.hero');
-    if (!hero) return null;
-
-    panel = document.createElement('section');
-    panel.id = 'v53MenuStatusPanel';
-    panel.className = 'v53-menu-status-panel';
-    panel.setAttribute('aria-label', 'Live status');
-    panel.innerHTML = `
-      <div class="v53-status-card v53-clock-card">
-        <span id="v53ClockKicker"></span>
-        <strong id="v53ClockValue"></strong>
-        <small id="v53ClockLabel"></small>
-      </div>
-      <div class="v53-status-card v53-visit-card">
-        <span>⏱️</span>
-        <strong id="v53VisitValue">00:00</strong>
-        <small id="v53VisitLabel"></small>
-      </div>
-    `;
-
-    const languagePicker = hero.querySelector('.language-picker');
-    if (languagePicker) languagePicker.insertAdjacentElement('afterend', panel);
-    else hero.appendChild(panel);
-
-    return panel;
-  }
-
-  function updatePanel() {
-    const panel = ensurePanel();
-    if (!panel) return;
-
-    const clockKicker = document.getElementById('v53ClockKicker');
-    const clockValue = document.getElementById('v53ClockValue');
-    const clockLabel = document.getElementById('v53ClockLabel');
-    const visitValue = document.getElementById('v53VisitValue');
-    const visitLabel = document.getElementById('v53VisitLabel');
-
-    if (clockKicker) clockKicker.textContent = t('kicker');
-    if (clockValue) clockValue.textContent = `${t('nowPrefix')}: ${formattedNow()}`;
-    if (clockLabel) clockLabel.textContent = t('nowLabel');
-    if (visitValue) visitValue.textContent = duration(Date.now() - startedAt);
-    if (visitLabel) visitLabel.textContent = `${t('visitLabel')} · ${t('visitHelp')}`;
-  }
-
-  function start() {
-    ensurePanel();
-    updatePanel();
-    if (timer) clearInterval(timer);
-    timer = setInterval(updatePanel, 1000);
-  }
-
-  const oldApplyLanguage = window.applyLanguage || globalThis.applyLanguage;
-  if (typeof oldApplyLanguage === 'function' && !oldApplyLanguage.__v53ClockWrapped) {
-    const wrappedApplyLanguage = function applyLanguageV53Clock() {
-      const result = oldApplyLanguage.apply(this, arguments);
-      setTimeout(updatePanel, 0);
-      return result;
-    };
-    wrappedApplyLanguage.__v53ClockWrapped = true;
-    window.applyLanguage = globalThis.applyLanguage = wrappedApplyLanguage;
-    try { applyLanguage = wrappedApplyLanguage; } catch (_) {}
-  }
-
-  document.addEventListener('DOMContentLoaded', start);
-  setTimeout(start, 350);
-})();
-
-
-/* --------------------------------------------------------------------------
-   V54: Winner board / shop / hero layout polish
-   - Hides all technical score-sync badges for players.
-   - Prevents winner modal from popping back open right after close.
-   - Improves hero dashboard arrangement and shop usability.
-   -------------------------------------------------------------------------- */
-(function v54WinnerShopHeroPolish(){
-  if (window.__ragiJoyV54Polish) return;
-  window.__ragiJoyV54Polish = true;
-
-  let suppressWinnerBoardUntil = 0;
-  let winnerObserver = null;
-
-  function removeCloudBadges() {
-    document.querySelectorAll('#v50CloudScoreBadge, .v50-cloud-score-badge, #v50ScoreSyncStatus, .v50-score-sync-status').forEach(el => {
-      try { el.remove(); } catch (_) {
-        try {
-          el.textContent = '';
-          el.hidden = true;
-          el.style.display = 'none';
-        } catch (_) {}
-      }
+  /* ---------- 4) Keep pause action row stable ---------- */
+  function v74StabilizePausedActions(){
+    const row = document.querySelector('.top-actions');
+    if (!row) return;
+    const ids = ['pauseButton', 'menuFromPauseButton', 'endRunButton', 'soundButton', 'shopButton'];
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.parentElement === row) row.appendChild(el);
     });
-  }
-
-  function getWinnerDialog() {
-    return document.getElementById('winnerBoardModal');
-  }
-
-  function hardCloseWinnerDialog() {
-    const modal = getWinnerDialog();
-    if (!modal) return;
-    try {
-      if (typeof modal.close === 'function' && modal.open) modal.close();
-      else modal.removeAttribute('open');
-    } catch (_) {
-      try { modal.removeAttribute('open'); } catch (_) {}
-    }
-  }
-
-  function armWinnerObserver() {
-    const modal = getWinnerDialog();
-    if (!modal || winnerObserver) return;
-    winnerObserver = new MutationObserver(() => {
-      removeCloudBadges();
-      if (modal.open && Date.now() < suppressWinnerBoardUntil) {
-        setTimeout(hardCloseWinnerDialog, 0);
-      }
-    });
-    winnerObserver.observe(modal, { attributes: true, attributeFilter: ['open'] });
-  }
-
-  const oldCloseWinnerBoard = window.closeWinnerBoard;
-  if (typeof oldCloseWinnerBoard === 'function' && !oldCloseWinnerBoard.__v54Wrapped) {
-    const wrappedCloseWinnerBoard = function closeWinnerBoardV54() {
-      suppressWinnerBoardUntil = Date.now() + 1400;
-      const result = oldCloseWinnerBoard.apply(this, arguments);
-      setTimeout(hardCloseWinnerDialog, 80);
-      setTimeout(hardCloseWinnerDialog, 220);
-      setTimeout(hardCloseWinnerDialog, 520);
-      removeCloudBadges();
-      return result;
-    };
-    wrappedCloseWinnerBoard.__v54Wrapped = true;
-    window.closeWinnerBoard = wrappedCloseWinnerBoard;
-    try { closeWinnerBoard = wrappedCloseWinnerBoard; } catch (_) {}
-  }
-
-  const oldShowWinnerBoard = window.showWinnerBoard;
-  if (typeof oldShowWinnerBoard === 'function' && !oldShowWinnerBoard.__v54Wrapped) {
-    const wrappedShowWinnerBoard = function showWinnerBoardV54() {
-      if (Date.now() < suppressWinnerBoardUntil) return;
-      const result = oldShowWinnerBoard.apply(this, arguments);
-      setTimeout(() => {
-        armWinnerObserver();
-        removeCloudBadges();
-      }, 0);
-      setTimeout(removeCloudBadges, 120);
-      return result;
-    };
-    wrappedShowWinnerBoard.__v54Wrapped = true;
-    window.showWinnerBoard = wrappedShowWinnerBoard;
-    try { showWinnerBoard = wrappedShowWinnerBoard; } catch (_) {}
-  }
-
-  const oldApplyLanguage = window.applyLanguage || globalThis.applyLanguage;
-  if (typeof oldApplyLanguage === 'function' && !oldApplyLanguage.__v54Wrapped) {
-    const wrappedApplyLanguage = function applyLanguageV54() {
-      const result = oldApplyLanguage.apply(this, arguments);
-      setTimeout(removeCloudBadges, 0);
-      return result;
-    };
-    wrappedApplyLanguage.__v54Wrapped = true;
-    window.applyLanguage = globalThis.applyLanguage = wrappedApplyLanguage;
-    try { applyLanguage = wrappedApplyLanguage; } catch (_) {}
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    armWinnerObserver();
-    removeCloudBadges();
-    setTimeout(removeCloudBadges, 250);
-    setTimeout(removeCloudBadges, 900);
+    v74RefreshSummaryBadges();
+    v74CleanupShopButtons();
+    v74StabilizePausedActions();
   });
 
-  setInterval(removeCloudBadges, 1800);
+  setTimeout(() => {
+    v74RefreshSummaryBadges();
+    v74CleanupShopButtons();
+    v74StabilizePausedActions();
+  }, 300);
+
+  setInterval(() => {
+    v74RefreshSummaryBadges();
+    v74StabilizePausedActions();
+    const modal = document.getElementById('shopModal');
+    if (modal && (modal.open || modal.hasAttribute('open'))) v74CleanupShopButtons();
+  }, 1000);
 })();
 
 
 /* --------------------------------------------------------------------------
-   V55: Stable winner board + compact home dashboard
-   - Replaces the older chained Top 10 popup with one stable renderer.
-   - No technical cloud/server/Firebase text is shown in the player UI.
-   - Background score sync can still run; this modal does not flicker or reopen itself.
+   V75: Top 10 vinnerresultat only
+   - desktop layout with Top 10 and Dagens Top 10 side by side
+   - no inner scrolling in the winner lists on PC
+   - compact filters: all / Top 10 / today / my player
    -------------------------------------------------------------------------- */
-(function v55StableWinnerBoardAndUi(){
-  if (window.__ragiJoyV55StableUi) return;
-  window.__ragiJoyV55StableUi = true;
+(function v75WinnerBoardOnlyPatch(){
+  if (window.__ragiJoyV75WinnerBoardPatch) return;
+  window.__ragiJoyV75WinnerBoardPatch = true;
 
-  const BOARD_KEY = 'ragiJoyMazeLeaderboardV34';
-  const DAILY_KEY = 'ragiJoyMazeDailyTop10V41';
-  const DAILY_TTL = 24 * 60 * 60 * 1000;
+  function v75IsNo(){
+    try { return String(currentLanguage || 'no').toLowerCase().startsWith('no'); }
+    catch(_) { return true; }
+  }
 
-  function lang(){ try { return currentLanguage === 'no' ? 'no' : 'en'; } catch(_) { return 'no'; } }
-  function txt(no, en){ return lang() === 'no' ? no : en; }
-  function esc(value){ return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-  function fmt(n){ try { return Number(n || 0).toLocaleString(lang()==='no'?'nb-NO':'en-GB'); } catch(_) { return String(n || 0); } }
-  function diffIcon(d){ return d === 'extreme' ? '💀 💀' : d === 'hard' ? '🔥 🔥' : d === 'normal' ? '😎 😎' : '😁 😁'; }
-  function diffName(d){
-    const no = { easy:'Enkel', normal:'Middels', hard:'Vanskelig', extreme:'Ekstrem' };
-    const en = { easy:'Easy', normal:'Medium', hard:'Hard', extreme:'Extreme' };
-    return (lang()==='no' ? no : en)[d || 'normal'] || (lang()==='no' ? 'Middels' : 'Medium');
+  function v75Text(no, en){
+    return v75IsNo() ? no : en;
   }
-  function readList(key){
-    try {
-      const value = JSON.parse(localStorage.getItem(key) || '[]');
-      return Array.isArray(value) ? value : [];
-    } catch(_) { return []; }
-  }
-  function cleanList(list, daily){
-    const cutoff = Date.now() - DAILY_TTL;
-    const seen = new Set();
-    return list
-      .filter(x => x && Number(x.score) > 0)
-      .filter(x => !daily || !Number(x.createdAt) || Number(x.createdAt) >= cutoff)
-      .sort((a,b) => (Number(b.score)||0) - (Number(a.score)||0) || (Number(b.level)||0) - (Number(a.level)||0))
-      .filter(x => {
-        const id = `${x.name}|${x.score}|${x.level}|${x.difficulty}|${x.createdAt||''}`;
-        if (seen.has(id)) return false;
-        seen.add(id);
-        return true;
-      })
-      .slice(0,10);
-  }
-  function expiryText(list){
-    const times = list.map(x => Number(x.createdAt)||0).filter(Boolean);
-    if (!times.length) return '';
-    const remain = Math.max(0, DAILY_TTL - (Date.now() - Math.min(...times)));
-    const h = Math.floor(remain / 3600000);
-    const m = Math.floor((remain % 3600000) / 60000);
-    return txt(`Nullstilles ca. ${h}t ${m}m`, `Resets in about ${h}h ${m}m`);
-  }
-  function row(entry, index, compact=false){
-    const d = entry.difficulty || 'normal';
-    return `<li class="v55-score-row">
-      <span class="v55-rank">#${index + 1}</span>
-      <strong class="v55-name">${esc(entry.name || 'Player')}</strong>
-      <span class="v55-diff">${diffIcon(d)} ${esc(diffName(d))}</span>
-      <small class="v55-level">L${esc(entry.level || 1)}</small>
-      <b class="v55-score">${fmt(entry.score)}</b>
-    </li>`;
-  }
-  function listHtml(items, emptyText){
-    if (!items.length) return `<div class="v55-empty">${esc(emptyText)}</div>`;
-    return `<ol class="v55-score-list">${items.map((e,i)=>row(e,i)).join('')}</ol>`;
-  }
-  function ensureModal(){
-    let modal = document.getElementById('winnerBoardModal');
-    if (!modal) {
-      modal = document.createElement('dialog');
-      modal.id = 'winnerBoardModal';
-      modal.className = 'winner-modal v55-winner-modal';
-      document.body.appendChild(modal);
+
+  function v75GetPlayerName(){
+    const selectors = [
+      '#playerName',
+      '#playerNameDisplay',
+      '#playerDisplayName',
+      '.player-name',
+      '.player-card strong',
+      '.player-card .value',
+      '[data-player-name]'
+    ];
+    for (const selector of selectors) {
+      const el = document.querySelector(selector);
+      const txt = el && (el.value || el.textContent || el.getAttribute('data-player-name') || '').trim();
+      if (txt && !/^(spiller|player)$/i.test(txt)) return txt;
     }
-    modal.classList.add('v55-winner-modal');
-    return modal;
-  }
-  function renderWinnerBoard(){
-    const modal = ensureModal();
-    const all = cleanList(readList(BOARD_KEY), false);
-    const daily = cleanList(readList(DAILY_KEY), true);
-    modal.innerHTML = `<div class="v55-winner-card">
-      <button class="v55-x" type="button" onclick="closeWinnerBoard()" aria-label="${esc(txt('Lukk','Close'))}">✕</button>
-      <header class="v55-winner-head">
-        <p>${esc(txt('VINNERRESULTAT', 'WINNER RESULTS'))}</p>
-        <h2>🏆 Top 10</h2>
-        <span>${esc(txt('De beste spillerne vises her. Klarer du å slå rekorden?', 'The best players are shown here. Can you beat the record?'))}</span>
-      </header>
-      <section class="v55-board-grid">
-        <article class="v55-board-panel">
-          <h3>${esc(txt('All-time Top 10', 'All-time Top 10'))}</h3>
-          ${listHtml(all, txt('Ingen resultater ennå.', 'No scores yet.'))}
-        </article>
-        <article class="v55-board-panel v55-daily-panel">
-          <h3>⏱️ ${esc(txt('Dagens Top 10', 'Daily Top 10'))}</h3>
-          <p>${esc(expiryText(daily) || txt('Resultater fra siste 24 timer.', 'Scores from the last 24 hours.'))}</p>
-          ${listHtml(daily, txt('Ingen dagsresultater ennå.', 'No daily scores yet.'))}
-        </article>
-      </section>
-      <footer><button class="v55-close-main" type="button" onclick="closeWinnerBoard()">${esc(txt('Lukk', 'Close'))}</button></footer>
-    </div>`;
-  }
-
-  window.closeWinnerBoard = function closeWinnerBoardV55(){
-    const modal = document.getElementById('winnerBoardModal');
-    if (!modal) return;
-    try { if (typeof modal.close === 'function' && modal.open) modal.close(); else modal.removeAttribute('open'); }
-    catch(_) { modal.removeAttribute('open'); }
-  };
-
-  window.showWinnerBoard = function showWinnerBoardV55(){
-    const modal = ensureModal();
-    renderWinnerBoard();
-    try { if (typeof modal.showModal === 'function' && !modal.open) modal.showModal(); else modal.setAttribute('open','open'); }
-    catch(_) { modal.setAttribute('open','open'); }
-    // Silent sync after opening. Re-render once only if the modal is still open, without showing a status badge.
     try {
-      const syncFn = window.syncScoresNow || window.ragiJoyForceScoreSync;
-      if (typeof syncFn === 'function') {
-        Promise.resolve(syncFn()).finally(() => setTimeout(() => {
-          const stillOpen = document.getElementById('winnerBoardModal')?.open;
-          if (stillOpen) renderWinnerBoard();
-        }, 250));
-      }
+      const saved = localStorage.getItem('ragiJoyMazePreferredNameV34') || localStorage.getItem('ragiJoyPlayerName');
+      if (saved) return saved.replace(/^"|"$/g, '').trim();
     } catch(_) {}
-  };
-
-  try { showWinnerBoard = window.showWinnerBoard; closeWinnerBoard = window.closeWinnerBoard; } catch(_) {}
-
-  function wireButton(){
-    const btn = document.getElementById('winnerBoardButton');
-    if (btn) btn.onclick = window.showWinnerBoard;
+    return '';
   }
 
-  const oldApply = window.applyLanguage || globalThis.applyLanguage;
-  if (typeof oldApply === 'function' && !oldApply.__v55Wrapped) {
-    const wrapped = function applyLanguageV55(){
-      const result = oldApply.apply(this, arguments);
-      setTimeout(() => {
-        wireButton();
-        if (document.getElementById('winnerBoardModal')?.open) renderWinnerBoard();
-      }, 0);
+  function v75EnsureControlPanel(card){
+    if (!card) return null;
+    let panel = document.getElementById('v75WinnerControlPanel');
+    if (!panel) {
+      panel = document.createElement('section');
+      panel.id = 'v75WinnerControlPanel';
+      panel.className = 'v75-winner-control';
+      panel.innerHTML = `
+        <div class="v75-winner-control-text">
+          <strong>${v75Text('Ryddig Top 10-visning', 'Clean Top 10 view')}</strong>
+          <span>${v75Text('Listen viser plassering, spiller, level, flagg og score. Bruk filter hvis du bare vil se én del.', 'The list shows rank, player, level, flag and score. Use filters if you only want one section.')}</span>
+        </div>
+        <div id="v75WinnerFilters" class="v75-winner-filters" role="group" aria-label="Winner filters">
+          <button type="button" data-v75-filter="all">${v75Text('Alt', 'All')}</button>
+          <button type="button" data-v75-filter="global">${v75Text('Top 10', 'Top 10')}</button>
+          <button type="button" data-v75-filter="daily">${v75Text('Dagens', 'Today')}</button>
+          <button type="button" data-v75-filter="mine">${v75Text('Meg', 'Me')}</button>
+        </div>
+      `;
+      const subtitle = document.getElementById('winnersSubtitle');
+      if (subtitle && subtitle.parentElement === card) subtitle.insertAdjacentElement('afterend', panel);
+      else {
+        const title = document.getElementById('winnersTitle');
+        if (title && title.parentElement === card) title.insertAdjacentElement('afterend', panel);
+        else card.prepend(panel);
+      }
+    }
+
+    const buttons = panel.querySelectorAll('[data-v75-filter]');
+    buttons.forEach(button => {
+      if (button.dataset.v75Bound) return;
+      button.dataset.v75Bound = '1';
+      button.addEventListener('click', () => {
+        const filter = button.getAttribute('data-v75-filter') || 'all';
+        v75ApplyFilter(filter);
+      });
+    });
+
+    const text = panel.querySelector('.v75-winner-control-text span');
+    if (text) {
+      text.textContent = v75Text(
+        'Listen viser plassering, spiller, level, flagg og score. Bruk filter hvis du bare vil se én del.',
+        'The list shows rank, player, level, flag and score. Use filters if you only want one section.'
+      );
+    }
+    return panel;
+  }
+
+  function v75FindMainCard(dialog){
+    if (!dialog) return null;
+    return dialog.querySelector('.winner-card') || dialog;
+  }
+
+  function v75EnsureLayout(){
+    const dialog = document.getElementById('winnerBoardModal');
+    if (!dialog) return;
+    const card = v75FindMainCard(dialog);
+    const list = document.getElementById('winnerList');
+    let daily = document.getElementById('dailyTopPanel');
+    if (!card || !list) return;
+
+    if (!daily) {
+      daily = document.createElement('section');
+      daily.id = 'dailyTopPanel';
+      daily.className = 'v41-daily-panel v42-daily-panel';
+    }
+
+    dialog.classList.add('v75-winner-modal');
+    card.classList.add('v75-winner-card');
+    list.classList.add('v75-winner-list');
+    daily.classList.add('v75-daily-panel');
+
+    v75EnsureControlPanel(card);
+
+    // Hide older explanation boxes that took too much space and caused the layout to scroll.
+    card.querySelectorAll('#v64WinnerInfoBox, #v70WinnerInfoBox, .v64-winner-info, .v70-winner-info').forEach(el => {
+      if (el.id !== 'v75WinnerControlPanel') el.classList.add('v75-hidden-legacy-info');
+    });
+
+    let layout = card.querySelector('.v75-winner-grid') || card.querySelector('.v73-winner-layout') || card.querySelector('.v65-winner-grid');
+    if (!layout) {
+      layout = document.createElement('div');
+      layout.className = 'v75-winner-grid';
+      const control = document.getElementById('v75WinnerControlPanel');
+      if (control && control.parentElement === card) control.insertAdjacentElement('afterend', layout);
+      else card.appendChild(layout);
+    }
+    layout.classList.add('v75-winner-grid');
+    // Keep older layout classes so older interval patches reuse the same element instead of creating duplicates.
+
+    if (list.parentElement !== layout) layout.appendChild(list);
+    if (daily.parentElement !== layout) layout.appendChild(daily);
+
+    // Inline style cleanup from older patches so CSS can control the board.
+    [dialog, card, layout, list, daily].forEach(el => {
+      if (!el) return;
+      el.style.overflow = '';
+      el.style.maxHeight = '';
+      el.style.height = '';
+    });
+
+    v75CompactRows();
+    v75ApplyFilter(dialog.dataset.v75Filter || 'all');
+  }
+
+  function v75CompactRows(){
+    const list = document.getElementById('winnerList');
+    if (list) {
+      list.querySelectorAll('.winner-row, li').forEach((row, index) => {
+        row.classList.add('v75-compact-row');
+        row.dataset.v75Index = String(index + 1);
+        const score = row.querySelector('.winner-score, .v42-score, strong:last-child');
+        if (score) score.setAttribute('title', v75Text('Score', 'Score'));
+      });
+    }
+
+    const daily = document.getElementById('dailyTopPanel');
+    if (daily) {
+      daily.querySelectorAll('ol li').forEach((row, index) => {
+        row.classList.add('v75-compact-daily-row');
+        row.dataset.v75Index = String(index + 1);
+      });
+    }
+  }
+
+  function v75ApplyFilter(filter){
+    const dialog = document.getElementById('winnerBoardModal');
+    if (!dialog) return;
+    const selected = filter || 'all';
+    dialog.dataset.v75Filter = selected;
+
+    dialog.classList.toggle('v75-filter-all', selected === 'all');
+    dialog.classList.toggle('v75-filter-global', selected === 'global');
+    dialog.classList.toggle('v75-filter-daily', selected === 'daily');
+    dialog.classList.toggle('v75-filter-mine', selected === 'mine');
+
+    const buttons = dialog.querySelectorAll('[data-v75-filter]');
+    buttons.forEach(button => {
+      const active = button.getAttribute('data-v75-filter') === selected;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+
+    const playerName = v75GetPlayerName().toLowerCase();
+    const rows = dialog.querySelectorAll('#winnerList .winner-row, #winnerList li, #dailyTopPanel ol li');
+    rows.forEach(row => {
+      row.classList.remove('v75-mine-hidden');
+      if (selected === 'mine') {
+        const text = (row.textContent || '').toLowerCase();
+        const visible = playerName && text.includes(playerName);
+        row.classList.toggle('v75-mine-hidden', !visible);
+      }
+    });
+
+    let empty = document.getElementById('v75MineEmpty');
+    if (selected === 'mine') {
+      if (!empty) {
+        empty = document.createElement('div');
+        empty.id = 'v75MineEmpty';
+        empty.className = 'v75-mine-empty';
+        empty.textContent = v75Text('Fant ingen synlig score for din spiller i denne listen ennå.', 'No visible score for your player in this list yet.');
+        const layout = dialog.querySelector('.v75-winner-grid');
+        if (layout) layout.appendChild(empty);
+      }
+      const hasVisible = Array.from(rows).some(row => !row.classList.contains('v75-mine-hidden'));
+      empty.hidden = hasVisible;
+    } else if (empty) {
+      empty.hidden = true;
+    }
+  }
+
+  function v75RefreshSoon(){
+    [0, 50, 150, 350].forEach(delay => setTimeout(v75EnsureLayout, delay));
+  }
+
+  const prevShow = window.showWinnerBoard || (typeof showWinnerBoard === 'function' ? showWinnerBoard : null);
+  if (typeof prevShow === 'function' && !prevShow.__v75Wrapped) {
+    const wrapped = function showWinnerBoardV75(){
+      const result = prevShow.apply(this, arguments);
+      v75RefreshSoon();
       return result;
     };
-    wrapped.__v55Wrapped = true;
-    window.applyLanguage = globalThis.applyLanguage = wrapped;
-    try { applyLanguage = wrapped; } catch(_) {}
+    wrapped.__v75Wrapped = true;
+    window.showWinnerBoard = globalThis.showWinnerBoard = wrapped;
+    try { showWinnerBoard = wrapped; } catch(_) {}
   }
 
-  document.addEventListener('DOMContentLoaded', () => setTimeout(wireButton, 250));
-  setTimeout(wireButton, 600);
+  document.addEventListener('DOMContentLoaded', () => setTimeout(v75EnsureLayout, 300));
+
+  let v75Interval = null;
+  document.addEventListener('click', event => {
+    const btn = event.target && event.target.closest && event.target.closest('#winnerBoardButton, [onclick*="showWinnerBoard"]');
+    if (btn) v75RefreshSoon();
+  }, true);
+
+  v75Interval = setInterval(() => {
+    const dialog = document.getElementById('winnerBoardModal');
+    if (dialog && (dialog.open || dialog.hasAttribute('open'))) v75EnsureLayout();
+  }, 700);
+
+  try {
+    const observer = new MutationObserver(() => {
+      const dialog = document.getElementById('winnerBoardModal');
+      if (dialog && (dialog.open || dialog.hasAttribute('open'))) setTimeout(v75EnsureLayout, 30);
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+      const dialog = document.getElementById('winnerBoardModal');
+      if (dialog) observer.observe(dialog, { childList: true, subtree: true });
+    });
+  } catch(_) {}
 })();
 
+
+
+
+/* --------------------------------------------------------------------------
+   V76: focused gameplay/pause + power-shop stability patch
+   - no repeated shaking shop popups
+   - stable pause/action layout
+   - one clean manual laser button + one clean auto laser button
+   -------------------------------------------------------------------------- */
+(function v76GameplayShopPolish(){
+  if (window.__ragiJoyV76GameplayShopPatch) return;
+  window.__ragiJoyV76GameplayShopPatch = true;
+
+  function isNo(){
+    try { return String(currentLanguage || 'no').toLowerCase().startsWith('no'); }
+    catch(_) { return true; }
+  }
+  function txt(no, en){ return isNo() ? no : en; }
+
+  let v76TipCount = 0;
+  let v76LastTipAt = 0;
+  function disableOldTipBubbles(){
+    document.querySelectorAll('#v62ShopCoach, #v72InlineShopCoach, .v62-shop-coach, .v72-inline-shop-coach').forEach(el => {
+      el.classList.add('hidden');
+      el.setAttribute('aria-hidden', 'true');
+      el.style.display = 'none';
+      el.style.visibility = 'hidden';
+      el.style.opacity = '0';
+      el.style.animation = 'none';
+      el.style.transform = 'none';
+    });
+  }
+
+  function maybeShowQuietShopInfo(){
+    try {
+      if (!gameRunning || paused || onlineMode) return;
+      const now = Date.now();
+      if (v76TipCount >= 2 || now - v76LastTipAt < 45000) return;
+      const costs = (typeof V23_SHOP_COSTS === 'object' && V23_SHOP_COSTS) ? Object.values(V23_SHOP_COSTS).map(Number).filter(Number.isFinite) : [650];
+      const cheapest = Math.min(...costs);
+      if (Number(score || 0) < cheapest) return;
+      v76TipCount++;
+      v76LastTipAt = now;
+      if (messageBar) messageBar.textContent = txt('Tips: Du har nok poeng til Power-butikken.', 'Tip: You have enough points for the Power shop.');
+    } catch(_) {}
+  }
+
+  function getInventory(){
+    try { return Math.max(0, Number(v23TurretInventory || 0)); }
+    catch(_) { return 0; }
+  }
+
+  function autoPlaceAllLasers(){
+    let placed = 0;
+    try {
+      const max = getInventory();
+      if (!max) {
+        if (messageBar) messageBar.textContent = txt('Kjøp laser først, så kan systemet plassere den.', 'Buy a laser first, then the system can place it.');
+        return 0;
+      }
+      const candidates = [];
+      for (let y = 1; y < map.length - 1; y++) {
+        for (let x = 1; x < map[y].length - 1; x++) {
+          const ok = (typeof v23CanPlaceTurret === 'function') ? v23CanPlaceTurret(x, y) : map[y][x] === TILE.EMPTY;
+          if (ok) candidates.push({ x, y });
+        }
+      }
+      while (candidates.length && getInventory() > 0 && placed < max) {
+        const index = Math.floor(Math.random() * candidates.length);
+        const spot = candidates.splice(index, 1)[0];
+        if (typeof v23PlaceTurretAt === 'function' && v23PlaceTurretAt(spot.x, spot.y)) placed++;
+      }
+      if (placed > 0) {
+        v23PlacingTurret = false;
+        document.body.classList.remove('turret-placement-active');
+        if (messageBar) messageBar.textContent = txt(`🤖 Systemet plasserte ${placed} laser(e) på trygge ruter.`, `🤖 The system placed ${placed} laser(s) on safe tiles.`);
+        try { playSfx('power'); } catch(_) {}
+        try { drawGame(); } catch(_) {}
+      } else if (messageBar) {
+        messageBar.textContent = txt('Fant ingen trygg ledig rute for laser akkurat nå.', 'No safe free tile for a laser right now.');
+      }
+    } catch(_) {}
+    try { if (typeof updateLaserHud === 'function') updateLaserHud(); } catch(_) {}
+    setTimeout(v76RefreshShopActions, 40);
+    return placed;
+  }
+
+  function v76EnsureShopActions(){
+    const modal = document.getElementById('shopModal');
+    const card = modal && modal.querySelector('.shop-card');
+    if (!card) return null;
+
+    let panel = document.getElementById('v76ShopActions');
+    if (!panel) {
+      panel = document.createElement('div');
+      panel.id = 'v76ShopActions';
+      panel.className = 'v76-shop-actions';
+      panel.innerHTML = `
+        <button id="v76ManualPlaceButton" type="button" class="v76-manual-place"></button>
+        <button id="v76AutoPlaceButton" type="button" class="v76-auto-place"></button>
+      `;
+      const grid = card.querySelector('.shop-grid');
+      const hint = document.getElementById('shopHint');
+      if (grid) grid.insertAdjacentElement('afterend', panel);
+      else if (hint) card.insertBefore(panel, hint);
+      else card.appendChild(panel);
+    }
+
+    let help = document.getElementById('v76ShopHelp');
+    if (!help) {
+      help = document.createElement('p');
+      help.id = 'v76ShopHelp';
+      help.className = 'v76-shop-help';
+      const hint = document.getElementById('shopHint');
+      if (hint) hint.insertAdjacentElement('afterend', help);
+      else panel.insertAdjacentElement('afterend', help);
+    }
+
+    const manual = document.getElementById('v76ManualPlaceButton');
+    const auto = document.getElementById('v76AutoPlaceButton');
+    if (manual && !manual.dataset.v76Bound) {
+      manual.dataset.v76Bound = '1';
+      manual.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (getInventory() <= 0) {
+          if (messageBar) messageBar.textContent = txt('Kjøp laser først.', 'Buy a laser first.');
+          v76RefreshShopActions();
+          return;
+        }
+        if (typeof activateTurretPlacement === 'function') activateTurretPlacement();
+      });
+    }
+    if (auto && !auto.dataset.v76Bound) {
+      auto.dataset.v76Bound = '1';
+      auto.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        autoPlaceAllLasers();
+      });
+    }
+    return { panel, help, manual, auto };
+  }
+
+  function v76RefreshShopActions(){
+    disableOldTipBubbles();
+    const bits = v76EnsureShopActions();
+    if (!bits) return;
+    const inv = getInventory();
+    const disabled = Boolean(onlineMode) || !gameRunning || inv <= 0;
+    if (bits.manual) {
+      bits.manual.textContent = txt(`🎯 Plasser selv (${inv})`, `🎯 Place manually (${inv})`);
+      bits.manual.disabled = disabled;
+    }
+    if (bits.auto) {
+      bits.auto.textContent = inv > 0
+        ? txt(`🤖 Auto-plasser laser (${inv})`, `🤖 Auto-place lasers (${inv})`)
+        : txt('🤖 Auto-plasser: kjøp laser først', '🤖 Auto-place: buy laser first');
+      bits.auto.disabled = disabled;
+    }
+    if (bits.help) {
+      bits.help.textContent = inv > 0
+        ? txt('Velg selv-plassering eller la systemet plassere laser på trygg tilfeldig rute.', 'Place manually or let the system place lasers on safe random tiles.')
+        : txt('Kjøp Laser-tårn først. Da aktiveres knappene for plassering.', 'Buy Laser turret first. Then the placement buttons become active.');
+    }
+  }
+
+  function v76StabilizeLayout(){
+    disableOldTipBubbles();
+    const top = document.querySelector('.top-actions');
+    if (top) {
+      ['pauseButton', 'menuFromPauseButton', 'endRunButton', 'soundButton', 'shopButton'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.parentElement === top) top.appendChild(el);
+      });
+    }
+  }
+
+  const prevOpen = window.openPowerShop || (typeof openPowerShop === 'function' ? openPowerShop : null);
+  if (typeof prevOpen === 'function' && !prevOpen.__v76Wrapped) {
+    const wrappedOpen = function openPowerShopV76(){
+      const result = prevOpen.apply(this, arguments);
+      [0, 40, 120, 260].forEach(delay => setTimeout(v76RefreshShopActions, delay));
+      return result;
+    };
+    wrappedOpen.__v76Wrapped = true;
+    window.openPowerShop = globalThis.openPowerShop = wrappedOpen;
+    try { openPowerShop = wrappedOpen; } catch(_) {}
+  }
+
+  const prevShopUi = window.v23UpdateShopUi || (typeof v23UpdateShopUi === 'function' ? v23UpdateShopUi : null);
+  if (typeof prevShopUi === 'function' && !prevShopUi.__v76Wrapped) {
+    const wrappedShopUi = function v23UpdateShopUiV76(){
+      const result = prevShopUi.apply(this, arguments);
+      setTimeout(v76RefreshShopActions, 0);
+      return result;
+    };
+    wrappedShopUi.__v76Wrapped = true;
+    window.v23UpdateShopUi = globalThis.v23UpdateShopUi = wrappedShopUi;
+    try { v23UpdateShopUi = wrappedShopUi; } catch(_) {}
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    v76StabilizeLayout();
+    v76RefreshShopActions();
+  });
+
+  setTimeout(() => {
+    v76StabilizeLayout();
+    v76RefreshShopActions();
+  }, 300);
+
+  setInterval(() => {
+    v76StabilizeLayout();
+    maybeShowQuietShopInfo();
+    const modal = document.getElementById('shopModal');
+    if (modal && (modal.open || modal.hasAttribute('open'))) v76RefreshShopActions();
+    else disableOldTipBubbles();
+  }, 900);
+})();
+
+
+
+/* --------------------------------------------------------------------------
+   V77: Winner board only - remove filters and keep Top 10 + Daily side-by-side
+   -------------------------------------------------------------------------- */
+(function v77WinnerTwoColumnReset(){
+  if (window.__ragiJoyV77WinnerReset) return;
+  window.__ragiJoyV77WinnerReset = true;
+
+  function v77No(){
+    try { return String(currentLanguage || 'no').toLowerCase().startsWith('no'); }
+    catch(_) { return true; }
+  }
+  function v77Text(no, en){ return v77No() ? no : en; }
+
+  function v77EnsureWinnerLayout(){
+    const dialog = document.getElementById('winnerBoardModal');
+    if (!dialog) return;
+    const card = dialog.querySelector('.winner-card') || dialog;
+    const list = document.getElementById('winnerList');
+    let daily = document.getElementById('dailyTopPanel');
+    const close = document.getElementById('winnersCloseButton');
+    if (!card || !list) return;
+
+    dialog.classList.add('v77-winner-modal');
+    dialog.classList.remove('v75-filter-global', 'v75-filter-daily', 'v75-filter-mine');
+    dialog.classList.add('v75-filter-all');
+    dialog.dataset.v75Filter = 'all';
+
+    const oldControl = document.getElementById('v75WinnerControlPanel');
+    if (oldControl) oldControl.remove();
+    const oldMine = document.getElementById('v75MineEmpty');
+    if (oldMine) oldMine.remove();
+
+    let info = document.getElementById('v77WinnerInfo');
+    if (!info) {
+      info = document.createElement('div');
+      info.id = 'v77WinnerInfo';
+      info.className = 'v77-winner-info';
+      const subtitle = document.getElementById('winnersSubtitle');
+      if (subtitle && subtitle.parentElement === card) subtitle.insertAdjacentElement('afterend', info);
+      else card.prepend(info);
+    }
+    info.innerHTML = v77Text(
+      '<strong>Oversikt:</strong> Top 10 totalt til venstre og Dagens Top 10 til høyre. Sortering skjer automatisk etter høyest score, deretter høyest level.',
+      '<strong>Overview:</strong> All-time Top 10 on the left and Today\'s Top 10 on the right. Sorted automatically by highest score, then highest level.'
+    );
+
+    let layout = card.querySelector('.v77-winner-grid') || card.querySelector('.v75-winner-grid') || card.querySelector('.v73-winner-layout') || card.querySelector('.v65-winner-grid');
+    if (!layout) {
+      layout = document.createElement('div');
+      card.appendChild(layout);
+    }
+    layout.className = 'v77-winner-grid v75-winner-grid';
+
+    let globalPanel = document.getElementById('v77GlobalWinnersPanel');
+    if (!globalPanel) {
+      globalPanel = document.createElement('section');
+      globalPanel.id = 'v77GlobalWinnersPanel';
+      globalPanel.className = 'v77-board-panel';
+    }
+    let globalTitle = document.getElementById('v77GlobalWinnersTitle');
+    if (!globalTitle) {
+      globalTitle = document.createElement('h3');
+      globalTitle.id = 'v77GlobalWinnersTitle';
+      globalPanel.prepend(globalTitle);
+    }
+    globalTitle.textContent = v77Text('🏆 Top 10 totalt', '🏆 All-time Top 10');
+
+    let globalNote = document.getElementById('v77GlobalWinnersNote');
+    if (!globalNote) {
+      globalNote = document.createElement('small');
+      globalNote.id = 'v77GlobalWinnersNote';
+      globalNote.className = 'v77-panel-note';
+      globalTitle.insertAdjacentElement('afterend', globalNote);
+    }
+    globalNote.textContent = v77Text('Beste score blir liggende øverst.', 'Highest score stays on top.');
+
+    if (globalPanel.parentElement !== layout) layout.appendChild(globalPanel);
+    if (list.parentElement !== globalPanel) globalPanel.appendChild(list);
+
+    if (!daily) {
+      daily = document.createElement('section');
+      daily.id = 'dailyTopPanel';
+      daily.className = 'v41-daily-panel v42-daily-panel v75-daily-panel';
+      daily.innerHTML = `<h3>${v77Text('⏱️ Dagens Top 10', '⏱️ Today\'s Top 10')}</h3><p>${v77Text('Ingen resultater for i dag ennå.', 'No results today yet.')}</p>`;
+    }
+    daily.classList.add('v77-board-panel');
+    if (daily.parentElement !== layout) layout.appendChild(daily);
+
+    const dailyTitle = daily.querySelector('h3');
+    if (dailyTitle) dailyTitle.textContent = v77Text('⏱️ Dagens Top 10', '⏱️ Today\'s Top 10');
+
+    list.querySelectorAll('.v75-mine-hidden').forEach(row => row.classList.remove('v75-mine-hidden'));
+    dialog.querySelectorAll('#winnerList .winner-row, #winnerList li, #dailyTopPanel li').forEach(row => row.classList.remove('v75-mine-hidden'));
+
+    if (close && close.parentElement !== card) card.appendChild(close);
+    else if (close) card.appendChild(close);
+
+    // Remove inline height/overflow left by older patches.
+    [dialog, card, layout, globalPanel, list, daily].forEach(el => {
+      if (!el) return;
+      el.style.maxHeight = '';
+      el.style.height = '';
+      el.style.overflow = '';
+    });
+  }
+
+  const previousShow = window.showWinnerBoard || (typeof showWinnerBoard === 'function' ? showWinnerBoard : null);
+  if (typeof previousShow === 'function' && !previousShow.__v77Wrapped) {
+    const wrapped = function showWinnerBoardV77(){
+      const result = previousShow.apply(this, arguments);
+      [0, 80, 220, 500].forEach(delay => setTimeout(v77EnsureWinnerLayout, delay));
+      return result;
+    };
+    wrapped.__v77Wrapped = true;
+    window.showWinnerBoard = globalThis.showWinnerBoard = wrapped;
+    try { showWinnerBoard = wrapped; } catch(_) {}
+  }
+
+  document.addEventListener('DOMContentLoaded', () => setTimeout(v77EnsureWinnerLayout, 350));
+  setInterval(() => {
+    const dialog = document.getElementById('winnerBoardModal');
+    if (dialog && (dialog.open || dialog.hasAttribute('open'))) v77EnsureWinnerLayout();
+  }, 500);
+})();
+
+
+
+/* --------------------------------------------------------------------------
+   V78 focused repair:
+   - reliable pause click
+   - avatar preview in summary card
+   - stable power shop laser controls + direct purchase handlers
+   -------------------------------------------------------------------------- */
+(function v78FocusedRepair(){
+  if (window.__ragiJoyV78FocusedRepair) return;
+  window.__ragiJoyV78FocusedRepair = true;
+
+  function noLang(){
+    try { return String(currentLanguage || 'no').toLowerCase().startsWith('no'); }
+    catch(_) { return true; }
+  }
+  function txt(no, en){ return noLang() ? no : en; }
+
+  function inv(){
+    try { return Math.max(0, Number(v23TurretInventory || 0)); }
+    catch(_) { return 0; }
+  }
+  function maxInv(){
+    try { return Number(V25_TURRET_MAX_INVENTORY || 6); }
+    catch(_) { return 6; }
+  }
+  function setInv(value){
+    try { v23TurretInventory = Math.max(0, Math.min(maxInv(), Number(value || 0))); }
+    catch(_) {}
+  }
+  function safeSfx(name){ try { if (typeof playSfx === 'function') playSfx(name); } catch(_) {} }
+  function safeDraw(){
+    try { if (typeof drawGame === 'function') drawGame(); } catch(_) {}
+    try { if (typeof v23UpdateShopUi === 'function') v23UpdateShopUi(); } catch(_) {}
+    try { if (typeof updateLaserHud === 'function') updateLaserHud(); } catch(_) {}
+    setTimeout(refreshShopLaserControls, 20);
+  }
+
+  /* 1) Pause: one click = one toggle */
+  function setPauseVisuals(){
+    const active = Boolean(gameRunning);
+    const btn = document.getElementById('pauseButton');
+    if (btn) {
+      btn.textContent = paused ? txt('▶️ Fortsett', '▶️ Resume') : txt('⏸️ Pause', '⏸️ Pause');
+      btn.disabled = !active;
+      btn.setAttribute('aria-pressed', paused ? 'true' : 'false');
+    }
+    document.body.classList.toggle('paused-state', Boolean(active && paused));
+    document.body.classList.toggle('playing-state', Boolean(active && !paused));
+    const msg = document.getElementById('messageBar');
+    if (msg && paused && !msg.textContent.trim()) msg.textContent = txt('Pause aktivert. Trykk P igjen for å fortsette.', 'Paused. Press P again to continue.');
+  }
+
+  function robustTogglePause(){
+    if (!gameRunning) return;
+    paused = !paused;
+    if (messageBar) messageBar.textContent = paused ? t('paused') : t('resumed');
+    try { clearInterval(enemyTimer); clearTimeout(enemyTimer); } catch(_) {}
+    if (!paused) {
+      try { enemyTimer = setTimeout(moveEnemies, getEnemyDelay()); } catch(_) {}
+    }
+    setPauseVisuals();
+    try { if (typeof drawGame === 'function') drawGame(); } catch(_) {}
+  }
+
+  window.togglePause = globalThis.togglePause = robustTogglePause;
+  try { togglePause = robustTogglePause; } catch(_) {}
+
+  function bindPauseButton(){
+    const btn = document.getElementById('pauseButton');
+    if (!btn || btn.dataset.v78PauseBound === '1') return;
+    btn.dataset.v78PauseBound = '1';
+    btn.removeAttribute('onclick');
+    btn.onclick = null;
+    btn.addEventListener('click', function(event){
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      robustTogglePause();
+    }, true);
+  }
+
+  /* 2) Uploaded avatar preview in "Figur" card */
+  function refreshSummaryAvatar(){
+    const avatar = document.getElementById('summaryAvatar');
+    if (!avatar) return;
+    let image = '';
+    let emoji = '😄';
+    try { image = selectedPlayerImage || localStorage.getItem('ragiJoyPlayerImage') || ''; } catch(_) {}
+    try { emoji = selectedPlayerEmoji || localStorage.getItem('ragiJoyPlayerEmoji') || '😄'; } catch(_) {}
+    if (image && /^data:image\//.test(image)) {
+      avatar.innerHTML = '';
+      const img = document.createElement('img');
+      img.className = 'v78-summary-avatar-img';
+      img.alt = txt('Valgt figur', 'Selected avatar');
+      img.src = image;
+      avatar.appendChild(img);
+    } else {
+      avatar.textContent = emoji || '😄';
+    }
+  }
+
+  /* 3) Stable power-shop laser purchase + buttons */
+  function ensureShopLaserControls(){
+    const modal = document.getElementById('shopModal');
+    const card = modal && modal.querySelector('.shop-card');
+    if (!card) return null;
+
+    let row = document.getElementById('v78ShopActions');
+    if (!row) {
+      row = document.createElement('div');
+      row.id = 'v78ShopActions';
+      row.innerHTML = `
+        <button id="v78ManualLaserButton" type="button"></button>
+        <button id="v78AutoLaserButton" type="button"></button>
+      `;
+    }
+
+    const grid = card.querySelector('.shop-grid');
+    const hint = document.getElementById('shopHint');
+    if (row.parentElement !== card) {
+      if (grid) grid.insertAdjacentElement('afterend', row);
+      else if (hint) card.insertBefore(row, hint);
+      else card.appendChild(row);
+    }
+
+    let status = document.getElementById('v78ShopStatus');
+    if (!status) {
+      status = document.createElement('p');
+      status.id = 'v78ShopStatus';
+    }
+    if (hint && status.parentElement !== card) {
+      hint.insertAdjacentElement('afterend', status);
+    } else if (!hint && status.parentElement !== card) {
+      row.insertAdjacentElement('afterend', status);
+    }
+
+    const manual = document.getElementById('v78ManualLaserButton');
+    const auto = document.getElementById('v78AutoLaserButton');
+
+    if (manual && manual.dataset.v78Bound !== '1') {
+      manual.dataset.v78Bound = '1';
+      manual.addEventListener('click', function(event){
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        if (inv() <= 0) {
+          if (messageBar) messageBar.textContent = txt('Kjøp Laser-tårn først.', 'Buy a laser tower first.');
+          refreshShopLaserControls();
+          return;
+        }
+        try {
+          if (typeof activateTurretPlacement === 'function') activateTurretPlacement();
+        } catch(_) {}
+        refreshShopLaserControls();
+      }, true);
+    }
+
+    if (auto && auto.dataset.v78Bound !== '1') {
+      auto.dataset.v78Bound = '1';
+      auto.addEventListener('click', function(event){
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        autoPlaceLasersV78();
+      }, true);
+    }
+
+    return { row, manual, auto, status };
+  }
+
+  function refreshShopLaserControls(){
+    const bits = ensureShopLaserControls();
+    if (!bits) return;
+    const count = inv();
+    const disabled = Boolean(onlineMode) || !gameRunning || count <= 0;
+
+    if (bits.manual) {
+      bits.manual.textContent = txt(`🎯 Plasser selv (${count})`, `🎯 Place manually (${count})`);
+      bits.manual.disabled = disabled;
+    }
+    if (bits.auto) {
+      bits.auto.textContent = count > 0
+        ? txt(`🤖 Auto-plasser (${count})`, `🤖 Auto-place (${count})`)
+        : txt('🤖 Auto-plasser: kjøp laser først', '🤖 Auto-place: buy laser first');
+      bits.auto.disabled = disabled;
+    }
+    if (bits.status) {
+      bits.status.textContent = count > 0
+        ? txt(`Du har ${count} laser klar. Velg Plasser selv eller Auto-plasser.`, `You have ${count} laser(s) ready. Choose manual or auto-place.`)
+        : txt('Kjøp Laser-tårn først. Da aktiveres knappene for plassering.', 'Buy a laser tower first. Then the placement buttons activate.');
+    }
+
+    const buyOne = document.getElementById('buyTurretButton');
+    const buyPack = document.getElementById('buyTurretPackButton');
+    if (buyOne) buyOne.disabled = Boolean(onlineMode) || !gameRunning || score < V23_SHOP_COSTS.turret || count >= maxInv();
+    if (buyPack) buyPack.disabled = Boolean(onlineMode) || !gameRunning || score < V23_SHOP_COSTS.turretPack || count + V25_TURRET_PACK_COUNT > maxInv();
+    try { if (typeof v23UpdateShopTexts === 'function') v23UpdateShopTexts(); } catch(_) {}
+  }
+
+  function buyLaserDirect(count, cost, label){
+    if (onlineMode || !gameRunning) return false;
+    const current = inv();
+    if (current + count > maxInv()) {
+      if (messageBar) messageBar.textContent = txt('Du har maks antall laser på lager allerede.', 'You already have the maximum number of lasers.');
+      safeSfx('lose');
+      refreshShopLaserControls();
+      return false;
+    }
+    if (score < cost) {
+      if (messageBar) messageBar.textContent = t('shopNotEnough');
+      safeSfx('lose');
+      refreshShopLaserControls();
+      return false;
+    }
+    score -= cost;
+    setInv(current + count);
+    if (v23PlacingTurret) {
+      v23PlacingTurret = false;
+      document.body.classList.remove('turret-placement-active');
+    }
+    if (messageBar) messageBar.textContent = txt(`${label} kjøpt. Du har ${inv()} laser klar.`, `${label} bought. You have ${inv()} laser(s) ready.`);
+    try { if (typeof spawnCenterBurst === 'function') spawnCenterBurst(count > 1 ? '🔫 x3' : '🔫 +1'); } catch(_) {}
+    safeSfx('power');
+    safeDraw();
+    return true;
+  }
+
+  const previousBuyShopItemV78 = window.buyShopItem || (typeof buyShopItem === 'function' ? buyShopItem : null);
+  function buyShopItemV78(item){
+    const key = String(item || '');
+    if (key === 'turret') {
+      return buyLaserDirect(1, V23_SHOP_COSTS.turret, txt('Laser-tårn', 'Laser tower'));
+    }
+    return typeof previousBuyShopItemV78 === 'function' ? previousBuyShopItemV78.apply(this, arguments) : false;
+  }
+  window.buyShopItem = globalThis.buyShopItem = buyShopItemV78;
+  try { buyShopItem = buyShopItemV78; } catch(_) {}
+
+  function buyTurretPackV78(){
+    return buyLaserDirect(V25_TURRET_PACK_COUNT, V23_SHOP_COSTS.turretPack, txt('Laser-pakke', 'Laser pack'));
+  }
+  window.buyTurretPack = globalThis.buyTurretPack = buyTurretPackV78;
+  try { buyTurretPack = buyTurretPackV78; } catch(_) {}
+
+  function bindShopPurchaseButtons(){
+    const one = document.getElementById('buyTurretButton');
+    if (one && one.dataset.v78Bound !== '1') {
+      one.dataset.v78Bound = '1';
+      one.removeAttribute('onclick');
+      one.onclick = null;
+      one.addEventListener('click', function(event){
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        buyShopItemV78('turret');
+      }, true);
+    }
+    const pack = document.getElementById('buyTurretPackButton');
+    if (pack && pack.dataset.v78Bound !== '1') {
+      pack.dataset.v78Bound = '1';
+      pack.removeAttribute('onclick');
+      pack.onclick = null;
+      pack.addEventListener('click', function(event){
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        buyTurretPackV78();
+      }, true);
+    }
+  }
+
+  function autoPlaceLasersV78(){
+    if (inv() <= 0) {
+      if (messageBar) messageBar.textContent = txt('Kjøp Laser-tårn først.', 'Buy a laser tower first.');
+      refreshShopLaserControls();
+      return 0;
+    }
+
+    const candidates = [];
+    try {
+      for (let y = 1; y < map.length - 1; y++) {
+        for (let x = 1; x < map[y].length - 1; x++) {
+          const ok = (typeof v23CanPlaceTurret === 'function') ? v23CanPlaceTurret(x, y) : map[y][x] === TILE.EMPTY;
+          if (ok) candidates.push({ x, y });
+        }
+      }
+    } catch(_) {}
+
+    let placed = 0;
+    while (candidates.length && inv() > 0) {
+      const index = Math.floor(Math.random() * candidates.length);
+      const spot = candidates.splice(index, 1)[0];
+      try {
+        if (typeof v23PlaceTurretAt === 'function' && v23PlaceTurretAt(spot.x, spot.y)) placed++;
+      } catch(_) {}
+    }
+
+    if (placed > 0) {
+      v23PlacingTurret = false;
+      document.body.classList.remove('turret-placement-active');
+      try { if (typeof closePowerShop === 'function') closePowerShop(); } catch(_) {}
+      if (messageBar) messageBar.textContent = txt(`🤖 Systemet plasserte ${placed} laser.`, `🤖 The system placed ${placed} laser(s).`);
+      safeSfx('power');
+      safeDraw();
+    } else {
+      if (messageBar) messageBar.textContent = txt('Fant ingen trygg ledig rute for laser akkurat nå.', 'No safe free tile for a laser right now.');
+      refreshShopLaserControls();
+    }
+    return placed;
+  }
+
+  const previousOpenPowerShopV78 = window.openPowerShop || (typeof openPowerShop === 'function' ? openPowerShop : null);
+  if (typeof previousOpenPowerShopV78 === 'function' && !previousOpenPowerShopV78.__v78Wrapped) {
+    const openWrapped = function openPowerShopV78(){
+      const result = previousOpenPowerShopV78.apply(this, arguments);
+      [0, 40, 120, 260].forEach(delay => setTimeout(() => {
+        bindShopPurchaseButtons();
+        refreshShopLaserControls();
+      }, delay));
+      return result;
+    };
+    openWrapped.__v78Wrapped = true;
+    window.openPowerShop = globalThis.openPowerShop = openWrapped;
+    try { openPowerShop = openWrapped; } catch(_) {}
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    bindPauseButton();
+    setPauseVisuals();
+    refreshSummaryAvatar();
+    bindShopPurchaseButtons();
+    refreshShopLaserControls();
+  });
+
+  setTimeout(function(){
+    bindPauseButton();
+    setPauseVisuals();
+    refreshSummaryAvatar();
+    bindShopPurchaseButtons();
+    refreshShopLaserControls();
+  }, 250);
+
+  setInterval(function(){
+    bindPauseButton();
+    setPauseVisuals();
+    refreshSummaryAvatar();
+    const modal = document.getElementById('shopModal');
+    if (modal && (modal.open || modal.hasAttribute('open'))) {
+      bindShopPurchaseButtons();
+      refreshShopLaserControls();
+    }
+  }, 500);
+
+  const previousHandleAvatarUploadV78 = window.handleAvatarUpload || (typeof handleAvatarUpload === 'function' ? handleAvatarUpload : null);
+  if (typeof previousHandleAvatarUploadV78 === 'function' && !previousHandleAvatarUploadV78.__v78Wrapped) {
+    const avatarWrapped = function handleAvatarUploadV78(){
+      const result = previousHandleAvatarUploadV78.apply(this, arguments);
+      setTimeout(refreshSummaryAvatar, 80);
+      setTimeout(refreshSummaryAvatar, 250);
+      return result;
+    };
+    avatarWrapped.__v78Wrapped = true;
+    window.handleAvatarUpload = globalThis.handleAvatarUpload = avatarWrapped;
+    try { handleAvatarUpload = avatarWrapped; } catch(_) {}
+  }
+
+  const previousClearAvatarImageV78 = window.clearAvatarImage || (typeof clearAvatarImage === 'function' ? clearAvatarImage : null);
+  if (typeof previousClearAvatarImageV78 === 'function' && !previousClearAvatarImageV78.__v78Wrapped) {
+    const clearWrapped = function clearAvatarImageV78(){
+      const result = previousClearAvatarImageV78.apply(this, arguments);
+      setTimeout(refreshSummaryAvatar, 80);
+      return result;
+    };
+    clearWrapped.__v78Wrapped = true;
+    window.clearAvatarImage = globalThis.clearAvatarImage = clearWrapped;
+    try { clearAvatarImage = clearWrapped; } catch(_) {}
+  }
+})();
+
+/* --------------------------------------------------------------------------
+   V79 focused patch requested:
+   - stable winner tab with two boxes side-by-side and no visible refresh text
+   - readable date card
+   - player name from anonymous prompt / player card is shown immediately in HUD
+   - one clean laser control panel in the power shop
+   - pause does not reopen menu/home content
+   -------------------------------------------------------------------------- */
+(function v79FocusedFinalPatch(){
+  if (window.__ragiJoyV79FocusedFinalPatch) return;
+  window.__ragiJoyV79FocusedFinalPatch = true;
+
+  const NAME_KEY = 'ragiJoyMazePreferredNameV34';
+  const LAST_NAME_KEY = 'ragiJoyLastWinnerName';
+  const TURRET_COST = () => {
+    try { return Number(V23_SHOP_COSTS && V23_SHOP_COSTS.turret) || 1200; }
+    catch(_) { return 1200; }
+  };
+  const TURRET_PACK_COST = () => {
+    try { return Number(V23_SHOP_COSTS && V23_SHOP_COSTS.turretPack) || 3300; }
+    catch(_) { return 3300; }
+  };
+  const PACK_COUNT = () => {
+    try { return Number(V25_TURRET_PACK_COUNT || 3); }
+    catch(_) { return 3; }
+  };
+  const MAX_TURRETS = () => {
+    try { return Number(V25_TURRET_MAX_INVENTORY || 6); }
+    catch(_) { return 6; }
+  };
+
+  function isNo(){
+    try { return String(currentLanguage || localStorage.getItem('ragiJoyLanguage') || 'no').toLowerCase().startsWith('no'); }
+    catch(_) { return true; }
+  }
+  function text(no, en){ return isNo() ? no : en; }
+  function escapeHtml(value){
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+  function activeName(){
+    try { return String(localStorage.getItem(NAME_KEY) || localStorage.getItem(LAST_NAME_KEY) || '').trim(); }
+    catch(_) { return ''; }
+  }
+  function setDomText(id, value){
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  }
+  function playSafe(name){ try { if (typeof playSfx === 'function') playSfx(name); } catch(_) {} }
+  function redrawSafe(){
+    try { if (typeof drawGame === 'function') drawGame(); } catch(_) {}
+    try { if (typeof v23UpdateShopUi === 'function') v23UpdateShopUi(); } catch(_) {}
+    try { if (typeof updateLaserHud === 'function') updateLaserHud(); } catch(_) {}
+  }
+  function inv(){
+    try { return Math.max(0, Number(v23TurretInventory || 0)); }
+    catch(_) { return 0; }
+  }
+  function setInv(value){
+    try { v23TurretInventory = Math.max(0, Math.min(MAX_TURRETS(), Number(value || 0))); }
+    catch(_) {}
+  }
+  function canUseShop(){
+    try { return Boolean(gameRunning && !onlineMode); }
+    catch(_) { return false; }
+  }
+
+  /* Player name must update everywhere after anonymous prompt or player card save. */
+  function syncPlayerNameUi(showReadyMessage){
+    const name = activeName();
+    if (!name) return;
+    setDomText('playerNameHudValue', name);
+    setDomText('profileCurrentName', name);
+    const hud = document.getElementById('playerNameHudCard');
+    if (hud) hud.classList.remove('empty-profile');
+    const profileButton = document.getElementById('profileNameButton');
+    if (profileButton) {
+      profileButton.textContent = `👤 ${name}`;
+      profileButton.classList.add('has-name');
+    }
+    try {
+      const input = document.getElementById('championNameInput');
+      if (input && !input.value.trim()) input.value = name;
+    } catch(_) {}
+    if (showReadyMessage && typeof messageBar !== 'undefined' && messageBar) {
+      messageBar.textContent = text(`Klar, ${name}! Lykke til 🚀`, `Ready, ${name}! Good luck 🚀`);
+    }
+  }
+
+  try {
+    const nativeSetItem = Storage.prototype.setItem;
+    if (!nativeSetItem.__v79NameSyncWrapped) {
+      Storage.prototype.setItem = function setItemV79(key, value){
+        const result = nativeSetItem.call(this, key, value);
+        if (String(key) === NAME_KEY || String(key) === LAST_NAME_KEY) {
+          setTimeout(() => syncPlayerNameUi(false), 0);
+          setTimeout(() => syncPlayerNameUi(false), 120);
+        }
+        return result;
+      };
+      Storage.prototype.setItem.__v79NameSyncWrapped = true;
+    }
+  } catch(_) {}
+
+  const previousStartGameV79 = window.startGame || (typeof startGame === 'function' ? startGame : null);
+  if (typeof previousStartGameV79 === 'function' && !previousStartGameV79.__v79NameWrapped) {
+    const wrappedStart = function startGameV79(){
+      const result = previousStartGameV79.apply(this, arguments);
+      setTimeout(() => syncPlayerNameUi(true), 40);
+      setTimeout(() => syncPlayerNameUi(false), 220);
+      setTimeout(() => {
+        try {
+          document.body.classList.remove('menu-state');
+          document.body.classList.add(paused ? 'paused-state' : 'playing-state');
+          const summary = document.getElementById('preGameSummary');
+          if (summary) summary.setAttribute('aria-hidden', 'true');
+        } catch(_) {}
+      }, 80);
+      return result;
+    };
+    wrappedStart.__v79NameWrapped = true;
+    window.startGame = globalThis.startGame = wrappedStart;
+    try { startGame = wrappedStart; } catch(_) {}
+  }
+
+  /* Winner tab: no filter row, no visible auto-refresh text, two panels side-by-side. */
+  function cleanWinnerTextNoise(dialog){
+    if (!dialog) return;
+    const selectors = [
+      '#v75WinnerControlPanel', '#v75WinnerFilters', '#v75MineEmpty',
+      '#v64WinnerInfoBox', '#v70WinnerInfoBox', '.v64-winner-info', '.v70-winner-info',
+      '.v75-winner-control', '.v75-winner-filters'
+    ];
+    selectors.forEach(selector => dialog.querySelectorAll(selector).forEach(el => el.remove()));
+    dialog.querySelectorAll('em, small, p, span').forEach(el => {
+      const value = (el.textContent || '').toLowerCase();
+      if (value.includes('oppdateres automatisk') || value.includes('oppdaterer automatisk') || value.includes('auto-refresh') || value.includes('updates automatically')) {
+        el.remove();
+      }
+    });
+  }
+
+  function ensureWinnerTwoColumns(){
+    const dialog = document.getElementById('winnerBoardModal');
+    if (!dialog) return;
+    const card = dialog.querySelector('.winner-card') || dialog;
+    const list = document.getElementById('winnerList') || card.querySelector('.winner-list');
+    if (!card || !list) return;
+
+    dialog.classList.add('v79-winner-modal', 'v77-winner-modal', 'v75-filter-all');
+    dialog.classList.remove('v75-filter-global', 'v75-filter-daily', 'v75-filter-mine');
+    dialog.dataset.v75Filter = 'all';
+    cleanWinnerTextNoise(dialog);
+
+    const title = document.getElementById('winnersTitle');
+    if (title) title.textContent = text('🏆 Top 10 vinnerresultat', '🏆 Top 10 winners');
+    const subtitle = document.getElementById('winnersSubtitle');
+    if (subtitle) {
+      subtitle.textContent = text(
+        'Beste resultater til venstre. Dagens Top 10 til høyre. Sorteres etter score, deretter level.',
+        'Best results on the left. Today\'s Top 10 on the right. Sorted by score, then level.'
+      );
+    }
+
+    let info = document.getElementById('v79WinnerInfo');
+    if (!info) {
+      info = document.createElement('div');
+      info.id = 'v79WinnerInfo';
+      info.className = 'v79-winner-info';
+      if (subtitle && subtitle.parentElement === card) subtitle.insertAdjacentElement('afterend', info);
+      else card.prepend(info);
+    }
+    info.textContent = text('Topplisten lagres lokalt i nettleseren. Flagget hentes fra språk/landprofil.', 'The leaderboard is stored locally in the browser. The flag comes from language/country profile.');
+
+    let layout = card.querySelector('.v79-winner-grid') || card.querySelector('.v77-winner-grid') || card.querySelector('.v75-winner-grid') || card.querySelector('.v73-winner-layout') || card.querySelector('.v65-winner-grid');
+    if (!layout) {
+      layout = document.createElement('div');
+      card.appendChild(layout);
+    }
+    layout.className = 'v79-winner-grid v77-winner-grid v75-winner-grid';
+
+    let globalPanel = document.getElementById('v79GlobalWinnersPanel') || document.getElementById('v77GlobalWinnersPanel');
+    if (!globalPanel) {
+      globalPanel = document.createElement('section');
+      globalPanel.id = 'v79GlobalWinnersPanel';
+      globalPanel.className = 'v79-board-panel v77-board-panel';
+    }
+    globalPanel.id = 'v79GlobalWinnersPanel';
+    globalPanel.className = 'v79-board-panel v77-board-panel';
+    let globalTitle = document.getElementById('v79GlobalWinnersTitle');
+    if (!globalTitle) {
+      globalTitle = document.createElement('h3');
+      globalTitle.id = 'v79GlobalWinnersTitle';
+      globalPanel.prepend(globalTitle);
+    }
+    globalTitle.textContent = text('🏆 Top 10 totalt', '🏆 All-time Top 10');
+    let globalNote = document.getElementById('v79GlobalWinnersNote');
+    if (!globalNote) {
+      globalNote = document.createElement('p');
+      globalNote.id = 'v79GlobalWinnersNote';
+      globalNote.className = 'v79-panel-note';
+      globalTitle.insertAdjacentElement('afterend', globalNote);
+    }
+    globalNote.textContent = text('Høyeste score øverst. Ved lik score teller level først.', 'Highest score first. If tied, level wins.');
+    if (globalPanel.parentElement !== layout) layout.appendChild(globalPanel);
+    if (list.parentElement !== globalPanel) globalPanel.appendChild(list);
+
+    let daily = document.getElementById('dailyTopPanel');
+    if (!daily) {
+      daily = document.createElement('section');
+      daily.id = 'dailyTopPanel';
+      daily.innerHTML = `<h3>${text('⏱️ Dagens Top 10', '⏱️ Today\'s Top 10')}</h3><p>${text('Ingen resultater for i dag ennå.', 'No results today yet.')}</p>`;
+    }
+    daily.classList.add('v79-board-panel', 'v77-board-panel');
+    const dailyTitle = daily.querySelector('h3') || document.createElement('h3');
+    if (!dailyTitle.parentElement) daily.prepend(dailyTitle);
+    dailyTitle.textContent = text('⏱️ Dagens Top 10', '⏱️ Today\'s Top 10');
+    daily.querySelectorAll('p, small, em').forEach(el => {
+      const value = (el.textContent || '').toLowerCase();
+      if (value.includes('oppdater') || value.includes('update')) el.remove();
+    });
+    if (daily.parentElement !== layout) layout.appendChild(daily);
+
+    list.querySelectorAll('.v75-mine-hidden').forEach(row => row.classList.remove('v75-mine-hidden'));
+    dialog.querySelectorAll('#winnerList .winner-row, #winnerList li, #dailyTopPanel li').forEach(row => row.classList.remove('v75-mine-hidden'));
+
+    const closeButton = document.getElementById('winnersCloseButton');
+    if (closeButton) {
+      closeButton.textContent = text('Lukk', 'Close');
+      if (closeButton.parentElement !== card) card.appendChild(closeButton);
+    }
+    [dialog, card, layout, globalPanel, list, daily].forEach(el => {
+      if (!el) return;
+      el.style.maxHeight = '';
+      el.style.height = '';
+      el.style.overflow = '';
+    });
+  }
+
+  const previousShowWinnerV79 = window.showWinnerBoard || (typeof showWinnerBoard === 'function' ? showWinnerBoard : null);
+  if (typeof previousShowWinnerV79 === 'function' && !previousShowWinnerV79.__v79WinnerWrapped) {
+    const wrappedWinner = function showWinnerBoardV79(){
+      const result = previousShowWinnerV79.apply(this, arguments);
+      [0, 60, 180, 420].forEach(delay => setTimeout(ensureWinnerTwoColumns, delay));
+      return result;
+    };
+    wrappedWinner.__v79WinnerWrapped = true;
+    window.showWinnerBoard = globalThis.showWinnerBoard = wrappedWinner;
+    try { showWinnerBoard = wrappedWinner; } catch(_) {}
+  }
+
+  /* Date card: make it readable instead of cutting "2026". */
+  function fixSummaryDateCard(){
+    const dateCard = document.getElementById('v74DateBadge');
+    if (dateCard) {
+      dateCard.classList.add('v79-date-wide');
+      const strong = dateCard.querySelector('strong');
+      if (strong) {
+        strong.style.whiteSpace = 'nowrap';
+        strong.style.overflow = 'visible';
+        strong.style.textOverflow = 'clip';
+        strong.style.fontSize = 'clamp(16px, 2vw, 22px)';
+      }
+    }
+  }
+
+  /* Power shop: one clear laser panel; remove old duplicate rows every time. */
+  function removeOldLaserControls(card){
+    if (!card) return;
+    const removeSelectors = [
+      '#v78ShopActions', '#v76ShopActions', '.v76-shop-actions', '.shop-action-row',
+      '#v70AutoPlaceTurretButton', '#v72AutoPlaceTurretButton', '#v74AutoPlaceTurretButton',
+      '#placeTurretButton', '#shopPlaceTurretButton', '#v78ShopStatus', '#v76ShopHelp'
+    ];
+    removeSelectors.forEach(selector => card.querySelectorAll(selector).forEach(el => el.remove()));
+    card.querySelectorAll('[id="v79ShopLaserPanel"]').forEach((el, index) => { if (index > 0) el.remove(); });
+  }
+
+  function buyLaser(count, cost, label){
+    if (!canUseShop()) return false;
+    const current = inv();
+    if (current + count > MAX_TURRETS()) {
+      if (messageBar) messageBar.textContent = text('Du har maks antall laser på lager allerede.', 'You already have the maximum number of lasers.');
+      playSafe('lose');
+      refreshShopLaserPanel();
+      return false;
+    }
+    if (Number(score || 0) < cost) {
+      if (messageBar) messageBar.textContent = typeof t === 'function' ? t('shopNotEnough') : text('Ikke nok poeng.', 'Not enough points.');
+      playSafe('lose');
+      refreshShopLaserPanel();
+      return false;
+    }
+    try { score = Number(score || 0) - cost; } catch(_) {}
+    setInv(current + count);
+    try { v23PlacingTurret = false; document.body.classList.remove('turret-placement-active'); } catch(_) {}
+    if (messageBar) messageBar.textContent = text(`${label} kjøpt. Du har ${inv()} laser klar.`, `${label} bought. You have ${inv()} laser(s) ready.`);
+    try { if (typeof spawnCenterBurst === 'function') spawnCenterBurst(count > 1 ? '🔫 x3' : '🔫 +1'); } catch(_) {}
+    playSafe('power');
+    redrawSafe();
+    refreshShopLaserPanel();
+    return true;
+  }
+
+  function activateManualLaser(){
+    if (inv() <= 0) {
+      if (messageBar) messageBar.textContent = text('Kjøp Laser-tårn først.', 'Buy a laser tower first.');
+      refreshShopLaserPanel();
+      return;
+    }
+    try {
+      if (typeof activateTurretPlacement === 'function') activateTurretPlacement();
+      else {
+        v23PlacingTurret = true;
+        document.body.classList.add('turret-placement-active');
+      }
+    } catch(_) {}
+    refreshShopLaserPanel();
+  }
+
+  function autoPlaceAllLasers(){
+    if (inv() <= 0) {
+      if (messageBar) messageBar.textContent = text('Kjøp Laser-tårn først.', 'Buy a laser tower first.');
+      refreshShopLaserPanel();
+      return 0;
+    }
+    const spots = [];
+    try {
+      for (let y = 1; y < map.length - 1; y++) {
+        for (let x = 1; x < map[y].length - 1; x++) {
+          const ok = (typeof v23CanPlaceTurret === 'function') ? v23CanPlaceTurret(x, y) : map[y][x] === TILE.EMPTY;
+          if (ok) spots.push({ x, y });
+        }
+      }
+    } catch(_) {}
+    let placed = 0;
+    while (spots.length && inv() > 0) {
+      const index = Math.floor(Math.random() * spots.length);
+      const spot = spots.splice(index, 1)[0];
+      try {
+        if (typeof v23PlaceTurretAt === 'function') {
+          if (v23PlaceTurretAt(spot.x, spot.y)) placed++;
+        }
+      } catch(_) {}
+    }
+    try { v23PlacingTurret = false; document.body.classList.remove('turret-placement-active'); } catch(_) {}
+    if (placed > 0) {
+      try { if (typeof closePowerShop === 'function') closePowerShop(); } catch(_) {}
+      if (messageBar) messageBar.textContent = text(`🤖 Systemet plasserte ${placed} laser automatisk.`, `🤖 The system placed ${placed} laser(s) automatically.`);
+      playSafe('power');
+      redrawSafe();
+    } else {
+      if (messageBar) messageBar.textContent = text('Fant ingen ledig trygg rute for laser nå.', 'No safe free tile for a laser right now.');
+    }
+    refreshShopLaserPanel();
+    return placed;
+  }
+
+  function cleanShopBuyButton(id){
+    const oldButton = document.getElementById(id);
+    if (!oldButton) return null;
+    if (oldButton.dataset.v79CleanButton === '1') return oldButton;
+    const fresh = oldButton.cloneNode(true);
+    fresh.removeAttribute('onclick');
+    fresh.onclick = null;
+    fresh.dataset.v79CleanButton = '1';
+    oldButton.replaceWith(fresh);
+    return fresh;
+  }
+
+  function ensureShopLaserPanel(){
+    const modal = document.getElementById('shopModal');
+    const card = modal && modal.querySelector('.shop-card');
+    if (!card) return null;
+    removeOldLaserControls(card);
+
+    let panel = document.getElementById('v79ShopLaserPanel');
+    if (!panel) {
+      panel = document.createElement('section');
+      panel.id = 'v79ShopLaserPanel';
+      panel.innerHTML = `
+        <div class="v79-shop-laser-actions">
+          <button id="v79ManualLaserButton" type="button"></button>
+          <button id="v79AutoLaserButton" type="button"></button>
+        </div>
+        <p id="v79ShopLaserHint"></p>
+      `;
+    }
+    const grid = card.querySelector('.shop-grid');
+    const hint = document.getElementById('shopHint');
+    if (panel.parentElement !== card) {
+      if (grid) grid.insertAdjacentElement('afterend', panel);
+      else if (hint) hint.insertAdjacentElement('beforebegin', panel);
+      else card.appendChild(panel);
+    }
+
+    const manual = document.getElementById('v79ManualLaserButton');
+    const auto = document.getElementById('v79AutoLaserButton');
+    if (manual && manual.dataset.v79Bound !== '1') {
+      manual.dataset.v79Bound = '1';
+      manual.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        activateManualLaser();
+      }, true);
+    }
+    if (auto && auto.dataset.v79Bound !== '1') {
+      auto.dataset.v79Bound = '1';
+      auto.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        autoPlaceAllLasers();
+      }, true);
+    }
+
+    const buyOne = cleanShopBuyButton('buyTurretButton');
+    if (buyOne && buyOne.dataset.v79Bound !== '1') {
+      buyOne.dataset.v79Bound = '1';
+      buyOne.removeAttribute('onclick');
+      buyOne.onclick = null;
+      buyOne.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        buyLaser(1, TURRET_COST(), text('Laser-tårn', 'Laser tower'));
+      }, true);
+    }
+    const buyPack = cleanShopBuyButton('buyTurretPackButton');
+    if (buyPack && buyPack.dataset.v79Bound !== '1') {
+      buyPack.dataset.v79Bound = '1';
+      buyPack.removeAttribute('onclick');
+      buyPack.onclick = null;
+      buyPack.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        buyLaser(PACK_COUNT(), TURRET_PACK_COST(), text('Laser-pakke', 'Laser pack'));
+      }, true);
+    }
+    return { panel, manual, auto, hint: document.getElementById('v79ShopLaserHint'), buyOne, buyPack };
+  }
+
+  function refreshShopLaserPanel(){
+    const bits = ensureShopLaserPanel();
+    if (!bits) return;
+    const count = inv();
+    const disabledPlace = !canUseShop() || count <= 0;
+    if (bits.manual) {
+      bits.manual.textContent = text(`🎯 Plasser selv (${count})`, `🎯 Place manually (${count})`);
+      bits.manual.disabled = disabledPlace;
+    }
+    if (bits.auto) {
+      bits.auto.textContent = count > 0
+        ? text(`🤖 Auto-plasser (${count})`, `🤖 Auto-place (${count})`)
+        : text('🤖 Auto-plasser: kjøp laser først', '🤖 Auto-place: buy laser first');
+      bits.auto.disabled = disabledPlace;
+    }
+    if (bits.hint) {
+      bits.hint.textContent = count > 0
+        ? text(`Du har ${count} laser klar. Velg Plasser selv for å velge rute, eller Auto-plasser for at systemet gjør det.`, `You have ${count} laser(s) ready. Choose manual placement or auto-place.`)
+        : text('Kjøp Laser-tårn først. Da aktiveres knappene under.', 'Buy a laser tower first. Then the buttons below activate.');
+    }
+    try {
+      if (bits.buyOne) bits.buyOne.disabled = !canUseShop() || Number(score || 0) < TURRET_COST() || count >= MAX_TURRETS();
+      if (bits.buyPack) bits.buyPack.disabled = !canUseShop() || Number(score || 0) < TURRET_PACK_COST() || count + PACK_COUNT() > MAX_TURRETS();
+    } catch(_) {}
+  }
+
+  const previousOpenPowerShopV79 = window.openPowerShop || (typeof openPowerShop === 'function' ? openPowerShop : null);
+  if (typeof previousOpenPowerShopV79 === 'function' && !previousOpenPowerShopV79.__v79ShopWrapped) {
+    const wrappedShop = function openPowerShopV79(){
+      const result = previousOpenPowerShopV79.apply(this, arguments);
+      [0, 60, 160, 360].forEach(delay => setTimeout(refreshShopLaserPanel, delay));
+      return result;
+    };
+    wrappedShop.__v79ShopWrapped = true;
+    window.openPowerShop = globalThis.openPowerShop = wrappedShop;
+    try { openPowerShop = wrappedShop; } catch(_) {}
+  }
+
+  const previousBuyShopItemV79 = window.buyShopItem || (typeof buyShopItem === 'function' ? buyShopItem : null);
+  if (typeof previousBuyShopItemV79 === 'function' && !previousBuyShopItemV79.__v79ShopBuyWrapped) {
+    const wrappedBuy = function buyShopItemV79(item){
+      if (String(item || '') === 'turret') return buyLaser(1, TURRET_COST(), text('Laser-tårn', 'Laser tower'));
+      return previousBuyShopItemV79.apply(this, arguments);
+    };
+    wrappedBuy.__v79ShopBuyWrapped = true;
+    window.buyShopItem = globalThis.buyShopItem = wrappedBuy;
+    try { buyShopItem = wrappedBuy; } catch(_) {}
+  }
+  const previousBuyPackV79 = window.buyTurretPack || (typeof buyTurretPack === 'function' ? buyTurretPack : null);
+  if (typeof previousBuyPackV79 === 'function' && !previousBuyPackV79.__v79ShopPackWrapped) {
+    const wrappedPack = function buyTurretPackV79(){
+      return buyLaser(PACK_COUNT(), TURRET_PACK_COST(), text('Laser-pakke', 'Laser pack'));
+    };
+    wrappedPack.__v79ShopPackWrapped = true;
+    window.buyTurretPack = globalThis.buyTurretPack = wrappedPack;
+    try { buyTurretPack = wrappedPack; } catch(_) {}
+  }
+
+  /* Pause: keep only game HUD/actions visible, never show start/menu cards while paused. */
+  function stabilizePauseView(){
+    try {
+      const active = Boolean(gameRunning);
+      document.body.classList.toggle('paused-state', active && Boolean(paused));
+      document.body.classList.toggle('playing-state', active && !Boolean(paused));
+      if (active) document.body.classList.remove('menu-state');
+      const summary = document.getElementById('preGameSummary');
+      if (summary && active) summary.setAttribute('aria-hidden', 'true');
+      const pauseBtn = document.getElementById('pauseButton');
+      if (pauseBtn && active) {
+        pauseBtn.textContent = paused ? text('▶️ Fortsett', '▶️ Resume') : text('⏸️ Pause', '⏸️ Pause');
+        pauseBtn.disabled = false;
+      }
+    } catch(_) {}
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    syncPlayerNameUi(false);
+    fixSummaryDateCard();
+    ensureWinnerTwoColumns();
+    refreshShopLaserPanel();
+    stabilizePauseView();
+  });
+  setTimeout(() => {
+    syncPlayerNameUi(false);
+    fixSummaryDateCard();
+    ensureWinnerTwoColumns();
+    refreshShopLaserPanel();
+    stabilizePauseView();
+  }, 350);
+  setInterval(() => {
+    syncPlayerNameUi(false);
+    fixSummaryDateCard();
+    stabilizePauseView();
+    const shop = document.getElementById('shopModal');
+    if (shop && (shop.open || shop.hasAttribute('open'))) refreshShopLaserPanel();
+    const winners = document.getElementById('winnerBoardModal');
+    if (winners && (winners.open || winners.hasAttribute('open'))) ensureWinnerTwoColumns();
+  }, 900);
+})();
+
+
+/* --------------------------------------------------------------------------
+   V80: Winner tab only - final readable layout, no visible sync/countdown text
+   -------------------------------------------------------------------------- */
+(function v80WinnerOnlyPatch(){
+  if (window.__ragiJoyV80WinnerOnlyPatch) return;
+  window.__ragiJoyV80WinnerOnlyPatch = true;
+
+  function noLang(){
+    try { return String(currentLanguage || 'no').toLowerCase().startsWith('no'); }
+    catch(_) { return true; }
+  }
+  function tx(no, en){ return noLang() ? no : en; }
+
+  function hideSyncNoise(root){
+    if (!root) return;
+    const noisySelectors = [
+      '#v75WinnerControlPanel', '#v75WinnerFilters', '#v75MineEmpty',
+      '#v64WinnerInfoBox', '#v70WinnerInfoBox', '#v77WinnerInfo', '#v79WinnerInfo',
+      '.v64-winner-info', '.v70-winner-info', '.v77-winner-info', '.v79-winner-info',
+      '.v75-winner-control', '.v75-winner-filters', '.v77-panel-note', '.v79-panel-note'
+    ];
+    noisySelectors.forEach(sel => root.querySelectorAll(sel).forEach(el => {
+      el.hidden = true;
+      el.setAttribute('aria-hidden', 'true');
+      el.style.display = 'none';
+    }));
+
+    root.querySelectorAll('#dailyTopPanel > p, #dailyTopPanel > small, #dailyTopPanel > em, p, small, em').forEach(el => {
+      const value = (el.textContent || '').toLowerCase();
+      const syncWords = ['oppdater', 'synk', 'sync', 'refresh', 'automatisk', 'automatic', 'nullstilles', 'ryddes', '24 timer', '24 hours', 'ca.'];
+      if (el.closest('#winnerList')) return;
+      if (syncWords.some(word => value.includes(word))) {
+        el.hidden = true;
+        el.setAttribute('aria-hidden', 'true');
+        el.style.display = 'none';
+      }
+    });
+  }
+
+  function ensureBox(id, titleText){
+    let box = document.getElementById(id);
+    if (!box) {
+      box = document.createElement('section');
+      box.id = id;
+      box.className = 'v80-board-box';
+      const title = document.createElement('h3');
+      title.className = 'v80-board-title';
+      box.appendChild(title);
+    }
+    box.className = 'v80-board-box';
+    let title = box.querySelector(':scope > .v80-board-title');
+    if (!title) {
+      title = document.createElement('h3');
+      title.className = 'v80-board-title';
+      box.prepend(title);
+    }
+    title.textContent = titleText;
+    return box;
+  }
+
+  function normalizeWinnerBoard(){
+    const dialog = document.getElementById('winnerBoardModal');
+    if (!dialog) return;
+    const card = dialog.querySelector('.winner-card') || dialog;
+    const list = document.getElementById('winnerList') || card.querySelector('.winner-list');
+    let daily = document.getElementById('dailyTopPanel');
+    if (!card || !list) return;
+
+    dialog.classList.add('v80-winner-modal', 'v79-winner-modal');
+    dialog.classList.remove('v75-filter-global', 'v75-filter-daily', 'v75-filter-mine');
+    dialog.dataset.v75Filter = 'all';
+
+    const title = document.getElementById('winnersTitle');
+    if (title) title.textContent = tx('🏆 Top 10 vinnerresultat', '🏆 Top 10 winners');
+    const subtitle = document.getElementById('winnersSubtitle');
+    if (subtitle) subtitle.hidden = true;
+
+    hideSyncNoise(dialog);
+
+    let grid = document.getElementById('v80WinnerGrid');
+    if (!grid) {
+      grid = document.createElement('div');
+      grid.id = 'v80WinnerGrid';
+      grid.className = 'v80-winner-grid';
+      const anchor = title || card.firstElementChild;
+      if (anchor && anchor.parentElement === card) anchor.insertAdjacentElement('afterend', grid);
+      else card.prepend(grid);
+    }
+    grid.className = 'v80-winner-grid';
+
+    const dailyBox = ensureBox('v80DailyBox', tx('⏱️ Dagens Top 10', '⏱️ Today\'s Top 10'));
+    const globalBox = ensureBox('v80GlobalBox', tx('🏆 Top 10 totalt', '🏆 All-time Top 10'));
+
+    if (!daily) {
+      daily = document.createElement('section');
+      daily.id = 'dailyTopPanel';
+      daily.innerHTML = `<ol class="v41-daily-list"></ol>`;
+    }
+    daily.classList.remove('v79-board-panel', 'v77-board-panel');
+    daily.querySelectorAll('h3, p, small, em').forEach(el => {
+      if (el.tagName.toLowerCase() === 'h3') el.remove();
+      else {
+        el.hidden = true;
+        el.style.display = 'none';
+      }
+    });
+
+    if (dailyBox.parentElement !== grid) grid.appendChild(dailyBox);
+    if (globalBox.parentElement !== grid) grid.appendChild(globalBox);
+    if (daily.parentElement !== dailyBox) dailyBox.appendChild(daily);
+    if (list.parentElement !== globalBox) globalBox.appendChild(list);
+
+    list.querySelectorAll('.v75-mine-hidden').forEach(row => row.classList.remove('v75-mine-hidden'));
+    dialog.querySelectorAll('#winnerList .winner-row, #winnerList li, #dailyTopPanel li').forEach(row => {
+      row.classList.remove('v75-mine-hidden');
+      row.style.display = '';
+    });
+
+    const closeButton = document.getElementById('winnersCloseButton');
+    if (closeButton) {
+      closeButton.textContent = tx('Lukk', 'Close');
+      if (closeButton.parentElement !== card) card.appendChild(closeButton);
+    }
+
+    [dialog, card, grid, dailyBox, globalBox, list, daily].forEach(el => {
+      if (!el) return;
+      el.style.maxHeight = '';
+      el.style.height = '';
+      el.style.overflow = '';
+    });
+  }
+
+  const previousShow = window.showWinnerBoard || (typeof showWinnerBoard === 'function' ? showWinnerBoard : null);
+  if (typeof previousShow === 'function' && !previousShow.__v80WinnerWrapped) {
+    const wrapped = function showWinnerBoardV80(){
+      const result = previousShow.apply(this, arguments);
+      [0, 80, 220, 520].forEach(delay => setTimeout(normalizeWinnerBoard, delay));
+      return result;
+    };
+    wrapped.__v80WinnerWrapped = true;
+    window.showWinnerBoard = globalThis.showWinnerBoard = wrapped;
+    try { showWinnerBoard = wrapped; } catch(_) {}
+  }
+
+  document.addEventListener('DOMContentLoaded', () => setTimeout(normalizeWinnerBoard, 450));
+  document.addEventListener('click', event => {
+    if (event.target && event.target.closest && event.target.closest('#winnerBoardButton, [onclick*="showWinnerBoard"]')) {
+      [50, 250, 600].forEach(delay => setTimeout(normalizeWinnerBoard, delay));
+    }
+  }, true);
+
+  let running = false;
+  setInterval(() => {
+    if (running) return;
+    const dialog = document.getElementById('winnerBoardModal');
+    if (!dialog || !(dialog.open || dialog.hasAttribute('open'))) return;
+    running = true;
+    requestAnimationFrame(() => {
+      normalizeWinnerBoard();
+      running = false;
+    });
+  }, 1500);
+})();
+
+
+/* --------------------------------------------------------------------------
+   V81: ONLY stable winner board + front menu after pause/end + feedback only
+   -------------------------------------------------------------------------- */
+(function v81StableWinnerMenuFeedbackOnly(){
+  if (window.__ragiJoyV81StableWinnerMenuFeedbackOnly) return;
+  window.__ragiJoyV81StableWinnerMenuFeedbackOnly = true;
+
+  const WINNERS_KEY_V81 = 'ragiJoyMazeWinnersV33';
+  const DAILY_KEY_V81 = 'ragiJoyMazeDailyTop10V41';
+
+  function v81No(){
+    try { return String(currentLanguage || 'no').toLowerCase().startsWith('no'); }
+    catch(_) { return true; }
+  }
+  function v81Text(no, en){ return v81No() ? no : en; }
+  function v81Escape(value){
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+  function v81Number(value){
+    const number = Number(value || 0);
+    try { return number.toLocaleString(v81No() ? 'nb-NO' : undefined); }
+    catch(_) { return String(number); }
+  }
+  function v81ArrayFromStorage(key){
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+      if (parsed && Array.isArray(parsed.items)) return parsed.items;
+      if (parsed && typeof parsed === 'object') return Object.values(parsed);
+      return [];
+    } catch(_) {
+      return [];
+    }
+  }
+  function v81DifficultyLabel(value){
+    const key = String(value || '').toLowerCase();
+    const no = {
+      easy: 'Enkel',
+      normal: 'Middels',
+      hard: 'Vanskelig',
+      extreme: 'Ekstrem'
+    };
+    const en = {
+      easy: 'Easy',
+      normal: 'Normal',
+      hard: 'Hard',
+      extreme: 'Extreme'
+    };
+    return (v81No() ? no[key] : en[key]) || value || (v81No() ? 'Ukjent' : 'Unknown');
+  }
+  function v81CountryCode(entry){
+    const raw = String(
+      entry.countryCode ||
+      entry.country ||
+      entry.countryIso ||
+      entry.languageCountry ||
+      entry.lang ||
+      entry.locale ||
+      (v81No() ? 'NO' : 'US')
+    ).trim();
+    const upper = raw.toUpperCase();
+    if (upper.includes('NOR') || upper.includes('NORG') || upper === 'NB-NO' || upper === 'NN-NO' || upper === 'NO') return 'NO';
+    if (upper.includes('UNITED STATES') || upper === 'EN-US' || upper === 'US') return 'US';
+    if (upper.includes('UNITED KINGDOM') || upper === 'EN-GB' || upper === 'GB' || upper === 'UK') return 'GB';
+    const match = upper.match(/([A-Z]{2})(?:$|[-_])/);
+    if (match) return match[1];
+    if (/^[A-Z]{2}$/.test(upper)) return upper;
+    return v81No() ? 'NO' : 'US';
+  }
+  function v81CountryName(code){
+    const c = String(code || 'NO').toUpperCase();
+    const mapNo = { NO:'Norge', SE:'Sverige', DK:'Danmark', FI:'Finland', US:'USA', GB:'Storbritannia', LK:'Sri Lanka', IN:'India', DE:'Tyskland', FR:'Frankrike', ES:'Spania' };
+    const mapEn = { NO:'Norway', SE:'Sweden', DK:'Denmark', FI:'Finland', US:'USA', GB:'United Kingdom', LK:'Sri Lanka', IN:'India', DE:'Germany', FR:'France', ES:'Spain' };
+    return (v81No() ? mapNo[c] : mapEn[c]) || c;
+  }
+  function v81FlagChip(entry){
+    const code = v81CountryCode(entry);
+    const lower = code.toLowerCase();
+    return `<span class="v81-chip"><img class="v81-flag-img" src="https://flagcdn.com/w40/${v81Escape(lower)}.png" alt="${v81Escape(code)}"> ${v81Escape(v81CountryName(code))}</span>`;
+  }
+  function v81NormalizeEntries(entries){
+    return (Array.isArray(entries) ? entries : [])
+      .filter(Boolean)
+      .map(entry => ({
+        ...entry,
+        name: String(entry.name || entry.playerName || entry.alias || entry.player || (v81No() ? 'Spiller' : 'Player')).trim() || (v81No() ? 'Spiller' : 'Player'),
+        score: Number(entry.score || entry.points || 0) || 0,
+        level: Number(entry.level || entry.levelReached || entry.stage || 1) || 1,
+        difficulty: String(entry.difficulty || entry.mode || 'normal'),
+        createdAt: Number(entry.createdAt || entry.time || entry.timestamp || entry.date || 0) || 0
+      }))
+      .sort((a, b) => (b.score - a.score) || (b.level - a.level) || (b.createdAt - a.createdAt))
+      .slice(0, 10);
+  }
+  function v81DailyEntries(){
+    const now = Date.now();
+    return v81NormalizeEntries(v81ArrayFromStorage(DAILY_KEY_V81).filter(entry => {
+      const ts = Number(entry && (entry.createdAt || entry.time || entry.timestamp || entry.date || 0));
+      return !ts || now - ts < 24 * 60 * 60 * 1000;
+    }));
+  }
+  function v81TotalEntries(){
+    return v81NormalizeEntries(v81ArrayFromStorage(WINNERS_KEY_V81));
+  }
+  function v81Rows(entries, emptyText){
+    if (!entries.length) return `<div class="v81-empty">${v81Escape(emptyText)}</div>`;
+    return `<ol class="v81-winner-list">${entries.map((entry, index) => `
+      <li class="v81-winner-row">
+        <span class="v81-rank">#${index + 1}</span>
+        <span class="v81-player">
+          <strong class="v81-name">${v81Escape(entry.name)}</strong>
+          <span class="v81-meta">
+            <span class="v81-chip">${v81Escape(v81DifficultyLabel(entry.difficulty))} • L${v81Escape(entry.level)}</span>
+            ${v81FlagChip(entry)}
+          </span>
+        </span>
+        <strong class="v81-score">${v81Number(entry.score)}</strong>
+      </li>`).join('')}</ol>`;
+  }
+  function v81CloseWinnerBoard(){
+    const dialog = document.getElementById('winnerBoardModal');
+    if (!dialog) return;
+    try { if (dialog.open && typeof dialog.close === 'function') dialog.close(); } catch(_) {}
+    dialog.removeAttribute('open');
+  }
+  function v81EnsureWinnerDialog(){
+    let dialog = document.getElementById('winnerBoardModal');
+    if (!dialog) {
+      dialog = document.createElement('dialog');
+      dialog.id = 'winnerBoardModal';
+      document.body.appendChild(dialog);
+    }
+    dialog.className = 'winner-modal v81-winner-modal';
+    dialog.oncancel = (event) => {
+      event.preventDefault();
+      v81CloseWinnerBoard();
+    };
+    return dialog;
+  }
+  function v81ShowWinnerBoard(){
+    const dialog = v81EnsureWinnerDialog();
+    const daily = v81DailyEntries();
+    const total = v81TotalEntries();
+    dialog.innerHTML = `
+      <div class="v81-winner-card">
+        <header class="v81-winner-head">
+          <div>
+            <h2 class="v81-winner-title">🏆 Top 10 vinnerresultat</h2>
+            <p class="v81-winner-subtitle">${v81Escape(v81Text('Stabil oversikt uten synlig oppdatering. Beste score vises tydelig.', 'Stable overview without visible updating. Best scores are shown clearly.'))}</p>
+          </div>
+          <button class="v81-winner-close" type="button" aria-label="Lukk">×</button>
+        </header>
+        <div class="v81-winner-grid">
+          <section class="v81-board-panel">
+            <h3>⏱️ ${v81Escape(v81Text('Dagens Top 10', 'Today Top 10'))}</h3>
+            ${v81Rows(daily, v81Text('Ingen dagsresultater ennå.', 'No daily scores yet.'))}
+          </section>
+          <section class="v81-board-panel">
+            <h3>🏆 ${v81Escape(v81Text('Top 10 totalt', 'Top 10 total'))}</h3>
+            ${v81Rows(total, v81Text('Ingen resultater lagret ennå.', 'No scores saved yet.'))}
+          </section>
+        </div>
+        <button class="v81-winner-footer" type="button">${v81Escape(v81Text('Lukk', 'Close'))}</button>
+      </div>`;
+    dialog.querySelector('.v81-winner-close')?.addEventListener('click', v81CloseWinnerBoard);
+    dialog.querySelector('.v81-winner-footer')?.addEventListener('click', v81CloseWinnerBoard);
+    try { if (typeof dialog.showModal === 'function' && !dialog.open) dialog.showModal(); else dialog.setAttribute('open', ''); }
+    catch(_) { dialog.setAttribute('open', ''); }
+  }
+
+  window.showWinnerBoard = globalThis.showWinnerBoard = v81ShowWinnerBoard;
+  window.closeWinnerBoard = globalThis.closeWinnerBoard = v81CloseWinnerBoard;
+  try { showWinnerBoard = v81ShowWinnerBoard; } catch(_) {}
+  try { closeWinnerBoard = v81CloseWinnerBoard; } catch(_) {}
+
+  function v81ShowFrontMenu(){
+    try { if (typeof closeEndRunDialog === 'function') closeEndRunDialog(); } catch(_) {}
+    ['shopModal', 'howToModal', 'v64FeedbackDialog', 'championModal'].forEach(id => {
+      const dialog = document.getElementById(id);
+      if (!dialog) return;
+      try { if (dialog.open && typeof dialog.close === 'function') dialog.close(); } catch(_) {}
+      dialog.removeAttribute('open');
+      dialog.classList.add('hidden');
+    });
+
+    try { clearInterval(enemyTimer); } catch(_) {}
+    try { clearTimeout(enemyTimer); } catch(_) {}
+    try { if (typeof stopMusic === 'function') stopMusic(); } catch(_) {}
+
+    try { gameRunning = false; } catch(_) {}
+    try { paused = false; } catch(_) {}
+    try { onlineMode = false; } catch(_) {}
+
+    document.body.classList.remove('playing-state', 'paused-state', 'online-state');
+    document.body.classList.add('menu-state');
+
+    const startScreen = document.getElementById('startScreen');
+    const endScreen = document.getElementById('endScreen');
+    const levelOverlay = document.getElementById('levelOverlay');
+    if (startScreen) {
+      startScreen.classList.remove('hidden');
+      startScreen.hidden = false;
+      startScreen.style.display = '';
+    }
+    if (endScreen) {
+      endScreen.classList.add('hidden');
+      endScreen.hidden = false;
+      endScreen.style.display = '';
+    }
+    if (levelOverlay) {
+      levelOverlay.classList.add('hidden');
+      levelOverlay.hidden = false;
+      levelOverlay.style.display = '';
+    }
+
+    const preGame = document.getElementById('preGameSummary');
+    if (preGame) {
+      preGame.hidden = false;
+      preGame.style.display = '';
+    }
+
+    const pauseButton = document.getElementById('pauseButton');
+    if (pauseButton) pauseButton.textContent = v81Text('⏸️ Pause', '⏸️ Pause');
+
+    try { if (typeof v30UpdatePlayUi === 'function') v30UpdatePlayUi(); } catch(_) {}
+    try { if (typeof updateStartMenuStats === 'function') updateStartMenuStats(); } catch(_) {}
+    try { if (typeof drawGame === 'function') drawGame(); } catch(_) {}
+    setTimeout(v81SyncFeedbackButton, 40);
+  }
+
+  window.goToMainMenu = globalThis.goToMainMenu = v81ShowFrontMenu;
+  window.returnToMainMenuFromPause = globalThis.returnToMainMenuFromPause = v81ShowFrontMenu;
+  try { goToMainMenu = v81ShowFrontMenu; } catch(_) {}
+  try { returnToMainMenuFromPause = v81ShowFrontMenu; } catch(_) {}
+
+  function v81IsFrontPage(){
+    const startScreen = document.getElementById('startScreen');
+    const endScreen = document.getElementById('endScreen');
+    const winner = document.getElementById('winnerBoardModal');
+    const isMenu = document.body.classList.contains('menu-state') &&
+      !document.body.classList.contains('playing-state') &&
+      !document.body.classList.contains('paused-state') &&
+      !document.body.classList.contains('online-state');
+    const startVisible = !!(startScreen && !startScreen.classList.contains('hidden') && startScreen.style.display !== 'none');
+    const endVisible = !!(endScreen && !endScreen.classList.contains('hidden'));
+    const winnerOpen = !!(winner && (winner.open || winner.hasAttribute('open')));
+    return isMenu && startVisible && !endVisible && !winnerOpen;
+  }
+  function v81SyncFeedbackButton(){
+    const button = document.getElementById('v64FeedbackButton');
+    const dialog = document.getElementById('v64FeedbackDialog');
+    const show = v81IsFrontPage();
+    if (button) {
+      button.hidden = !show;
+      button.style.display = show ? '' : 'none';
+      button.setAttribute('aria-hidden', show ? 'false' : 'true');
+    }
+    if (!show && dialog && (dialog.open || dialog.hasAttribute('open'))) {
+      try { if (typeof dialog.close === 'function') dialog.close(); } catch(_) {}
+      dialog.removeAttribute('open');
+      dialog.classList.add('hidden');
+    }
+  }
+  function v81StabilizePauseScreen(){
+    if (!document.body.classList.contains('paused-state')) return;
+    const startScreen = document.getElementById('startScreen');
+    const preGame = document.getElementById('preGameSummary');
+    if (startScreen) startScreen.classList.add('hidden');
+    if (preGame) preGame.style.display = 'none';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    v81SyncFeedbackButton();
+    v81StabilizePauseScreen();
+  });
+  setInterval(() => {
+    v81SyncFeedbackButton();
+    v81StabilizePauseScreen();
+  }, 350);
+})();
+
+
+
+/* --------------------------------------------------------------------------
+   V82: ONLY main-menu confirmation during an active/paused run
+   - Clicking Hovedmeny/Main menu while a match is running or paused now asks
+     for confirmation first.
+   - Yes ends the current run and returns to the real front menu with all menu
+     choices visible.
+   - No closes only the confirmation and keeps the match paused.
+   -------------------------------------------------------------------------- */
+(function v82MainMenuConfirmOnly(){
+  if (window.__ragiJoyV82MainMenuConfirmOnly) return;
+  window.__ragiJoyV82MainMenuConfirmOnly = true;
+
+  const hardMainMenuV82 = window.goToMainMenu || (typeof goToMainMenu === 'function' ? goToMainMenu : null);
+
+  function noLang(){
+    try { return String(currentLanguage || 'no').toLowerCase().startsWith('no'); }
+    catch(_) { return true; }
+  }
+  function tx(no, en){ return noLang() ? no : en; }
+  function closeDialogById(id){
+    const dialog = document.getElementById(id);
+    if (!dialog) return;
+    try { if (dialog.open && typeof dialog.close === 'function') dialog.close(); } catch(_) {}
+    dialog.removeAttribute('open');
+    dialog.classList.add('hidden');
+  }
+
+  function ensureMainMenuConfirmV82(){
+    let dialog = document.getElementById('v82MainMenuConfirmDialog');
+    if (dialog) return dialog;
+    dialog = document.createElement('dialog');
+    dialog.id = 'v82MainMenuConfirmDialog';
+    dialog.className = 'v82-mainmenu-confirm-dialog';
+    document.body.appendChild(dialog);
+    dialog.addEventListener('cancel', function(event){
+      event.preventDefault();
+      closeMainMenuConfirmV82();
+    });
+    dialog.addEventListener('click', function(event){
+      if (event.target === dialog) closeMainMenuConfirmV82();
+    });
+    return dialog;
+  }
+
+  function renderMainMenuConfirmV82(){
+    const dialog = ensureMainMenuConfirmV82();
+    dialog.innerHTML = `
+      <div class="v82-mainmenu-confirm-card">
+        <button class="v82-confirm-x" type="button" data-v82-no aria-label="Close">×</button>
+        <p class="v82-confirm-kicker">${tx('BEKREFT HOVEDMENY', 'CONFIRM MAIN MENU')}</p>
+        <h2>${tx('Avslutte spillet?', 'End the game?')}</h2>
+        <p>${tx('Hvis du går til hovedmenyen blir denne kampen avsluttet. Du kommer tilbake til forsiden med alle menyvalgene.', 'If you go to the main menu, this run will be ended. You will return to the front page with all menu choices.')}</p>
+        <div class="v82-confirm-actions">
+          <button type="button" class="v82-confirm-yes" data-v82-yes>${tx('Ja, avslutt og gå til hovedmeny', 'Yes, end and go to main menu')}</button>
+          <button type="button" class="v82-confirm-no" data-v82-no>${tx('Nei, bli i pause', 'No, stay paused')}</button>
+        </div>
+      </div>`;
+    dialog.querySelectorAll('[data-v82-no]').forEach(btn => btn.addEventListener('click', closeMainMenuConfirmV82));
+    dialog.querySelector('[data-v82-yes]')?.addEventListener('click', confirmGoMainMenuV82);
+    return dialog;
+  }
+
+  function closeMainMenuConfirmV82(){
+    const dialog = document.getElementById('v82MainMenuConfirmDialog');
+    if (dialog) {
+      try { if (dialog.open && typeof dialog.close === 'function') dialog.close(); } catch(_) {}
+      dialog.removeAttribute('open');
+    }
+    try {
+      if (gameRunning) paused = true;
+      document.body.classList.add('paused-state');
+      document.body.classList.remove('playing-state');
+      if (typeof v30UpdatePlayUi === 'function') v30UpdatePlayUi();
+    } catch(_) {}
+  }
+
+  function confirmGoMainMenuV82(){
+    closeDialogById('v82MainMenuConfirmDialog');
+    closeDialogById('endRunDialog');
+    closeDialogById('shopModal');
+    closeDialogById('v64FeedbackDialog');
+    closeDialogById('howToModal');
+
+    try { clearInterval(enemyTimer); } catch(_) {}
+    try { clearTimeout(enemyTimer); } catch(_) {}
+    try { clearTimeout(powerTimer); } catch(_) {}
+
+    try { gameRunning = false; } catch(_) {}
+    try { paused = false; } catch(_) {}
+    try { onlineMode = false; } catch(_) {}
+
+    if (typeof hardMainMenuV82 === 'function') {
+      try { hardMainMenuV82(); } catch(_) {}
+    }
+
+    const startScreen = document.getElementById('startScreen');
+    const endScreen = document.getElementById('endScreen');
+    const levelScreen = document.getElementById('levelScreen') || document.getElementById('levelOverlay');
+    const preGame = document.getElementById('preGameSummary');
+    if (startScreen) {
+      startScreen.classList.remove('hidden');
+      startScreen.hidden = false;
+      startScreen.style.display = '';
+    }
+    if (endScreen) {
+      endScreen.classList.add('hidden');
+      endScreen.hidden = false;
+      endScreen.style.display = '';
+    }
+    if (levelScreen) {
+      levelScreen.classList.add('hidden');
+      levelScreen.hidden = false;
+      levelScreen.style.display = '';
+    }
+    if (preGame) {
+      preGame.hidden = false;
+      preGame.style.display = '';
+    }
+
+    document.body.classList.remove('playing-state', 'paused-state', 'online-state');
+    document.body.classList.add('menu-state');
+    try { if (typeof v30UpdatePlayUi === 'function') v30UpdatePlayUi(); } catch(_) {}
+    try { if (typeof updateStartMenuStats === 'function') updateStartMenuStats(); } catch(_) {}
+    try { if (messageBar) messageBar.textContent = tx('Kampen ble avsluttet. Du er tilbake i hovedmenyen.', 'The run was ended. You are back in the main menu.'); } catch(_) {}
+  }
+
+  function showMainMenuConfirmV82(){
+    try { if (gameRunning) paused = true; } catch(_) {}
+    try { document.body.classList.add('paused-state'); document.body.classList.remove('playing-state'); } catch(_) {}
+    try { if (typeof v30UpdatePlayUi === 'function') v30UpdatePlayUi(); } catch(_) {}
+    const dialog = renderMainMenuConfirmV82();
+    try { if (typeof dialog.showModal === 'function' && !dialog.open) dialog.showModal(); else dialog.setAttribute('open', ''); }
+    catch(_) { dialog.setAttribute('open', ''); }
+  }
+
+  function returnToMainMenuFromPauseV82(){
+    let active = false;
+    try { active = Boolean(gameRunning || document.body.classList.contains('paused-state') || document.body.classList.contains('playing-state')); } catch(_) {}
+    if (active) {
+      showMainMenuConfirmV82();
+      return;
+    }
+    confirmGoMainMenuV82();
+  }
+
+  window.returnToMainMenuFromPause = globalThis.returnToMainMenuFromPause = returnToMainMenuFromPauseV82;
+  try { returnToMainMenuFromPause = returnToMainMenuFromPauseV82; } catch(_) {}
+
+  document.addEventListener('click', function(event){
+    const btn = event.target && event.target.closest && event.target.closest('#v82DisabledMenuSelector');
+    if (!btn) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    returnToMainMenuFromPauseV82();
+  }, true);
+})();
+
+
+/* --------------------------------------------------------------------------
+   V83: MAIN MENU HARD FIX ONLY
+   Purpose:
+   - When Hovedmeny/Main menu is clicked during a run, pause/end-run dialog,
+     show one confirmation first.
+   - YES forcibly returns to the real front menu with all menu choices visible.
+   - NO closes the confirmation and keeps the run paused.
+   - Uses a WINDOW capture listener so older document-level click handlers cannot
+     steal the click before this fix runs.
+   -------------------------------------------------------------------------- */
+(function v83MainMenuHardFixOnly(){
+  if (window.__ragiJoyV83MainMenuHardFixOnly) return;
+  window.__ragiJoyV83MainMenuHardFixOnly = true;
+
+  function isNo(){
+    try { return String(currentLanguage || 'no').toLowerCase().startsWith('no'); }
+    catch (_) { return true; }
+  }
+  function txt(no, en){ return isNo() ? no : en; }
+
+  function closeDialog(dialog){
+    if (!dialog) return;
+    try { if (dialog.open && typeof dialog.close === 'function') dialog.close(); } catch (_) {}
+    dialog.removeAttribute('open');
+    dialog.classList.add('hidden');
+  }
+
+  function closeAllBlockingDialogs(){
+    ['v83MainMenuConfirmDialog','v82MainMenuConfirmDialog','endRunDialog','shopModal','howToModal','customizeModal','friendModal','v64FeedbackDialog','winnerBoardModal'].forEach(id => {
+      closeDialog(document.getElementById(id));
+    });
+  }
+
+  function ensureConfirmDialog(){
+    let dialog = document.getElementById('v83MainMenuConfirmDialog');
+    if (dialog) return dialog;
+
+    dialog = document.createElement('dialog');
+    dialog.id = 'v83MainMenuConfirmDialog';
+    dialog.className = 'v82-mainmenu-confirm-dialog';
+    document.body.appendChild(dialog);
+
+    dialog.addEventListener('cancel', function(event){
+      event.preventDefault();
+      stayPaused();
+    });
+    dialog.addEventListener('click', function(event){
+      if (event.target === dialog) stayPaused();
+    });
+    return dialog;
+  }
+
+  function renderConfirmDialog(){
+    const dialog = ensureConfirmDialog();
+    dialog.innerHTML = `
+      <div class="v82-mainmenu-confirm-card">
+        <button class="v82-confirm-x" type="button" data-v83-no aria-label="Close">×</button>
+        <p class="v82-confirm-kicker">${txt('BEKREFT HOVEDMENY', 'CONFIRM MAIN MENU')}</p>
+        <h2>${txt('Tilbake til startmeny?', 'Return to start menu?')}</h2>
+        <p>${txt('Hvis du går tilbake til startmenyen, avsluttes denne kampen og du mister poengsummen fra runden. Er du sikker?', 'If you return to the start menu, this run ends and you lose the score from this round. Are you sure?')}</p>
+        <div class="v82-confirm-actions">
+          <button type="button" class="v82-confirm-yes" data-v83-yes>${txt('Ja, avslutt og gå til startmeny', 'Yes, end and go to start menu')}</button>
+          <button type="button" class="v82-confirm-no" data-v83-no>${txt('Nei, bli i pause', 'No, stay paused')}</button>
+        </div>
+      </div>`;
+    dialog.querySelectorAll('[data-v83-no]').forEach(btn => btn.addEventListener('click', stayPaused));
+    const yes = dialog.querySelector('[data-v83-yes]');
+    if (yes) yes.addEventListener('click', forceReturnToFrontMenu);
+    return dialog;
+  }
+
+  function markPausedBehindConfirm(){
+    try { if (typeof gameRunning !== 'undefined' && gameRunning) paused = true; } catch (_) {}
+    try { clearTimeout(enemyTimer); } catch (_) {}
+    try { clearInterval(enemyTimer); } catch (_) {}
+    document.body.classList.remove('playing-state');
+    document.body.classList.add('paused-state');
+    document.body.classList.remove('menu-state');
+    try { if (typeof v30UpdatePlayUi === 'function') v30UpdatePlayUi(); } catch (_) {}
+    const pauseButton = document.getElementById('pauseButton');
+    if (pauseButton) pauseButton.textContent = txt('▶️ Fortsett', '▶️ Resume');
+  }
+
+  function showMainMenuConfirm(){
+    markPausedBehindConfirm();
+    closeDialog(document.getElementById('v82MainMenuConfirmDialog'));
+    const dialog = renderConfirmDialog();
+    dialog.classList.remove('hidden');
+    try {
+      if (typeof dialog.showModal === 'function' && !dialog.open) dialog.showModal();
+      else dialog.setAttribute('open', '');
+    } catch (_) {
+      dialog.setAttribute('open', '');
+    }
+  }
+
+  function stayPaused(){
+    closeDialog(document.getElementById('v83MainMenuConfirmDialog'));
+    closeDialog(document.getElementById('v82MainMenuConfirmDialog'));
+    try { if (typeof gameRunning !== 'undefined' && gameRunning) paused = true; } catch (_) {}
+    document.body.classList.remove('menu-state','playing-state');
+    document.body.classList.add('paused-state');
+    try { if (typeof v30UpdatePlayUi === 'function') v30UpdatePlayUi(); } catch (_) {}
+    const pauseButton = document.getElementById('pauseButton');
+    if (pauseButton) pauseButton.textContent = txt('▶️ Fortsett', '▶️ Resume');
+  }
+
+  function resetBoardWithoutStartingTimers(){
+    try {
+      levelIndex = 0;
+      score = 0;
+      combo = 1;
+      powerMode = false;
+      shield = false;
+      portalOpen = false;
+      onlineMode = false;
+      remotePlayer = null;
+      roomCode = '';
+      playerSlot = null;
+      lives = difficultySettings[selectedDifficulty].lives;
+      const level = levels[0];
+      if (level) {
+        map = cloneMap(level.map);
+        player = { ...level.player };
+        enemies = (typeof buildRandomEnemySetForLevel === 'function') ? buildRandomEnemySetForLevel(level, 0) : [];
+        diamondsLeft = (typeof countTiles === 'function') ? countTiles(TILE.DOT) : 0;
+        try { applyLevelTheme(level); } catch (_) {}
+      }
+    } catch (_) {}
+  }
+
+  function forceReturnToFrontMenu(){
+    closeAllBlockingDialogs();
+
+    try { clearTimeout(enemyTimer); } catch (_) {}
+    try { clearInterval(enemyTimer); } catch (_) {}
+    try { clearTimeout(powerTimer); } catch (_) {}
+    try { clearInterval(musicTimer); } catch (_) {}
+    try { if (typeof stopMusic === 'function') stopMusic(); } catch (_) {}
+    try { if (typeof detachRoomListener === 'function') detachRoomListener(); } catch (_) {}
+
+    try { gameRunning = false; } catch (_) {}
+    try { paused = false; } catch (_) {}
+    resetBoardWithoutStartingTimers();
+
+    const start = document.getElementById('startScreen');
+    const end = document.getElementById('endScreen');
+    const level = document.getElementById('levelScreen') || document.getElementById('levelOverlay');
+    const pre = document.getElementById('preGameSummary');
+    const msg = document.getElementById('messageBar');
+
+    document.body.classList.remove('playing-state','paused-state','online-state','game-active');
+    document.body.classList.add('menu-state');
+
+    if (start) {
+      start.classList.remove('hidden');
+      start.hidden = false;
+      start.style.removeProperty('display');
+    }
+    if (end) {
+      end.classList.add('hidden');
+      end.hidden = false;
+      end.style.removeProperty('display');
+    }
+    if (level) {
+      level.classList.add('hidden');
+      level.hidden = false;
+      level.style.removeProperty('display');
+    }
+    if (pre) {
+      pre.hidden = false;
+      pre.classList.remove('hidden');
+      pre.style.removeProperty('display');
+    }
+
+    try { if (typeof drawGame === 'function') drawGame(); } catch (_) {}
+    try { if (typeof v30UpdatePlayUi === 'function') v30UpdatePlayUi(); } catch (_) {}
+    try { if (typeof updateStartMenuStats === 'function') updateStartMenuStats(); } catch (_) {}
+    try { if (typeof updateDifficultyScoreBadges === 'function') updateDifficultyScoreBadges(); } catch (_) {}
+
+    if (msg) msg.textContent = txt('Kampen ble avsluttet. Du er tilbake på startsiden.', 'The run was ended. You are back on the start screen.');
+
+    // One extra pass after older intervals have reacted.
+    setTimeout(() => {
+      document.body.classList.remove('playing-state','paused-state','online-state','game-active');
+      document.body.classList.add('menu-state');
+      if (start) { start.classList.remove('hidden'); start.style.removeProperty('display'); }
+      if (pre) { pre.hidden = false; pre.classList.remove('hidden'); pre.style.removeProperty('display'); }
+      if (end) end.classList.add('hidden');
+      if (level) level.classList.add('hidden');
+    }, 80);
+  }
+
+  function mainMenuRequested(){
+    let active = false;
+    try { active = Boolean(gameRunning || document.body.classList.contains('playing-state') || document.body.classList.contains('paused-state')); } catch (_) {}
+    if (active) showMainMenuConfirm();
+    else forceReturnToFrontMenu();
+  }
+
+  window.returnToMainMenuFromPause = globalThis.returnToMainMenuFromPause = mainMenuRequested;
+  window.goToMainMenu = globalThis.goToMainMenu = function goToMainMenuV83(){
+    let active = false;
+    try { active = Boolean(gameRunning || document.body.classList.contains('playing-state') || document.body.classList.contains('paused-state')); } catch (_) {}
+    if (active) showMainMenuConfirm();
+    else forceReturnToFrontMenu();
+  };
+  try { returnToMainMenuFromPause = window.returnToMainMenuFromPause; } catch (_) {}
+  try { goToMainMenu = window.goToMainMenu; } catch (_) {}
+
+  function isMainMenuClickTarget(event){
+    const target = event.target;
+    if (!target || !target.closest) return false;
+    return Boolean(target.closest('#v83DisabledMenuSelector')); /* disabled by V85 */
+  }
+
+  // Window capture runs before older document capture handlers.
+  window.addEventListener('click', function(event){
+    if (!isMainMenuClickTarget(event)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
+    mainMenuRequested();
+  }, true);
+
+  document.addEventListener('DOMContentLoaded', function(){
+    const btn = document.getElementById('menuFromPauseButton');
+    if (btn) btn.onclick = null;
+  });
+  setTimeout(function(){
+    const btn = document.getElementById('menuFromPauseButton');
+    if (btn) btn.onclick = null;
+  }, 300);
+})();
+
+
+/* --------------------------------------------------------------------------
+   V85: ONLY main-menu return + laser pause/cleanup fix
+   - All Hovedmeny/Main menu buttons use the same confirmation.
+   - YES clears active lasers/effects and returns to the real start menu.
+   - Pause freezes laser lifetime; Resume continues the remaining time.
+   -------------------------------------------------------------------------- */
+(function v85MainMenuAndLaserFix(){
+  if (window.__ragiJoyV85MainMenuAndLaserFix) return;
+  window.__ragiJoyV85MainMenuAndLaserFix = true;
+
+  let turretPauseStartedAt = 0;
+
+  function isNo(){
+    try { return String(currentLanguage || localStorage.getItem('ragiJoyLanguage') || 'no').toLowerCase().startsWith('no'); }
+    catch(_) { return true; }
+  }
+  function tx(no, en){ return isNo() ? no : en; }
+  function byId(id){ return document.getElementById(id); }
+
+  function closeDialogElement(el){
+    if (!el) return;
+    try { if (el.open && typeof el.close === 'function') el.close(); } catch(_) {}
+    el.removeAttribute('open');
+    el.classList.add('hidden');
+  }
+
+  function closeGameDialogs(){
+    [
+      'v85MainMenuConfirmDialog', 'v83MainMenuConfirmDialog', 'v82MainMenuConfirmDialog',
+      'finalMainMenuConfirmDialog', 'endRunDialog', 'shopModal', 'winnerBoardModal',
+      'howToModal', 'customizeModal', 'profileNameModal', 'feedbackDialog',
+      'v64FeedbackDialog', 'dailyRecordCelebration', 'friendModal', 'friendLobbyModal'
+    ].forEach(id => closeDialogElement(byId(id)));
+
+    document.querySelectorAll('dialog[open]').forEach(closeDialogElement);
+  }
+
+  function removeLaserVisuals(){
+    document.querySelectorAll('.laser-beam-effect, .laser-impact-effect').forEach(el => el.remove());
+    document.querySelectorAll('.turret-cell').forEach(cell => {
+      cell.classList.remove('turret-cell');
+      delete cell.dataset.turret;
+      cell.removeAttribute('data-turret');
+    });
+    const hud = byId('v70LaserHud');
+    if (hud) {
+      hud.classList.add('hidden');
+      hud.innerHTML = '';
+    }
+  }
+
+  function clearLasersCompletely(){
+    try { v23Turrets = []; } catch(_) {}
+    try { v23TurretInventory = 0; } catch(_) {}
+    try { v23PlacingTurret = false; } catch(_) {}
+    try { v23SlowUntil = 0; } catch(_) {}
+    try { if (typeof v23StopTurretLoop === 'function') v23StopTurretLoop(); } catch(_) {}
+    try { document.body.classList.remove('turret-placement-active'); } catch(_) {}
+    turretPauseStartedAt = 0;
+    removeLaserVisuals();
+  }
+
+  function pauseLaserClock(){
+    if (turretPauseStartedAt) return;
+    let list = [];
+    try { list = Array.isArray(v23Turrets) ? v23Turrets : []; } catch(_) { list = []; }
+    if (!list.length) return;
+
+    const now = Date.now();
+    turretPauseStartedAt = now;
+    list.forEach(turret => {
+      const remaining = Math.max(0, Number(turret.expiresAt || now) - now);
+      turret.__v85RemainingMs = remaining;
+      turret.__v85LastShotAt = Number(turret.lastShotAt || 0);
+    });
+    renderPausedLaserHud();
+  }
+
+  function resumeLaserClock(){
+    if (!turretPauseStartedAt) return;
+    const now = Date.now();
+    const pausedFor = Math.max(0, now - turretPauseStartedAt);
+    let list = [];
+    try { list = Array.isArray(v23Turrets) ? v23Turrets : []; } catch(_) { list = []; }
+
+    list.forEach(turret => {
+      if (typeof turret.__v85RemainingMs === 'number') {
+        turret.expiresAt = now + Math.max(0, turret.__v85RemainingMs);
+      } else if (Number.isFinite(Number(turret.expiresAt))) {
+        turret.expiresAt = Number(turret.expiresAt) + pausedFor;
+      }
+      if (Number(turret.__v85LastShotAt || 0)) {
+        turret.lastShotAt = Number(turret.__v85LastShotAt) + pausedFor;
+      }
+      delete turret.__v85RemainingMs;
+      delete turret.__v85LastShotAt;
+    });
+    turretPauseStartedAt = 0;
+    try { if (typeof updateLaserHud === 'function') updateLaserHud(); } catch(_) {}
+  }
+
+  function renderPausedLaserHud(){
+    if (!turretPauseStartedAt) return;
+    let list = [];
+    try { list = Array.isArray(v23Turrets) ? v23Turrets : []; } catch(_) { list = []; }
+    const active = list.filter(t => Number(t.__v85RemainingMs || 0) > 0);
+    const hud = byId('v70LaserHud');
+    if (!hud || !active.length || !gameRunning) return;
+    const longest = Math.max(...active.map(t => Number(t.__v85RemainingMs || 0)));
+    const seconds = Math.max(0, Math.ceil(longest / 1000));
+    hud.classList.remove('hidden');
+    hud.innerHTML = `<span>⏸️ ${tx('Laser er pauset', 'Lasers paused')}: <b>${active.length}</b></span><span>⏳ ${tx('igjen ca.', 'left about')} <b>${seconds}s</b></span><small>${tx('Fortsett spillet for at laserne skal skyte videre.', 'Resume the game so the lasers keep shooting.')}</small>`;
+  }
+
+  function setPauseUi(){
+    const active = Boolean(gameRunning);
+    const pauseButton = byId('pauseButton');
+    if (pauseButton) {
+      pauseButton.textContent = paused ? tx('▶️ Fortsett', '▶️ Resume') : tx('⏸️ Pause', '⏸️ Pause');
+      pauseButton.disabled = !active;
+      pauseButton.setAttribute('aria-pressed', paused ? 'true' : 'false');
+    }
+    document.body.classList.toggle('paused-state', Boolean(active && paused));
+    document.body.classList.toggle('playing-state', Boolean(active && !paused));
+    document.body.classList.toggle('menu-state', Boolean(!active));
+  }
+
+  function pauseGameForMenu(){
+    if (!gameRunning) return;
+    paused = true;
+    try { clearInterval(enemyTimer); } catch(_) {}
+    try { clearTimeout(enemyTimer); } catch(_) {}
+    pauseLaserClock();
+    setPauseUi();
+    if (messageBar) messageBar.textContent = tx('Pause aktivert. Velg Fortsett eller Hovedmeny.', 'Paused. Choose Resume or Main menu.');
+    try { if (typeof v30UpdatePlayUi === 'function') v30UpdatePlayUi(); } catch(_) {}
+    setPauseUi();
+  }
+
+  function togglePauseV85(){
+    if (!gameRunning) return;
+    const nextPaused = !paused;
+    paused = nextPaused;
+    try { clearInterval(enemyTimer); } catch(_) {}
+    try { clearTimeout(enemyTimer); } catch(_) {}
+
+    if (paused) {
+      pauseLaserClock();
+      if (messageBar) messageBar.textContent = tx('Pause aktivert. Laser-tiden er også pauset.', 'Paused. Laser time is paused too.');
+    } else {
+      resumeLaserClock();
+      try { enemyTimer = setTimeout(moveEnemies, getEnemyDelay()); } catch(_) {}
+      try { if (typeof v23StartTurretLoop === 'function') v23StartTurretLoop(); } catch(_) {}
+      if (messageBar) messageBar.textContent = t('resumed');
+    }
+
+    setPauseUi();
+    try { if (typeof v30UpdatePlayUi === 'function') v30UpdatePlayUi(); } catch(_) {}
+    setPauseUi();
+    try { if (typeof drawGame === 'function') drawGame(); } catch(_) {}
+    if (paused) setTimeout(renderPausedLaserHud, 40);
+  }
+
+  function resetBoardToFirstLevel(){
+    try {
+      const first = levels && levels[0];
+      if (!first) return;
+      map = cloneMap(first.map);
+      player = { ...first.player };
+      enemies = (typeof buildRandomEnemySetForLevel === 'function') ? buildRandomEnemySetForLevel(first, 0) : (first.enemies || []).map(e => ({ ...e }));
+      diamondsLeft = (typeof countTiles === 'function') ? countTiles(TILE.DOT) : 0;
+      try { applyLevelTheme(first); } catch(_) {}
+    } catch(_) {}
+  }
+
+  function forceRealStartMenu(){
+    closeGameDialogs();
+
+    try { clearInterval(enemyTimer); } catch(_) {}
+    try { clearTimeout(enemyTimer); } catch(_) {}
+    try { clearTimeout(powerTimer); } catch(_) {}
+    try { clearTimeout(levelTimer); } catch(_) {}
+    try { clearInterval(syncTimer); } catch(_) {}
+    try { if (typeof detachRoomListener === 'function') detachRoomListener(); } catch(_) {}
+    try { if (typeof stopMusic === 'function') stopMusic(); } catch(_) {}
+
+    clearLasersCompletely();
+
+    try { onlineMode = false; } catch(_) {}
+    try { remotePlayer = null; } catch(_) {}
+    try { roomCode = ''; } catch(_) {}
+    try { playerSlot = null; } catch(_) {}
+    try { gameRunning = false; } catch(_) {}
+    try { paused = false; } catch(_) {}
+    try { score = 0; } catch(_) {}
+    try { levelIndex = 0; } catch(_) {}
+    try { combo = 1; } catch(_) {}
+    try { powerMode = false; } catch(_) {}
+    try { shield = false; } catch(_) {}
+    try { portalOpen = false; } catch(_) {}
+    try { lives = difficultySettings[selectedDifficulty].lives; } catch(_) {}
+
+    resetBoardToFirstLevel();
+
+    const body = document.body;
+    const start = byId('startScreen');
+    const end = byId('endScreen');
+    const level = byId('levelScreen') || byId('levelOverlay');
+    const pre = byId('preGameSummary');
+    const msg = byId('messageBar');
+
+    body.classList.add('menu-state');
+    body.classList.remove('playing-state','paused-state','game-active','online-state','friend-playing-state','run-ended-state','turret-placement-active');
+
+    if (start) {
+      start.classList.remove('hidden');
+      start.hidden = false;
+      start.removeAttribute('aria-hidden');
+      start.style.display = '';
+      start.style.visibility = '';
+      start.style.opacity = '';
+      start.style.pointerEvents = '';
+    }
+    if (end) {
+      end.classList.add('hidden');
+      end.removeAttribute('open');
+      end.style.display = '';
+    }
+    if (level) {
+      level.classList.add('hidden');
+      level.removeAttribute('open');
+      level.style.display = '';
+    }
+    if (pre) {
+      pre.classList.remove('hidden');
+      pre.hidden = false;
+      pre.removeAttribute('aria-hidden');
+      pre.style.display = '';
+    }
+    if (msg) {
+      msg.textContent = '';
+      msg.style.display = '';
+    }
+
+    try { if (typeof drawGame === 'function') drawGame(); } catch(_) {}
+    clearLasersCompletely();
+    try { if (typeof v23UpdateShopUi === 'function') v23UpdateShopUi(); } catch(_) {}
+    try { if (typeof updateScoreDisplay === 'function') updateScoreDisplay(); } catch(_) {}
+    try { if (typeof updateStartMenuStats === 'function') updateStartMenuStats(); } catch(_) {}
+    try { if (typeof updatePreGameSummary === 'function') updatePreGameSummary(); } catch(_) {}
+    try { if (typeof v30UpdatePlayUi === 'function') v30UpdatePlayUi(); } catch(_) {}
+
+    body.classList.add('menu-state');
+    body.classList.remove('playing-state','paused-state','game-active','online-state','turret-placement-active');
+    if (start) start.classList.remove('hidden');
+    if (end) end.classList.add('hidden');
+    if (level) level.classList.add('hidden');
+    if (pre) pre.classList.remove('hidden');
+    removeLaserVisuals();
+
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(_) { try { window.scrollTo(0, 0); } catch(__) {} }
+
+    [40, 120, 300, 700].forEach(delay => setTimeout(() => {
+      body.classList.add('menu-state');
+      body.classList.remove('playing-state','paused-state','game-active','online-state','turret-placement-active');
+      if (start) start.classList.remove('hidden');
+      if (end) end.classList.add('hidden');
+      if (level) level.classList.add('hidden');
+      if (pre) pre.classList.remove('hidden');
+      clearLasersCompletely();
+      try { if (typeof drawGame === 'function') drawGame(); } catch(_) {}
+    }, delay));
+  }
+
+  function ensureConfirmDialog(){
+    let dialog = byId('v85MainMenuConfirmDialog');
+    if (dialog) return dialog;
+    dialog = document.createElement('dialog');
+    dialog.id = 'v85MainMenuConfirmDialog';
+    dialog.className = 'v85-mainmenu-dialog';
+    document.body.appendChild(dialog);
+
+    dialog.addEventListener('cancel', event => {
+      event.preventDefault();
+      stayPaused();
+    });
+    dialog.addEventListener('click', event => {
+      if (event.target === dialog) stayPaused();
+    });
+    return dialog;
+  }
+
+  function renderConfirmDialog(){
+    const dialog = ensureConfirmDialog();
+    dialog.innerHTML = `
+      <div class="v85-mainmenu-card">
+        <button type="button" class="v85-mainmenu-x" data-v85-no>×</button>
+        <p class="v85-mainmenu-kicker">${tx('BEKREFT HOVEDMENY', 'CONFIRM MAIN MENU')}</p>
+        <h2>${tx('Tilbake til startmeny?', 'Return to start menu?')}</h2>
+        <p>${tx('Hvis du går tilbake til startmenyen nå, avsluttes kampen og du mister score for denne runden. Er du sikker?', 'If you return to the start menu now, this run ends and you lose the score from this round. Are you sure?')}</p>
+        <div class="v85-mainmenu-actions">
+          <button type="button" class="v85-mainmenu-yes" data-v85-yes>${tx('Ja, avslutt og gå til startmeny', 'Yes, end and go to start menu')}</button>
+          <button type="button" class="v85-mainmenu-no" data-v85-no>${tx('Nei, bli i pause', 'No, stay paused')}</button>
+        </div>
+      </div>`;
+    dialog.querySelector('[data-v85-yes]')?.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopPropagation();
+      forceRealStartMenu();
+    });
+    dialog.querySelectorAll('[data-v85-no]').forEach(button => button.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopPropagation();
+      stayPaused();
+    }));
+    return dialog;
+  }
+
+  function showMainMenuConfirm(){
+    pauseGameForMenu();
+    closeDialogElement(byId('v83MainMenuConfirmDialog'));
+    closeDialogElement(byId('v82MainMenuConfirmDialog'));
+    closeDialogElement(byId('finalMainMenuConfirmDialog'));
+    const dialog = renderConfirmDialog();
+    dialog.classList.remove('hidden');
+    try { if (typeof dialog.showModal === 'function' && !dialog.open) dialog.showModal(); else dialog.setAttribute('open',''); }
+    catch(_) { dialog.setAttribute('open',''); }
+  }
+
+  function stayPaused(){
+    closeDialogElement(byId('v85MainMenuConfirmDialog'));
+    if (gameRunning) paused = true;
+    pauseLaserClock();
+    setPauseUi();
+    if (messageBar) messageBar.textContent = tx('Pause aktivert. Trykk Fortsett for å spille videre.', 'Paused. Press Resume to continue.');
+    try { if (typeof v30UpdatePlayUi === 'function') v30UpdatePlayUi(); } catch(_) {}
+    setPauseUi();
+    renderPausedLaserHud();
+  }
+
+  function handleMainMenuRequest(){
+    const active = Boolean(gameRunning || document.body.classList.contains('playing-state') || document.body.classList.contains('paused-state'));
+    if (active) showMainMenuConfirm();
+    else forceRealStartMenu();
+  }
+
+  window.togglePause = globalThis.togglePause = togglePauseV85;
+  try { togglePause = togglePauseV85; } catch(_) {}
+  window.returnToMainMenuFromPause = globalThis.returnToMainMenuFromPause = handleMainMenuRequest;
+  try { returnToMainMenuFromPause = handleMainMenuRequest; } catch(_) {}
+  window.goToMainMenu = globalThis.goToMainMenu = function goToMainMenuV85(){
+    const active = Boolean(gameRunning || document.body.classList.contains('playing-state') || document.body.classList.contains('paused-state'));
+    if (active) showMainMenuConfirm();
+    else forceRealStartMenu();
+  };
+  try { goToMainMenu = window.goToMainMenu; } catch(_) {}
+
+  window.addEventListener('click', function(event){
+    const target = event.target && event.target.closest ? event.target.closest('#pauseButton') : null;
+    if (!target) return;
+    if (window.__v86SuppressPauseClickUntil && Date.now() < window.__v86SuppressPauseClickUntil) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
+    togglePauseV85();
+  }, true);
+
+  window.addEventListener('click', function(event){
+    const target = event.target && event.target.closest ? event.target.closest('#menuFromPauseButton, .v41-menu-now, #mainMenuButton') : null;
+    if (!target) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
+    handleMainMenuRequest();
+  }, true);
+
+  /* If the original End-run dialog is rendered after this patch, remove old inline behavior. */
+  function normalizeMenuButtons(){
+    const ids = ['menuFromPauseButton', 'mainMenuButton'];
+    ids.forEach(id => {
+      const btn = byId(id);
+      if (!btn) return;
+      btn.onclick = null;
+      btn.removeAttribute('onclick');
+    });
+    document.querySelectorAll('.v41-menu-now').forEach(btn => {
+      btn.onclick = null;
+      btn.removeAttribute('onclick');
+    });
+  }
+
+  const oldShowEndRun = window.showEndRunDialog || (typeof showEndRunDialog === 'function' ? showEndRunDialog : null);
+  if (typeof oldShowEndRun === 'function' && !oldShowEndRun.__v85Wrapped) {
+    const wrapped = function showEndRunDialogV85(){
+      const result = oldShowEndRun.apply(this, arguments);
+      setTimeout(normalizeMenuButtons, 0);
+      setTimeout(normalizeMenuButtons, 60);
+      return result;
+    };
+    wrapped.__v85Wrapped = true;
+    window.showEndRunDialog = globalThis.showEndRunDialog = wrapped;
+    try { showEndRunDialog = wrapped; } catch(_) {}
+  }
+
+  const oldStart = window.startGame || (typeof startGame === 'function' ? startGame : null);
+  if (typeof oldStart === 'function' && !oldStart.__v85LaserResetWrapped) {
+    const wrappedStart = function startGameV85(){
+      clearLasersCompletely();
+      const result = oldStart.apply(this, arguments);
+      turretPauseStartedAt = 0;
+      return result;
+    };
+    wrappedStart.__v85LaserResetWrapped = true;
+    window.startGame = globalThis.startGame = wrappedStart;
+    try { startGame = wrappedStart; } catch(_) {}
+  }
+
+  normalizeMenuButtons();
+  setInterval(() => {
+    normalizeMenuButtons();
+    if (paused && gameRunning) renderPausedLaserHud();
+  }, 350);
+})();
+
+
+/* --------------------------------------------------------------------------
+   V86: større spillknapper + pause reagerer på første trykk
+   Kun denne delen er endret.
+   -------------------------------------------------------------------------- */
+(function v86BiggerButtonsAndFirstTapPause(){
+  if (window.__ragiJoyV86Patch) return;
+  window.__ragiJoyV86Patch = true;
+
+  function byId(id){ return document.getElementById(id); }
+
+  function normalizePauseButton(){
+    const btn = byId('pauseButton');
+    if (!btn) return;
+    btn.onclick = null;
+    btn.removeAttribute('onclick');
+    btn.disabled = !(typeof gameRunning !== 'undefined' && gameRunning);
+    btn.style.touchAction = 'manipulation';
+  }
+
+  function runPauseNow(event){
+    const btn = event && event.target && event.target.closest ? event.target.closest('#pauseButton') : null;
+    if (!btn) return;
+    const active = Boolean(typeof gameRunning !== 'undefined' && gameRunning);
+    if (!active) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
+
+    // Hindrer at den etterfølgende click-eventen toggler pause tilbake igjen.
+    window.__v86SuppressPauseClickUntil = Date.now() + 650;
+
+    btn.disabled = false;
+    try {
+      if (typeof togglePauseV85 === 'function') togglePauseV85();
+      else if (typeof window.togglePause === 'function') window.togglePause();
+      else if (typeof togglePause === 'function') togglePause();
+    } catch(_) {}
+
+    // Sørg for riktig tekst/state etter første trykk.
+    try { if (typeof v30UpdatePlayUi === 'function') v30UpdatePlayUi(); } catch(_) {}
+    try {
+      if (typeof gameRunning !== 'undefined' && gameRunning) {
+        document.body.classList.toggle('paused-state', Boolean(paused));
+        document.body.classList.toggle('playing-state', !paused);
+        const pauseBtn = byId('pauseButton');
+        if (pauseBtn) {
+          const no = String((typeof currentLanguage !== 'undefined' ? currentLanguage : 'no') || 'no').toLowerCase().startsWith('no');
+          pauseBtn.textContent = paused ? (no ? '▶️ Fortsett' : '▶️ Resume') : '⏸️ Pause';
+          pauseBtn.setAttribute('aria-pressed', paused ? 'true' : 'false');
+          pauseBtn.disabled = false;
+        }
+      }
+    } catch(_) {}
+  }
+
+  // Pointerdown gjør at pause svarer umiddelbart på PC og mobil, ikke først etter click-delay.
+  window.addEventListener('pointerdown', runPauseNow, true);
+  window.addEventListener('touchstart', function(event){
+    // Fallback for eldre mobilnettlesere uten stabil pointer-events.
+    if (window.PointerEvent) return;
+    runPauseNow(event);
+  }, { capture: true, passive: false });
+
+  document.addEventListener('DOMContentLoaded', normalizePauseButton);
+  setTimeout(normalizePauseButton, 100);
+  setInterval(normalizePauseButton, 500);
+})();
