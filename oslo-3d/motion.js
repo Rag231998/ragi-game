@@ -4,7 +4,7 @@
 const $=id=>document.getElementById(id);
 const ENTUR='https://api.entur.io/journey-planner/v3/graphql',GEO='https://api.entur.io/geocoder/v3/autocomplete';
 const GH={'ET-Client-Name':'osloatlas-motion','Content-Type':'application/json'},H={'ET-Client-Name':'osloatlas-motion'};
-const NAMES=['Grorud','Ammerud','Rødtvet','Kalbakken','Veitvet','Romsås','Stovner','Helsfyr','Brynseng','Økern','Sinsen','Majorstuen','Oslo S','Nationaltheatret','Lillestrøm','Strømmen','Kløfta','Jessheim','Eidsvoll'];
+const NAMES=['Grorud','Ammerud','Rødtvet','Kalbakken','Veitvet','Romsås','Stovner','Helsfyr','Brynseng','Økern','Sinsen','Majorstuen','Oslo S','Nationaltheatret','Lillestrøm','Strømmen','Kløfta','Jessheim','Eidsvoll','Aker brygge','Nesoddtangen','Vippetangen','Hovedøya'];
 let map,lib,initialized=false,cars=[],projected=new Map(),stops=[],loadBusy=false,stationBusy=false,follow=null;
 let carOn=true,estimatedOn=true,timer=0,roadRefresh=0,errorMsg='';
 const normalized=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'');
@@ -68,7 +68,7 @@ function roadLines(){
 }
 function makeCars(){
  if(!map||!carOn)return;
- if(map.getZoom()<11.7){for(const x of cars)x.marker.remove();cars=[];status();return}
+ if(map.getZoom()<9.9){for(const x of cars)x.marker.remove();cars=[];status();return}
  if(Date.now()-roadRefresh<1200&&cars.length)return;roadRefresh=Date.now();
  const lines=roadLines().slice(0,map.getZoom()>=15?75:map.getZoom()>=13?55:38);
  const previous=new Map(cars.map(x=>[x.id,x]));cars=[];
@@ -90,7 +90,7 @@ function makeCars(){
   cars.push(x);
  }
  for(const item of previous.values())item.marker.remove();
- if(!cars.length)errorMsg='Ingen vegsegmenter tilgjengelige her – zoom inn for å se biler.';
+ if(!cars.length)errorMsg='Vegsegmenter ikke ferdig lastet i dette utsnittet. Zoom inn eller beveg kartet.';
  else errorMsg='';
  status();
 }
@@ -127,7 +127,7 @@ async function fetchSegments(){
   for(const c of json.data?.['s'+i]?.estimatedCalls||[]){
    if(c.cancellation||!c.serviceJourney?.id)continue;
    const kind=String(c.serviceJourney.line?.transportMode||'').toLowerCase();
-   if(!['rail','metro','tram','bus'].includes(kind))continue;
+   if(!['rail','metro','tram','bus','ferry'].includes(kind))continue;
    const t=Date.parse(c.expectedDepartureTime||c.aimedDepartureTime);
    if(!finite(t))continue;
    const id=c.serviceJourney.id;
@@ -140,7 +140,7 @@ async function fetchSegments(){
   const list=[...entries.values()].sort((a,b)=>a.t-b.t);
   for(let i=1;i<list.length;i++){
    const a=list[i-1],b=list[i],km=dist([a.s.lon,a.s.lat],[b.s.lon,b.s.lat]);
-   const max=a.kind==='rail'?34000:a.kind==='metro'?5000:a.kind==='tram'?3300:7000;
+   const max=a.kind==='rail'?34000:a.kind==='metro'?5000:a.kind==='tram'?3300:a.kind==='ferry'?22000:7000;
    if(a.t<=now&&now<=b.t&&b.t-a.t<34*60000&&km>80&&km<max){
     matches.push({id,a,b});break;
    }
@@ -154,7 +154,7 @@ function updateProjected(data){
   live.add(v.id);
   let p=projected.get(v.id);
   if(!p){
-   const el=document.createElement('div');el.className='atlas-predicted';el.textContent={rail:'🚆',metro:'🚇',tram:'🚋',bus:'🚌'}[v.a.kind]||'🚍';
+   const el=document.createElement('div');el.className='atlas-predicted';el.textContent={rail:'🚆',metro:'🚇',tram:'🚋',bus:'🚌',ferry:'⛴️'}[v.a.kind]||'🚍';
    el.title='BEREGNET posisjon (ikke GPS), rett linje mellom stopp';
    const marker=new lib.Marker({element:el,anchor:'center'}).setLngLat([v.a.s.lon,v.a.s.lat]).addTo(map);
    p={el,marker,value:v};projected.set(v.id,p);
@@ -186,7 +186,7 @@ function frame(){
  if(map&&document.visibilityState==='visible'){
   const t=Date.now();
   for(const c of cars){
-   if(!carOn||map.getZoom()<11.7)continue;
+   if(!carOn||map.getZoom()<9.9)continue;
    const k=((t-c.started)/1000*c.speed/c.road.length+c.progress)%1;
    const pos=pathPoint(c.road.pts,k);c.marker.setLngLat(pos);
    if(follow==='car:'+c.id)map.jumpTo({center:pos});
@@ -210,7 +210,7 @@ function initialize(m,l){
  map.on('dragstart',()=>{follow=null});
  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){makeCars();loadPredicted()}});
  setTimeout(makeCars,1300);requestAnimationFrame(frame);
- loadPredicted();setInterval(()=>{if(document.visibilityState==='visible')loadPredicted()},130000);
+ loadPredicted();window.atlasMotionRefresh=()=>{roadRefresh=0;makeCars();loadPredicted()};setInterval(()=>{if(document.visibilityState==='visible')loadPredicted()},130000);
 }
 window.atlasMotionInit=initialize;
 if(window.osloAtlas)initialize(window.osloAtlas.map,window.osloAtlas.lib);
