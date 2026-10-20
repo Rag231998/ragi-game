@@ -42,8 +42,20 @@
 <div class="instructions">Kart: © OpenStreetMap-bidragsytere · OpenFreeMap · Terreng: AWS/Mapzen · Satellitt: Esri</div>
 <div class="toast" id="toast" role="status"></div><div class="loading" id="loading"><div class="loadingcard"><div class="orbit"></div><div class="loadingtitle">Klargjør Oslo i 3D</div><p class="loadingdesc" id="loadMessage">Henter kart, bygninger og høydeinformasjon …</p></div></div>
 <noscript><div style="position:absolute;z-index:50;inset:0;background:#091522;color:white;display:grid;place-items:center">Aktiver JavaScript for å bruke 3D-kartet.</div></noscript>
-<script src="https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.js"></script>
-<script>
+<script type="module">
+// MapLibre GL JS v6 uses ES modules (the legacy .js bundle was removed).
+// Try two independent CDNs so that a temporary CDN failure does not break the map.
+let maplibregl;
+try {
+  maplibregl = await import('https://cdn.jsdelivr.net/npm/maplibre-gl@6.14.0/dist/maplibre-gl.mjs');
+} catch (primaryError) {
+  console.warn('Primær CDN utilgjengelig, prøver reservekilde:', primaryError);
+  try {
+    maplibregl = await import('https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.mjs');
+  } catch (backupError) {
+    console.error('Kunne ikke laste MapLibre fra noen av CDN-ene:', backupError);
+  }
+}
 (function(){
 'use strict';
 var places=[
@@ -82,7 +94,7 @@ function addSourcesAndLayers(){
  map.on('click',featurePopup);map.on('mousemove',function(e){var f=map.queryRenderedFeatures(e.point,{layers:['oslo-buildings']});map.getCanvas().style.cursor=f.length?'pointer':''});
 }
 function init(){renderPlaces('');$('search').addEventListener('input',function(){renderPlaces(this.value)});$('mapMode').addEventListener('click',function(){setMode(false)});$('satMode').addEventListener('click',function(){setMode(true)});$('buildingsSwitch').addEventListener('change',function(){setBuildings(this.checked)});$('terrainSwitch').addEventListener('change',function(){setTerrain(this.checked)});$('tilt').addEventListener('input',function(){$('tiltValue').textContent=this.value+'°';if(map)map.setPitch(Number(this.value))});$('resetTop').addEventListener('click',reset);$('resetCamera').addEventListener('click',reset);$('homeBtn').addEventListener('click',reset);$('tourBtn').addEventListener('click',toggleTour);$('perspectiveBtn').addEventListener('click',function(){if(map){var pitch=map.getPitch()<25?68:0;map.easeTo({pitch:pitch,duration:900});$('tilt').value=pitch;$('tiltValue').textContent=pitch+'°'}});$('fullscreenBtn').addEventListener('click',function(){if(!document.fullscreenElement&&document.documentElement.requestFullscreen)document.documentElement.requestFullscreen();else if(document.exitFullscreen)document.exitFullscreen()});$('shareTop').addEventListener('click',function(){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(location.href).then(function(){toast('Lenken er kopiert!')}).catch(function(){toast('Kopier adressen fra nettleseren')})}else toast('Kopier adressen fra nettleseren')});
- if(!window.maplibregl){$('loadMessage').textContent='Kunne ikke laste 3D-kartbiblioteket. Sjekk internett og last siden på nytt.';return}
+ if(!maplibregl){$('loadMessage').textContent='Kunne ikke laste 3D-kartmotoren. Kontroller at nettleseren tillater eksterne skript fra jsDelivr eller unpkg, og prøv på nytt.';return}
  try{
  map=new maplibregl.Map({container:'map',style:'https://tiles.openfreemap.org/styles/liberty',center:[10.7522,59.9139],zoom:14.8,pitch:65,bearing:-28,maxPitch:85,antialias:true,attributionControl:true});
  map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'top-right');
