@@ -47,9 +47,10 @@ async function fetchJson(url,options={},limitMs=13000){
   return await res.json();
  }finally{clearTimeout(timer)}
 }
-function bbox(url,limit=true){
+function bbox(url,limit=true,order='wsen'){
  const text=url.searchParams.get('bbox')||'';
- const a=text.split(',').map(Number);
+ let a=text.split(',').map(Number);
+ if(order==='swne'&&a.length===4)a=[a[1],a[0],a[3],a[2]];
  if(a.length!==4||a.some(x=>!Number.isFinite(x)))throw Error('Kartutsnitt mangler');
  const [w,s,e,n]=a;
  if(w<3.5||e>32.5||s<57.2||n>72.1||w>=e||s>=n)throw Error('Kartutsnitt utenfor Norge');
@@ -57,7 +58,7 @@ function bbox(url,limit=true){
  return {w,s,e,n};
 }
 async function chargerPoints(url,ctx){
- const {w,s,e,n}=bbox(url);
+ const {w,s,e,n}=bbox(url,true,'swne');
  // Round to coarse grid to minimize redundant Overpass requests.
  const r=x=>Math.round(x*20)/20;
  const box=[Math.max(57.2,r(s)-.06),Math.max(3.5,r(w)-.06),Math.min(72.1,r(n)+.06),Math.min(32.5,r(e)+.06)];
