@@ -50,10 +50,11 @@ button:disabled{opacity:.48;cursor:not-allowed}#map{position:fixed;inset:0;backg
 @media(max-width:850px){.app-header{height:62px;padding:0 12px}.brand-symbol{width:33px;height:33px;font-size:19px}.brand h1{font-size:16px}.brand p{font-size:9px}.status{display:none}.header-actions{gap:4px}.chip-button{padding:8px 9px;font-size:11px}.workspace{top:75px;left:10px;bottom:12px;width:min(354px,calc(100vw - 20px))}.map-legend{left:375px;right:12px;max-width:unset}.map-chip{top:75px}}
 @media(max-width:640px){.workspace{left:9px;right:9px;width:auto;top:auto;bottom:9px;height:min(55vh,440px);border-radius:18px}.workspace.compact{height:64px;overflow:hidden}.workspace.compact .workspace-header{padding:10px 13px}.workspace.compact .workspace-header h2{font-size:16px}.workspace.compact .workspace-header .eyebrow,.workspace.compact .workspace-header p,.workspace.compact .tabs,.workspace.compact .tab-section,.workspace.compact .workspace-footer{display:none}.mobile-launch{display:block;position:absolute;right:10px;top:10px;background:#205769;color:#fff;border:1px solid #4f8597;border-radius:9px;padding:8px 11px;font-weight:800}.workspace:not(.compact) .mobile-launch{top:17px}.workspace-header{padding:15px 15px 0}.workspace-header h2{font-size:19px}.workspace-header p{margin-bottom:9px}.tabs{margin-bottom:8px}.tab{padding:10px 5px}.tab-section{padding:3px 14px 18px}.map-legend{left:9px;bottom:85px;right:auto;max-width:calc(100vw - 18px);font-size:9px;padding:7px 10px}.workspace:not(.compact)~.map-legend{display:none}.map-chip{top:73px;right:9px;max-width:200px;font-size:9px;padding:8px}.header-actions .chip-button:first-child{display:none}}
 </style>
-<script defer src="./v2.js?v=20261020-ux"></script>
+<script defer src="./v2.js?v=20261020-motion"></script>
+<script defer src="./motion.js?v=20261020-motion"></script>
 </head>
 <body>
-<div id="map" aria-label="Interaktivt kart over Oslo og Romerike med fly og kollektivtrafikk"></div>
+<div id="map" aria-label="Interaktivt kart over Oslo og Romerike med modellert trafikk og sanntidskollektiv"></div>
 <div id="map-loading"><div class="loading-content"><div class="loading-glyph">◈</div><h2>Åpner Oslo Atlas</h2><p id="loading-detail">Klargjør 3D-kartet og de åpne datakildene …</p></div></div>
 <header class="app-header">
   <div class="brand"><div class="brand-symbol" aria-hidden="true">◈</div><div><h1>OSLO <span>ATLAS</span></h1><p>Oslo · Romerike · Gardermoen</p></div></div>
@@ -61,10 +62,10 @@ button:disabled{opacity:.48;cursor:not-allowed}#map{position:fixed;inset:0;backg
 </header>
 <aside id="workspace" class="workspace" aria-label="Utforsk Oslo Atlas">
   <button class="mobile-launch" id="mobile-toggle" aria-expanded="true">Skjul −</button>
-  <div class="workspace-header"><div class="eyebrow">Utforsk byen</div><h2>Hele regionen.<br>En levende oversikt.</h2><p>Avganger, kjøretøy, fly og offentlige kameraer – på ett kart.</p>
+  <div class="workspace-header"><div class="eyebrow">Utforsk byen</div><h2>Hele regionen.<br>En levende oversikt.</h2><p>Se avganger, modellerte biler, GPS-kjøretøy og offentlige kameraer – på ett kart.</p>
     <nav class="tabs" role="tablist" aria-label="Innhold">
       <button id="tab-avganger" role="tab" aria-selected="true" aria-controls="panel-avganger" class="tab">🚇 Avganger</button>
-      <button id="tab-trafikk" role="tab" aria-selected="false" aria-controls="panel-trafikk" class="tab">✈️ Live-kart</button>
+      <button id="tab-trafikk" role="tab" aria-selected="false" aria-controls="panel-trafikk" class="tab">🚗 Bevegelse</button>
       <button id="tab-kamera" role="tab" aria-selected="false" aria-controls="panel-kamera" class="tab">📷 Kamera</button>
     </nav>
   </div>
@@ -76,17 +77,19 @@ button:disabled{opacity:.48;cursor:not-allowed}#map{position:fixed;inset:0;backg
     <section class="board" id="board" hidden><div class="board-head"><div><h3 id="board-name">Avganger</h3><p id="board-updated">Henter avganger …</p></div><button class="refresh" id="board-refresh">↻ Oppdater</button></div><div id="board-rows"></div></section>
   </section>
   <section id="panel-trafikk" class="tab-section" role="tabpanel" aria-labelledby="tab-trafikk">
-    <p class="helper">Her vises bare rapporterte posisjoner. Tog, busser og fly kan mangle når en operatør eller datakilde ikke rapporterer GPS.</p>
-    <div class="panel-title">Vis på kartet</div>
-    <div class="filters" id="traffic-filters"><button class="filter active" data-layer="all">Alt</button><button class="filter" data-layer="rail">🚆 Tog</button><button class="filter" data-layer="bus">🚌 Buss/Flybuss</button><button class="filter" data-layer="flight">✈️ Fly</button></div>
-    <div class="filters"><button class="filter" id="go-airport">📍 Gardermoen</button><button class="filter" id="go-oslo">📍 Oslo</button><button class="filter" id="traffic-refresh">↻ Oppdater</button></div>
-    <div class="message" id="traffic-status">Henter rapporterte posisjoner …</div>
-    <div class="panel-title">Fly over området <span id="flight-count">–</span></div>
-    <p class="helper">Flydata fra åpne ADS-B-mottakere. Listen viser fly nærmest Gardermoen.</p>
-    <p id="flight-error" class="helper" role="status"></p><p class="helper"><a href="https://globe.airplanes.live/" target="_blank" rel="noopener noreferrer" style="color:#9be4eb;font-weight:750">↗ Sammenlign med flykartet hos Airplanes.live</a></p><div class="mini-list" id="flight-list"></div>
-    <div class="panel-title">Tog og busser <span id="vehicle-count">–</span></div>
+    <p class="helper">Bevegelige kjøretøy med tydelig kilde: <b>GPS</b> når operatøren rapporterer posisjon, <b>beregnet</b> når rutetider brukes og <b>modellert</b> for fiktiv biltrafikk langs virkelige veier.</p>
+    <div class="panel-title">Rapporterte GPS-posisjoner</div>
+    <div class="filters" id="traffic-filters">
+      <button class="filter active" data-layer="all">Alt</button>
+      <button class="filter" data-layer="rail">🚆 Tog</button>
+      <button class="filter" data-layer="bus">🚌 Buss/Flybuss</button>
+      <button class="filter" data-layer="ferry">⛴️ Båt/Ferge</button>
+    </div>
+    <div class="filters"><button class="filter" id="go-airport">📍 Gardermoen</button><button class="filter" id="go-oslo">📍 Oslo</button><button class="filter" id="traffic-refresh">↻ Oppdater data</button></div>
+    <div class="message" id="traffic-status">Henter rapporterte posisjoner fra Entur …</div>
+    <div class="panel-title">GPS-kjøretøy <span id="vehicle-count">–</span></div>
     <div class="mini-list" id="vehicle-list"></div>
-    <p class="helper">Kamera- og avgangsinformasjon kommer fra egne kilder. Kartet er ikke en erstatning for offisiell trafikkvarsling. Flydata: <a style="color:#9be4eb" href="https://airplanes.live/" target="_blank" rel="noopener noreferrer">Airplanes.live</a> / <a style="color:#9be4eb" href="https://adsb.fi/" target="_blank" rel="noopener noreferrer">ADSB.fi</a>.</p>
+    <p class="helper">Avgangsprognoser og posisjoner kan være forsinket. Modellerte biler er ikke trafikkmålinger. Bruk Entur eller Ruter til reiseplanlegging.</p>
   </section>
   <section id="panel-kamera" class="tab-section" role="tabpanel" aria-labelledby="tab-kamera">
     <p class="helper">Offentlig tilgjengelige kameraer fra Oslo Havn og Statens vegvesen. Noen viser oppdaterte stillbilder – ikke kontinuerlig video. Markørene viser omtrentlige områder.</p>
@@ -96,7 +99,7 @@ button:disabled{opacity:.48;cursor:not-allowed}#map{position:fixed;inset:0;backg
   <footer class="workspace-footer"><span>Bygget på åpne data · Ikke tilknyttet Ruter</span><a href="https://www.entur.org/" target="_blank" rel="noopener noreferrer">Entur</a></footer>
 </aside>
 <div class="map-chip" id="map-status" role="status">Forbereder sanntidslag …</div>
-<div class="map-legend">🚇 Holdeplass · 🚆 Tog (GPS) · 🚌 Buss (GPS) · ✈️ Fly (ADS-B) · 📷 Offentlig kamera</div>
+<div class="map-legend">🚇 Stasjon · 🟢 GPS tog/buss/båt · 🟡 Beregnet kollektiv · ⚪ Modellert bil · 📷 Kamera</div>
 <script type="module">
 let L;
 try { L=await import('https://cdn.jsdelivr.net/npm/maplibre-gl@6.14.0/dist/maplibre-gl.mjs'); }
