@@ -43,24 +43,12 @@
 </head>
 <body>
 <div id="map" aria-label="Interaktivt 3D-kart over Oslo"></div>
-<header class="header"><div class="brand"><div class="brandmark">◈</div><div><div class="brandname">OSLO<b>ATLAS</b></div><div class="brandsub">OSLO · NORGE · 3D EXPLORER</div></div></div><div class="header-center"><span class="status-dot"></span> ÅPNE KARTDATA · INTERAKTIV 3D</div><div class="header-right"><button class="tiny-btn" id="transit-toggle" aria-expanded="false">🚇 Kollektiv LIVE</button><button class="tiny-btn" id="resetTop">↺ Nullstill visning</button><button class="tiny-btn gold" id="shareTop">↗ Del kartet</button></div></header>
-<aside class="sidebar"><div class="sidebar-top"><div class="eyebrow">01 / OPPDAG BYEN</div><h1 class="bigtitle">Hele Oslo.<br>Fra en ny vinkel.</h1><p class="lead">Fly over byen, se terrenget og utforsk bygninger i en levende 3D-modell basert på åpne kartdata.</p><div class="searchwrap"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg><input id="search" placeholder="Søk etter sted i Oslo …" aria-label="Søk etter sted"></div></div><div class="sectionline"></div><div class="placeshead"><span class="sectiontitle">Utvalgte steder</span><span class="count" id="placeCount">9 steder</span></div><div class="places" id="places"></div><div class="sidefoot"><div class="sidefootrow"><div class="sidefootnote"><strong>Utforsk på din måte</strong><br>Dra for å flytte · Ctrl + dra for å vippe</div><span class="livepill">3D MODELL</span></div></div></aside>
+<header class="header"><div class="brand"><div class="brandmark">◈</div><div><div class="brandname">OSLO<b>ATLAS</b></div><div class="brandsub">OSLO · ROMERIKE · GARDERMOEN</div></div></div><div class="header-center"><span class="status-dot"></span> ÅPNE KARTDATA · INTERAKTIV 3D</div><div class="header-right"><button class="tiny-btn" id="resetTop">↺ Nullstill visning</button><button class="tiny-btn gold" id="shareTop">↗ Del kartet</button></div></header>
+<aside class="sidebar"><div class="sidebar-top"><div class="eyebrow">01 / OPPDAG BYEN</div><h1 class="bigtitle">Oslo og Romerike.<br>Fra en ny vinkel.</h1><p class="lead">Utforsk Oslo, Romerike og Gardermoen i 3D. Finn holdeplasser, rapporterte kjøretøyposisjoner og fly i luften.</p><div class="searchwrap"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg><input id="search" placeholder="Søk etter sted i Oslo …" aria-label="Søk etter sted"></div></div><div class="sectionline"></div><div class="placeshead"><span class="sectiontitle">Utvalgte steder</span><span class="count" id="placeCount">15 steder</span></div><div class="places" id="places"></div><div class="sidefoot"><div class="sidefootrow"><div class="sidefootnote"><strong>Utforsk på din måte</strong><br>Dra for å flytte · Ctrl + dra for å vippe</div><span class="livepill">3D MODELL</span></div></div></aside>
 <aside class="rightbar"><div class="panel"><div class="panelhead"><h2>Visningsmodus</h2><span class="subtle">02 / KONTROLL</span></div><div class="modegroup"><button id="mapMode" class="modebtn active"><span>🗺️</span>Bykart</button><button id="satMode" class="modebtn"><span>🛰️</span>Satellitt</button></div><div class="toggleline">3D-bygninger<label class="switch"><input id="buildingsSwitch" type="checkbox" checked><span></span></label></div><div class="toggleline">3D-terreng<label class="switch"><input id="terrainSwitch" type="checkbox" checked><span></span></label></div><div class="tiltrow"><div class="tilthead"><span>Kameravinkel</span><strong id="tiltValue">65°</strong></div><input type="range" id="tilt" min="0" max="80" value="65" aria-label="Kameravinkel"></div><button class="secondary-btn" id="resetCamera">↺ Tilbake til Oslo sentrum</button></div><div class="panel"><div class="panelhead"><h2>Oppdag nå</h2><span class="focusbadge">Valgt sted</span></div><div class="focusname" id="focusName">Oslo sentrum</div><div class="focusarea" id="focusArea">59.9139° N / 10.7522° Ø</div><div class="focusdesc" id="focusDesc">Opplev hovedstaden i et nytt perspektiv. Velg et sted til venstre eller klikk på en bygning.</div><div class="focuscoords"><span>DATA</span> OpenStreetMap · OpenFreeMap</div></div></aside>
 <div class="bottom"><button class="action featured" id="tourBtn">▶ <span id="tourLabel">Start bytur</span></button><div class="mini-sep"></div><button class="action" id="homeBtn">⌂ <span>Sentrum</span></button><button class="action" id="perspectiveBtn">◩ <span>3D-visning</span></button><button class="action" id="fullscreenBtn">⛶ <span>Fullskjerm</span></button></div>
-<section id="transit-panel" class="closed" aria-label="Kollektivtrafikk i Oslo">
-<div class="transit-head"><b>🚇 Kollektivtrafikk · LIVE</b><button id="transit-close">×</button></div>
-<div class="transit-body">
-<p class="transit-note">Sanntidsavganger fra Entur. Togikoner viser faktiske GPS-rapporter der posisjonsdata finnes. T-bane og trikk vises ved holdeplassene, ikke som GPS-sporede kjøretøy.</p>
-<input id="transit-search" autocomplete="off" placeholder="Søk holdeplass (Ammerud, Oslo S …)">
-<div id="transit-filters" class="transit-actions"><button class="chosen" data-mode="all">Alle</button><button data-mode="metro">T-bane</button><button data-mode="tram">Trikk</button><button data-mode="rail">Tog</button></div>
-<div id="transit-results"><span class="transit-note">Henter holdeplasser …</span></div>
-<h3 id="transit-selected" class="transit-title">Velg holdeplass</h3>
-<p id="transit-updated" class="transit-note">Klikk et holdeplasspunkt i kartet eller søk over.</p>
-<div id="transit-departures"></div>
-<p id="transit-vehicles" class="transit-note">🚆 Henter rapporterte togposisjoner …</p>
-<p class="transit-note">● Sanntid betyr oppdatert avgangsprognose. ○ Rutetid betyr planlagt avgang. GPS-posisjoner oppdateres periodisk, og er ikke en kontinuerlig animasjon.</p>
-</div></section>
-<div class="instructions">Kart: © OpenStreetMap-bidragsytere · OpenFreeMap · Terreng: AWS/Mapzen · Satellitt: Esri</div>
+
+<div class="instructions">Kart: © OpenStreetMap-bidragsytere · OpenFreeMap · Terreng: AWS/Mapzen · Satellitt: Esri · Live: Entur / adsb.lol</div>
 <div class="toast" id="toast" role="status"></div><div class="loading" id="loading"><div class="loadingcard"><div class="orbit"></div><div class="loadingtitle">Klargjør Oslo i 3D</div><p class="loadingdesc" id="loadMessage">Henter kart, bygninger og høydeinformasjon …</p></div></div>
 <noscript><div style="position:absolute;z-index:50;inset:0;background:#091522;color:white;display:grid;place-items:center">Aktiver JavaScript for å bruke 3D-kartet.</div></noscript>
 <script type="module">
@@ -88,7 +76,13 @@ var places=[
  {name:'Grünerløkka',area:'Indre øst',icon:'☕',lng:10.7570,lat:59.9237,zoom:16.2,pitch:65,bearing:-20,desc:'Tette bygårder, parker og Akerselva sett ovenfra.'},
  {name:'Karl Johans gate',area:'Sentrum',icon:'🏛️',lng:10.7430,lat:59.9143,zoom:16.5,pitch:67,bearing:25,desc:'Fra Stortinget mot Slottet gjennom hjertet av Oslo.'},
  {name:'Ekeberg',area:'Oslo sørøst',icon:'🌲',lng:10.7763,lat:59.8985,zoom:15.4,pitch:72,bearing:-40,desc:'Se byens topografi og utsikten ned mot Oslofjorden.'},
- {name:'Ammerud',area:'Groruddalen',icon:'🏘️',lng:10.8761,lat:59.9631,zoom:15.8,pitch:65,bearing:-30,desc:'Groruddalens blokker, boligområder og grønne lunger.'}
+ {name:'Ammerud',area:'Groruddalen',icon:'🏘️',lng:10.8761,lat:59.9631,zoom:15.8,pitch:65,bearing:-30,desc:'Groruddalens blokker, boligområder og grønne lunger.'},
+ {name:'Grorud T',area:'Groruddalen',icon:'🚇',lng:10.883,lat:59.961,zoom:16.1,pitch:67,bearing:-28,desc:'Grorud T-banestasjon og nærområdet. Åpne LIVE trafikk for avganger.'},
+ {name:'Lillestrøm',area:'Romerike',icon:'🚆',lng:11.049,lat:59.956,zoom:15.8,pitch:64,bearing:-28,desc:'Se jernbanestasjonen og sentrum. Kollektiv LIVE viser rapporterte togposisjoner og avganger.'},
+ {name:'Jessheim',area:'Ullensaker',icon:'🏙️',lng:11.171,lat:60.143,zoom:15.8,pitch:64,bearing:-28,desc:'Utforsk Jessheim sentrum og jernbanestasjonen.'},
+ {name:'Kløfta',area:'Ullensaker',icon:'🚆',lng:11.147,lat:60.076,zoom:16,pitch:63,bearing:-20,desc:'Kløfta stasjon med togavganger og tettstedet rundt.'},
+ {name:'Oslo lufthavn',area:'Gardermoen',icon:'✈️',lng:11.1004,lat:60.1939,zoom:14.5,pitch:68,bearing:-32,desc:'Utforsk Gardermoen – flybevegelser fra ADS-B der dekning finnes.'},
+ {name:'Eidsvoll',area:'Øvre Romerike',icon:'🚆',lng:11.257,lat:60.332,zoom:14.8,pitch:61,bearing:-22,desc:'Jernbane og stasjonsområdet ved Eidsvoll.'}
 ];
 var state={selected:-1,satellite:false,terrain:true,buildings:true,tour:false,tourTimer:null,popup:null,loaded:false};
 var $=function(id){return document.getElementById(id)};
@@ -127,117 +121,7 @@ function init(){renderPlaces('');$('search').addEventListener('input',function()
 init();
 })();
 </script>
-<script>
-(function(){
-'use strict';
-const GET='https://api.entur.io/geocoder/v3/autocomplete',JP='https://api.entur.io/journey-planner/v3/graphql',VP='https://api.entur.io/realtime/v2/vehicles/graphql';
-const headers={'ET-Client-Name':'rag231998-oslo-atlas'},graphqlHeaders={...headers,'Content-Type':'application/json'};
-const $=id=>document.getElementById(id);let map,lib,stops=[],selected=null,mode='all',calls=[],trainMarkers=[],timer=null,busy=false,busyGPS=false;
-const index=new Map();
-function show(open){$('transit-panel').classList.toggle('closed',!open);$('transit-toggle').setAttribute('aria-expanded',String(open))}
-function norwayTime(s){const d=new Date(s);return Number.isFinite(+d)?new Intl.DateTimeFormat('nb-NO',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Oslo'}).format(d):'–'}
-function kind(p){const m=(p.transportModes||[]).map(x=>x.mode);return m.includes('metro')?'metro':m.includes('tram')?'tram':m.includes('rail')?'rail':'other'}
-function getStop(f){const p=f.properties||{},c=f.geometry?.coordinates||[];return{id:p.id,name:p.names?.default||'Holdeplass',lng:Number(c[0]),lat:Number(c[1]),kind:kind(p)}}
-function near(s){return s.id?.startsWith('NSR:StopPlace:')&&Number.isFinite(s.lng)&&Number.isFinite(s.lat)&&s.lat>59.70&&s.lat<60.2&&s.lng>10.3&&s.lng<11.2}
-async function findStops(search){
- const u=new URL(GET);u.searchParams.set('layers','stopPlace');u.searchParams.set('stopPlaceTypes','metroStation,tramStation,onstreetTram,railStation');u.searchParams.set('limit','100');u.searchParams.set('lang','no');
- if(search){u.searchParams.set('q',search);u.searchParams.set('lat','59.9139');u.searchParams.set('lon','10.7522')}
- else u.searchParams.set('bbox','10.55,59.875,10.95,60.055');
- const r=await fetch(u,{headers});if(!r.ok)throw Error('HTTP '+r.status);
- const j=await r.json();return(j.features||[]).map(getStop).filter(near);
-}
-function layer(){
- if(map.getSource('transit-stop-source'))return;
- map.addSource('transit-stop-source',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
- map.addLayer({id:'transit-stop-pins',type:'circle',source:'transit-stop-source',paint:{
- 'circle-radius':['interpolate',['linear'],['zoom'],10,3,13,6,17,10],
- 'circle-color':['match',['get','kind'],'metro','#3aafff','tram','#ffc15d','rail','#65e1aa','#bdd4e7'],
- 'circle-stroke-color':'#0c2236','circle-stroke-width':2}});
- map.on('click','transit-stop-pins',e=>{const id=e.features?.[0]?.properties?.id;if(index.has(id))pick(index.get(id))});
- map.on('mouseenter','transit-stop-pins',()=>map.getCanvas().style.cursor='pointer');
- map.on('mouseleave','transit-stop-pins',()=>map.getCanvas().style.cursor='');
-}
-function draw(){
- const items=[...index.values()].filter(s=>mode==='all'||s.kind===mode).slice(0,150);
- const src=map.getSource('transit-stop-source');if(src)src.setData({type:'FeatureCollection',features:items.map(s=>({type:'Feature',geometry:{type:'Point',coordinates:[s.lng,s.lat]},properties:{id:s.id,kind:s.kind,name:s.name}}))});
-}
-function list(){
- const box=$('transit-results');box.replaceChildren();
- const a=stops.filter(s=>mode==='all'||s.kind===mode).slice(0,15);
- if(!a.length){box.textContent='Ingen holdeplasser funnet. Prøv et annet navn.';return}
- for(const s of a){const b=document.createElement('button');b.textContent=(s.kind==='metro'?'🚇 ':s.kind==='tram'?'🚋 ':s.kind==='rail'?'🚆 ':'📍 ')+s.name;b.addEventListener('click',()=>pick(s));box.appendChild(b)}
-}
-function refreshFilterButtons(){document.querySelectorAll('#transit-filters button').forEach(b=>b.classList.toggle('chosen',b.dataset.mode===mode))}
-function pick(s){
- selected=s;mode='all';refreshFilterButtons();draw();$('transit-selected').textContent=s.name;$('transit-updated').textContent='Henter avganger …';$('transit-departures').replaceChildren();show(true);
- map.flyTo({center:[s.lng,s.lat],zoom:15.7,pitch:65,duration:1100});getDepartures();
-}
-async function getDepartures(){
- if(!selected||busy)return;busy=true;
- const id=selected.id,query='query($id:String!){stopPlace(id:$id){name estimatedCalls(numberOfDepartures:36,timeRange:7200){realtime cancellation aimedDepartureTime expectedDepartureTime destinationDisplay{frontText} serviceJourney{line{publicCode transportMode}}}}}';
- try{const r=await fetch(JP,{method:'POST',headers:graphqlHeaders,body:JSON.stringify({query,variables:{id}})});
- if(!r.ok)throw Error('HTTP '+r.status);const j=await r.json();if(j.errors?.length)throw Error(j.errors[0].message);
- if(!selected||selected.id!==id)return;
- calls=j.data?.stopPlace?.estimatedCalls||[];renderBoard();$('transit-updated').textContent='Oppdatert kl. '+norwayTime(new Date())+' · '+calls.length+' avganger';
- }catch(e){$('transit-updated').textContent='Entur-avganger kunne ikke lastes: '+e.message;console.warn(e)}
- finally{busy=false}
-}
-function renderBoard(){
- const el=$('transit-departures');el.replaceChildren();
- const a=calls.filter(c=>mode==='all'||c.serviceJourney?.line?.transportMode===mode).sort((a,b)=>new Date(a.expectedDepartureTime||a.aimedDepartureTime)-new Date(b.expectedDepartureTime||b.aimedDepartureTime));
- let added=0;for(const c of a){
- const d=new Date(c.expectedDepartureTime||c.aimedDepartureTime);if(!Number.isFinite(+d)||+d<Date.now()-60000)continue;if(++added>18)break;
- const line=c.serviceJourney?.line||{},code=document.createElement('span');code.className='transit-code '+(line.transportMode||'');code.textContent=line.publicCode||'–';
- const dest=document.createElement('div'),name=document.createElement('div'),sub=document.createElement('div');name.className='transit-dest';sub.className='transit-sub';name.textContent=c.destinationDisplay?.frontText||'Ukjent';sub.textContent=c.cancellation?'Innstilt':c.realtime?'● Sanntid':'○ Rutetid';dest.append(name,sub);
- const eta=document.createElement('span');eta.className='transit-eta';const min=Math.ceil((d-Date.now())/60000);eta.textContent=min<=0?'Nå':min<30?min+' min':norwayTime(d);
- if(c.cancellation)eta.style.textDecoration='line-through';
- const row=document.createElement('div');row.className='transit-item';row.append(code,dest,eta);el.appendChild(row);
- }if(!added)el.textContent='Ingen avganger i valgt kategori de neste to timene.';
-}
-async function loadGPS(){
- if(busyGPS)return;busyGPS=true;
- async function one(code,label){
- const query='query { vehicles(codespaceId:"'+code+'"){lastUpdated location{latitude longitude}} }';
- const r=await fetch(VP,{method:'POST',headers:graphqlHeaders,body:JSON.stringify({query})});if(!r.ok)throw Error('HTTP '+r.status);
- const j=await r.json();if(j.errors?.length)throw Error(j.errors[0].message);
- return(j.data?.vehicles||[]).map(v=>({...v,operator:label}));
- }
- try{
- const results=await Promise.allSettled([one('NSB','Vy'),one('FLT','Flytoget'),one('GOA','Go-Ahead')]);
- if(results.every(r=>r.status==='rejected'))throw Error('Ingen posisjonskilder svarte');
- const vs=results.flatMap(r=>r.status==='fulfilled'?r.value:[]).filter(v=>{
- const p=v.location||{},lat=+p.latitude,lon=+p.longitude,t=Date.parse(v.lastUpdated);
- return lat>59.6&&lat<60.4&&lon>10&&lon<11.55&&(!Number.isFinite(t)||Date.now()-t<600000);
- }).slice(0,130);
- for(const m of trainMarkers)m.remove();trainMarkers=[];
- for(const v of vs){
- const el=document.createElement('span');el.className='train-pin';el.textContent='🚆';el.title='GPS: '+v.operator;
- const detail=document.createElement('div');detail.textContent=v.operator+' · Sist rapportert posisjon kl. '+norwayTime(v.lastUpdated)+'. Dette er faktisk posisjonsrapport, ikke animasjon.';
- trainMarkers.push(new lib.Marker({element:el}).setLngLat([+v.location.longitude,+v.location.latitude]).setPopup(new lib.Popup({offset:12}).setDOMContent(detail)).addTo(map));
- }
- $('transit-vehicles').textContent='🚆 '+vs.length+' rapporterte togposisjoner i Oslo-regionen · '+norwayTime(new Date());
- }catch(e){$('transit-vehicles').textContent='Tog-GPS utilgjengelig: '+e.message}
- finally{busyGPS=false}
-}
-async function startup(){
- try{
- const fresh=await findStops('');
- for(const s of fresh)index.set(s.id,s);
- stops=fresh.sort((a,b)=>Math.hypot(a.lng-10.752,a.lat-59.914)-Math.hypot(b.lng-10.752,b.lat-59.914));draw();list();
- const j=stops.find(s=>s.name.toLowerCase().includes('jernbanetorget'))||stops[0];
- if(j){selected=j;$('transit-selected').textContent=j.name;getDepartures()}
- }catch(e){$('transit-results').textContent='Kunne ikke hente holdeplasser: '+e.message+'. Du kan fortsatt prøve søk.'}
-}
-function init(){
- map=window.osloAtlasMap;lib=window.osloAtlasLib;if(!map||!lib||window.osloTransitReady)return;window.osloTransitReady=true;
- layer();$('transit-toggle').addEventListener('click',()=>show($('transit-panel').classList.contains('closed')));$('transit-close').addEventListener('click',()=>show(false));
- $('transit-search').addEventListener('input',e=>{clearTimeout(timer);const q=e.target.value.trim();timer=setTimeout(async()=>{try{const a=await findStops(q);stops=a;for(const s of a)index.set(s.id,s);list();draw()}catch(err){$('transit-results').textContent='Søk feilet: '+err.message}},400)});
- $('transit-filters').addEventListener('click',e=>{const b=e.target.closest('button[data-mode]');if(!b)return;mode=b.dataset.mode;refreshFilterButtons();list();draw();renderBoard()});
- if(innerWidth>780)show(true);
- startup();loadGPS();setInterval(getDepartures,45000);setInterval(loadGPS,60000);
-}
-window.addEventListener('oslo-atlas-loaded',init,{once:true});if(window.osloAtlasMap?.loaded())init();
-})();
-</script>
+
+<script src="./live.js?v=20261020"></script>
 </body>
 </html>
