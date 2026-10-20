@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1926">
+<meta name="description" content="Oslo Atlas – interaktiv 3D-oversikt over Oslo, Romerike og Gardermoen med kollektivavganger, rapporterte flyposisjoner og offentlige kameraer.">
+<title>Oslo Atlas – Oslo, Romerike og Gardermoen</title>
+<link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@6.14.0/dist/maplibre-gl.css">
+<style>
+:root{color-scheme:dark;--bg:#0b1926;--panel:#0c1d2b;--raised:#173040;--outline:#304757;--text:#eff8fb;--muted:#a1b9c7;--mint:#68d7c9;--gold:#f1b973;--blue:#63bfff;--ring:#a2f8e6}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--ring);outline-offset:2px}
+button:disabled{opacity:.48;cursor:not-allowed}#map{position:fixed;inset:0;background:#16384a}#map-loading{position:fixed;z-index:25;inset:0;background:#0b1926e8;display:grid;place-items:center}
+#map-loading.hidden{display:none}.loading-content{text-align:center;max-width:380px;padding:30px}.loading-glyph{font-size:44px;color:var(--gold)}.loading-content h2{font-size:21px;margin:12px 0 5px}.loading-content p{color:var(--muted)}
+.app-header{position:fixed;z-index:20;inset:0 0 auto 0;height:73px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 24px;background:#091926ef;border-bottom:1px solid #42617588;backdrop-filter:blur(14px)}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}.brand-symbol{border:1px solid #eab67c99;border-radius:13px;width:42px;height:42px;display:grid;place-items:center;color:#f4c28c;background:#f4c28c17;font-size:24px}.brand h1{margin:0;font-weight:850;font-size:20px;letter-spacing:.07em}.brand h1 span{color:var(--gold)}.brand p{margin:0;font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.header-actions{display:flex;align-items:center;gap:7px}.chip-button{background:#132c3e;border:1px solid #3e5c6e;color:#eef8ff;border-radius:10px;padding:10px 12px;font-size:12px;font-weight:750;white-space:nowrap}
+.chip-button:hover,.chip-button.active{background:#215367;border-color:#70d3ca}.status{display:flex;gap:8px;align-items:center;color:#a9c5d1;font-size:11px}.status-dot{width:8px;height:8px;border-radius:50%;background:#61ceaa}
+.workspace{position:fixed;z-index:15;top:87px;left:18px;bottom:18px;width:388px;background:#0b1e2ced;border:1px solid #3d5c7080;border-radius:21px;box-shadow:0 17px 65px #0009;overflow:hidden;display:flex;flex-direction:column;backdrop-filter:blur(19px)}
+.workspace-header{padding:19px 19px 0}.eyebrow{text-transform:uppercase;letter-spacing:.15em;font-size:10px;font-weight:850;color:var(--gold)}.workspace-header h2{margin:7px 0 5px;font-size:24px;line-height:1.1;letter-spacing:-.035em}.workspace-header p{font-size:12px;color:var(--muted);margin:0 0 15px;line-height:1.45}
+.tabs{display:flex;gap:4px;background:#0b1927;border-radius:12px;padding:5px;margin-bottom:12px;border:1px solid #ffffff19}.tab{flex:1;min-width:0;background:transparent;border:0;color:#afc3cf;border-radius:9px;padding:12px 5px;font-size:11.5px;font-weight:800}.tab[aria-selected=true]{background:#255063;color:#fff;box-shadow:0 2px 9px #0006}
+.tab-section{display:none;overflow-y:auto;overscroll-behavior:contain;flex:1;padding:4px 19px 22px;scrollbar-width:thin;scrollbar-color:#526d80 transparent}.tab-section.active{display:block}
+.field-label{display:block;margin-bottom:8px;color:#e9f5fb;font-size:11px;font-weight:800}.search{display:block;width:100%;border-radius:11px;padding:14px 13px;background:#172e40;border:1px solid #4f6f81;color:#fff;font-size:13px;outline:none}.search::placeholder{color:#95adba}.search:focus{border-color:#6de0c9}
+.helper{font-size:11px;color:var(--muted);line-height:1.5;margin:8px 0 12px}.panel-title{font-size:11px;color:#dbeef7;font-weight:850;text-transform:uppercase;letter-spacing:.09em;margin:19px 0 10px;display:flex;align-items:center;justify-content:space-between}
+#search-results{display:flex;flex-direction:column;gap:5px}.result{width:100%;display:flex;align-items:center;gap:11px;padding:11px;background:#102a3b;border:1px solid #325367;border-radius:11px;color:#f5faff;text-align:left}
+.result:hover,.result.selected{background:#204656;border-color:#68d5cb}.result .symbol{width:34px;height:34px;display:grid;place-items:center;background:#294b5f;border-radius:10px;font-size:16px}
+.result strong,.result small{display:block}.result strong{font-size:12px}.result small{font-size:10px;color:var(--muted);margin-top:2px}
+.board{border:1px solid #355366;border-radius:14px;background:#0c2739;overflow:hidden;margin-top:12px}.board-head{background:#183649;padding:13px 14px;border-bottom:1px solid #466276;display:flex;justify-content:space-between;gap:8px}.board-head h3{font-size:15px;margin:0 0 3px}.board-head p{color:var(--muted);margin:0;font-size:10px}.refresh{border:1px solid #4b6b80;border-radius:8px;background:#203f54;color:#fff;padding:6px 9px;font-size:11px;align-self:flex-start}
+.board-row{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 13px;border-bottom:1px solid #ffffff12}.board-row:last-child{border-bottom:0}
+.route-number{border-radius:6px;background:#1b73b4;color:#fff;font-weight:850;font-size:11px;text-align:center;padding:8px 3px}
+.route-number.metro{background:#157ebb}.route-number.tram{background:#b18a32}.route-number.bus{background:#904e9e}.route-number.rail{background:#16865e}
+.route-destination{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:750;font-size:12px}.route-detail{color:#a8c1ce;font-size:10px;margin-top:3px}.time{font-size:12px;font-weight:850;color:#ffdbab;white-space:nowrap}.cancelled{color:#ffa594;text-decoration:line-through}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 14px}.filter{background:#173345;border:1px solid #46677c;border-radius:9px;padding:9px 12px;color:#c8dbe5;font-size:11px;font-weight:750}.filter.active{background:#145c61;border-color:#6fcac0;color:#fff}
+.message{font-size:12px;line-height:1.5;background:#162c3c;border-radius:11px;padding:12px;border:1px solid #345368;color:#bfd5df}.message.error{border-color:#d68e72;color:#ffd0b7}.message a{color:#9be4eb}.stat-line{font-size:12px;color:#bdd7e2;margin:10px 0}.mini-list{display:flex;flex-direction:column;gap:6px}
+.item{display:flex;align-items:center;justify-content:space-between;gap:9px;background:#142f41;border:1px solid #35576b;border-radius:11px;padding:11px 12px;color:#e9f7fc;text-align:left}
+.item:hover{border-color:#68d5cb;background:#204356}.item strong{font-size:12px}.item small{display:block;color:#a7bfcc;font-size:10px;margin-top:3px}.item .arrow{color:var(--gold)}
+.camera-card{display:flex;align-items:center;gap:10px;width:100%;background:#163345;border:1px solid #3e6478;color:#f3fbff;text-align:left;border-radius:12px;padding:12px;margin:7px 0}
+.camera-card:hover{border-color:#8be1d9}.camera-icon{width:37px;height:37px;border-radius:10px;background:#244e65;display:grid;place-items:center;font-size:19px}.camera-card strong{display:block;font-size:12px}.camera-card small{display:block;font-size:10px;color:var(--muted);margin-top:4px}
+.preview{background:#132f40;border:1px solid #4c6e81;border-radius:14px;padding:12px;margin:15px 0}.preview img{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#162937;border-radius:9px;margin:9px 0}.preview a{display:inline-block;margin-top:9px;color:#a9eced;font-size:12px;font-weight:750}
+.map-legend{position:fixed;z-index:10;left:424px;bottom:22px;background:#0a2234e8;color:#d7ebf3;border:1px solid #395c73;padding:11px 14px;border-radius:11px;font-size:10px;backdrop-filter:blur(15px);max-width:460px}
+.map-chip{position:fixed;z-index:12;top:89px;right:19px;padding:10px 12px;background:#0c293ae9;border:1px solid #45697b;border-radius:10px;color:#effbff;font-size:11px;font-weight:750;max-width:300px}
+.custom-pin{min-width:33px;height:33px;padding:0 6px;display:grid;place-items:center;border:2px solid #c9f5fd;background:#14658a;color:#fff;box-shadow:0 3px 18px #000b;border-radius:30px;font-size:17px;font-weight:850;cursor:pointer}
+.custom-pin.train{background:#08734d;border-color:#9cf2cf}.custom-pin.bus{background:#7b579f;border-color:#e4bdf6}.custom-pin.flight{background:#235cab;border-color:#badcff}.custom-pin.camera{background:#9a5e28;border-color:#ffdaad}.custom-pin:hover{transform:scale(1.13)}
+.maplibregl-popup-content{background:#102b3b;color:#e8f9ff;border:1px solid #66889c;border-radius:12px;padding:14px;box-shadow:0 8px 35px #0008}.maplibregl-popup-close-button{color:#fff;font-size:18px}.maplibregl-popup-tip{border-top-color:#102b3b}
+.popup-name{font-size:14px;font-weight:800;margin-bottom:6px}.popup-text{font-size:11px;color:#c4d9e2;line-height:1.5}.popup-link{color:#b9f1ed;font-weight:700;display:inline-block;margin-top:8px}
+.workspace-footer{padding:11px 18px;border-top:1px solid #ffffff20;font-size:10px;color:#9cbbcb;display:flex;align-items:center;justify-content:space-between;gap:10px}.workspace-footer a{color:#c0e0e6}
+.mobile-launch{display:none}
+@media(max-width:850px){.app-header{height:62px;padding:0 12px}.brand-symbol{width:33px;height:33px;font-size:19px}.brand h1{font-size:16px}.brand p{font-size:9px}.status{display:none}.header-actions{gap:4px}.chip-button{padding:8px 9px;font-size:11px}.workspace{top:75px;left:10px;bottom:12px;width:min(354px,calc(100vw - 20px))}.map-legend{left:375px;right:12px;max-width:unset}.map-chip{top:75px}}
+@media(max-width:640px){.workspace{left:9px;right:9px;width:auto;top:auto;bottom:9px;height:min(55vh,440px);border-radius:18px}.workspace.compact{height:64px;overflow:hidden}.workspace.compact .workspace-header{padding:10px 13px}.workspace.compact .workspace-header h2{font-size:16px}.workspace.compact .workspace-header .eyebrow,.workspace.compact .workspace-header p,.workspace.compact .tabs,.workspace.compact .tab-section,.workspace.compact .workspace-footer{display:none}.mobile-launch{display:block;position:absolute;right:10px;top:10px;background:#205769;color:#fff;border:1px solid #4f8597;border-radius:9px;padding:8px 11px;font-weight:800}.workspace:not(.compact) .mobile-launch{top:17px}.workspace-header{padding:15px 15px 0}.workspace-header h2{font-size:19px}.workspace-header p{margin-bottom:9px}.tabs{margin-bottom:8px}.tab{padding:10px 5px}.tab-section{padding:3px 14px 18px}.map-legend{left:9px;bottom:85px;right:auto;max-width:calc(100vw - 18px);font-size:9px;padding:7px 10px}.workspace:not(.compact)~.map-legend{display:none}.map-chip{top:73px;right:9px;max-width:200px;font-size:9px;padding:8px}.header-actions .chip-button:first-child{display:none}}
+
+.online-pill{border:1px solid #4b7284;background:#103344;border-radius:999px;font-size:11px;font-weight:800;padding:9px 12px;white-space:nowrap;color:#bff2e8}
+.layer-opt{display:flex;align-items:center;gap:9px;padding:11px 12px;border:1px solid #3b6170;border-radius:10px;margin:10px 0;color:#e9f8fa;font-size:12px;cursor:pointer}.layer-opt input{accent-color:#71d9cb;width:18px;height:18px}
+.road-info{position:fixed;z-index:19;right:18px;bottom:18px;max-width:325px;background:#0d2739f7;box-shadow:0 15px 35px #0008;border:1px solid #54788c;border-radius:16px;padding:14px 16px;color:#effaff}
+.road-info[hidden]{display:none}.road-top{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:7px}.road-top button{color:white;background:#254559;border:1px solid #4c7487;border-radius:6px;padding:4px 9px;cursor:pointer}
+.road-info #road-details{font-size:12px;line-height:1.6;margin-bottom:7px}.road-info a{font-size:11px;color:#a0e2f0}
+@media(max-width:850px){.online-pill{padding:7px 9px;font-size:10px}}
+@media(max-width:640px){.road-info{left:9px;right:9px;bottom:79px;max-width:none}.app-header{gap:4px}.header-actions{max-width:60%}.status{display:none}.online-pill{font-size:9px;padding:7px}}
+
+</style>
+<script defer src="./app.js?v=20261020-release"></script>
+<script defer src="./motion.js?v=20261020-release"></script>
+</head>
+<body>
+<div id="map" aria-label="Interaktivt kart over Oslo og Romerike med modellert trafikk og sanntidskollektiv"></div>
+<div id="map-loading"><div class="loading-content"><div class="loading-glyph">◈</div><h2>Åpner Oslo Atlas</h2><p id="loading-detail">Laster 3D-kartet …</p></div></div>
+<header class="app-header">
+  <div class="brand"><div class="brand-symbol" aria-hidden="true">◈</div><div><h1>OSLO <span>ATLAS</span></h1><p>Oslo · Romerike · Gardermoen</p></div></div>
+  <div class="header-actions"><div class="status" id="api-label" title="Serverstatus">API: sjekker …</div><div id="online-count" class="online-pill" title="Aktive faner siste 95 sekunder. Vises når server er tilkoblet.">Online: –</div><button id="map-home" class="chip-button">⌂ Oversikt</button><button id="map-3d" class="chip-button active">◩ 3D</button><button id="map-satellite" class="chip-button">🛰 Satellitt</button></div>
+</header>
+<aside id="workspace" class="workspace" aria-label="Utforsk Oslo Atlas">
+  <button class="mobile-launch" id="mobile-toggle" aria-expanded="true">Skjul −</button>
+  <div class="workspace-header"><div class="eyebrow">Utforsk byen</div><h2>Hele regionen.<br>En levende oversikt.</h2><p>Se avganger, modellerte biler, GPS-kjøretøy og offentlige kameraer – på ett kart.</p>
+    <nav class="tabs" role="tablist" aria-label="Innhold">
+      <button id="tab-avganger" role="tab" aria-selected="true" aria-controls="panel-avganger" class="tab">🚇 Avganger</button>
+      <button id="tab-trafikk" role="tab" aria-selected="false" aria-controls="panel-trafikk" class="tab">🚗 Bevegelse</button>
+      <button id="tab-kamera" role="tab" aria-selected="false" aria-controls="panel-kamera" class="tab">📷 Kamera</button>
+    </nav>
+  </div>
+  <section id="panel-avganger" class="tab-section active" role="tabpanel" aria-labelledby="tab-avganger">
+    <label class="field-label" for="stop-search">Finn holdeplass eller stasjon</label>
+    <input class="search" id="stop-search" placeholder="F.eks. Grorud T, Jessheim, Oslo S" autocomplete="off" spellcheck="false">
+    <p class="helper" id="search-hint">Søk etter et sted og velg én holdeplass for å se avganger.</p>
+    <div id="search-results" role="listbox" aria-label="Søkeresultater"></div>
+    <section class="board" id="board" hidden><div class="board-head"><div><h3 id="board-name">Avganger</h3><p id="board-updated">Henter avganger …</p></div><button class="refresh" id="board-refresh">↻ Oppdater</button></div><div id="board-rows"></div></section>
+  </section>
+  <section id="panel-trafikk" class="tab-section" role="tabpanel" aria-labelledby="tab-trafikk">
+    <p class="helper">Velg kartlag under. Kjøretøy merkes etter kilde: <b>GPS</b> når operatøren rapporterer, <b>beregnet</b> fra rutetid eller <b>modellert</b> vegtrafikk. Ingenting merkes sanntid uten rapportert posisjon.</p>
+    <div class="panel-title">Rapporterte GPS-posisjoner</div>
+    <div class="filters" id="traffic-filters">
+      <button class="filter active" data-layer="all">Alt</button>
+      <button class="filter" data-layer="rail">🚆 Tog</button>
+      <button class="filter" data-layer="bus">🚌 Buss/Flybuss</button>
+      <button class="filter" data-layer="ferry">⛴️ Båt/Ferge</button>
+    </div>
+    <div class="filters"><button class="filter" id="go-airport">📍 Gardermoen</button><button class="filter" id="go-oslo">📍 Oslo</button><button class="filter" id="traffic-refresh">↻ Oppdater data</button></div><label class="layer-opt"><input type="checkbox" id="camera-markers-toggle" checked> Vis kameraer på kartet</label>
+    <div class="message" id="traffic-status">Henter rapporterte posisjoner fra Entur …</div>
+    <div class="panel-title">GPS-kjøretøy <span id="vehicle-count">–</span></div>
+    <div class="mini-list" id="vehicle-list"></div>
+    <p class="helper">Avgangsprognoser og posisjoner kan være forsinket. Modellerte biler er ikke trafikkmålinger. Bruk Entur eller Ruter til reiseplanlegging.</p>
+  </section>
+  <section id="panel-kamera" class="tab-section" role="tabpanel" aria-labelledby="tab-kamera">
+    <p class="helper">Åpne offentlige kameraer fra Statens vegvesen og Oslo Havn. Vegkamera viser periodisk oppdaterte <b>stillbilder</b> når kilden svarer, ikke direktesendt video. Plasseringer kan være omtrentlige.</p>
+    <div id="camera-list"></div>
+    <div id="camera-preview" class="preview" hidden></div>
+  </section>
+  <footer class="workspace-footer"><span>Ikke offisiell · Transportdata kan være beregnet</span><a href="https://github.com/Rag231998/ragi-game/blob/main/oslo-3d/DATAKILDER-ARKITEKTUR.md" target="_blank" rel="noopener noreferrer" title="Datakildekatalog, begrensninger og utviklingsplan">Kilder og metode ↗</a></footer>
+</aside>
+<div class="map-chip" id="map-status" role="status">Klargjør datalag …</div><section id="road-info" class="road-info" aria-label="Veg- og fartsgrenseinformasjon" hidden><div class="road-top"><strong>🚧 Veginformasjon</strong><button id="road-close" aria-label="Lukk veginformasjon">×</button></div><div id="road-details">Klikk på en veg for informasjon.</div><a href="https://www.vegvesen.no/trafikk/" target="_blank" rel="noopener noreferrer">Se offisielle trafikkmeldinger hos Vegvesenet ↗</a></section>
+<div class="map-legend">🚇 Stasjon · 🟢 GPS: rapportert · 🟡 Rutetidsberegnet · ⚪ Bil: modellert · 📷 Offentlig kamera · Klikk en veg for fartsgrense</div>
+<script type="module">
+let L;
+try { L=await import('https://cdn.jsdelivr.net/npm/maplibre-gl@6.14.0/dist/maplibre-gl.mjs'); }
+catch(e){ console.warn('Reserve-CDN for MapLibre',e);try{L=await import('https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.mjs')}catch(ex){document.getElementById('loading-detail').textContent='Kartbiblioteket kunne ikke lastes. Kontroller nettverk, innholdsblokkering eller prøv en annen nettleser.';throw ex} }
+try {
+  const map=new L.Map({container:'map',style:'https://tiles.openfreemap.org/styles/liberty',center:[10.93,60.025],zoom:10.2,pitch:44,bearing:-12,maxPitch:80,antialias:true});
+  map.addControl(new L.NavigationControl({visualizePitch:true}),'top-right');
+  map.on('load',()=>{
+    document.getElementById('map-loading').classList.add('hidden');
+    window.osloAtlas={map,lib:L};
+    if(typeof window.atlasInit==='function')window.atlasInit(map,L);
+    else window.dispatchEvent(new Event('atlas-ready'));
+  });
+  map.on('error',e=>console.warn('Kartlaget rapporterte feil',e.error||e));
+  setTimeout(()=>{if(!map.loaded())document.getElementById('loading-detail').textContent='Kartet lastes tregt. Sjekk kartnettverk og WebGL.'},20000);
+} catch(e){console.error(e);document.getElementById('loading-detail').textContent='Kunne ikke starte 3D-kartet: '+e.message}
+</script>
+</body>
+</html>
