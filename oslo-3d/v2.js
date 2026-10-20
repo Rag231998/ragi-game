@@ -303,7 +303,7 @@ async function loadFlights(force=false){
   setStatus(fresh.size+' fly · '+state.flightSource+' · '+clock(new Date()));
   renderFlightList();filterMarkers();
   state.lastAir=Date.now();
-  if(!fresh.size)showMessage('traffic-status','Datakilden svarte, men ingen ferske flyposisjoner var tilgjengelige i valgt område. Fly kan være utenfor dekningen.');
+  if(!fresh.size)showMessage('flight-error','Datakilden svarte, men fant ingen ferske flyposisjoner i området. Sjekk eksternt flykart for sammenligning.',true);
  }catch(e){
   $('flight-count').textContent='Ingen data';
   setStatus('✈️ Flydatakilden er utilgjengelig');
@@ -388,6 +388,7 @@ async function initial(){
  // Do not falsely show hard-coded sample departures.
  $('stop-search').value='Grorud T';
  searchStops('Grorud T');
+ nearbyStops();
  loadVehicles();loadFlights();
  setInterval(()=>{if(document.visibilityState==='visible'){if(currentStop)loadBoard();loadVehicles()}},45000);
  setInterval(()=>{if(document.visibilityState==='visible')loadFlights()},180000);
