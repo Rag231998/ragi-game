@@ -18,7 +18,7 @@ const CAMERAS=[
 ];
 let map,lib,tab='avganger',filter='all',currentStop=null,board=[],boardRequest=0,searchRequest=0;
 let state={stops:new Map(),transit:new Map(),camera:new Map(),vehicleBusy:false,stopsBusy:false,boardBusy:false};
-let searchTimer=0,lastSearch='',stopKey='';
+let searchTimer=0,lastSearch='',stopKey='',followGps=null;
 const clock=d=>{const x=new Date(d);return Number.isFinite(+x)?x.toLocaleTimeString('nb-NO',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Oslo'}):'–'};
 const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
 const fmtKm=h=>typeof h==='number'&&Number.isFinite(h)?Math.round(h*.3048).toLocaleString('nb-NO')+' m':h==='ground'?'På bakken':'Ukjent';
@@ -199,7 +199,7 @@ function makeTransitMarker(v){
   const p=item.data;
   const description=(p.operator||'Entur')+' · linje '+(p.line||'ukjent')+(p.dest?' mot '+p.dest:'')
     +'. Sist rapportert GPS kl. '+clock(p.time)+'.';
-  const pos=item.marker.getLngLat();popup([pos.lng,pos.lat],p.type==='rail'?'🚆 Tog':p.type==='ferry'?'⛴️ Ferge/båt':'🚌 '+(p.isFlybus?'Flybuss':'Buss'),description+' Mellom GPS-rapporter er bevegelsen jevnet ut og ikke målt.');
+  const pos=item.marker.getLngLat();const btn=document.createElement('button');btn.textContent=followGps===p.id?'Slutt å følge':'Følg GPS-kjøretøy';btn.style.cssText='margin-top:8px;padding:7px 11px;background:#1b5665;border:1px solid #66b4be;color:white;border-radius:7px;cursor:pointer';btn.onclick=()=>{followGps=followGps===p.id?null:p.id;btn.textContent=followGps?'Slutt å følge':'Følg GPS-kjøretøy'};popup([pos.lng,pos.lat],p.type==='rail'?'🚆 Tog':p.type==='ferry'?'⛴️ Ferge/båt':'🚌 '+(p.isFlybus?'Flybuss':'Buss'),description+' Mellom GPS-rapporter er bevegelsen jevnet ut og ikke målt.',btn);
  });
  return item;
 }
@@ -239,7 +239,7 @@ function animateGPS(){
  const t=performance.now();
  for(const it of state.transit.values()){
   const k=Math.max(0,Math.min(1,(t-it.updated)/36000));const f=k*k*(3-2*k);
-  it.marker.setLngLat([it.from[0]+(it.to[0]-it.from[0])*f,it.from[1]+(it.to[1]-it.from[1])*f]);
+  const location=[it.from[0]+(it.to[0]-it.from[0])*f,it.from[1]+(it.to[1]-it.from[1])*f];it.marker.setLngLat(location);if(followGps===it.data.id)map.jumpTo({center:location});
  }
  if(document.visibilityState==='visible')requestAnimationFrame(animateGPS);
  else setTimeout(()=>requestAnimationFrame(animateGPS),1000);
@@ -322,6 +322,7 @@ async function initial(){
  map.on('moveend',()=>{
    nearbyStops();
  });
+ map.on('dragstart',()=>{followGps=null});
  if(window.innerWidth<=640)$('workspace').classList.add('compact');
 }
 window.atlasInit=function(mapRef,libRef){
