@@ -1,0 +1,165 @@
+/* PrisKart Norway: mobile-first refinement v2.
+   Override original MVP layout; accessible 44px tap targets and safe-area handling. */
+:root {--ease:cubic-bezier(.2,.8,.25,1);}
+html {font-size:14px;-webkit-text-size-adjust:100%}
+body {overscroll-behavior:none}
+button,select,input { -webkit-tap-highlight-color:transparent }
+button {touch-action:manipulation}
+.brandmark {font-size:21px!important}
+.brand strong {letter-spacing:.01em}
+.brand small {letter-spacing:.035em}
+.topbtn{min-height:40px}
+.sidebar {transition:height .28s var(--ease),transform .28s var(--ease); z-index:11}
+.intro,.filters,.result-head,.sidefooter {flex-shrink:0}
+.result-list {min-height:0;flex:1}
+.station {min-height:78px}
+.station-name {font-size:13px}
+.station-price {font-variant-numeric:tabular-nums}
+.station-price:empty:after {content:"Pris ukjent"}
+#results:focus-visible {outline:3px solid #159b7b;outline-offset:-3px}
+#map-message {pointer-events:none;max-width:320px;font-weight:650}
+#details {z-index:17}
+.price-row {overflow-wrap:anywhere}
+.detailbody {overscroll-behavior:contain}
+#d-description{border-radius:12px}
+.report-status.visible{border:1px solid #bbdcd1}
+#report-modal{overscroll-behavior:contain}
+.report-warning{font-size:10px;color:#8d622e}
+.station-empty{padding:15px;color:#587687}
+.near-me{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:7px 11px;border-radius:100px;color:#0f7960;font-size:11px;font-weight:800;border:1px solid #a2d8cb;background:#ebfaf5;white-space:nowrap;min-height:35px}
+.near-me:hover{background:#def4eb}
+.city-wrap{display:flex;align-items:center;gap:9px}
+.city-wrap .cities{min-width:0;flex:1}
+.quick-hint{display:none}
+.more-filters summary{cursor:pointer;font-weight:800;font-size:11px;color:#336779;list-style:none;min-height:32px;display:flex;align-items:center;gap:5px;user-select:none}
+.more-filters summary::-webkit-details-marker{display:none}
+.more-filters summary:after{content:"▾";font-size:11px;transition:transform .2s}
+.more-filters[open] summary:after{transform:rotate(180deg)}
+.more-filters .checkrow {margin:9px 0 0;min-height:29px}
+.data-freshness{color:#7b6236;background:#fff5e7;border-radius:9px;padding:9px 11px;font-size:10px;line-height:1.4;margin-top:8px}
+.status-inline{color:#63848f;font-size:10px}
+.data-banner{font-size:11px;color:#547886;background:#eff8fa;border-radius:9px;padding:11px;line-height:1.45}
+.station-skeleton{height:73px;border-radius:12px;margin:7px 3px;background:linear-gradient(105deg,#eef4f5 25%,#f7fafa 45%,#eef4f5 70%);background-size:200% 100%;animation:priskart-pulse 1.4s ease infinite}
+@keyframes priskart-pulse {from{background-position:200% 0}to{background-position:-200% 0}}
+@media(max-width:1000px) and (min-width:761px){
+ .sidebar {width:350px}
+ #details {width:310px}
+ .intro h1{font-size:21px}
+}
+@media(max-width:760px){
+ :root{color-scheme:light}
+ html,body{height:100%;height:100dvh;overflow:hidden}
+ header{
+   height:60px;
+   padding:0 14px;
+   padding-top:env(safe-area-inset-top,0px);
+   height:calc(60px + env(safe-area-inset-top,0px));
+   gap:8px
+ }
+ .brand {gap:10px;min-width:0}
+ .brandmark {width:36px;height:36px;border-radius:11px;font-size:19px!important}
+ .brand strong {font-size:15px;white-space:nowrap}
+ .brand small{font-size:8px;white-space:nowrap}
+ .header-right{gap:4px}
+ .header-right .topbtn{height:35px;min-height:35px;border-radius:9px;padding:7px 10px}
+ #map{top:calc(60px + env(safe-area-inset-top,0px));bottom:0;left:0;right:0}
+ #loader{top:calc(60px + env(safe-area-inset-top,0px))}
+ .maplibregl-ctrl-top-right{top:12px;right:12px}
+ .maplibregl-ctrl-top-right .maplibregl-ctrl-group {margin:0}
+ .sidebar{
+   top:auto;left:7px;right:7px;width:auto;
+   bottom:calc(7px + env(safe-area-inset-bottom,0px));
+   height:min(66dvh,555px);
+   min-height:300px;
+   border-radius:20px;
+   box-shadow:0 -9px 45px #113d4550;
+   border:1px solid #d4e7e6;
+   z-index:14;
+   overflow:hidden
+ }
+ .sidebar::before{
+   content:"";position:absolute;z-index:2;top:7px;left:50%;transform:translateX(-50%);
+   width:43px;height:5px;border-radius:8px;background:#c9d9dd;
+   pointer-events:none
+ }
+ .sidebar.collapsed {height:64px;min-height:64px}
+ .sidebar.collapsed::before{display:none}
+ .sidebar .intro{padding:17px 13px 9px;border-bottom:1px solid #eaf2f2}
+ .sidebar .intro .eyebrow{margin:0;font-size:10px;line-height:22px;color:#167e6c}
+ .sidebar .intro h1,.sidebar .intro p{display:none}
+ .sidebar .intro .searchbox {
+   margin:8px 0 8px; height:46px;
+   border-radius:12px;
+   background:#f5f9fa;
+   display:flex
+ }
+ .sidebar .intro .searchbox input {font-size:13px;height:45px}
+ .sidebar .intro .cities{
+   display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;
+   gap:6px;-webkit-overflow-scrolling:touch;padding:0 0 2px
+ }
+ .sidebar .intro .cities::-webkit-scrollbar{display:none}
+ .sidebar .cities button{flex:0 0 auto;padding:7px 11px;min-height:35px;font-size:10px}
+ .mobiletoggle{
+   display:block!important;
+   z-index:5;
+   right:12px;top:15px;
+   height:30px;min-width:89px;
+   padding:5px 9px;
+   border-radius:10px;
+   font-size:11px;
+   color:#0d7a61;
+   background:#e3f5ee
+ }
+ .sidebar.collapsed .intro {padding:18px 12px 8px;height:62px}
+ .sidebar.collapsed .intro .eyebrow{font-size:10px}
+ .sidebar.collapsed .filters,.sidebar.collapsed .result-head,.sidebar.collapsed .result-list,.sidebar.collapsed .sidefooter,.sidebar.collapsed .intro .searchbox,.sidebar.collapsed .intro .city-wrap,.sidebar.collapsed .intro .cities{display:none}
+ .sidebar .filters {padding:9px 13px 8px}
+ .sidebar .segment {padding:4px;border-radius:12px}
+ .sidebar .segment button{min-height:38px;font-size:11px;padding:8px 4px}
+ .sidebar .filtergrid {gap:8px;margin-top:8px}
+ .sidebar .formfield label{font-size:9px;margin-bottom:3px}
+ .sidebar .formfield select {min-height:38px;border-radius:9px;padding:6px 7px;font-size:11px}
+ .sidebar .more-filters {margin-top:4px}
+ .sidebar .result-head {padding:8px 15px 6px}
+ .sidebar .result-head strong {font-size:12px}
+ .sidebar .result-head span {font-size:10px}
+ .sidebar .result-list {padding:0 8px 14px;scrollbar-width:thin}
+ .sidebar .station {min-height:72px;padding:10px 8px}
+ .sidebar .station-icon {width:39px;height:39px;flex-basis:39px;font-size:18px}
+ .sidebar .station-name{font-size:12px}
+ .sidebar .sidefooter{display:none}
+ #details {
+   top:auto;left:7px;right:7px;width:auto;
+   bottom:calc(7px + env(safe-area-inset-bottom,0px));
+   height:min(68dvh,570px);
+   max-height:calc(100dvh - 92px);
+   border-radius:20px;
+   z-index:20;
+   box-shadow:0 -10px 50px #112d4280
+ }
+ .detailhead{padding:17px 15px 12px}
+ .detailhead h2{font-size:17px;margin:2px 0}
+ .detailbody{padding:10px 15px 15px}
+ .bigprice{margin-top:5px}
+ #map-message{
+   left:auto;top:calc(70px + env(safe-area-inset-top,0px));right:12px;
+   bottom:auto;max-width:min(215px,55vw);
+   font-size:9px;padding:8px 10px;line-height:1.35;
+   background:#0b2539e0;border-radius:10px;
+   z-index:9
+ }
+ .maplibregl-ctrl-attrib{font-size:9px!important;max-width:180px}
+ #report-modal{padding:12px;align-items:center}
+ .dialog{padding:17px;border-radius:18px;max-height:calc(90dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
+ .dialog h2{font-size:19px}
+}
+@media(max-width:390px){
+ .brand strong{font-size:13px}
+ .brand small{font-size:7px}
+ .topbtn{font-size:10px!important}
+ .sidebar .intro{padding-left:11px;padding-right:11px}
+}
+@media(prefers-reduced-motion:reduce) {
+ *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}
+}
