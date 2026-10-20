@@ -206,7 +206,6 @@ function makeTransitMarker(v){
 function allowed(type){return filter==='all'||filter===type||(filter==='bus'&&type==='bus')}
 function filterMarkers(){
  for(const m of state.transit.values())m.el.style.display=allowed(m.data.type)?'grid':'none';
- for(const m of state.aircraft.values())m.el.style.display=allowed('flight')?'grid':'none';
 }
 async function loadVehicles(){
  if(state.vehicleBusy)return;state.vehicleBusy=true;
@@ -246,85 +245,6 @@ function renderVehicleList(){
   div.append(b);
  }
  if(!vs.length)div.append(element('p','helper','Ingen rapporterte kjøretøyposisjoner tilgjengelige akkurat nå.'));
-}
-function planeName(a){return String(a.flight||a.r||a.hex||'Ukjent fly').trim()}
-function makePlane(a,id){
- const el=makePin('flight','✈'),marker=new lib.Marker({element:el}).setLngLat([+a.lon,+a.lat]).addTo(map);
- const item={marker,el,data:a};
- el.addEventListener('click',()=>{
-  const f=item.data,h=f.alt_geom??f.alt_baro;
-  popup([Number(f.lon),Number(f.lat)],'✈ '+planeName(f),'Registrering: '+(f.r||'ukjent')+' · Høyde: '+fmtKm(h)+' · Fart: '+fmtSpeed(f.gs)+'. Siste posisjonsrapport: '+(f.seen_pos??'?')+' sek siden. Kilde: '+state.flightSource+'.');
- });
- return item;
-}
-async function requestJson(url,timeout=11000){
- const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout);
- try{
-  const r=await fetch(url,{signal:controller.signal,cache:'no-store'});
-  if(!r.ok)throw Error('HTTP '+r.status);
-  const d=await r.json();
-  if(!Array.isArray(d.ac))throw Error('Flylisten mangler i API-svaret');
-  return d.ac;
- } finally {clearTimeout(timer)}
-}
-async function loadFlights(force=false){
- if(state.flyBusy)return;
- if(!force&&Date.now()-state.lastAir<175000)return;
- state.flyBusy=true;
- const targets=[
-  {source:'Airplanes.live',url:'https://api.airplanes.live/v2/point/60.19/11.1/180'},
-  {source:'ADSB.fi',url:'https://opendata.adsb.fi/api/v3/lat/60.19/lon/11.1/dist/180'}
- ];
- try{
-  let raw=null,errors=[];
-  for(const t of targets){
-    try{raw=await requestJson(t.url);state.flightSource=t.source;break}
-    catch(e){errors.push(t.source+': '+e.message)}
-  }
-  if(!raw)throw Error(errors.join(' / '));
-  const fresh=new Map();
-  for(const f of raw){
-    const lat=Number(f.lat),lng=Number(f.lon),age=Number(f.seen_pos);
-    if(!Number.isFinite(lat)||!Number.isFinite(lng)||lat<58.5||lat>62.1||lng<7.4||lng>14.3)continue;
-    if(!Number.isFinite(age)||age>150)continue;
-    const id=String(f.hex||f.flight||lat+','+lng).toLowerCase();
-    if(!fresh.has(id)||Number(fresh.get(id).seen_pos)>age)fresh.set(id,f);
-  }
-  const liveIds=new Set();
-  for(const [id,f] of fresh){
-    liveIds.add(id);
-    let item=state.aircraft.get(id);
-    if(!item){item=makePlane(f,id);state.aircraft.set(id,item)}
-    else{item.data=f;item.marker.setLngLat([Number(f.lon),Number(f.lat)])}
-  }
-  for(const [id,item] of state.aircraft)if(!liveIds.has(id)){item.marker.remove();state.aircraft.delete(id)}
-  $('flight-count').textContent=fresh.size+' fly';
-  showMessage('flight-error','');
-  setStatus(fresh.size+' fly · '+state.flightSource+' · '+clock(new Date()));
-  renderFlightList();filterMarkers();
-  state.lastAir=Date.now();
-  if(!fresh.size)showMessage('flight-error','Datakilden svarte, men fant ingen ferske flyposisjoner i området. Sjekk eksternt flykart for sammenligning.',true);
- }catch(e){
-  $('flight-count').textContent='Ingen data';
-  setStatus('✈️ Flydatakilden er utilgjengelig');
-  showMessage('flight-error','Flyposisjoner kunne ikke lastes: '+e.message+'. Datakilden kan blokkere nettleseren (CORS) eller ha nådd grensen sin. Ingen fiktive fly vises.',true);
-  state.lastAir=Date.now();
- }finally{state.flyBusy=false}
-}
-function renderFlightList(){
- const div=$('flight-list');div.replaceChildren();
- const list=[...state.aircraft.values()].map(x=>x.data).sort((a,b)=>{
-  const x=Math.hypot(+a.lat-60.1939,(+a.lon-11.1)*.5),y=Math.hypot(+b.lat-60.1939,(+b.lon-11.1)*.5);return x-y;
- }).slice(0,22);
- for(const f of list){
-  const id=String(f.hex||f.flight||f.lat+','+f.lon).toLowerCase();
-  const b=element('button','item'),l=element('span'),name=planeName(f);
-  l.append(element('strong',null,'✈ '+name),element('small',null,'Høyde '+fmtKm(f.alt_geom??f.alt_baro)+' · '+fmtSpeed(f.gs)));
-  b.append(l,element('span','arrow','›'));
-  b.addEventListener('click',()=>{showTab('trafikk');filter='flight';setFilter();focusPoint(+f.lon,+f.lat,11);state.aircraft.get(id)?.el.click()});
-  div.append(b);
- }
- if(!list.length)div.append(element('p','helper','Ingen fly med tilgjengelig GPS akkurat nå. Prøv å oppdatere om litt.'));
 }
 function addCamera(c){
  const el=makePin('camera','📷'),marker=new lib.Marker({element:el}).setLngLat([c.lng,c.lat]).addTo(map);
@@ -367,10 +287,9 @@ function setTabsEvents(){
  $('traffic-filters').addEventListener('click',e=>{
   const b=e.target.closest('[data-layer]');if(!b)return;
   filter=b.dataset.layer;setFilter();
-  if(filter==='flight')focusPoint(11.1,60.1939,9.9);
  });
- $('traffic-refresh').addEventListener('click',()=>{loadVehicles();loadFlights(true)});
- $('go-airport').addEventListener('click',()=>{showTab('trafikk');filter='flight';setFilter();focusPoint(11.1,60.1939,10)});
+ $('traffic-refresh').addEventListener('click',()=>{loadVehicles();if(window.atlasMotionRefresh)window.atlasMotionRefresh()});
+ $('go-airport').addEventListener('click',()=>{showTab('trafikk');focusPoint(11.1,60.1939,10)});
  $('go-oslo').addEventListener('click',()=>{showTab('trafikk');focusPoint(10.752,59.914,12)});
  $('map-home').addEventListener('click',()=>map.flyTo({center:[10.93,60.025],zoom:10.2,pitch:44,bearing:-12,duration:1200}));
  $('map-3d').addEventListener('click',()=>{map.easeTo({pitch:map.getPitch()>20?0:65,duration:700});setTimeout(toggleMapButtons,750)});
@@ -389,16 +308,15 @@ async function initial(){
  $('stop-search').value='Grorud T';
  searchStops('Grorud T');
  nearbyStops();
- loadVehicles();loadFlights();
+ loadVehicles();
  setInterval(()=>{if(document.visibilityState==='visible'){if(currentStop)loadBoard();loadVehicles()}},45000);
- setInterval(()=>{if(document.visibilityState==='visible')loadFlights()},180000);
  map.on('moveend',()=>{
    nearbyStops();
  });
  if(window.innerWidth<=640)$('workspace').classList.add('compact');
 }
 window.atlasInit=function(mapRef,libRef){
- map=mapRef;lib=libRef;setupBase();stopSource();drawCameraMarkers();drawCameras();setTabsEvents();showTab('avganger');initial();
+ map=mapRef;lib=libRef;setupBase();stopSource();drawCameraMarkers();drawCameras();setTabsEvents();showTab('avganger');initial();if(window.atlasMotionInit)window.atlasMotionInit(map,lib);
 };
 if(window.osloAtlas)window.atlasInit(window.osloAtlas.map,window.osloAtlas.lib);
 })();
