@@ -192,14 +192,14 @@ function renderBoard(){
  if(!count)div.append(element('p','helper','Ingen avganger de neste to timene fra dette stoppestedet.'));
 }
 function makeTransitMarker(v){
- const kind=v.type==='rail'?'train':'bus',el=makePin(kind,v.type==='rail'?'🚆':'🚌');
+ const kind=v.type==='rail'?'train':v.type==='ferry'?'ferry':'bus',el=makePin(kind,v.type==='rail'?'🚆':v.type==='ferry'?'⛴️':'🚌');
  const marker=new lib.Marker({element:el}).setLngLat([v.lng,v.lat]).addTo(map);
- const item={marker,el,data:v};
+ const item={marker,el,data:v,from:[v.lng,v.lat],to:[v.lng,v.lat],updated:performance.now()};
  el.addEventListener('click',()=>{
   const p=item.data;
   const description=(p.operator||'Entur')+' · linje '+(p.line||'ukjent')+(p.dest?' mot '+p.dest:'')
     +'. Sist rapportert GPS kl. '+clock(p.time)+'.';
-  popup([p.lng,p.lat],p.type==='rail'?'🚆 Tog':'🚌 '+(p.isFlybus?'Flybuss':'Buss'),description);
+  const pos=item.marker.getLngLat();popup([pos.lng,pos.lat],p.type==='rail'?'🚆 Tog':p.type==='ferry'?'⛴️ Ferge/båt':'🚌 '+(p.isFlybus?'Flybuss':'Buss'),description+' Mellom GPS-rapporter er bevegelsen jevnet ut og ikke målt.');
  });
  return item;
 }
@@ -219,28 +219,37 @@ async function loadVehicles(){
     const type=String(a.mode||'').toLowerCase(),lat=Number(a.location?.latitude),lng=Number(a.location?.longitude),time=a.lastUpdated;
     const id=(a.codespace?.codespaceId||'Entur')+':'+(a.vehicleId||i);
     const operator=a.operator?.name||a.codespace?.codespaceId||'';
-    return{id,lat,lng,time,type:type==='rail'?'rail':type==='bus'||type==='coach'?'bus':'other',line:a.line?.publicCode||a.line?.lineName,dest:a.destinationName,operator,isFlybus:/flybuss/i.test(operator)||a.codespace?.codespaceId==='NBU'};
-  }).filter(v=>['rail','bus'].includes(v.type)&&within(v)&&Date.now()-Date.parse(v.time)<300000&&Number.isFinite(Date.parse(v.time)));
+    return{id,lat,lng,time,type:type==='rail'?'rail':type==='ferry'?'ferry':type==='bus'||type==='coach'?'bus':'other',line:a.line?.publicCode||a.line?.lineName,dest:a.destinationName,operator,isFlybus:/flybuss/i.test(operator)||a.codespace?.codespaceId==='NBU'};
+  }).filter(v=>['rail','bus','ferry'].includes(v.type)&&within(v)&&Date.now()-Date.parse(v.time)<300000&&Number.isFinite(Date.parse(v.time)));
   const ids=new Set();
   for(const v of vehicles){
     ids.add(v.id);
     let item=state.transit.get(v.id);
     if(!item){item=makeTransitMarker(v);state.transit.set(v.id,item)}
-    else{item.data=v;item.marker.setLngLat([v.lng,v.lat])}
+    else{if(item.data.time!==v.time){const pos=item.marker.getLngLat();item.from=[pos.lng,pos.lat];item.to=[v.lng,v.lat];item.updated=performance.now()}item.data=v}
   }
   for(const [id,item] of state.transit)if(!ids.has(id)){item.marker.remove();state.transit.delete(id)}
   $('vehicle-count').textContent=vehicles.length+' GPS';
-  showMessage('traffic-status','Entur '+clock(new Date())+': '+vehicles.filter(v=>v.type==='rail').length+' tog, '+vehicles.filter(v=>v.type==='bus').length+' busser med rapportert GPS. Fly oppdateres separat.');
+  showMessage('traffic-status','Entur '+clock(new Date())+': '+vehicles.filter(v=>v.type==='rail').length+' tog, '+vehicles.filter(v=>v.type==='bus').length+' busser med rapportert GPS. Ferger vises når operatøren rapporterer GPS.');
   renderVehicleList();filterMarkers();
  }catch(e){showMessage('traffic-status','Entur GPS-posisjoner ikke tilgjengelige: '+e.message,true)}
  finally{state.vehicleBusy=false}
+}
+function animateGPS(){
+ const t=performance.now();
+ for(const it of state.transit.values()){
+  const k=Math.max(0,Math.min(1,(t-it.updated)/36000));const f=k*k*(3-2*k);
+  it.marker.setLngLat([it.from[0]+(it.to[0]-it.from[0])*f,it.from[1]+(it.to[1]-it.from[1])*f]);
+ }
+ if(document.visibilityState==='visible')requestAnimationFrame(animateGPS);
+ else setTimeout(()=>requestAnimationFrame(animateGPS),1000);
 }
 function renderVehicleList(){
  const div=$('vehicle-list');div.replaceChildren();
  const vs=[...state.transit.values()].map(x=>x.data).sort((a,b)=>(b.isFlybus?1:0)-(a.isFlybus?1:0)).slice(0,22);
  for(const v of vs){
   const b=element('button','item'),left=element('span');
-  left.append(element('strong',null,(v.type==='rail'?'🚆 ':v.isFlybus?'🚌 Flybuss ':'🚌 ')+(v.line||'–')+(v.dest?' mot '+v.dest:'')),element('small',null,(v.operator||'Entur')+' · '+clock(v.time)));
+  left.append(element('strong',null,(v.type==='rail'?'🚆 ':v.isFlybus?'🚌 Flybuss ':v.type==='ferry'?'⛴️ ':'🚌 ')+(v.line||'–')+(v.dest?' mot '+v.dest:'')),element('small',null,(v.operator||'Entur')+' · '+clock(v.time)));
   b.append(left,element('span','arrow','›'));b.addEventListener('click',()=>{showTab('trafikk');focusPoint(v.lng,v.lat,13.4);state.transit.get(v.id)?.el.click()});
   div.append(b);
  }
@@ -316,7 +325,7 @@ async function initial(){
  if(window.innerWidth<=640)$('workspace').classList.add('compact');
 }
 window.atlasInit=function(mapRef,libRef){
- map=mapRef;lib=libRef;setupBase();stopSource();drawCameraMarkers();drawCameras();setTabsEvents();showTab('avganger');initial();if(window.atlasMotionInit)window.atlasMotionInit(map,lib);
+ map=mapRef;lib=libRef;setupBase();stopSource();drawCameraMarkers();drawCameras();setTabsEvents();showTab('avganger');initial();requestAnimationFrame(animateGPS);if(window.atlasMotionInit)window.atlasMotionInit(map,lib);
 };
 if(window.osloAtlas)window.atlasInit(window.osloAtlas.map,window.osloAtlas.lib);
 })();
