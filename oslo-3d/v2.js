@@ -36,7 +36,7 @@ function showTab(name){
   if(name==='kamera')drawCameraMarkers();
   if(name==='trafikk')renderVehicleList();
 }
-function makePin(kind,emoji){const e=element('div','custom-pin '+kind,emoji);e.setAttribute('role','button');e.setAttribute('tabindex','0');return e}
+function makePin(kind,emoji){const e=element('div','custom-pin '+kind,emoji);e.setAttribute('role','button');e.setAttribute('tabindex','0');e.addEventListener('keydown',x=>{if(x.key==='Enter'||x.key===' '){x.preventDefault();e.click()}});return e}
 function popup(coords,title,description,more){
   const body=element('div');body.append(element('div','popup-name',title),element('div','popup-text',description));
   if(more)body.append(more);
@@ -46,7 +46,7 @@ function focusPoint(lng,lat,zoom=13.8){map.flyTo({center:[lng,lat],zoom,pitch:43
 function toggleMapButtons(){
   const b3=$('map-3d'),bs=$('map-satellite');
   b3.classList.toggle('active',map.getPitch()>15);
-  bs.classList.toggle('active',map.getLayoutProperty('atlas-aerial','visibility')==='visible');
+  bs.classList.toggle('active',!!map.getLayer('atlas-aerial')&&map.getLayoutProperty('atlas-aerial','visibility')==='visible');
 }
 function setupBase(){
  try {
@@ -80,7 +80,7 @@ function parseStop(f){
 function stopSource(){
  if(map.getSource('atlas-stops'))return;
  map.addSource('atlas-stops',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
- map.addLayer({id:'atlas-stops-markers',type:'circle',source:'atlas-stops',minzoom:11.7,paint:{
+ map.addLayer({id:'atlas-stops-markers',type:'circle',source:'atlas-stops',minzoom:10,paint:{
   'circle-radius':['interpolate',['linear'],['zoom'],11,3,14,6,18,10],
   'circle-color':['match',['get','type'],'metro','#318df2','rail','#4fda91','tram','#ffc15e','bus','#ac7af0','#aac4d1'],
   'circle-stroke-color':'#0a1a27','circle-stroke-width':2
@@ -143,7 +143,7 @@ async function searchStops(q){
  }catch(e){if(number===searchRequest)showMessage('search-hint','Søket feilet: '+e.message,true)}
 }
 async function nearbyStops(){
- if(state.stopsBusy||map.getZoom()<11.7)return;
+ if(state.stopsBusy||map.getZoom()<9.9)return;
  const b=map.getBounds(),c=map.getCenter(),key=[Math.round(c.lng*5),Math.round(c.lat*5),Math.floor(map.getZoom()/2)].join(',');
  if(key===stopKey)return;stopKey=key;state.stopsBusy=true;
  const box=[Math.max(REGION.w,b.getWest()-.04),Math.max(REGION.s,b.getSouth()-.04),Math.min(REGION.e,b.getEast()+.04),Math.min(REGION.n,b.getNorth()+.04)];
@@ -299,6 +299,7 @@ async function loadFlights(force=false){
   }
   for(const [id,item] of state.aircraft)if(!liveIds.has(id)){item.marker.remove();state.aircraft.delete(id)}
   $('flight-count').textContent=fresh.size+' fly';
+  showMessage('flight-error','');
   setStatus(fresh.size+' fly · '+state.flightSource+' · '+clock(new Date()));
   renderFlightList();filterMarkers();
   state.lastAir=Date.now();
@@ -306,7 +307,7 @@ async function loadFlights(force=false){
  }catch(e){
   $('flight-count').textContent='Ingen data';
   setStatus('✈️ Flydatakilden er utilgjengelig');
-  showMessage('traffic-status','Flyposisjoner kunne ikke lastes i nettleseren: '+e.message+'. Vi viser ikke fiktive fly.',true);
+  showMessage('flight-error','Flyposisjoner kunne ikke lastes: '+e.message+'. Datakilden kan blokkere nettleseren (CORS) eller ha nådd grensen sin. Ingen fiktive fly vises.',true);
   state.lastAir=Date.now();
  }finally{state.flyBusy=false}
 }
@@ -385,12 +386,12 @@ function setTabsEvents(){
 }
 async function initial(){
  // Do not falsely show hard-coded sample departures.
- searchStops('Grorud');
+ $('stop-search').value='Grorud T';
+ searchStops('Grorud T');
  loadVehicles();loadFlights();
  setInterval(()=>{if(document.visibilityState==='visible'){if(currentStop)loadBoard();loadVehicles()}},45000);
  setInterval(()=>{if(document.visibilityState==='visible')loadFlights()},180000);
  map.on('moveend',()=>{
-   clearTimeout(searchTimer+0);
    nearbyStops();
  });
  if(window.innerWidth<=640)$('workspace').classList.add('compact');
