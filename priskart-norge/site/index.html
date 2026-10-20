@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="no"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d1722">
+<meta name="description" content="PrisKart Norge – finn bensinstasjoner og elbilladere over hele landet. Se rapporterte priser og bidra med nye observasjoner.">
+<title>PrisKart Norge – drivstoff og elbillading</title>
+<link rel="preconnect" href="https://tiles.openfreemap.org">
+<link href="https://cdn.jsdelivr.net/npm/maplibre-gl@6.14.0/dist/maplibre-gl.css" rel="stylesheet">
+<style>
+:root{--navy:#0d1722;--panel:#fdfefe;--white:#fff;--text:#122432;--muted:#647a89;--line:#e4edf0;--green:#0e8168;--greenbg:#dcf6eb;--blue:#2878a9;--bluebg:#e8f4ff;--orange:#aa631d;--orangebg:#fff1d9;--shadow:0 12px 42px #0b253322}
+*{box-sizing:border-box}html,body{margin:0;height:100%;width:100%;font:14px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#eef4f6;color:var(--text);overflow:hidden}
+button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #24bca0;outline-offset:2px}
+header{height:72px;position:fixed;inset:0 0 auto;z-index:15;background:#0e1b29;color:#f8ffff;display:flex;align-items:center;justify-content:space-between;padding:0 23px;gap:16px;border-bottom:1px solid #ffffff1f}
+.brand{display:flex;gap:12px;align-items:center}.brandmark{width:41px;height:41px;border-radius:13px;background:#19ac86;display:grid;place-items:center;color:#062c26;font-size:24px;font-weight:900;box-shadow:0 0 0 5px #19ac8617}
+.brand strong{display:block;font-size:18px;letter-spacing:.03em;line-height:1.1}.brand strong span{color:#7cf1d0}.brand small{color:#9bc1c7;font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+.header-right{display:flex;align-items:center;gap:10px}.header-right small{font-size:11px;color:#9ab5c4}.topbtn{border:1px solid #587681;color:#e6fff8;background:#1a3847;padding:10px 13px;border-radius:10px;font-weight:700;font-size:12px}
+.topbtn:hover{background:#265164}.counter{font-size:12px;color:#b7d6da;border-radius:999px;border:1px solid #44606f;padding:8px 12px}
+#map{position:fixed;inset:72px 0 0 0;background:#cfdfdd}.maplibregl-ctrl-top-right{top:20px;right:22px}.maplibregl-ctrl-group{border-radius:12px!important;overflow:hidden;box-shadow:var(--shadow)!important}
+.sidebar{position:fixed;z-index:11;top:87px;bottom:16px;left:16px;width:395px;display:flex;flex-direction:column;overflow:hidden;background:var(--panel);border:1px solid #dce9e9;border-radius:20px;box-shadow:var(--shadow)}
+.intro{padding:22px 20px 14px;border-bottom:1px solid var(--line)}.eyebrow{font-size:10px;font-weight:850;color:var(--green);text-transform:uppercase;letter-spacing:.15em}
+.intro h1{font-size:24px;letter-spacing:-.045em;line-height:1.08;margin:7px 0 9px}.intro p{font-size:12px;color:var(--muted);line-height:1.55;margin:0}
+.searchbox{display:flex;align-items:center;gap:9px;background:#f4f8f9;border:1px solid #bed1d7;border-radius:11px;padding:0 13px;margin:17px 0 9px}
+.searchbox:focus-within{border-color:#28a88e;box-shadow:0 0 0 3px #12a98714}.searchbox span{font-size:17px;color:#597b8b}.searchbox input{border:0;outline:0!important;background:transparent;padding:13px 0;width:100%;font-size:12.5px;color:var(--text)}
+.cities{display:flex;flex-wrap:wrap;gap:6px}.cities button{border:1px solid #d0dedf;background:white;padding:7px 10px;border-radius:999px;color:#536977;font-size:10.5px;font-weight:750}.cities button:hover{border-color:#17a889;color:#0b8066}
+.filters{padding:12px 20px 13px;border-bottom:1px solid var(--line);background:#fbfdfd}
+.segment{display:grid;grid-template-columns:repeat(3,1fr);padding:4px;background:#eef4f4;border-radius:11px;gap:4px}.segment button{border:0;border-radius:8px;background:transparent;color:#657b87;padding:10px 4px;font-weight:800;font-size:11px}.segment button.active{background:white;color:#0c7863;box-shadow:0 2px 7px #0000000b}
+.filtergrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px}.formfield label{display:block;font-size:10px;font-weight:800;color:#637b89;margin-bottom:5px}.formfield select{width:100%;border:1px solid #d2e0e5;background:#fff;color:#204252;border-radius:9px;padding:9px;font-size:11px}
+.checkrow{display:flex;gap:8px;align-items:center;font-size:11px;color:#516d7a;margin:11px 0 0}.checkrow input{accent-color:var(--green)}
+.result-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 19px 7px}.result-head strong{font-size:12px}.result-head span{font-size:10px;color:#768d9a;text-align:right}
+.result-list{overflow-y:auto;flex:1;scrollbar-width:thin;padding:3px 12px 17px}.station{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;border:1px solid transparent;border-radius:13px;padding:13px 10px;background:transparent;margin:2px 0;color:var(--text)}
+.station:hover,.station.selected{border-color:#a9d6d0;background:#eaf8f5}.station-icon{height:42px;width:42px;flex:0 0 42px;border-radius:12px;display:grid;place-items:center;font-size:20px;background:var(--greenbg)}.station-icon.fuel{background:var(--bluebg)}
+.station-main{flex:1;min-width:0}.station-name{font-size:12px;font-weight:830;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.station-sub{font-size:10.5px;color:var(--muted);margin:4px 0 7px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.statbits{display:flex;flex-wrap:wrap;gap:5px}.tiny{display:inline-flex;align-items:center;border-radius:6px;padding:3px 6px;font-size:9px;font-weight:800;background:#f1f4f5;color:#58727f}.tiny.recent{background:var(--greenbg);color:var(--green)}.tiny.old{background:var(--orangebg);color:var(--orange)}
+.station-price{font-size:14px;font-weight:850;color:#0e8269;white-space:nowrap;text-align:right}.station-price small{display:block;color:#8396a3;font-weight:650;font-size:9px;margin-top:4px}
+.empty{padding:20px 13px;color:#617987;font-size:12px;line-height:1.65}
+.sidefooter{padding:11px 17px;border-top:1px solid var(--line);font-size:10px;color:#6e8790;background:#fcfefe;line-height:1.5}
+.mapmsg{z-index:9;position:fixed;right:20px;bottom:22px;max-width:360px;background:#0b2537e8;color:#eaffff;border-radius:13px;padding:12px 15px;font-size:11px;line-height:1.5;box-shadow:var(--shadow)}
+#details{position:fixed;z-index:14;right:20px;top:90px;bottom:22px;width:354px;background:#fff;border-radius:19px;border:1px solid #d8e7e8;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
+#details[hidden],#report-modal[hidden]{display:none}.detailhead{padding:18px 19px;border-bottom:1px solid var(--line);display:flex;align-items:start;justify-content:space-between;gap:10px}
+.detailhead small{font-size:10px;color:var(--green);font-weight:800;text-transform:uppercase}.detailhead h2{font-size:19px;letter-spacing:-.035em;margin:5px 0}.detailhead p{font-size:12px;color:var(--muted);margin:0}
+.xbtn{border:1px solid #d1dddf;border-radius:9px;background:#fff;color:#55727f;padding:6px 10px;font-size:18px}
+.detailbody{overflow-y:auto;flex:1;padding:17px 19px}.bigprice{display:flex;align-items:baseline;justify-content:space-between;gap:10px;background:#ebf8f5;border:1px solid #c4eadd;border-radius:12px;padding:13px;margin:6px 0 14px}
+.bigprice b{font-size:25px;color:#0e8268}.bigprice small{font-size:11px;color:#4d8779}.info-title{font-size:11px;color:#527282;text-transform:uppercase;letter-spacing:.07em;font-weight:800;margin:18px 0 8px}
+.price-row{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #edf2f4;padding:10px 0;font-size:12px}.price-row span{color:#58717d}.price-row strong{font-weight:800}.tag{display:inline-block;border-radius:8px;padding:4px 7px;background:#e8f4f5;color:#477683;font-size:10px;font-weight:800}
+.actions{display:flex;gap:8px;margin:16px 0}.primary,.secondary{border-radius:10px;padding:12px 10px;font-weight:800;font-size:12px;text-decoration:none;text-align:center;display:inline-block;flex:1}
+.primary{background:#108367;border:1px solid #108367;color:white}.primary:hover{background:#0a6c54}
+.secondary{background:white;border:1px solid #b6d4d6;color:#20596b}
+.warn{background:#fff8eb;border:1px solid #f0d9b2;padding:11px 12px;border-radius:11px;color:#785b2b;font-size:11px;line-height:1.5}
+#report-modal{position:fixed;z-index:30;inset:0;background:#071a25ad;display:grid;place-items:center;padding:14px;backdrop-filter:blur(6px)}
+.dialog{width:min(430px,100%);background:white;border-radius:20px;padding:24px;box-shadow:0 25px 80px #0006;max-height:95vh;overflow:auto}
+.dialoghead{display:flex;justify-content:space-between;align-items:start;gap:10px}.dialog h2{font-size:21px;margin:0 0 6px}.dialog p{font-size:12px;color:var(--muted);line-height:1.5}
+.dialog label{display:block;font-size:11px;font-weight:800;margin:13px 0 5px}.dialog input,.dialog select{width:100%;padding:13px;border:1px solid #bad1d8;border-radius:10px;background:#f9fcfc;color:#183543}
+#turnstile{margin:13px 0}.submitrow{display:flex;gap:9px;margin-top:20px}.submitrow button{flex:1}.report-status{font-size:12px;border-radius:10px;padding:10px;margin-top:10px;display:none}.report-status.visible{display:block;background:#ebf6f2;color:#146852}
+#loader{position:fixed;z-index:21;inset:72px 0 0;background:#eef5f5dd;display:grid;place-items:center;color:#385b66;font-weight:800;text-align:center;padding:30px}#loader.hidden{display:none}
+@media(max-width:1150px){#details{top:auto;right:18px;bottom:18px;height:min(440px,70vh)}.mapmsg{bottom:475px}}
+@media(max-width:760px){header{height:62px;padding:0 11px}.brandmark{width:32px;height:32px;font-size:18px}.brand strong{font-size:14px}.brand small{font-size:8px}.header-right small{display:none}.topbtn{font-size:10px;padding:8px}.counter{display:none}#map{inset:62px 0 0}#loader{inset:62px 0 0}.sidebar{left:8px;right:8px;top:auto;bottom:7px;width:auto;height:min(51vh,420px);border-radius:17px}.sidebar.collapsed{height:57px}.sidebar.collapsed .filters,.sidebar.collapsed .result-head,.sidebar.collapsed .result-list,.sidebar.collapsed .sidefooter,.sidebar.collapsed .intro h1,.sidebar.collapsed .intro p,.sidebar.collapsed .searchbox,.sidebar.collapsed .cities{display:none}.intro{padding:13px}.eyebrow{margin-right:100px}.mobiletoggle{display:block!important;position:absolute;right:13px;top:11px;background:#d7eee9;border:0;border-radius:8px;padding:7px 10px;color:#0b745d;font-weight:850;font-size:11px}.mapmsg{left:8px;right:8px;bottom:calc(min(51vh,420px) + 16px);max-width:none;font-size:9px;padding:8px}.maplibregl-ctrl-top-right{top:10px;right:10px}#details{left:8px;right:8px;top:auto;bottom:8px;width:auto;height:min(67vh,530px);border-radius:17px}.filtergrid{margin-top:7px}.intro h1{font-size:19px}}
+@media(min-width:761px){.mobiletoggle{display:none}}
+</style></head>
+<body>
+<header><div class="brand"><div class="brandmark" aria-hidden="true">₭</div><div><strong>PRIS<span>KART</span> NORGE</strong><small>Finn · sammenlign · oppdater</small></div></div>
+<div class="header-right"><small>Rapporterte priser ≠ bekreftede sanntidspriser</small><span class="counter" id="map-counter">Norge</span><button class="topbtn" id="btn-about">Om data</button></div></header>
+<div id="map" aria-label="Kart med norske ladestasjoner og bensinstasjoner"></div>
+<div id="loader">Laster kart og stasjonsdata …</div>
+<aside class="sidebar" id="sidebar"><button class="mobiletoggle" id="mobile-toggle" aria-expanded="true">Skjul −</button>
+<section class="intro"><div class="eyebrow">Hele Norge · ett kart</div><h1>Hvor er det billigst<br>å fylle eller lade?</h1><p>Finn stasjoner, se hvor gammel prisen er og bidra med dine egne oppdateringer.</p>
+<label class="searchbox"><span>⌕</span><input id="search" autocomplete="off" placeholder="Søk stasjon eller sted, f.eks. Tromsø" aria-label="Søk etter stasjon eller sted"></label>
+<div class="cities" id="city-buttons"><button data-city="Oslo">Oslo</button><button data-city="Bergen">Bergen</button><button data-city="Trondheim">Trondheim</button><button data-city="Tromsø">Tromsø</button><button data-city="Stavanger">Stavanger</button><button data-city="Bodø">Bodø</button></div></section>
+<section class="filters">
+<div class="segment" id="category"><button class="active" data-mode="all">Alle</button><button data-mode="fuel">⛽ Drivstoff</button><button data-mode="charge">⚡ Lading</button></div>
+<div class="filtergrid">
+<div class="formfield"><label for="fuel-type">Pris på</label><select id="fuel-type"><option value="petrol95">Bensin 95</option><option value="diesel">Diesel</option><option value="petrol98">Bensin 98</option><option value="electric">Elbil kr/kWh</option></select></div>
+<div class="formfield"><label for="sort-by">Sorter</label><select id="sort-by"><option value="near">Nærmest kartmidten</option><option value="cheap">Laveste pris</option><option value="name">Navn A–Å</option><option value="recent">Nyest pris først</option></select></div>
+</div>
+<label class="checkrow"><input type="checkbox" id="recent-only"> Bare priser oppdatert siste 72 timer</label>
+<label class="checkrow"><input type="checkbox" id="priced-only"> Vis kun stasjoner med rapportert pris</label>
+</section>
+<div class="result-head"><strong>Stasjoner i området</strong><span id="summary">Henter stasjoner …</span></div><div class="result-list" id="results" aria-live="polite"></div>
+<div class="sidefooter" id="source-note">Kilder og priser lastes inn. Ukjent pris vises aldri som 0 kr.</div></aside>
+<section id="details" hidden aria-label="Stasjonsdetaljer">
+<div class="detailhead"><div><small id="d-category">Stasjon</small><h2 id="d-name">–</h2><p id="d-address"></p></div><button id="details-close" class="xbtn" aria-label="Lukk detaljer">×</button></div>
+<div class="detailbody">
+<div class="bigprice"><div><small id="d-primary-label">Rapportert pris</small><div><b id="d-primary">Ukjent</b></div></div><span id="d-age" class="tag">Ingen pris</span></div>
+<div id="d-description" class="warn">Prisene er observasjoner fra brukere, ikke garantier.</div>
+<div class="info-title">Registrerte priser</div><div id="d-prices"></div>
+<div class="info-title">Informasjon</div><div id="d-meta"></div>
+<div class="actions"><a class="secondary" id="d-navigate" target="_blank" rel="noopener noreferrer">↗ Veibeskrivelse</a><button class="primary" id="d-report">＋ Meld inn pris</button></div>
+</div></section>
+<div class="mapmsg" id="map-message" role="status">⛽ Bensinstasjoner i hele Norge. ⚡ Zoom inn for å hente offentlige ladespunkter.</div>
+<div id="report-modal" hidden role="dialog" aria-modal="true" aria-labelledby="report-title"><form class="dialog" id="report-form">
+<div class="dialoghead"><div><h2 id="report-title">Meld inn pris</h2><p id="report-station">–</p></div><button type="button" id="report-close" class="xbtn" aria-label="Lukk skjema">×</button></div>
+<label for="report-type">Hva gjelder prisen?</label><select id="report-type"><option value="petrol95">Bensin 95 (kr/liter)</option><option value="petrol98">Bensin 98 (kr/liter)</option><option value="diesel">Diesel (kr/liter)</option><option value="electric">Lading (kr/kWh)</option></select>
+<label for="report-price">Pris i norske kroner</label><input id="report-price" type="text" inputmode="decimal" placeholder="F.eks. 19,89" maxlength="8" required autocomplete="off">
+<p>Kun priser du har observert på stasjonen. Ikke oppgi personopplysninger. Nye rapporter merkes «Brukerrapportert – ikke verifisert».</p>
+<div id="turnstile"></div><div id="report-status" class="report-status" role="status"></div>
+<div class="submitrow"><button class="secondary" type="button" id="report-cancel">Avbryt</button><button class="primary" id="report-submit" type="submit">Publiser pris</button></div>
+</form></div>
+<script type="module">
+let lib;
+try{lib=await import('https://cdn.jsdelivr.net/npm/maplibre-gl@6.14.0/dist/maplibre-gl.mjs')}
+catch(e){try{lib=await import('https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.mjs')}catch(ex){document.getElementById('loader').textContent='Kartbiblioteket kunne ikke lastes. Prøv en annen nettleser.';throw ex}}
+try{
+ const map=new lib.Map({container:'map',style:'https://tiles.openfreemap.org/styles/liberty',center:[10.65,63.15],zoom:4.25,attributionControl:true});
+ map.addControl(new lib.NavigationControl(),'top-right');
+ map.on('load',()=>{document.getElementById('loader').classList.add('hidden');window.priskartMap={map,lib};window.dispatchEvent(new Event('priskart-map-ready'))});
+ map.on('error',e=>console.warn('Kartressurs kunne ikke lastes',e.error||e));
+}catch(e){document.getElementById('loader').textContent='Kartet kunne ikke startes: '+e.message}
+</script>
+<script defer src="./app.js?v=1"></script>
+</body></html>
