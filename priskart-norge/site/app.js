@@ -26,7 +26,7 @@ function fuelStation(raw){
  if(!id||id.length>100)return null;
  const name=raw.name||raw.brand||'Stasjon uten navn';
  // Some input sources include charging-only sites. Do not mislabel them as petrol stations.
- if(/(^|\s)(lader|ladestasjon|charging)(\s|$)/i.test(name))return null;
+ if(/(^|\s)(lader|ladestasjon|charging|bilvask|vaskehall)(\s|$)/i.test(name))return null;
  return {id:'fuel:'+id,sourceId:id,name,brand:String(raw.brand||''),address:String(raw.address||''),city:String(raw.city||''),lat,lon,type:'fuel',kw:null,connectors:[],origin:'Drivstoffpriser / OpenStreetMap'};
 }
 function chargerStation(raw){
@@ -66,6 +66,7 @@ async function loadFuel(){
   }
   state.feedAt=sta.exportedAt||pri.exportedAt;
   state.loadedFuel=true;updateNote();updateSources();refresh();
+  status('⛽ '+state.stations.size.toLocaleString('nb-NO')+' kartpunkter. Rapporter viser dato – prisene er ikke garantert sanntid.');
  }catch(err){
   state.loadedFuel=false;updateNote();status('⛽ Kunne ikke laste stasjonslisten: '+err.message+'. Kartet kan fortsatt brukes til å søke etter ladere.');
   $('summary').textContent='Datakilde utilgjengelig';
@@ -124,11 +125,7 @@ function filtered(){
  const distance=s=>km([center.lng,center.lat],[s.lon,s.lat]);
  n.sort((a,b)=>{
   const x=currentPrice(a),y=currentPrice(b);
-  if(state.sort==='cheap'){
-   const xFresh=ageCategory(x)==='recent',yFresh=ageCategory(y)==='recent';
-   if(xFresh!==yFresh)return xFresh?-1:1;
-   return (x?.price??9999)-(y?.price??9999)||distance(a)-distance(b);
-  }
+  if(state.sort==='cheap')return (x?.price??9999)-(y?.price??9999)||distance(a)-distance(b);
   if(state.sort==='recent')return (parseTimestamp(y?.updatedAt)||0)-(parseTimestamp(x?.updatedAt)||0)||distance(a)-distance(b);
   if(state.sort==='name')return a.name.localeCompare(b.name,'nb');
   return distance(a)-distance(b);
@@ -139,6 +136,15 @@ function refresh(){
  if(!state.map)return;filterLayer();
  const list=$('results');const arr=filtered();list.replaceChildren();
  $('summary').textContent=arr.length.toLocaleString('nb-NO')+' treff'+(state.search?' for søket':' i kartet');
+ $('result-title').textContent=state.mode==='charge'?'Ladestasjoner':state.mode==='fuel'?'Bensinstasjoner':'Stasjoner i området';
+ const searchedCity=state.search&&Object.keys(cities).find(city=>norm(city)===norm(state.search.trim()));
+ if(searchedCity){
+  const nav=document.createElement('button');nav.className='result city-result';nav.type='button';
+  nav.style.cssText='display:flex;align-items:center;min-height:50px;background:#e6f7ef;border:1px solid #a7dcc9;margin:4px 0 10px;gap:11px';
+  const ico=document.createElement('span');ico.className='symbol';ico.textContent='📍';
+  const label=document.createElement('span');label.style.cssText='font-size:12px;font-weight:800';label.textContent='Vis '+searchedCity+' på kartet';
+  nav.append(ico,label);nav.addEventListener('click',()=>moveCity(searchedCity));list.append(nav);
+ }
  if(!arr.length){
   const message=state.mode==='charge'&&state.map.getZoom()<9?'Zoom inn til en by for å hente ladespunkter.':state.chargersError?'Ladesøk feilet: '+state.chargersError:'Ingen treff. Prøv å endre søk eller filtre.';
   list.append(Object.assign(document.createElement('p'),{className:'empty',textContent:message}));return;
@@ -182,7 +188,8 @@ function showDetails(s){
 }
 function selectStation(s){
  state.selected=s;showDetails(s);refresh();
- if(window.innerWidth<=760){$('sidebar').classList.add('collapsed');$('mobile-toggle').setAttribute('aria-expanded','false');$('mobile-toggle').textContent='Vis panel +'}
+ // Keep the search and filters discoverable when a station card is closed.
+ if(window.innerWidth<=760){$('sidebar').classList.remove('collapsed');$('mobile-toggle').setAttribute('aria-expanded','true');$('mobile-toggle').textContent='Skjul −'}
 }
 async function loadChargers(){
  const m=state.map;if(!m||state.loadingChargers||state.mode==='fuel'||m.getZoom()<9)return;
@@ -228,15 +235,16 @@ async function loadReports(){
 function moveCity(name){
  const xy=cities[name];if(!xy)return;
  state.map.flyTo({center:xy,zoom:11.4,duration:1100});
- state.search='';$('search').value='';
- if(window.innerWidth<=760)$('sidebar').classList.remove('collapsed');
+ state.search='';$('search').value='';$('search').blur();
+ if(window.innerWidth<=760){$('sidebar').classList.remove('collapsed');$('mobile-toggle').setAttribute('aria-expanded','true');$('mobile-toggle').textContent='Skjul −'}
 }
 async function config(){
  try{
   const r=await fetch('/api/config',{cache:'no-store'});if(!r.ok)throw Error('Not hosted');
   const j=await r.json();state.backend=!!j.reportingEnabled;state.siteKey=j.turnstileSiteKey||null;
+  $('d-report').textContent=state.backend?'＋ Meld inn pris':'＋ Prisrapportering (snart)';
   if(state.backend)loadReports();
- }catch(e){state.backend=false;state.siteKey=null}
+ }catch(e){state.backend=false;state.siteKey=null;$('d-report').textContent='＋ Prisrapportering (snart)'}
 }
 function startReport(){
  if(!state.selected)return;
@@ -298,12 +306,28 @@ function closeDialog(){
 }
 function controls(){
  $('city-buttons').addEventListener('click',e=>{const b=e.target.closest('[data-city]');if(b)moveCity(b.dataset.city)});
+ $('near-me').addEventListener('click',()=>{
+  if(!navigator.geolocation){status('Posisjonstjenester støttes ikke i denne nettleseren. Søk etter en by i stedet.');return}
+  const btn=$('near-me');btn.disabled=true;btn.textContent='⌖ Finner …';
+  navigator.geolocation.getCurrentPosition(pos=>{
+   btn.disabled=false;btn.textContent='⌖ Nær meg';
+   const lat=pos.coords.latitude,lon=pos.coords.longitude;
+   if(lat<57.5||lat>72||lon<3.5||lon>32.5){status('Posisjonen er utenfor kartområdet. Velg en by.');return}
+   state.search='';$('search').value='';$('search').blur();
+   state.map.flyTo({center:[lon,lat],zoom:12.3,duration:1100});
+   status('📍 Viser stasjoner rundt din omtrentlige posisjon. Nettleserens posisjon sendes ikke til PrisKart.');
+  },error=>{
+   btn.disabled=false;btn.textContent='⌖ Nær meg';
+   status(error.code===1?'Posisjon ble ikke delt. Du kan søke etter en by.':'Fant ikke posisjonen. Søk etter et sted i stedet.');
+  },{enableHighAccuracy:false,timeout:10000,maximumAge:300000});
+ });
  $('search').addEventListener('input',e=>{state.search=e.target.value;refresh()});
  $('search').addEventListener('keydown',e=>{
   if(e.key==='Enter'){
    const q=norm(state.search);
    const city=Object.keys(cities).find(x=>norm(x)===q);
    if(city)moveCity(city);else{const first=filtered()[0];if(first)selectStation(first)}
+   $('search').blur();
   }
  });
  $('category').addEventListener('click',e=>{
@@ -329,6 +353,7 @@ function controls(){
  $('report-modal').addEventListener('click',e=>{if(e.target===$('report-modal'))closeDialog()});
  $('btn-about').addEventListener('click',infoDialog);
  $('mobile-toggle').addEventListener('click',()=>{
+  $('search').blur();
   const side=$('sidebar'),expanded=side.classList.toggle('collapsed')===false;
   $('mobile-toggle').textContent=expanded?'Skjul −':'Vis panel +';
   $('mobile-toggle').setAttribute('aria-expanded',String(expanded));
@@ -338,6 +363,7 @@ function init(){
  if(!window.priskartMap)return;
  state.map=window.priskartMap.map;state.lib=window.priskartMap.lib;
  controls();createMapLayers();updateSources();loadFuel();config();refresh();
+ if(window.innerWidth<=760){$('sidebar').classList.remove('collapsed');$('mobile-toggle').textContent='Skjul −';$('mobile-toggle').setAttribute('aria-expanded','true')}
  state.map.on('moveend',()=>{
   clearTimeout(state.debounce);
   state.debounce=setTimeout(()=>{refresh();loadChargers();loadReports()},420);
