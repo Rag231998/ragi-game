@@ -146,8 +146,15 @@ function refresh(){
   nav.append(ico,label);nav.addEventListener('click',()=>moveCity(searchedCity));list.append(nav);
  }
  if(!arr.length){
-  const message=state.mode==='charge'&&state.map.getZoom()<9?'Zoom inn til en by for å hente ladespunkter.':state.chargersError?'Ladesøk feilet: '+state.chargersError:'Ingen treff. Prøv å endre søk eller filtre.';
-  list.append(Object.assign(document.createElement('p'),{className:'empty',textContent:message}));return;
+  let message=state.recent?'Ingen priser fra de siste 72 timene finnes med disse filtrene. Mange prisobservasjoner i kilden er gamle.':
+     state.priced?'Ingen registrerte priser for dette valget. Prøv å vise alle stasjoner.':
+     state.mode==='charge'&&state.map.getZoom()<9?'Zoom inn til en by for å laste ladepunkter.':
+     state.chargersError?'Ladedata kunne ikke hentes: '+state.chargersError:
+     'Ingen stasjoner samsvarer med søk og filtre.';
+  list.append(Object.assign(document.createElement('p'),{className:'empty',textContent:message}));
+  const reset=document.createElement('button');reset.type='button';reset.className='secondary';reset.style.cssText='width:100%;margin:4px 0 12px';reset.textContent='Nullstill søk og filtre';
+  reset.addEventListener('click',()=>{state.search='';$('search').value='';state.recent=false;state.priced=false;state.sort='near';state.mode='all';state.fuel='petrol95';$('recent-only').checked=false;$('priced-only').checked=false;$('sort-by').value='near';$('fuel-type').value='petrol95';document.querySelectorAll('#category button').forEach(b=>b.classList.toggle('active',b.dataset.mode==='all'));refresh()});
+  list.append(reset);return;
  }
  for(const s of arr.slice(0,65)){
   const p=currentPrice(s),b=document.createElement('button');
@@ -189,7 +196,7 @@ function showDetails(s){
 function selectStation(s){
  state.selected=s;showDetails(s);refresh();
  // Keep the search and filters discoverable when a station card is closed.
- if(window.innerWidth<=760){$('sidebar').classList.remove('collapsed');$('mobile-toggle').setAttribute('aria-expanded','true');$('mobile-toggle').textContent='Skjul −'}
+ if(window.innerWidth<=760){$('sidebar').classList.remove('collapsed');$('mobile-toggle').setAttribute('aria-expanded','true');$('mobile-toggle').textContent='Vis kart ↓'}
 }
 async function loadChargers(){
  const m=state.map;if(!m||state.loadingChargers||state.mode==='fuel'||m.getZoom()<9)return;
@@ -236,7 +243,7 @@ function moveCity(name){
  const xy=cities[name];if(!xy)return;
  state.map.flyTo({center:xy,zoom:11.4,duration:1100});
  state.search='';$('search').value='';$('search').blur();
- if(window.innerWidth<=760){$('sidebar').classList.remove('collapsed');$('mobile-toggle').setAttribute('aria-expanded','true');$('mobile-toggle').textContent='Skjul −'}
+ if(window.innerWidth<=760){$('sidebar').classList.remove('collapsed');$('mobile-toggle').setAttribute('aria-expanded','true');$('mobile-toggle').textContent='Vis kart ↓'}
 }
 async function config(){
  try{
@@ -315,7 +322,7 @@ function controls(){
    if(lat<57.5||lat>72||lon<3.5||lon>32.5){status('Posisjonen er utenfor kartområdet. Velg en by.');return}
    state.search='';$('search').value='';$('search').blur();
    state.map.flyTo({center:[lon,lat],zoom:12.3,duration:1100});
-   status('📍 Viser stasjoner rundt din omtrentlige posisjon. Nettleserens posisjon sendes ikke til PrisKart.');
+   status('📍 Viser stasjoner rundt deg. Kartutsnittet brukes til å hente steder, men ingen presis posisjon lagres av PrisKart.');
   },error=>{
    btn.disabled=false;btn.textContent='⌖ Nær meg';
    status(error.code===1?'Posisjon ble ikke delt. Du kan søke etter en by.':'Fant ikke posisjonen. Søk etter et sted i stedet.');
@@ -355,15 +362,29 @@ function controls(){
  $('mobile-toggle').addEventListener('click',()=>{
   $('search').blur();
   const side=$('sidebar'),expanded=side.classList.toggle('collapsed')===false;
-  $('mobile-toggle').textContent=expanded?'Skjul −':'Vis panel +';
+  $('mobile-toggle').textContent=expanded?'Vis kart ↓':'Vis liste ↑';
   $('mobile-toggle').setAttribute('aria-expanded',String(expanded));
  });
+ // The sheet can also be opened/closed with a short swipe on its title area.
+ let sheetTouchY=null;
+ const sheetIntro=$('sidebar').querySelector('.intro');
+ sheetIntro.addEventListener('touchstart',e=>{
+  if(e.target.closest('button,input,a,label,.city-wrap'))return;
+  sheetTouchY=e.changedTouches?.[0]?.clientY??null;
+ },{passive:true});
+ sheetIntro.addEventListener('touchend',e=>{
+  if(sheetTouchY===null)return;
+  const distance=(e.changedTouches?.[0]?.clientY??sheetTouchY)-sheetTouchY;
+  sheetTouchY=null;
+  if(distance>60&&!$('sidebar').classList.contains('collapsed'))$('mobile-toggle').click();
+  else if(distance< -60&&$('sidebar').classList.contains('collapsed'))$('mobile-toggle').click();
+ },{passive:true});
 }
 function init(){
  if(!window.priskartMap)return;
  state.map=window.priskartMap.map;state.lib=window.priskartMap.lib;
  controls();createMapLayers();updateSources();loadFuel();config();refresh();
- if(window.innerWidth<=760){$('sidebar').classList.remove('collapsed');$('mobile-toggle').textContent='Skjul −';$('mobile-toggle').setAttribute('aria-expanded','true')}
+ if(window.innerWidth<=760){$('sidebar').classList.remove('collapsed');$('mobile-toggle').textContent='Vis kart ↓';$('mobile-toggle').setAttribute('aria-expanded','true')}
  state.map.on('moveend',()=>{
   clearTimeout(state.debounce);
   state.debounce=setTimeout(()=>{refresh();loadChargers();loadReports()},420);
