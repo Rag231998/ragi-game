@@ -17,8 +17,8 @@ const CAMERAS=[
  {id:'v-hjortnes',name:'Hjortnes (E18)',subtitle:'Statens vegvesen · veitrafikkamera',lng:10.706,lat:59.9097,site:'https://www.vegvesen.no/trafikk/vaerveikamera/0329002',kind:'veg'}
 ];
 let map,lib,tab='avganger',filter='all',currentStop=null,board=[],boardRequest=0,searchRequest=0;
-let state={stops:new Map(),transit:new Map(),aircraft:new Map(),camera:new Map(),flightSource:'',lastAir:0,lastVehicle:0,flyBusy:false,vehicleBusy:false,stopsBusy:false,boardBusy:false};
-let searchTimer=0,lastSearch='',stopKey='',flightFallback=0;
+let state={stops:new Map(),transit:new Map(),camera:new Map(),vehicleBusy:false,stopsBusy:false,boardBusy:false};
+let searchTimer=0,lastSearch='',stopKey='';
 const clock=d=>{const x=new Date(d);return Number.isFinite(+x)?x.toLocaleTimeString('nb-NO',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Oslo'}):'–'};
 const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
 const fmtKm=h=>typeof h==='number'&&Number.isFinite(h)?Math.round(h*.3048).toLocaleString('nb-NO')+' m':h==='ground'?'På bakken':'Ukjent';
