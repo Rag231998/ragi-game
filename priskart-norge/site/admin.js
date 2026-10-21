@@ -12,9 +12,11 @@ const nf=new Intl.NumberFormat('nb-NO');
 const time=x=>x?new Intl.DateTimeFormat('nb-NO',{dateStyle:'short',timeStyle:'short'}).format(new Date(x)):'Ukjent tid';
 function showTab(tab){
  document.querySelectorAll('button[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
- for(const n of ['stations','reports','operators','sources'])$('panel-'+n).hidden=n!==tab;
+ for(const n of ['stations','reports','operators','appearance','faq','sources'])$('panel-'+n).hidden=n!==tab;
  if(tab==='reports')loadReports();
  if(tab==='operators')loadOperators();
+ if(tab==='appearance')loadAppearance();
+ if(tab==='faq')loadFaqAdmin();
 }
 function logoutUI(){
  $('admin-app').hidden=true;$('auth-section').hidden=false;
@@ -185,6 +187,102 @@ async function addOperator(){
  note(error?'Kunne ikke legge til: '+error.message:'Operatøren er lagt til.',!!error);
  if(!error){$('new-operator').value='';await loadOperators()}
 }
+
+const settingMap={
+ 'site-name':'brand_name','site-tagline':'tagline','site-title':'hero_title','site-description':'hero_description',
+ 'site-color':'accent_color','site-sidebar':'desktop_sidebar','site-density':'desktop_density',
+ 'site-notice':'public_notice','site-operator':'operator_name','site-org':'organization_number','site-contact':'contact_email'
+};
+const checkMap={
+ 'site-show-fuel':'show_fuel','site-show-charging':'show_charging','site-show-near':'show_near_me',
+ 'site-show-cities':'show_city_shortcuts','site-show-faq':'show_faq','site-show-intro':'show_intro','site-show-notice':'show_notice'
+};
+let currentSite=null;
+async function loadAppearance(){
+ if(!isAdmin)return;
+ const {data,error}=await db.from('site_settings').select('*').eq('id',1).maybeSingle();
+ if(error){note('Kan ikke laste nettstedinnstillinger: '+error.message,true);return}
+ currentSite=data||null;
+ if(!data){note('Nettstedinnstillinger mangler i databasen.',true);return}
+ for(const [id,key] of Object.entries(settingMap))$(id).value=data[key]??'';
+ for(const [id,key] of Object.entries(checkMap))$(id).checked=Boolean(data[key]);
+ $('site-logo-preview').hidden=!data.logo_url;
+ if(data.logo_url)$('site-logo-preview').src=data.logo_url;
+}
+async function uploadSiteLogo(){
+ const input=$('site-logo'),file=input.files?.[0];
+ if(!file)return currentSite?.logo_url||'';
+ const types=['image/jpeg','image/png','image/webp'];
+ if(!types.includes(file.type)||file.size>2097152)throw Error('Logo må være PNG, JPEG eller WebP og maks 2 MB');
+ const extension=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';
+ const name='logo-'+crypto.randomUUID()+'.'+extension;
+ const {error}=await db.storage.from('site-assets').upload(name,file,{upsert:false,cacheControl:'3600',contentType:file.type});
+ if(error)throw error;
+ return db.storage.from('site-assets').getPublicUrl(name).data.publicUrl;
+}
+async function saveAppearance(e){
+ e.preventDefault();if(!isAdmin)return;
+ const patch={id:1};
+ for(const [id,key] of Object.entries(settingMap))patch[key]=$(id).value.trim();
+ for(const [id,key] of Object.entries(checkMap))patch[key]=$(id).checked;
+ const org=patch.organization_number.replace(/\s/g,'');
+ if(org&&!/^\d{9}$/.test(org)){note('Organisasjonsnummer må ha 9 siffer, eller stå tomt.',true);return}
+ patch.organization_number=org;
+ if(!patch.show_fuel&&!patch.show_charging){note('Minst én kategori (drivstoff eller lading) må være synlig.',true);return}
+ const btn=$('save-appearance');btn.disabled=true;note('Lagrer nettstedinnstillinger …');
+ try{
+  patch.logo_url=await uploadSiteLogo();
+  patch.updated_at=new Date().toISOString();
+  const {error}=await db.from('site_settings').upsert(patch,{onConflict:'id'});
+  if(error)throw error;
+  currentSite={...patch};note('Endringene er lagret. Last inn kartet på nytt for å se oppdatert logo, farger og layout.');
+  $('site-logo').value='';
+  $('site-logo-preview').hidden=!patch.logo_url;
+  if(patch.logo_url)$('site-logo-preview').src=patch.logo_url;
+ }catch(error){note('Kunne ikke lagre designendringer: '+error.message,true)}
+ finally{btn.disabled=false}
+}
+function resetFaq(){
+ $('faq-id').value='';$('faq-question').value='';$('faq-answer').value='';
+ $('faq-order').value='100';$('faq-published').checked=true;
+}
+async function loadFaqAdmin(){
+ if(!isAdmin)return;
+ const {data,error}=await db.from('site_faq').select('*').order('sort_order').order('question');
+ const root=$('faq-admin-list');root.replaceChildren();
+ if(error){note('FAQ-feil: '+error.message,true);return}
+ for(const q of data||[]){
+  const card=el('div',undefined,'item'),left=el('div'),btns=el('div',undefined,'btns');
+  left.append(el('strong',(q.published?'':'(Skjult) ')+q.question),el('p',q.answer.slice(0,230)),el('p','Rekkefølge: '+q.sort_order));
+  const edit=el('button','Rediger');
+  edit.addEventListener('click',()=>{
+   $('faq-id').value=q.id;$('faq-question').value=q.question;$('faq-answer').value=q.answer;
+   $('faq-order').value=q.sort_order;$('faq-published').checked=q.published;
+   $('faq-form').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  const del=el('button','Slett','danger');
+  del.addEventListener('click',async()=>{
+   if(!confirm('Vil du slette spørsmålet "'+q.question+'"?'))return;
+   const {error}=await db.from('site_faq').delete().eq('id',q.id);
+   note(error?'FAQ ble ikke slettet: '+error.message:'FAQ-spørsmålet er slettet.',!!error);
+   if(!error){resetFaq();loadFaqAdmin()}
+  });
+  btns.append(edit,del);card.append(left,btns);root.append(card);
+ }
+ if(!data?.length)root.append(el('p','Ingen spørsmål registrert.','note'));
+}
+async function saveFaq(e){
+ e.preventDefault();if(!isAdmin)return;
+ const data={
+  question:$('faq-question').value.trim(),answer:$('faq-answer').value.trim(),
+  sort_order:Number($('faq-order').value)||100,published:$('faq-published').checked,updated_at:new Date().toISOString()
+ };
+ const id=$('faq-id').value;
+ const result=id?await db.from('site_faq').update(data).eq('id',id):await db.from('site_faq').insert(data);
+ note(result.error?'Kunne ikke lagre FAQ: '+result.error.message:'FAQ er lagret og publisert.',!!result.error);
+ if(!result.error){resetFaq();loadFaqAdmin()}
+}
+
 function events(){
  $('admin-login').addEventListener('click',login);
  $('admin-email-link').addEventListener('click',loginLink);
@@ -199,6 +297,9 @@ function events(){
  $('station-form').addEventListener('submit',saveStation);
  $('report-reload').addEventListener('click',loadReports);
  $('add-operator').addEventListener('click',addOperator);
+ $('appearance-form').addEventListener('submit',saveAppearance);
+ $('faq-form').addEventListener('submit',saveFaq);
+ $('faq-reset').addEventListener('click',resetFaq);
 }
 async function init(){
  if(!window.supabase){note('Innloggingsbiblioteket kunne ikke lastes. Prøv å deaktivere innholdsblokkering for denne siden.',true,'auth-message');return}
