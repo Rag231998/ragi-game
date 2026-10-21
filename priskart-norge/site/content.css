@@ -1,0 +1,23 @@
+:root{--ink:#173543;--muted:#5b7480;--accent:#107d62;--bg:#f3f8f8;--line:#d7e6e7}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font:15px/1.65 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+a{color:#087358}button,input{font:inherit}button{cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid #22c5a1;outline-offset:3px}
+header{background:#0f2230;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:15px;padding:18px max(18px,calc((100vw - 970px)/2))}
+header strong{font-size:18px}header strong span{color:#79ecc7}
+header a{color:#c8f5e6;border:1px solid #516f78;border-radius:10px;padding:8px 12px;text-decoration:none;font-size:12px;font-weight:800}
+main{max-width:960px;margin:0 auto;padding:34px 18px 70px}h1{font-size:clamp(27px,5vw,42px);line-height:1.12;letter-spacing:-.04em;margin:7px 0 12px}
+.intro{max-width:730px;color:var(--muted);font-size:14px}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:900;color:var(--accent)}
+.panel{background:#fff;border-radius:15px;border:1px solid var(--line);padding:22px 26px;margin:16px 0;box-shadow:0 8px 24px #0a31330b}
+.panel h2{font-size:20px;letter-spacing:-.025em;margin:0 0 8px}.panel p{font-size:13px;color:#486777}
+.panel a{font-size:13px}
+#faq-list details{border-bottom:1px solid var(--line);padding:9px 0}
+#faq-list details:last-child{border:0}
+#faq-list summary{padding:10px 12px 10px 0;cursor:pointer;font-weight:850;font-size:14px;min-height:45px}
+#faq-list details p{margin:1px 0 13px;white-space:pre-wrap;font-size:13px;line-height:1.65}
+.data-note{font-size:12px;border-radius:10px;padding:12px 14px;background:#fff6e6;border:1px solid #f3d6a4;color:#74592e;line-height:1.55}
+.button{border:1px solid #197d65;background:#127c63;color:white;border-radius:10px;padding:12px 16px;font-weight:800;font-size:12px}
+.button.secondary{background:white;color:#14715b}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.grid section{padding:17px;border:1px solid var(--line);border-radius:12px}
+dl{display:grid;grid-template-columns:150px 1fr;gap:8px;margin:10px 0;font-size:13px}dt{font-weight:850}dd{margin:0;color:#506b76}
+footer{font-size:11px;color:#6d8995;line-height:1.6;border-top:1px solid var(--line);padding:25px 18px;max-width:960px;margin:auto}
+@media(max-width:640px){header{padding:11px 14px}header strong{font-size:15px}main{padding:23px 11px 45px}.panel{padding:17px 16px}.grid{grid-template-columns:1fr}dl{grid-template-columns:1fr;gap:0}dd{margin-bottom:12px}}
