@@ -8,7 +8,7 @@
 const $=id=>document.getElementById(id),fuelUrl='https://drivstoffpriser.github.io/Drivstoffpriser-App/data/';
 const cities={Oslo:[10.7522,59.9139],Bergen:[5.3221,60.393],Trondheim:[10.3951,63.4305],Tromsø:[18.9553,69.6496],Stavanger:[5.7331,58.969],Bodø:[14.4049,67.2804],Jessheim:[11.171,60.143],Lillestrøm:[11.049,59.956],Kristiansand:[8.003,58.147],Ålesund:[6.154,62.472],Fredrikstad:[10.939,59.219],Hamar:[11.067,60.794]};
 const labels={petrol95:'Bensin 95',petrol98:'Bensin 98',diesel:'Diesel',electric:'Elbillading'};
-const state={map:null,lib:null,stations:new Map(),fuelPrices:new Map(),reports:new Map(),selected:null,mode:'all',fuel:'petrol95',sort:'near',recent:false,priced:false,feedAt:null,chargersError:null,loadingChargers:false,chargersLoaded:false,backend:false,siteKey:null,token:null,turnstileWidget:null,chargerRequestCache:new Set(),search:'',origin:'feed',searchId:0,loadedFuel:false,debounce:null};
+const state={map:null,lib:null,stations:new Map(),fuelPrices:new Map(),reports:new Map(),selected:null,mode:'all',fuel:'petrol95',sort:'near',recent:false,priced:false,feedAt:null,chargersError:null,loadingChargers:false,chargersLoaded:false,backend:false,siteKey:null,token:null,turnstileWidget:null,chargerRequestCache:new Set(),search:'',origin:'feed',searchId:0,loadedFuel:false,debounce:null,chargePower:0,chargePlug:'all'};
 const fmtCurrency=new Intl.NumberFormat('nb-NO',{minimumFractionDigits:2,maximumFractionDigits:2});
 const formatDate=d=>{const ms=Date.parse(d||'');return Number.isFinite(ms)?new Intl.DateTimeFormat('nb-NO',{dateStyle:'short',timeStyle:'short',timeZone:'Europe/Oslo'}).format(ms):'Ukjent tidspunkt'};
 const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -34,13 +34,14 @@ function chargerStation(raw){
  if(!Number.isFinite(lat)||!Number.isFinite(lon)||lat<57.5||lat>72||lon<3.5||lon>32.5)return null;
  const type=String(raw.type||'node'),id=String(raw.id||'');
  if(!/^(node|way|relation)$/.test(type)||!/^\d+$/.test(id))return null;
- const plugs=Object.keys(t).filter(k=>k.startsWith('socket:')&&!k.includes('output')&&Number(t[k])>0).map(k=>k.split(':').slice(1).join(':'));
+ const plugs=Object.keys(t).filter(k=>k.startsWith('socket:')&&!k.includes(':output')&&!['no','0','false'].includes(String(t[k]).trim().toLowerCase())).map(k=>k.split(':').slice(1).join(':'));
  const power=Object.entries(t).filter(([k])=>k.includes('output')&&k.startsWith('socket:')).map(([,v])=>Number(String(v).replace(',','.').match(/[\d.]+/)?.[0])).filter(Number.isFinite);
  return {id:'charge:osm:'+type+':'+id,name:String(t.name||t.operator||'Offentlig ladepunkt'),brand:String(t.operator||t.brand||''),city:String(t['addr:city']||''),address:String(t['addr:street']||''),lat,lon,type:'charge',kw:power.length?Math.max(...power):null,connectors:plugs,origin:'OpenStreetMap (kan være ufullstendig)'};
 }
 function currentPrice(s){
  const found=[...(state.fuelPrices.get(s.id)||[]),...(state.reports.get(s.id)||[])];
- const matches=found.filter(x=>x.fuelType===state.fuel&&Number.isFinite(+x.price));
+ const selectedType=s.type==='charge'?'electric':state.fuel;
+ const matches=found.filter(x=>x.fuelType===selectedType&&Number.isFinite(+x.price));
  matches.sort((a,b)=>parseTimestamp(b.updatedAt)-parseTimestamp(a.updatedAt));
  return matches[0]||null;
 }
@@ -115,6 +116,10 @@ function filtered(){
  const query=norm(state.search.trim()),center=state.map.getCenter(),bounds=state.map.getBounds();
  const n=Array.from(state.stations.values()).filter(s=>{
   if(state.mode!=='all'&&s.type!==state.mode)return false;
+  if(s.type==='charge'&&(state.chargePower>0||state.chargePlug!=='all')){
+   if(state.chargePower>0&&!(Number.isFinite(s.kw)&&s.kw>=state.chargePower))return false;
+   if(state.chargePlug!=='all'&&!s.connectors.some(x=>x.replace(/[^a-z0-9]/gi,'').toLowerCase().includes(state.chargePlug.replace(/[^a-z0-9]/gi,''))))return false;
+  }
   if(query){const hit=norm([s.name,s.brand,s.city,s.address].join(' ')).includes(query);if(!hit)return false}
   else if(!bounds.contains([s.lon,s.lat]))return false;
   const price=currentPrice(s);
@@ -134,6 +139,7 @@ function filtered(){
 }
 function refresh(){
  if(!state.map)return;filterLayer();
+ $('charger-filters').hidden=state.mode!=='charge';
  const list=$('results');const arr=filtered();list.replaceChildren();
  $('summary').textContent=arr.length.toLocaleString('nb-NO')+' treff'+(state.search?' for søket':' i kartet');
  $('result-title').textContent=state.mode==='charge'?'Ladestasjoner':state.mode==='fuel'?'Bensinstasjoner':'Stasjoner i området';
@@ -153,7 +159,7 @@ function refresh(){
      'Ingen stasjoner samsvarer med søk og filtre.';
   list.append(Object.assign(document.createElement('p'),{className:'empty',textContent:message}));
   const reset=document.createElement('button');reset.type='button';reset.className='secondary';reset.style.cssText='width:100%;margin:4px 0 12px';reset.textContent='Nullstill søk og filtre';
-  reset.addEventListener('click',()=>{state.search='';$('search').value='';state.recent=false;state.priced=false;state.sort='near';state.mode='all';state.fuel='petrol95';$('recent-only').checked=false;$('priced-only').checked=false;$('sort-by').value='near';$('fuel-type').value='petrol95';document.querySelectorAll('#category button').forEach(b=>b.classList.toggle('active',b.dataset.mode==='all'));refresh()});
+  reset.addEventListener('click',()=>{state.search='';$('search').value='';state.recent=false;state.priced=false;state.sort='near';state.mode='all';state.fuel='petrol95';state.chargePower=0;state.chargePlug='all';$('charge-power').value='all';$('charge-plug').value='all';$('recent-only').checked=false;$('priced-only').checked=false;$('sort-by').value='near';$('fuel-type').value='petrol95';document.querySelectorAll('#category button').forEach(b=>b.classList.toggle('active',b.dataset.mode==='all'));refresh()});
   list.append(reset);return;
  }
  for(const s of arr.slice(0,65)){
@@ -189,6 +195,8 @@ function showDetails(s){
  if(s.brand)meta.append(makeMetaRow('Operatør',s.brand));
  if(s.kw)meta.append(makeMetaRow('Effekt registrert',s.kw+' kW'));
  if(s.connectors?.length)meta.append(makeMetaRow('Ladekontakter',s.connectors.join(', ').slice(0,90)));
+ if(s.type==='charge'&&!s.kw)meta.append(makeMetaRow('Ladeeffekt','Ikke registrert'));
+ if(s.type==='charge')meta.append(makeMetaRow('Ladepris','Kun brukerinnmeldte priser – se dato'));
  meta.append(makeMetaRow('Koordinater',s.lat.toFixed(4)+', '+s.lon.toFixed(4)));
  $('d-navigate').href='https://www.google.com/maps/dir/?api=1&destination='+s.lat+','+s.lon;
  const m=state.map;m.flyTo({center:[s.lon,s.lat],zoom:Math.max(m.getZoom(),13),duration:850});
@@ -341,13 +349,18 @@ function controls(){
   const btn=e.target.closest('[data-mode]');if(!btn)return;state.mode=btn.dataset.mode;
   document.querySelectorAll('#category button').forEach(b=>b.classList.toggle('active',b===btn));
   if(state.mode==='charge'&&state.fuel!=='electric'){$('fuel-type').value='electric';state.fuel='electric'}
+  if(state.mode==='charge'&&state.map.getZoom()<9){const c=state.map.getCenter();state.map.flyTo({center:[c.lng,c.lat],zoom:10.6,duration:800});}
   if(state.mode==='fuel'&&state.fuel==='electric'){$('fuel-type').value='petrol95';state.fuel='petrol95'}
   refresh();loadChargers();
  });
+ $('charge-power').addEventListener('change',e=>{state.chargePower=Number(e.target.value)||0;refresh()});
+ $('charge-plug').addEventListener('change',e=>{state.chargePlug=e.target.value;refresh()});
  $('fuel-type').addEventListener('change',e=>{
   state.fuel=e.target.value;
-  if(state.fuel==='electric'&&state.mode==='fuel'){state.mode='all';document.querySelectorAll('#category button').forEach(b=>b.classList.toggle('active',b.dataset.mode==='all'))}
-  refresh();if(state.selected)showDetails(state.selected);
+  if(state.fuel==='electric'){state.mode='charge';if(state.map.getZoom()<9){const c=state.map.getCenter();state.map.flyTo({center:[c.lng,c.lat],zoom:10.6,duration:800})}}
+  if(state.fuel!=='electric'&&state.mode==='charge')state.mode='fuel';
+  document.querySelectorAll('#category button').forEach(b=>b.classList.toggle('active',b.dataset.mode===state.mode));
+  refresh();loadChargers();if(state.selected)showDetails(state.selected);
  });
  $('sort-by').addEventListener('change',e=>{state.sort=e.target.value;refresh()});
  $('recent-only').addEventListener('change',e=>{state.recent=e.target.checked;refresh()});
