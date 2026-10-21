@@ -74,16 +74,30 @@ async function loadFuel(){
   $('results').innerHTML='<p class="empty">Stasjonslisten kunne ikke lastes. Sjekk nettverk/innholdsblokkering, eller prøv igjen senere.</p>';
  }
 }
+function matchesFilters(s){
+ if(state.mode!=='all'&&s.type!==state.mode)return false;
+ if(s.type==='charge'&&(state.chargePower>0||state.chargePlug!=='all')){
+  if(state.chargePower>0&&!(Number.isFinite(s.kw)&&s.kw>=state.chargePower))return false;
+  if(state.chargePlug!=='all'&&!s.connectors.some(x=>x.replace(/[^a-z0-9]/gi,'').toLowerCase().includes(state.chargePlug.replace(/[^a-z0-9]/gi,''))))return false;
+ }
+ const query=norm(state.search.trim());
+ if(query&&!norm([s.name,s.brand,s.city,s.address].join(' ')).includes(query))return false;
+ const price=currentPrice(s);
+ if(state.priced&&!price)return false;
+ if(state.recent&&ageCategory(price)!=='recent')return false;
+ return true;
+}
 function updateSources(){
  const m=state.map;if(!m)return;
  const fuel=[],charge=[];
  for(const s of state.stations.values()){
+  if(!matchesFilters(s))continue;
   const obj={type:'Feature',geometry:{type:'Point',coordinates:[s.lon,s.lat]},properties:{id:s.id}};
   (s.type==='fuel'?fuel:charge).push(obj);
  }
  if(m.getSource('fuel-stations'))m.getSource('fuel-stations').setData({type:'FeatureCollection',features:fuel});
  if(m.getSource('charging-stations'))m.getSource('charging-stations').setData({type:'FeatureCollection',features:charge});
- $('map-counter').textContent=state.stations.size.toLocaleString('nb-NO')+' kartpunkter';
+ $('map-counter').textContent=state.stations.size.toLocaleString('nb-NO')+' registrerte punkter';
 }
 function createMapLayers(){
  const m=state.map;
@@ -115,17 +129,8 @@ function cleanPrice(p){
 function filtered(){
  const query=norm(state.search.trim()),center=state.map.getCenter(),bounds=state.map.getBounds();
  const n=Array.from(state.stations.values()).filter(s=>{
-  if(state.mode!=='all'&&s.type!==state.mode)return false;
-  if(s.type==='charge'&&(state.chargePower>0||state.chargePlug!=='all')){
-   if(state.chargePower>0&&!(Number.isFinite(s.kw)&&s.kw>=state.chargePower))return false;
-   if(state.chargePlug!=='all'&&!s.connectors.some(x=>x.replace(/[^a-z0-9]/gi,'').toLowerCase().includes(state.chargePlug.replace(/[^a-z0-9]/gi,''))))return false;
-  }
-  if(query){const hit=norm([s.name,s.brand,s.city,s.address].join(' ')).includes(query);if(!hit)return false}
-  else if(!bounds.contains([s.lon,s.lat]))return false;
-  const price=currentPrice(s);
-  if(state.priced&&!price)return false;
-  if(state.recent&&ageCategory(price)!=='recent')return false;
-  return true;
+  if(!matchesFilters(s))return false;
+  return query?true:bounds.contains([s.lon,s.lat]);
  });
  const distance=s=>km([center.lng,center.lat],[s.lon,s.lat]);
  n.sort((a,b)=>{
@@ -138,7 +143,7 @@ function filtered(){
  return n;
 }
 function refresh(){
- if(!state.map)return;filterLayer();
+ if(!state.map)return;filterLayer();updateSources();
  $('charger-filters').hidden=state.mode!=='charge';
  const list=$('results');const arr=filtered();list.replaceChildren();
  $('summary').textContent=arr.length.toLocaleString('nb-NO')+' treff'+(state.search?' for søket':' i kartet');
