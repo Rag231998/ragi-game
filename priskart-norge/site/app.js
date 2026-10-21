@@ -58,8 +58,9 @@ function pricesFor(s){
 }
 function status(message){$('map-message').textContent=message}
 function updateNote(){
- const stamp=state.feedAt?formatDate(state.feedAt):'Ukjent tidspunkt';
- $('source-note').textContent='⛽ Drivstoffpriser – eksportert '+stamp+'. Priser er brukerobservasjoner, ikke garanterte sanntidspriser. ⚡ Ladere fra OpenStreetMap i valgt kartutsnitt (ikke komplett NOBIL).';
+ const fuel=[...state.stations.values()].filter(x=>x.type==='fuel').length;
+ const charge=[...state.stations.values()].filter(x=>x.type==='charge').length;
+ $('source-note').textContent='⛽ '+fuel.toLocaleString('nb-NO')+' bensinstasjoner fra Drivstoffpriser. ⚡ '+charge.toLocaleString('nb-NO')+' ladestasjoner – NOBIL-basert datasett distribuert av Stavanger kommune (NLOD, oktober 2026). Prisene er brukerrapporterte og må kontrolleres hos operatøren.';
 }
 async function loadFuel(){
  try{
@@ -85,7 +86,7 @@ async function loadFuel(){
   state.loadedFuel=true;
   await loadReports();
   updateNote();updateSources();refresh();
-  status('⛽ '+all.filter(x=>x.kind==='fuel').length+' bensinstasjoner · ⚡ '+all.filter(x=>x.kind==='charge').length+' registrerte ladepunkter. Ladeoversikten utvides med OpenStreetMap når du zoomer inn.');
+  status('⛽ '+all.filter(x=>x.kind==='fuel').length+' bensinstasjoner · ⚡ '+all.filter(x=>x.kind==='charge').length+' registrerte ladepunkter. Ladestasjonene kommer fra en landsdekkende NOBIL-basert katalog.');
  }catch(err){
   console.warn('Database utilgjengelig; viser åpen reserveeksport',err);
   try{
@@ -241,42 +242,9 @@ function selectStation(s){
  if(window.innerWidth<=760){$('sidebar').classList.remove('collapsed');$('mobile-toggle').setAttribute('aria-expanded','true');$('mobile-toggle').textContent='Vis kart ↓'}
 }
 async function loadChargers(){
- const m=state.map;if(!m||state.loadingChargers||state.mode==='fuel'||m.getZoom()<9)return;
- const b=m.getBounds();
- const x1=Math.max(4,b.getWest()),x2=Math.min(32,b.getEast()),y1=Math.max(57.5,b.getSouth()),y2=Math.min(72,b.getNorth());
- if(x2<=x1||y2<=y1||x2-x1>1.5||y2-y1>1)return;
- const box=[y1,x1,y2,x2].map(x=>x.toFixed(3));
- const key=box.map(x=>Math.round(x*10)/10).join(',');
- if(state.chargerRequestCache.has(key))return;
- state.loadingChargers=true;state.chargersError=null;
- const query='[out:json][timeout:20];(node["amenity"="charging_station"]('+box.join(',')+');way["amenity"="charging_station"]('+box.join(',')+'););out center tags;';
- try{
-  const service='/api/chargers?bbox='+encodeURIComponent(box.join(','));
-  let obj;
-  try{const r=await fetch(service);if(!r.ok||!(r.headers.get('content-type')||'').includes('json'))throw Error('Server ikke tilkoblet');obj=await r.json()}
-  catch(e){
-   const endpoints=['https://overpass.kumi.systems/api/interpreter','https://overpass-api.de/api/interpreter'];
-   let lastError=null;
-   for(const endpoint of endpoints){
-    try{
-     const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
-     try{
-      const r=await fetch(endpoint+'?data='+encodeURIComponent(query),{signal:controller.signal,cache:'default'});
-      if(!r.ok)throw Error('HTTP '+r.status);
-      const payload=await r.json();
-      if(!Array.isArray(payload.elements))throw Error('Uventet svar fra karttjenesten');
-      obj=payload;break;
-     }finally{clearTimeout(timer)}
-    }catch(err){lastError=err}
-   }
-   if(!obj)throw Error('Kartkildene svarer ikke: '+(lastError?.message||'ukjent feil'));
-  }
-  let cnt=0;
-  for(const o of obj.elements||[]){const s=chargerStation(o);if(s){state.stations.set(s.id,s);cnt++}}
-  state.chargerRequestCache.add(key);state.chargersLoaded=true;updateSources();refresh();
-  if(cnt)status('⚡ '+cnt+' ladepunkter lastet fra OpenStreetMap i kartutsnittet. Zoom til et nytt område for å se flere.');
- }catch(err){state.chargersError=err.message;status('⚡ Ladesøk utilgjengelig akkurat nå: '+err.message+' · NOBIL skal bli hovedkilde når API-tilgang er på plass.');refresh()}
- finally{state.loadingChargers=false}
+ // Nationwide NOBIL-based catalog is imported into Supabase. Do not query
+ // unstable public Overpass endpoints from every user's mobile browser.
+ return;
 }
 async function loadReports(){
  if(!state.client)return;
