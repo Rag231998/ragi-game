@@ -1,0 +1,191 @@
+<!doctype html><html lang="no"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d1722"><title>Administrasjon – PrisKart Norge</title>
+<style>
+:root{color-scheme:light;--ink:#122f39;--navy:#0d202e;--mint:#127c63;--pale:#e7f7f1;--line:#d7e5e8;--muted:#5d7680}
+*{box-sizing:border-box}html,body{margin:0;background:#eef4f6;font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}
+button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #31c29e;outline-offset:2px}
+a{color:#157760;text-decoration:none}a:hover{text-decoration:underline}
+header{min-height:72px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px clamp(15px,4vw,40px)}
+.logo{font-size:18px;letter-spacing:.02em;font-weight:850}.logo span{color:#73ebc4}.mini{color:#9ab3c0;font-size:11px}
+header a{color:#e1f8f3;font-size:12px;border:1px solid #567985;border-radius:10px;padding:10px 12px}
+main{max-width:1180px;margin:25px auto;padding:0 18px 50px}
+h1{font-size:27px;letter-spacing:-.045em;margin:0 0 5px}.lead{color:var(--muted);font-size:12px;line-height:1.6;margin:0 0 18px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:17px;box-shadow:0 7px 25px #243b3d0a;padding:22px;margin-bottom:18px}
+.panel h2{margin:0 0 9px;font-size:20px}.panel p{font-size:12px;color:var(--muted)}
+.hidden,[hidden]{display:none!important}
+label{display:block;font-size:11px;font-weight:800;color:#486978;margin:10px 0 5px}
+input,textarea,select{background:#fbfdfd;border:1px solid #bfd1d8;border-radius:9px;padding:10px 11px;color:#1c3c47;width:100%;min-height:41px}
+textarea{min-height:80px;resize:vertical}
+.action{display:inline-flex;align-items:center;justify-content:center;background:#128166;color:#fff;border:1px solid #128166;border-radius:10px;min-height:41px;padding:10px 15px;font-size:12px;font-weight:800}
+.action:hover{background:#09634f}.action.light{background:#e8f6f2;color:#0a6952;border-color:#b9d9cf}.action.danger{background:#fff3f1;color:#a14235;border-color:#e8bab3}
+.authgrid{display:grid;grid-template-columns:1.4fr 1fr auto auto;align-items:end;gap:8px}
+.message{border-left:3px solid #a8c5c8;color:#547080;font-size:12px;padding:9px 12px;background:#f4f9f8;border-radius:6px;margin:12px 0}
+.message.error{border-left-color:#d66d53;color:#943f32;background:#fff6f0}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:15px 0}
+.stat{border:1px solid var(--line);border-radius:12px;padding:14px;background:#f8fbfc}
+.stat strong{font-size:24px;display:block;color:#087c60}.stat small{font-size:11px;color:#607e88}
+.tabs{display:flex;gap:5px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:14px}
+.tab{border:1px solid #d1e1e3;border-radius:9px;background:#f5f9f8;color:#416676;font-size:12px;padding:10px 13px;font-weight:750}
+.tab.active{background:#d9f6e9;border-color:#94d8c2;color:#0a7256}
+.controls{display:grid;grid-template-columns:1.8fr 1fr auto;gap:9px;align-items:end;margin-bottom:13px}
+.list{display:flex;flex-direction:column;gap:7px;max-height:580px;overflow:auto}
+.item{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px;border:1px solid #dfe9e9;border-radius:10px;background:#fff}
+.item strong{font-size:12px}.item p{margin:3px 0 0;font-size:11px;max-width:750px}
+.item .btns{display:flex;gap:5px;flex-shrink:0}
+.item .btns button{border:1px solid #bdddd3;border-radius:8px;background:#eef8f4;color:#236c5a;padding:7px 9px;font-size:10px;font-weight:800}
+.item .btns button.danger{border-color:#e8bfba;color:#a54840;background:#fff5f3}
+.editor{border:1px solid #b6d9d0;border-radius:13px;padding:17px;margin:15px 0;background:#f4fbf8}
+.editor h3{margin:0 0 12px}
+.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 13px}
+.spanall{grid-column:1/-1}.inline{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:13px 0}
+.reportprice{font-size:19px;font-weight:850;color:#0f7b60}
+.badge{font-size:10px;background:#e0f4e9;color:#0e7053;border-radius:7px;padding:3px 6px;font-weight:800}
+.badge.muted{background:#f4efe4;color:#8a6422}
+.note{font-size:11px;color:#56747f;line-height:1.6}
+select[disabled]{background:#f2f3f3}
+#admin-app[hidden],#auth-section[hidden]{display:none}
+@media(max-width:730px){
+ main{padding:0 10px 35px;margin:12px auto}
+ header{padding:12px}header a{font-size:11px}
+ .logo{font-size:15px}
+ h1{font-size:21px}.panel{padding:13px;border-radius:13px}
+ .stats{grid-template-columns:1fr 1fr}.stat strong{font-size:21px}
+ .controls{grid-template-columns:1fr 1fr}.controls input{grid-column:1/-1}.controls .action{width:100%}
+ .authgrid{grid-template-columns:1fr 1fr}.authgrid label{font-size:10px}
+ .item{align-items:flex-start;flex-direction:column}.item .btns{width:100%}.item .btns button{flex:1}
+ .formgrid{grid-template-columns:1fr}
+ .tabs{display:grid;grid-template-columns:repeat(2,1fr)}.tab{font-size:11px}
+}
+
+#site-toggles label{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:8px;padding:9px 11px;margin:3px 0;font-size:12px;color:var(--ink)}
+#site-toggles input,#faq-published{width:17px;height:17px;min-height:17px;accent-color:var(--mint)}
+#site-logo{padding:9px;max-width:100%;font-size:11px}
+</style></head>
+<body>
+<header><div><div class="logo">⛽ PRIS<span>KART</span> · ADMIN</div><div class="mini">Kun administratorer har tilgang til endringer</div></div><a href="https://priskart-norge-live.vercel.app/">↗ Til kartet</a></header>
+<main>
+<h1>Administrasjon</h1><p class="lead">Administrer stasjoner, operatører og priser fra mobil eller PC. Alle endringer lagres i den felles Supabase-databasen.</p>
+<section class="panel" id="auth-section"><h2>Logg inn</h2><p>Bruk kontoen som er administrator for prosjektet. Du kan bruke passord eller få en innloggingslenke på e-post.</p>
+<div class="authgrid">
+<div><label for="admin-email">E-post</label><input type="email" id="admin-email" autocomplete="email" placeholder="din@epost.no"></div>
+<div><label for="admin-password">Passord, hvis du har det</label><input type="password" id="admin-password" autocomplete="current-password" placeholder="Valgfritt"></div>
+<button class="action" id="admin-login">Logg inn</button><button class="action light" id="admin-email-link">Send lenke</button>
+</div><div id="auth-message" class="message" role="status">Sjekker innlogging …</div><details style="margin-top:14px;font-size:12px;color:#4d707c">
+<summary style="cursor:pointer;font-weight:800">Får du localhost eller «email rate limit exceeded»?</summary>
+<p>Innloggingen krever at eier setter korrekt Site URL og tillatte videresendingsadresser i Supabase → Authentication → URL Configuration og kobler egen SMTP-leverandør under Authentication → SMTP Settings. Den innebygde e-posttjenesten er kun ment for testing. Du kan logge inn med passord dersom kontoen allerede har et.</p>
+</details></section>
+<section id="admin-app" hidden>
+<div class="stats">
+<div class="stat"><strong id="st-total">–</strong><small>Alle stasjoner</small></div>
+<div class="stat"><strong id="st-fuel">–</strong><small>Bensinstasjoner</small></div>
+<div class="stat"><strong id="st-charge">–</strong><small>Ladestasjoner</small></div>
+<div class="stat"><strong id="st-reports">–</strong><small>Prismeldinger</small></div>
+</div>
+<div class="panel">
+<div class="inline" style="justify-content:space-between"><span id="admin-account" class="note"></span><button class="action light" id="admin-logout">Logg ut</button></div>
+<div class="tabs" role="tablist">
+<button class="tab active" data-tab="stations">📍 Stasjoner</button>
+<button class="tab" data-tab="reports">💰 Prisrapporter</button>
+<button class="tab" data-tab="operators">🏷 Operatører</button>
+<button class="tab" data-tab="appearance">🎨 Utseende og innhold</button>
+<button class="tab" data-tab="faq">❓ FAQ</button>
+<button class="tab" data-tab="sources">ℹ️ Data og kilder</button>
+</div>
+<div id="panel-stations">
+<div class="controls"><input id="station-search" placeholder="Søk navn eller operatør, f.eks. Circle K Tromsø" aria-label="Søk stasjon"><select id="station-kind"><option value="all">Alle stasjoner</option><option value="fuel">⛽ Bensin/diesel</option><option value="charge">⚡ Elbillading</option><option value="hidden">Skjulte stasjoner</option></select><button class="action" id="add-station">＋ Legg til</button></div>
+<p id="station-info" class="note">Søk eller velg en stasjon for å administrere den.</p>
+<div id="station-editor" class="editor" hidden>
+<h3 id="editor-heading">Rediger stasjon</h3>
+<form id="station-form"><input type="hidden" id="edit-id">
+<div class="formgrid">
+<div class="spanall"><label for="edit-name">Stasjonsnavn *</label><input id="edit-name" required maxlength="200"></div>
+<div><label for="edit-kind">Type *</label><select id="edit-kind"><option value="fuel">Bensinstasjon</option><option value="charge">Ladestasjon</option></select></div>
+<div><label for="edit-operator">Operatør / leverandør</label><input id="edit-operator" list="operator-options" maxlength="100"><datalist id="operator-options"></datalist></div>
+<div><label for="edit-lat">Breddegrad (latitude) *</label><input id="edit-lat" type="number" step="any" min="57" max="72" required></div>
+<div><label for="edit-lon">Lengdegrad (longitude) *</label><input id="edit-lon" type="number" step="any" min="4" max="32" required></div>
+<div class="spanall"><label for="edit-address">Adresse</label><input id="edit-address" maxlength="500"></div>
+<div><label for="edit-power">Elbil – maks effekt (kW)</label><input id="edit-power" type="number" step="0.1" min="0.1"></div>
+<div><label for="edit-connectors">Kontakter (kommaseparert)</label><input id="edit-connectors" placeholder="CCS, Type 2, CHAdeMO"></div>
+<div><label for="edit-status">Visning</label><select id="edit-status"><option value="active">Synlig på kartet</option><option value="hidden">Skjult</option></select></div>
+</div>
+<div class="inline"><button type="submit" class="action" id="save-station">Lagre stasjon</button><button type="button" class="action light" id="cancel-edit">Avbryt</button></div>
+</form></div>
+<div id="station-list" class="list"></div><div class="inline"><button id="station-next" class="action light">Vis flere</button><span id="station-page" class="note"></span></div>
+</div>
+<div id="panel-reports" hidden><p class="note">Rapporter fra brukere vises med tidsstempel. Avvis feilaktige observasjoner – de forsvinner da fra det offentlige kartet.</p>
+<div id="report-list" class="list"></div><button id="report-reload" class="action light" style="margin-top:12px">↻ Hent nye rapporter</button></div>
+<div id="panel-operators" hidden><p class="note">Listen brukes til å holde orden på leverandørene. Navnene kobles til stasjoner ved registrering.</p>
+<div class="inline"><input id="new-operator" placeholder="Navn på ny operatør" style="flex:1;min-width:160px"><select id="operator-kind" style="flex:0 0 105px"><option value="fuel">Drivstoff</option><option value="charge">Lading</option><option value="both">Begge</option></select><button id="add-operator" class="action">＋ Legg til</button></div><div id="operator-list" class="list"></div></div>
+
+<div id="panel-appearance" hidden>
+ <h3>Rediger nettstedet uten kode</h3>
+ <p>Du kan endre logo, navn, beskrivelse, farger og hvilke deler besøkende skal se. Velg mellom venstre og høyre sidemeny på PC. Mobil beholder et eget, tilgjengelig oppsett.</p>
+ <form id="appearance-form">
+ <div class="formgrid">
+  <div><label for="site-name">Nettstedets navn</label><input id="site-name" maxlength="70" required></div>
+  <div><label for="site-tagline">Undertittel</label><input id="site-tagline" maxlength="150"></div>
+  <div class="spanall"><label for="site-title">Hovedoverskrift</label><input id="site-title" maxlength="140" required></div>
+  <div class="spanall"><label for="site-description">Beskrivelse under overskriften</label><textarea id="site-description" maxlength="400"></textarea></div>
+  <div><label for="site-color">Hovedfarge</label><input type="color" id="site-color" style="height:43px;padding:5px"></div>
+  <div><label for="site-sidebar">Sidepanelet på PC</label><select id="site-sidebar"><option value="left">Venstre</option><option value="right">Høyre</option></select></div>
+  <div><label for="site-density">Tetthet i stasjonslisten</label><select id="site-density"><option value="comfortable">Luftig</option><option value="compact">Kompakt</option></select></div>
+  <div><label for="site-logo">Last opp logo (PNG, JPEG, WebP, maks 2 MB)</label><input type="file" accept="image/png,image/jpeg,image/webp" id="site-logo"></div>
+  <div class="spanall"><label>Forhåndsvisning av logo</label><img id="site-logo-preview" alt="Nåværende logo" style="max-width:160px;max-height:75px;border-radius:10px" hidden></div>
+ </div>
+ <div class="editor">
+  <h3>Hva skal besøkende se?</h3>
+  <div class="formgrid" id="site-toggles">
+   <label><input type="checkbox" id="site-show-fuel" checked> ⛽ Drivstoff</label>
+   <label><input type="checkbox" id="site-show-charging" checked> ⚡ Elbillading</label>
+   <label><input type="checkbox" id="site-show-near" checked> 📍 Nær meg</label>
+   <label><input type="checkbox" id="site-show-cities" checked> Byvalg</label>
+   <label><input type="checkbox" id="site-show-faq" checked> FAQ</label>
+   <label><input type="checkbox" id="site-show-intro" checked> Overskrift og introduksjon</label>
+   <label><input type="checkbox" id="site-show-notice"> Viktig melding øverst</label>
+  </div>
+  <label for="site-notice">Viktig melding (maks 240 tegn)</label><textarea id="site-notice" maxlength="240" placeholder="Eksempel: Vi oppdaterer ladeprisene fortløpende"></textarea>
+ </div>
+ <h3>Opplysninger om tjenesten</h3>
+ <p>Disse bør være korrekte før du markedsfører nettstedet. De brukes på personvernsiden.</p>
+ <div class="formgrid">
+  <div><label for="site-operator">Behandlingsansvarlig / virksomhet</label><input id="site-operator" placeholder="Registrert virksomhetsnavn"></div>
+  <div><label for="site-org">Organisasjonsnummer</label><input id="site-org" placeholder="9 siffer" inputmode="numeric"></div>
+  <div class="spanall"><label for="site-contact">Kontakt-e-post for personvern og support</label><input id="site-contact" type="email" placeholder="kontakt@dittdomene.no"></div>
+ </div>
+ <div class="inline"><button type="submit" class="action" id="save-appearance">Lagre og publiser endringer</button><a class="action light" href="./index.html" target="_blank" rel="noopener noreferrer">Se nettsiden ↗</a></div>
+ </form>
+</div>
+<div id="panel-faq" hidden>
+ <h3>Ofte stilte spørsmål</h3>
+ <p>Legg til, rediger, endre rekkefølge eller skjul spørsmål. Endringer lagres direkte i databasen.</p>
+ <form id="faq-form" class="editor">
+  <input type="hidden" id="faq-id">
+  <label for="faq-question">Spørsmål</label><input id="faq-question" minlength="5" maxlength="220" required>
+  <label for="faq-answer">Svar</label><textarea id="faq-answer" required minlength="8" maxlength="2500" style="min-height:100px"></textarea>
+  <div class="formgrid">
+   <div><label for="faq-order">Rekkefølge (laveste først)</label><input type="number" id="faq-order" value="100" min="0" max="10000"></div>
+   <label style="align-self:end"><input type="checkbox" id="faq-published" checked> Vis på nettsiden</label>
+  </div>
+  <div class="inline"><button type="submit" class="action">Lagre spørsmål</button><button type="button" class="action light" id="faq-reset">Nytt spørsmål</button></div>
+ </form>
+ <div id="faq-admin-list" class="list"></div>
+</div>
+
+<div id="panel-sources" hidden>
+<h3>Hvilke data har vi?</h3>
+<p>Drivstoffstasjoner og historiske drivstoffpriser ble importert fra åpne data. Nye brukerpriser lagres fortløpende i Supabase. Elbilladere kan registreres av administrator og oppdages via OpenStreetMap. Offisiell tilgjengelighet i sanntid for ladere krever NOBIL API-tilgang og er foreløpig ikke tilkoblet.</p>
+<p><a href="https://info.nobil.no/index.php/api" target="_blank" rel="noopener noreferrer">NOBIL – be om API-nøkkel ↗</a></p>
+<p><a href="https://info.nobil.no/sanntid" target="_blank" rel="noopener noreferrer">NOBIL – sanntidsstrøm ↗</a></p>
+<p><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap – lisens og bidragsytere ↗</a></p>
+<p><a href="https://drivstoffpriser.github.io/Drivstoffpriser-App/data/" target="_blank" rel="noopener noreferrer">Drivstoffpriser – kildeeksport ↗</a></p>
+<div class="message">«LIVE» på PrisKart betyr nye brukerinnmeldte prisobservasjoner med faktisk tidsstempel – ikke garanterte pumpepriser eller tilgjengelighet fra ladeselskapene.</div>
+</div>
+<div id="admin-message" class="message" role="status">Klar.</div>
+</div>
+</section>
+</main>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="./admin.js?v=1"></script>
+</body></html>
