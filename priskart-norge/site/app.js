@@ -363,6 +363,105 @@ function closeDialog(){
  $('report-modal').hidden=true;$('report-title').textContent='Meld inn pris';
  $('report-form').querySelectorAll('label,input,select,.auth-box,.submitrow').forEach(el=>el.style.display='');
 }
+
+/* No-code public site settings and optional preference storage. */
+const CONSENT_KEY='priskart_consent_v1',PREFERENCES_KEY='priskart_filter_preferences_v1';
+let siteSettings=null;
+function consentChoice(choice){
+ try{
+  localStorage.setItem(CONSENT_KEY,choice);
+  if(choice==='necessary')localStorage.removeItem(PREFERENCES_KEY);
+ }catch(e){console.warn('Preference storage disabled',e)}
+ $('privacy-prompt').hidden=true;
+}
+function initConsent(){
+ const panel=$('privacy-prompt');
+ try{panel.hidden=Boolean(localStorage.getItem(CONSENT_KEY))}
+ catch(e){panel.hidden=false}
+ $('privacy-necessary').addEventListener('click',()=>consentChoice('necessary'));
+ $('privacy-preferences').addEventListener('click',()=>{consentChoice('preferences');savePreferences()});
+ window.addEventListener('priskart-show-consent',()=>{panel.hidden=false});
+ document.addEventListener('change',e=>{
+  if(e.target?.closest?.('.filters'))setTimeout(savePreferences,0);
+ });
+ $('category').addEventListener('click',()=>setTimeout(savePreferences,0));
+}
+function savePreferences(){
+ try{
+  if(localStorage.getItem(CONSENT_KEY)!=='preferences')return;
+  localStorage.setItem(PREFERENCES_KEY,JSON.stringify({
+   mode:state.mode,fuel:state.fuel,sort:state.sort,
+   recent:state.recent,priced:state.priced,power:state.chargePower,plug:state.chargePlug
+  }));
+ }catch(e){console.warn('Could not save optional preferences',e)}
+}
+function restorePreferences(){
+ try{
+  if(localStorage.getItem(CONSENT_KEY)!=='preferences')return;
+  const p=JSON.parse(localStorage.getItem(PREFERENCES_KEY)||'{}');
+  if(['all','fuel','charge'].includes(p.mode))state.mode=p.mode;
+  if(['petrol95','petrol98','diesel','electric'].includes(p.fuel))state.fuel=p.fuel;
+  if(['near','cheap','recent','name'].includes(p.sort))state.sort=p.sort;
+  state.recent=p.recent===true;state.priced=p.priced===true;
+  state.chargePower=[0,50,150].includes(p.power)?p.power:0;
+  state.chargePlug=['all','ccs','type2','chademo'].includes(p.plug)?p.plug:'all';
+  $('fuel-type').value=state.fuel;$('sort-by').value=state.sort;
+  $('recent-only').checked=state.recent;$('priced-only').checked=state.priced;
+  $('charge-power').value=String(state.chargePower||'all');
+  $('charge-plug').value=state.chargePlug;
+  document.querySelectorAll('#category button').forEach(b=>b.classList.toggle('active',b.dataset.mode===state.mode));
+ }catch(e){console.warn('Invalid optional preferences',e)}
+}
+async function loadSiteSettings(){
+ if(!state.client)return;
+ try{
+  const {data,error}=await state.client.from('site_settings').select('*').eq('id',1).maybeSingle();
+  if(error||!data)return;
+  siteSettings=data;
+  const brand=document.querySelector('.brand strong'),tagline=document.querySelector('.brand small');
+  if(brand)brand.textContent=data.brand_name||'PrisKart Norge';
+  document.title=(data.brand_name||'PrisKart Norge')+' – finn drivstoff og lading';
+  if(tagline)tagline.textContent=data.tagline||'Finn, sammenlign og oppdater';
+  if(data.hero_title)document.querySelector('.intro h1').textContent=data.hero_title;
+  if(data.hero_description)document.querySelector('.intro p').textContent=data.hero_description;
+  document.querySelector('.intro h1').hidden=!data.show_intro;
+  document.querySelector('.intro p').hidden=!data.show_intro;
+  if(data.accent_color&&/^#[0-9a-fA-F]{6}$/.test(data.accent_color)){
+   document.documentElement.style.setProperty('--green',data.accent_color);
+   document.documentElement.style.setProperty('--brand-accent',data.accent_color);
+   const style=document.createElement('style');
+   style.textContent='.primary,.privacy-actions button:last-child{background:var(--brand-accent);border-color:var(--brand-accent)}.brandmark{background:var(--brand-accent)}';
+   document.head.appendChild(style);
+  }
+  document.body.classList.toggle('site-panel-right',data.desktop_sidebar==='right');
+  document.body.classList.toggle('site-compact',data.desktop_density==='compact');
+  $('near-me').hidden=!data.show_near_me;
+  document.querySelector('.city-wrap .cities').hidden=!data.show_city_shortcuts;
+  for(const id of ['faq-menu','faq-footer']){const link=$(id);if(link)link.hidden=!data.show_faq}
+  const fuels=document.querySelector('#category [data-mode="fuel"]');
+  const chargers=document.querySelector('#category [data-mode="charge"]');
+  fuels.hidden=!data.show_fuel;chargers.hidden=!data.show_charging;
+  if(data.show_fuel===false&&state.mode==='fuel'){
+   state.mode='charge';state.fuel='electric';$('fuel-type').value='electric';
+  }else if(data.show_charging===false&&state.mode==='charge'){
+   state.mode='fuel';state.fuel='petrol95';$('fuel-type').value='petrol95';
+  }
+  document.querySelectorAll('#category button').forEach(b=>b.classList.toggle('active',b.dataset.mode===state.mode));
+  if(data.logo_url&&/^https:\/\//i.test(data.logo_url)){
+   const mark=document.querySelector('.brandmark');mark.replaceChildren();
+   const image=document.createElement('img');image.src=data.logo_url;image.alt='';
+   image.style.cssText='max-width:100%;max-height:100%;object-fit:contain;border-radius:9px';
+   mark.append(image);
+  }
+  if(data.show_notice&&data.public_notice){
+   const notice=document.createElement('div');notice.id='site-notice-banner';
+   notice.textContent=data.public_notice;document.querySelector('.intro').append(notice);
+  }
+  filterLayer();refresh();
+  if(state.map)setTimeout(()=>state.map.resize(),100);
+ }catch(e){console.warn('Design settings unavailable',e)}
+}
+
 function controls(){
  $('city-buttons').addEventListener('click',e=>{const b=e.target.closest('[data-city]');if(b)moveCity(b.dataset.city)});
  $('near-me').addEventListener('click',()=>{
@@ -447,7 +546,7 @@ function init(){
  // Desktop wheel scrolls the station list; use +/- or map controls for map zoom.
  if(window.matchMedia('(min-width: 761px)').matches)state.map.scrollZoom.disable();
  state.client=window.supabase?.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})||null;
- controls();
+ controls();initConsent();restorePreferences();
  const link=new URLSearchParams(location.search);
  const startMode=link.get('type');
  if(startMode==='charge'||startMode==='fuel'){
@@ -455,7 +554,7 @@ function init(){
    $('fuel-type').value=state.fuel;
    document.querySelectorAll('#category button').forEach(b=>b.classList.toggle('active',b.dataset.mode===state.mode));
  }
- createMapLayers();updateSources();config();loadFuel();refresh();
+ createMapLayers();updateSources();config();loadSiteSettings();loadFuel();refresh();
  const place=link.get('sted');
  if(place){const match=Object.keys(cities).find(c=>norm(c)===norm(place));if(match)state.map.jumpTo({center:cities[match],zoom:11.1})}
  if(window.innerWidth<=760){$('sidebar').classList.remove('collapsed');$('mobile-toggle').textContent='Vis kart ↓';$('mobile-toggle').setAttribute('aria-expanded','true')}
