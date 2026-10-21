@@ -55,7 +55,7 @@ header{height:72px;position:fixed;inset:0 0 auto;z-index:15;background:#0e1b29;c
 @media(max-width:1150px){#details{top:auto;right:18px;bottom:18px;height:min(440px,70vh)}.mapmsg{bottom:475px}}
 @media(max-width:760px){header{height:62px;padding:0 11px}.brandmark{width:32px;height:32px;font-size:18px}.brand strong{font-size:14px}.brand small{font-size:8px}.header-right small{display:none}.topbtn{font-size:10px;padding:8px}.counter{display:none}#map{inset:62px 0 0}#loader{inset:62px 0 0}.sidebar{left:8px;right:8px;top:auto;bottom:7px;width:auto;height:min(51vh,420px);border-radius:17px}.sidebar.collapsed{height:57px}.sidebar.collapsed .filters,.sidebar.collapsed .result-head,.sidebar.collapsed .result-list,.sidebar.collapsed .sidefooter,.sidebar.collapsed .intro h1,.sidebar.collapsed .intro p,.sidebar.collapsed .searchbox,.sidebar.collapsed .cities{display:none}.intro{padding:13px}.eyebrow{margin-right:100px}.mobiletoggle{display:block!important;position:absolute;right:13px;top:11px;background:#d7eee9;border:0;border-radius:8px;padding:7px 10px;color:#0b745d;font-weight:850;font-size:11px}.mapmsg{left:8px;right:8px;bottom:calc(min(51vh,420px) + 16px);max-width:none;font-size:9px;padding:8px}.maplibregl-ctrl-top-right{top:10px;right:10px}#details{left:8px;right:8px;top:auto;bottom:8px;width:auto;height:min(67vh,530px);border-radius:17px}.filtergrid{margin-top:7px}.intro h1{font-size:19px}}
 @media(min-width:761px){.mobiletoggle{display:none}}
-</style><link rel="stylesheet" href="./ux.css?v=2"><style>
+</style><link rel="stylesheet" href="./ux.css?v=3"><style>
 .auth-box{background:#eef9f4;border:1px solid #b9e1d4;border-radius:11px;padding:12px;margin:13px 0}
 .auth-box strong{font-size:12px}.auth-box p{margin:5px 0 8px}.auth-row{display:flex;gap:6px}.auth-row input{min-width:0;flex:1}.auth-row button{border-radius:9px;background:#14795f;color:white;border:0;padding:8px 10px;white-space:nowrap;font-size:11px;font-weight:750}
 #logout-btn{margin-top:7px;padding:8px 10px}
@@ -124,5 +124,5 @@ try{
  map.on('error',e=>console.warn('Kartressurs kunne ikke lastes',e.error||e));
 }catch(e){document.getElementById('loader').textContent='Kartet kunne ikke startes: '+e.message}
 </script>
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./app.js?v=3"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./app.js?v=4"></script>
 </body></html>
