@@ -85,7 +85,7 @@ async function loadFuel(){
   }
   state.loadedFuel=true;
   await loadReports();
-  updateNote();updateSources();refresh();
+  updateNote();updateSources();refresh();openRequestedStation();
   status('⛽ '+all.filter(x=>x.kind==='fuel').length+' bensinstasjoner · ⚡ '+all.filter(x=>x.kind==='charge').length+' registrerte ladepunkter. Ladestasjonene kommer fra en landsdekkende NOBIL-basert katalog.');
  }catch(err){
   console.warn('Database utilgjengelig; viser åpen reserveeksport',err);
@@ -302,13 +302,80 @@ function updateAuthUI(){
  $('login-password').disabled=!!user;
  if(state.selected&&$('report-modal').hidden===false)$('report-submit').disabled=!user;
 }
+
+/* Client-side theme and share functions. All shared URLs intentionally omit GPS position. */
+const AUTH_REDIRECT_ROOT='https://priskart-norge-live.vercel.app/';
+let linkSending=false,linkCooldownUntil=0,currentTheme='light';
+function setTheme(mode,persist=false){
+  currentTheme=mode==='dark'?'dark':'light';
+  document.body.classList.toggle('dark-theme',currentTheme==='dark');
+  document.documentElement.style.colorScheme=currentTheme;
+  const toggle=$('theme-toggle');if(toggle){toggle.textContent=currentTheme==='dark'?'☀️':'🌙';toggle.title=currentTheme==='dark'?'Bytt til lys modus':'Bytt til mørk modus'}
+  if(persist)try{
+    if(localStorage.getItem(CONSENT_KEY)==='preferences')localStorage.setItem('priskart_theme',currentTheme);
+  }catch(e){}
+}
+function initTheme(){
+  let stored=null;
+  try{if(localStorage.getItem(CONSENT_KEY)==='preferences')stored=localStorage.getItem('priskart_theme')}catch(e){}
+  const dark=stored?stored==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+  setTheme(dark?'dark':'light');
+  $('theme-toggle').addEventListener('click',()=>setTheme(currentTheme==='dark'?'light':'dark',true));
+}
+function shareLink(url,text){
+  const share={url,title:'PrisKart Norge',text};
+  if(navigator.share){navigator.share(share).catch(err=>{if(err?.name!=='AbortError')copyShare(url)});return}
+  copyShare(url);
+}
+function copyShare(url){
+  if(navigator.clipboard?.writeText){
+    navigator.clipboard.writeText(url).then(()=>status('Lenken er kopiert. Nå kan du sende den til venner eller en gruppe.')).catch(()=>window.prompt('Kopier delingslenken:',url));
+  }else window.prompt('Kopier delingslenken:',url);
+}
+function stationShareUrl(s){
+  const url=new URL(AUTH_REDIRECT_ROOT);
+  url.searchParams.set('stasjon',s.id);
+  return url.toString();
+}
+function shareCurrentMap(){
+  const url=new URL(AUTH_REDIRECT_ROOT);
+  url.searchParams.set('type',state.mode==='all'?'fuel':state.mode);
+  // Deling fra "Nær meg" skal ikke legge GPS-koordinater i lenken.
+  const typed=Object.keys(cities).find(x=>norm(state.search.trim())===norm(x));
+  if(typed)url.searchParams.set('sted',typed);
+  shareLink(url.toString(),'Finn bensin- og ladepriser på samme kart.');
+}
+function openRequestedStation(){
+  const id=new URLSearchParams(location.search).get('stasjon');
+  if(!id||!state.stations.has(id))return;
+  selectStation(state.stations.get(id));
+}
+function loginErrorText(error){
+ const raw=(error?.message||'').toLowerCase();
+ if(raw.includes('rate limit')||raw.includes('too many')){
+  linkCooldownUntil=Date.now()+2*60*1000;
+  return 'Supabase har nådd grensen for e-postutsendelser. Ikke trykk flere ganger. Tjenesten trenger egen SMTP-leverandør før denne innloggingen fungerer stabilt.';
+ }
+ if(raw.includes('expired'))return 'Innloggingslenken er utløpt eller allerede brukt. Når e-posttjenesten fungerer, be om én ny lenke.';
+ return 'E-post kunne ikke sendes: '+(error?.message||'ukjent feil');
+}
+
 async function emailLogin(){
+ if(linkSending||Date.now()<linkCooldownUntil){
+  $('auth-info').textContent='Vent før du ber om en ny innloggingslenke. Gjentatte forsøk hjelper ikke når e-postgrensen er nådd.';
+  return;
+ }
  const email=$('login-email').value.trim();
  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){$('auth-info').textContent='Skriv en gyldig e-postadresse.';return}
- $('login-send').disabled=true;
- const {error}=await state.client.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname,shouldCreateUser:true}});
- $('login-send').disabled=false;
- $('auth-info').textContent=error?'Kunne ikke sende lenken: '+error.message:'Sjekk e-posten din og åpne innloggingslenken. Etter innlogging kan du melde inn pris.';
+ linkSending=true;$('login-send').disabled=true;
+ try{
+  const {error}=await state.client.auth.signInWithOtp({
+   email,options:{emailRedirectTo:AUTH_REDIRECT_ROOT+'index.html',shouldCreateUser:true}
+  });
+  $('auth-info').textContent=error?loginErrorText(error):'Én e-post er sendt. Sjekk innboksen og spam. Lenken må åpnes før den utløper.';
+  if(!error)linkCooldownUntil=Date.now()+90*1000;
+ }catch(error){$('auth-info').textContent=loginErrorText(error)}
+ finally{linkSending=false;$('login-send').disabled=!!state.user}
 }
 async function passwordLogin(){
  const email=$('login-email').value.trim(),password=$('login-password').value;
@@ -510,6 +577,8 @@ function controls(){
  $('priced-only').addEventListener('change',e=>{state.priced=e.target.checked;refresh()});
  $('details-close').addEventListener('click',()=>{state.selected=null;$('details').hidden=true;refresh()});
  $('d-report').addEventListener('click',startReport);
+ $('share-station').addEventListener('click',()=>{if(state.selected)shareLink(stationShareUrl(state.selected),'Se denne stasjonen i PrisKart Norge')});
+ $('share-map').addEventListener('click',shareCurrentMap);
  $('report-form').addEventListener('submit',submitReport);
  $('login-send').addEventListener('click',emailLogin);
  $('login-password-btn').addEventListener('click',passwordLogin);
@@ -546,7 +615,7 @@ function init(){
  // Desktop wheel scrolls the station list; use +/- or map controls for map zoom.
  if(window.matchMedia('(min-width: 761px)').matches)state.map.scrollZoom.disable();
  state.client=window.supabase?.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})||null;
- controls();initConsent();restorePreferences();
+ controls();initConsent();restorePreferences();initTheme();
  const link=new URLSearchParams(location.search);
  const startMode=link.get('type');
  if(startMode==='charge'||startMode==='fuel'){
