@@ -84,3 +84,5 @@ test('feed and free/pluss pages are accessible with no false checkout',async({pa
  await expect(page.getByRole('heading',{name:'Nye prisrapporter'})).toBeVisible();
  await expect(page.locator('#feed-list')).toBeVisible();
 });
+
+// Post-deployment verification: run after both public and admin Vercel apps report READY.
