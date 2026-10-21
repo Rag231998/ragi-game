@@ -1,0 +1,70 @@
+/* PrisKart theme: explicit light/dark toggle, with OS preference as default.
+   Applies to public shell only, not external map tiles. */
+.theme-button{width:39px;height:39px;flex:0 0 39px;display:grid;place-items:center;border:1px solid #4d7580;background:#1b3543;color:#fff;border-radius:10px;font-size:18px}
+.theme-button:hover{background:#275066}
+.share-station{width:100%;min-height:42px}
+[hidden]{display:none!important}
+body.dark-theme{
+  color-scheme:dark;
+  --panel:#132735;
+  --white:#102433;
+  --text:#e4f3f4;
+  --muted:#96aeb7;
+  --line:#2d4957;
+  --green:#5adeb6;
+  --greenbg:#123f36;
+  --bluebg:#193d5b;
+  --orangebg:#3c3022;
+  --shadow:0 12px 44px #0006;
+  background:#091824;color:#e4f3f4
+}
+body.dark-theme .sidebar,body.dark-theme #details,body.dark-theme .dialog,body.dark-theme .privacy-prompt{background:#102635;color:#e8f7f6;border-color:#345469}
+body.dark-theme .intro,body.dark-theme .filters,body.dark-theme .result-head,body.dark-theme .sidefooter,body.dark-theme .detailhead{background:#102635;border-color:#345063}
+body.dark-theme .sidebar .filters{background:#102635}
+body.dark-theme .segment{background:#203747}
+body.dark-theme .segment button{color:#a5bec6}
+body.dark-theme .segment button.active{background:#234b48;color:#95ffdb;box-shadow:none}
+body.dark-theme .searchbox{background:#1a3545;border-color:#416474}
+body.dark-theme input,body.dark-theme select,body.dark-theme textarea{background:#193344;border-color:#406271;color:#edf7f8}
+body.dark-theme input::placeholder{color:#90acb9}
+body.dark-theme .cities button,body.dark-theme .near-me{background:#1c3945;color:#b7ede2;border-color:#3b6b6b}
+body.dark-theme .station{color:#e7f2f6}
+body.dark-theme .station:hover,body.dark-theme .station.selected{background:#234744;border-color:#4b8a81}
+body.dark-theme .station-icon{background:#204b3d}
+body.dark-theme .station-icon.fuel{background:#243f63}
+body.dark-theme .tiny{background:#29424d;color:#c3d9dc}
+body.dark-theme .tiny.recent{background:#204e41;color:#83f2bd}
+body.dark-theme .tiny.old{background:#53442c;color:#ffcb78}
+body.dark-theme .station-sub,body.dark-theme .station-price small,body.dark-theme .intro p,body.dark-theme .helper,body.dark-theme .sidefooter,body.dark-theme .detailhead p{color:#9bb3bc}
+body.dark-theme .formfield label{color:#c1d9dc}
+body.dark-theme .more-filters summary{color:#9bdbd9}
+body.dark-theme .charger-filters{background:#174037;border-color:#416b61}
+body.dark-theme .charger-filters .formfield select{background:#1b3643;color:#e3f7f5;border-color:#47736e}
+body.dark-theme .charger-filters .helper{color:#b4d3c8}
+body.dark-theme .station-price,body.dark-theme .bigprice b{color:#7dffcc}
+body.dark-theme .bigprice{background:#133d37;border-color:#42766b}
+body.dark-theme .bigprice small{color:#a9d8c8}
+body.dark-theme .price-row{border-color:#315065}
+body.dark-theme .price-row span{color:#a8bec7}
+body.dark-theme .tag{background:#274b4b;color:#c1eee3}
+body.dark-theme .warn{background:#443825;border-color:#745d36;color:#f8daab}
+body.dark-theme .xbtn,body.dark-theme .secondary{background:#234051;border-color:#517585;color:#eaf6f7}
+body.dark-theme .auth-box{background:#193e37;border-color:#367a65}
+body.dark-theme .auth-box p,body.dark-theme .auth-box #auth-info{color:#d4e5e2}
+body.dark-theme .dialog p{color:#b3cbd1}
+body.dark-theme .report-status{background:#203f37;color:#a3f2d3}
+body.dark-theme .empty{color:#a9bfcb}
+body.dark-theme .site-menu nav{background:#153041;border-color:#345569}
+body.dark-theme .site-menu nav a,body.dark-theme .site-menu nav button{background:#153041;color:#e7f3f5}
+body.dark-theme .site-menu nav a:hover,body.dark-theme .site-menu nav button:hover{background:#28515d}
+body.dark-theme .privacy-prompt p{color:#b0c6cc}
+body.dark-theme .privacy-prompt a{color:#81e5c4}
+body.dark-theme .privacy-actions button{background:#20463e;color:#a1f7d7;border-color:#487764}
+body.dark-theme .privacy-actions button:last-child{background:#117f66;color:#fff}
+body.dark-theme #site-notice-banner{background:#4c3d1b;color:#ffe8b7}
+@media(max-width:760px){
+  .theme-button{width:35px;height:35px;flex-basis:35px;font-size:15px}
+  body.dark-theme .sidebar .intro .searchbox{background:#1a3545}
+  body.dark-theme .sidebar .filters{background:#102635}
+  body.dark-theme .mobiletoggle{background:#234a42;color:#b9ffdf}
+}
