@@ -42,7 +42,10 @@ async function login(){
  if(error){note('Kunne ikke logge inn: '+error.message,true,'auth-message');return}
  await checkAuth();
 }
+let adminEmailNextAllowedAt=0;
 async function loginLink(){
+ if(Date.now()<adminEmailNextAllowedAt){note('Vent litt før du bestiller en ny e-post. Bruk passord hvis du allerede har det.',true,'auth-message');return;}
+ adminEmailNextAllowedAt=Date.now()+120000;
  const email=$('admin-email').value.trim();
  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){note('Skriv en gyldig e-postadresse.',true,'auth-message');return}
  $('admin-email-link').disabled=true;
