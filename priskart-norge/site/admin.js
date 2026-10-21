@@ -46,9 +46,9 @@ async function loginLink(){
  const email=$('admin-email').value.trim();
  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){note('Skriv en gyldig e-postadresse.',true,'auth-message');return}
  $('admin-email-link').disabled=true;
- const {error}=await db.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname,shouldCreateUser:false}});
+ const {error}=await db.auth.signInWithOtp({email,options:{emailRedirectTo:'https://priskart-norge-live.vercel.app/admin.html',shouldCreateUser:false}});
  $('admin-email-link').disabled=false;
- note(error?'Kunne ikke sende e-post: '+error.message:'En innloggingslenke er sendt. Åpne den på samme enhet.',!!error,'auth-message');
+ note(error?(/rate limit|too many/i.test(error.message||'')?'Supabase stopper flere e-poster. Egen SMTP må kobles til før e-postinnlogging fungerer stabilt.':'Kunne ikke sende e-post: '+error.message):'Én innloggingslenke er sendt. Bruk den nyeste lenken før den utløper.',!!error,'auth-message');
 }
 async function loadStats(){
  if(!isAdmin)return;
