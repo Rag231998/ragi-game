@@ -56,6 +56,10 @@ header{height:72px;position:fixed;inset:0 0 auto;z-index:15;background:#0e1b29;c
 @media(max-width:760px){header{height:62px;padding:0 11px}.brandmark{width:32px;height:32px;font-size:18px}.brand strong{font-size:14px}.brand small{font-size:8px}.header-right small{display:none}.topbtn{font-size:10px;padding:8px}.counter{display:none}#map{inset:62px 0 0}#loader{inset:62px 0 0}.sidebar{left:8px;right:8px;top:auto;bottom:7px;width:auto;height:min(51vh,420px);border-radius:17px}.sidebar.collapsed{height:57px}.sidebar.collapsed .filters,.sidebar.collapsed .result-head,.sidebar.collapsed .result-list,.sidebar.collapsed .sidefooter,.sidebar.collapsed .intro h1,.sidebar.collapsed .intro p,.sidebar.collapsed .searchbox,.sidebar.collapsed .cities{display:none}.intro{padding:13px}.eyebrow{margin-right:100px}.mobiletoggle{display:block!important;position:absolute;right:13px;top:11px;background:#d7eee9;border:0;border-radius:8px;padding:7px 10px;color:#0b745d;font-weight:850;font-size:11px}.mapmsg{left:8px;right:8px;bottom:calc(min(51vh,420px) + 16px);max-width:none;font-size:9px;padding:8px}.maplibregl-ctrl-top-right{top:10px;right:10px}#details{left:8px;right:8px;top:auto;bottom:8px;width:auto;height:min(67vh,530px);border-radius:17px}.filtergrid{margin-top:7px}.intro h1{font-size:19px}}
 @media(min-width:761px){.mobiletoggle{display:none}}
 </style><link rel="stylesheet" href="./ux.css?v=3"><style>
+body.map-unavailable #loader{z-index:2;pointer-events:none;left:427px;right:0;font-size:14px;line-height:1.7}
+@media(min-width:761px) and (max-width:1000px){body.map-unavailable #loader{left:382px}}
+@media(max-width:760px){body.map-unavailable #loader{left:0;right:0;bottom:40%;top:60px;z-index:2;pointer-events:none;font-size:11px}}
+</style><style>
 .compare-modal{position:fixed;inset:0;z-index:65;display:grid;place-items:center;padding:13px;background:#071b26bf;backdrop-filter:blur(5px)}
 .compare-modal[hidden]{display:none!important}
 .compare-card{width:min(510px,100%);max-height:88dvh;overflow:auto;padding:22px;border-radius:18px;background:#fff;color:#133440;box-shadow:0 18px 55px #0005}
@@ -174,13 +178,13 @@ body.site-compact .sidebar .station-icon{height:34px;width:34px;flex-basis:34px}
 <script type="module">
 let lib;
 try{lib=await import('https://cdn.jsdelivr.net/npm/maplibre-gl@6.14.0/dist/maplibre-gl.mjs')}
-catch(e){try{lib=await import('https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.mjs')}catch(ex){document.getElementById('loader').textContent='Kartbiblioteket kunne ikke lastes. Prøv en annen nettleser.';throw ex}}
+catch(e){try{lib=await import('https://unpkg.com/maplibre-gl@6.14.0/dist/maplibre-gl.mjs')}catch(ex){document.body.classList.add('map-unavailable');document.getElementById('loader').textContent='Kartbiblioteket er utilgjengelig. Du kan fortsatt søke og lese priser i stasjonslisten.';throw ex}}
 try{
  const map=new lib.Map({container:'map',style:'https://tiles.openfreemap.org/styles/liberty',center:[10.65,63.15],zoom:4.25,attributionControl:true});
  map.addControl(new lib.NavigationControl(),'top-right');
  map.on('load',()=>{document.getElementById('loader').classList.add('hidden');window.priskartMap={map,lib};window.dispatchEvent(new Event('priskart-map-ready'))});
  map.on('error',e=>console.warn('Kartressurs kunne ikke lastes',e.error||e));
-}catch(e){document.getElementById('loader').textContent='Kartet kunne ikke startes: '+e.message}
+}catch(e){document.body.classList.add('map-unavailable');document.getElementById('loader').textContent='3D-kartet krever en nettleser med WebGL2. Stasjonslisten kan fortsatt brukes.';console.warn('Map startup failed',e)}
 </script>
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./app.js?v=8"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./app.js?v=9"></script>
 </body></html>
