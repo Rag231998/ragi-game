@@ -226,8 +226,21 @@ async function loadChargers(){
   let obj;
   try{const r=await fetch(service);if(!r.ok||!(r.headers.get('content-type')||'').includes('json'))throw Error('Server ikke tilkoblet');obj=await r.json()}
   catch(e){
-   const r=await fetch('https://overpass.kumi.systems/api/interpreter?data='+encodeURIComponent(query),{cache:'default'});
-   if(!r.ok)throw Error('OpenStreetMap API HTTP '+r.status);obj=await r.json();
+   const endpoints=['https://overpass.kumi.systems/api/interpreter','https://overpass-api.de/api/interpreter'];
+   let lastError=null;
+   for(const endpoint of endpoints){
+    try{
+     const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
+     try{
+      const r=await fetch(endpoint+'?data='+encodeURIComponent(query),{signal:controller.signal,cache:'default'});
+      if(!r.ok)throw Error('HTTP '+r.status);
+      const payload=await r.json();
+      if(!Array.isArray(payload.elements))throw Error('Uventet svar fra karttjenesten');
+      obj=payload;break;
+     }finally{clearTimeout(timer)}
+    }catch(err){lastError=err}
+   }
+   if(!obj)throw Error('Kartkildene svarer ikke: '+(lastError?.message||'ukjent feil'));
   }
   let cnt=0;
   for(const o of obj.elements||[]){const s=chargerStation(o);if(s){state.stations.set(s.id,s);cnt++}}
