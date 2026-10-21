@@ -444,6 +444,8 @@ function controls(){
 function init(){
  if(!window.priskartMap)return;
  state.map=window.priskartMap.map;state.lib=window.priskartMap.lib;
+ // Desktop wheel scrolls the station list; use +/- or map controls for map zoom.
+ if(window.matchMedia('(min-width: 761px)').matches)state.map.scrollZoom.disable();
  state.client=window.supabase?.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})||null;
  controls();
  const link=new URLSearchParams(location.search);
