@@ -701,6 +701,15 @@ function bootUI(){
  state.client=window.supabase?.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,
   {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})||null;
  controls();initConsent();restorePreferences();initTheme();
+ // Forward wheel movements over the desktop sidebar to the document.
+ // This avoids scrolling being trapped in an invisible nested container.
+ $('sidebar').addEventListener('wheel',event=>{
+  if(window.innerWidth<=760)return;
+  const root=document.scrollingElement;
+  if(!root)return;
+  event.preventDefault();
+  root.scrollTop+=event.deltaY;
+ },{passive:false});
  const link=new URLSearchParams(location.search);
  const startMode=link.get('type');
  if(startMode==='charge'||startMode==='fuel'){
