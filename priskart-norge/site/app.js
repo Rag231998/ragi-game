@@ -445,7 +445,17 @@ function init(){
  if(!window.priskartMap)return;
  state.map=window.priskartMap.map;state.lib=window.priskartMap.lib;
  state.client=window.supabase?.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})||null;
- controls();createMapLayers();updateSources();config();loadFuel();refresh();
+ controls();
+ const link=new URLSearchParams(location.search);
+ const startMode=link.get('type');
+ if(startMode==='charge'||startMode==='fuel'){
+   state.mode=startMode;state.fuel=startMode==='charge'?'electric':'petrol95';
+   $('fuel-type').value=state.fuel;
+   document.querySelectorAll('#category button').forEach(b=>b.classList.toggle('active',b.dataset.mode===state.mode));
+ }
+ createMapLayers();updateSources();config();loadFuel();refresh();
+ const place=link.get('sted');
+ if(place){const match=Object.keys(cities).find(c=>norm(c)===norm(place));if(match)state.map.jumpTo({center:cities[match],zoom:11.1})}
  if(window.innerWidth<=760){$('sidebar').classList.remove('collapsed');$('mobile-toggle').textContent='Vis kart ↓';$('mobile-toggle').setAttribute('aria-expanded','true')}
  state.map.on('moveend',()=>{
   clearTimeout(state.debounce);
