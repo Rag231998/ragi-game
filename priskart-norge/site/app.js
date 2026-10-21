@@ -85,7 +85,7 @@ async function loadFuel(){
   }
   state.loadedFuel=true;
   await loadReports();
-  updateNote();updateSources();refresh();restoreComparison();openRequestedStation();
+  updateNote();updateSources();refresh();if(state.map){restoreComparison();openRequestedStation()}
   status('⛽ '+all.filter(x=>x.kind==='fuel').length+' bensinstasjoner · ⚡ '+all.filter(x=>x.kind==='charge').length+' registrerte ladepunkter. Ladestasjonene kommer fra en landsdekkende NOBIL-basert katalog.');
  }catch(err){
   console.warn('Database utilgjengelig; viser åpen reserveeksport',err);
@@ -173,8 +173,8 @@ function filtered(){
  return n;
 }
 function refresh(){
- if(!state.map)return;filterLayer();updateSources();
  $('charger-filters').hidden=state.mode!=='charge';
+ if(!state.map)return;filterLayer();updateSources();
  const list=$('results');const arr=filtered();list.replaceChildren();
  $('summary').textContent=arr.length.toLocaleString('nb-NO')+' treff'+(state.search?' for søket':' i kartet');
  $('result-title').textContent=state.mode==='charge'?'Ladestasjoner':state.mode==='fuel'?'Bensinstasjoner':'Stasjoner i området';
@@ -271,6 +271,7 @@ async function loadReports(){
 }
 function moveCity(name){
  const xy=cities[name];if(!xy)return;
+ if(!state.map){status('Kartet lastes. Prøv igjen straks.');return;}
  state.map.flyTo({center:xy,zoom:11.4,duration:1100});
  state.search='';$('search').value='';$('search').blur();
  if(window.innerWidth<=760){$('sidebar').classList.remove('collapsed');$('mobile-toggle').setAttribute('aria-expanded','true');$('mobile-toggle').textContent='Vis kart ↓'}
@@ -595,6 +596,7 @@ async function loadSiteSettings(){
 function controls(){
  $('city-buttons').addEventListener('click',e=>{const b=e.target.closest('[data-city]');if(b)moveCity(b.dataset.city)});
  $('near-me').addEventListener('click',()=>{
+  if(!state.map){status('Kartet lastes – prøv igjen straks.');return}
   if(!navigator.geolocation){status('Posisjonstjenester støttes ikke i denne nettleseren. Søk etter en by i stedet.');return}
   const btn=$('near-me');btn.disabled=true;btn.textContent='⌖ Finner …';
   navigator.geolocation.getCurrentPosition(pos=>{
@@ -614,7 +616,7 @@ function controls(){
   if(e.key==='Enter'){
    const q=norm(state.search);
    const city=Object.keys(cities).find(x=>norm(x)===q);
-   if(city)moveCity(city);else{const first=filtered()[0];if(first)selectStation(first)}
+   if(city)moveCity(city);else if(state.map){const first=filtered()[0];if(first)selectStation(first)}
    $('search').blur();
   }
  });
@@ -622,7 +624,7 @@ function controls(){
   const btn=e.target.closest('[data-mode]');if(!btn)return;state.mode=btn.dataset.mode;
   document.querySelectorAll('#category button').forEach(b=>b.classList.toggle('active',b===btn));
   if(state.mode==='charge'&&state.fuel!=='electric'){$('fuel-type').value='electric';state.fuel='electric'}
-  if(state.mode==='charge'&&state.map.getZoom()<9){const c=state.map.getCenter();state.map.flyTo({center:[c.lng,c.lat],zoom:10.6,duration:800});}
+  if(state.mode==='charge'&&state.map&&state.map.getZoom()<9){const c=state.map.getCenter();state.map.flyTo({center:[c.lng,c.lat],zoom:10.6,duration:800});}
   if(state.mode==='fuel'&&state.fuel==='electric'){$('fuel-type').value='petrol95';state.fuel='petrol95'}
   refresh();loadChargers();
  });
@@ -630,7 +632,7 @@ function controls(){
  $('charge-plug').addEventListener('change',e=>{state.chargePlug=e.target.value;refresh()});
  $('fuel-type').addEventListener('change',e=>{
   state.fuel=e.target.value;
-  if(state.fuel==='electric'){state.mode='charge';if(state.map.getZoom()<9){const c=state.map.getCenter();state.map.flyTo({center:[c.lng,c.lat],zoom:10.6,duration:800})}}
+  if(state.fuel==='electric'){state.mode='charge';if(state.map&&state.map.getZoom()<9){const c=state.map.getCenter();state.map.flyTo({center:[c.lng,c.lat],zoom:10.6,duration:800})}}
   if(state.fuel!=='electric'&&state.mode==='charge')state.mode='fuel';
   document.querySelectorAll('#category button').forEach(b=>b.classList.toggle('active',b.dataset.mode===state.mode));
   refresh();loadChargers();if(state.selected)showDetails(state.selected);
@@ -673,32 +675,43 @@ function controls(){
   else if(distance< -60&&$('sidebar').classList.contains('collapsed'))$('mobile-toggle').click();
  },{passive:true});
 }
+let initializedMap=false;
 function init(){
- if(!window.priskartMap)return;
+ if(!window.priskartMap||initializedMap)return;
+ initializedMap=true;
  state.map=window.priskartMap.map;state.lib=window.priskartMap.lib;
- // Desktop wheel scrolls the station list; use +/- or map controls for map zoom.
  if(window.matchMedia('(min-width: 761px)').matches)state.map.scrollZoom.disable();
- state.client=window.supabase?.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})||null;
- controls();initConsent();restorePreferences();initTheme();
- const link=new URLSearchParams(location.search);
- const startMode=link.get('type');
- if(startMode==='charge'||startMode==='fuel'){
-   state.mode=startMode;state.fuel=startMode==='charge'?'electric':'petrol95';
-   $('fuel-type').value=state.fuel;
-   document.querySelectorAll('#category button').forEach(b=>b.classList.toggle('active',b.dataset.mode===state.mode));
- }
- createMapLayers();updateSources();config();loadSiteSettings();loadFuel();refresh();
- const place=link.get('sted');
+ createMapLayers();updateSources();refresh();
+ if(state.loadedFuel){restoreComparison();openRequestedStation()}
+ const place=new URLSearchParams(location.search).get('sted');
  if(place){const match=Object.keys(cities).find(c=>norm(c)===norm(place));if(match)state.map.jumpTo({center:cities[match],zoom:11.1})}
- if(window.innerWidth<=760){$('sidebar').classList.remove('collapsed');$('mobile-toggle').textContent='Vis kart ↓';$('mobile-toggle').setAttribute('aria-expanded','true')}
+ if(window.innerWidth<=760){
+  $('sidebar').classList.remove('collapsed');
+  $('mobile-toggle').textContent='Vis kart ↓';$('mobile-toggle').setAttribute('aria-expanded','true');
+ }
  state.map.on('moveend',()=>{
   clearTimeout(state.debounce);
   state.debounce=setTimeout(()=>{refresh();loadChargers();loadReports()},420);
  });
- state.map.on('click',()=>{});
  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&state.backend)loadReports()});
  setInterval(()=>{if(document.visibilityState==='visible'&&state.backend)loadReports()},65000);
 }
-window.addEventListener('priskart-map-ready',init,{once:true});
-if(window.priskartMap)init();
+function bootUI(){
+ // Controls, dark mode and filters must work before map tiles finish loading.
+ state.client=window.supabase?.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,
+  {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})||null;
+ controls();initConsent();restorePreferences();initTheme();
+ const link=new URLSearchParams(location.search);
+ const startMode=link.get('type');
+ if(startMode==='charge'||startMode==='fuel'){
+  state.mode=startMode;state.fuel=startMode==='charge'?'electric':'petrol95';
+  $('fuel-type').value=state.fuel;
+  document.querySelectorAll('#category button').forEach(b=>b.classList.toggle('active',b.dataset.mode===state.mode));
+ }
+ refresh();
+ config();loadSiteSettings();loadFuel();
+ window.addEventListener('priskart-map-ready',init,{once:true});
+ if(window.priskartMap)init();
+}
+bootUI();
 })();
