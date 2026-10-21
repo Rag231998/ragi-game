@@ -46,3 +46,41 @@ test('mobile view fits without desktop mode and retains map/list controls',async
   await page.locator('#mobile-toggle').click();
   await expect(page.locator('#sidebar')).not.toHaveClass(/collapsed/);
 });
+
+test('public navigation excludes administration but standalone admin is available',async({page})=>{
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await page.locator('#main-menu summary').click();
+ const menu=page.locator('#main-menu nav');
+ await expect(menu.getByText('Gratis og Pluss')).toBeVisible();
+ await expect(menu.getByText('Nye priser')).toBeVisible();
+ await expect(menu.getByText('Administrasjon')).toHaveCount(0);
+ await page.goto('/admin.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#admin-email')).toBeVisible();
+});
+test('theme changes without requiring desktop mode',async({page})=>{
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await page.locator('#theme-toggle').click();
+ const first=await page.evaluate(()=>document.body.classList.contains('dark-theme'));
+ await page.locator('#theme-toggle').click();
+ const second=await page.evaluate(()=>document.body.classList.contains('dark-theme'));
+ expect(first).not.toBe(second);
+});
+test('charging UI and comparison UI are clickable on responsive screens',async({page})=>{
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await page.locator('button[data-mode="charge"]').click();
+ await expect(page.locator('#charger-filters')).toBeVisible();
+ await expect(page.locator('#charge-power')).toBeVisible();
+ await page.locator('#main-menu summary').click();
+ await page.locator('#compare-open').click();
+ await expect(page.locator('#compare-modal')).toBeVisible();
+ await page.locator('#compare-close').click();
+ await expect(page.locator('#compare-modal')).toBeHidden();
+});
+test('feed and free/pluss pages are accessible with no false checkout',async({page})=>{
+ await page.goto('/priser.html',{waitUntil:'domcontentloaded'});
+ await expect(page.getByRole('heading',{name:'Gratis'})).toBeVisible();
+ await expect(page.getByText('Ingen betalt tjeneste er lansert ennå.')).toBeVisible();
+ await page.goto('/nytt.html',{waitUntil:'domcontentloaded'});
+ await expect(page.getByRole('heading',{name:'Nye prisrapporter'})).toBeVisible();
+ await expect(page.locator('#feed-list')).toBeVisible();
+});
