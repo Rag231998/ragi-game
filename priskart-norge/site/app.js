@@ -85,7 +85,7 @@ async function loadFuel(){
   }
   state.loadedFuel=true;
   await loadReports();
-  updateNote();updateSources();refresh();openRequestedStation();
+  updateNote();updateSources();refresh();restoreComparison();openRequestedStation();
   status('⛽ '+all.filter(x=>x.kind==='fuel').length+' bensinstasjoner · ⚡ '+all.filter(x=>x.kind==='charge').length+' registrerte ladepunkter. Ladestasjonene kommer fra en landsdekkende NOBIL-basert katalog.');
  }catch(err){
   console.warn('Database utilgjengelig; viser åpen reserveeksport',err);
@@ -218,7 +218,7 @@ function showDetails(s){
  $('d-category').textContent=s.type==='charge'?'⚡ Ladestasjon':'⛽ Bensinstasjon';
  $('d-name').textContent=s.name;$('d-address').textContent=[s.address,s.city].filter(Boolean).join(', ')||'Norge';
  $('d-primary-label').textContent=labels[state.fuel]||'Rapportert pris';
- $('d-primary').textContent=cleanPrice(p);$('d-age').textContent=!p?'Ingen pris':age==='recent'?'Siste 72 timer':'Eldre observasjon';
+ $('d-primary').textContent=cleanPrice(p);showComparisonButton();$('d-age').textContent=!p?'Ingen pris':age==='recent'?'Siste 72 timer':'Eldre observasjon';
  $('d-description').textContent=!p?'Ingen pris er registrert for dette produktet. Meld inn en pris hvis du har sett den på stasjonen.':
   'Siste observasjon '+formatDate(p.updatedAt)+'. Kilde: '+p.source+'. Dette er en brukerrapport og kan ha endret seg.';
  const container=$('d-prices');container.replaceChildren();
@@ -337,6 +337,67 @@ function stationShareUrl(s){
   url.searchParams.set('stasjon',s.id);
   return url.toString();
 }
+
+let comparisonIds=[];
+function restoreComparison(){
+ const text=new URLSearchParams(location.search).get('liste')||'';
+ if(text.length>1000)return;
+ comparisonIds=[...new Set(text.split(',').map(x=>x.trim()).filter(x=>x.length>=4&&x.length<150&&state.stations.has(x)))].slice(0,8);
+ showComparisonButton();
+ if(comparisonIds.length)renderComparison();
+}
+function showComparisonButton(){
+ const button=$('compare-open');
+ if(button)button.textContent='Sammenlign stasjoner ('+comparisonIds.length+')';
+ const add=$('compare-add');
+ if(add&&state.selected)add.textContent=comparisonIds.includes(state.selected.id)?'✓ Fjern fra listen':'＋ Sammenlign';
+}
+function toggleComparisonStation(){
+ const s=state.selected;
+ if(!s)return;
+ if(comparisonIds.includes(s.id))comparisonIds=comparisonIds.filter(x=>x!==s.id);
+ else{
+  if(comparisonIds.length>=8){status('Sammenligningslisten kan ha opptil åtte stasjoner. Fjern en før du legger til flere.');return}
+  comparisonIds.push(s.id);
+  status('Stasjonen er lagt til i sammenligningen. Åpne Meny → Sammenlign stasjoner for å dele.');
+ }
+ showComparisonButton();renderComparison();
+}
+function renderComparison(){
+ const root=$('compare-list');
+ if(!root)return;
+ root.replaceChildren();
+ for(const id of comparisonIds){
+  const station=state.stations.get(id);if(!station)continue;
+  const row=document.createElement('div');row.className='compare-row';
+  const icon=document.createElement('span');icon.textContent=station.type==='charge'?'⚡':'⛽';
+  const text=document.createElement('div');
+  const name=document.createElement('strong');name.textContent=station.name;
+  const price=document.createElement('small');price.textContent=cleanPrice(currentPrice(station))+' · '+(currentPrice(station)?'Brukerrapportert pris – se dato':'Ingen pris');
+  text.append(name,price);
+  const remove=document.createElement('button');remove.type='button';remove.textContent='Fjern';remove.setAttribute('aria-label','Fjern '+station.name+' fra listen');
+  remove.addEventListener('click',()=>{comparisonIds=comparisonIds.filter(x=>x!==id);renderComparison();showComparisonButton()});
+  row.append(icon,text,remove);root.append(row);
+ }
+ if(!comparisonIds.length){const p=document.createElement('p');p.textContent='Ingen stasjoner valgt ennå. Velg en stasjon på kartet og trykk «Sammenlign».';root.append(p)}
+ $('compare-share').disabled=!comparisonIds.length;
+}
+function shareComparison(){
+ if(!comparisonIds.length)return;
+ const url=new URL(AUTH_REDIRECT_ROOT);
+ url.searchParams.set('liste',comparisonIds.join(','));
+ shareLink(url.toString(),'Her er stasjonene vi kan sammenligne før vi fyller eller lader.');
+}
+function initComparison(){
+ $('compare-open').addEventListener('click',()=>{$('main-menu').open=false;renderComparison();$('compare-modal').hidden=false});
+ $('compare-close').addEventListener('click',()=>{$('compare-modal').hidden=true});
+ $('compare-modal').addEventListener('click',e=>{if(e.target===$('compare-modal'))$('compare-modal').hidden=true});
+ $('compare-add').addEventListener('click',toggleComparisonStation);
+ $('compare-clear').addEventListener('click',()=>{comparisonIds=[];showComparisonButton();renderComparison()});
+ $('compare-share').addEventListener('click',shareComparison);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')$('compare-modal').hidden=true});
+}
+
 function shareCurrentMap(){
   const url=new URL(AUTH_REDIRECT_ROOT);
   url.searchParams.set('type',state.mode==='all'?'fuel':state.mode);
@@ -577,6 +638,7 @@ function controls(){
  $('priced-only').addEventListener('change',e=>{state.priced=e.target.checked;refresh()});
  $('details-close').addEventListener('click',()=>{state.selected=null;$('details').hidden=true;refresh()});
  $('d-report').addEventListener('click',startReport);
+ initComparison();
  $('share-station').addEventListener('click',()=>{if(state.selected)shareLink(stationShareUrl(state.selected),'Se denne stasjonen i PrisKart Norge')});
  $('share-map').addEventListener('click',shareCurrentMap);
  $('report-form').addEventListener('submit',submitReport);
