@@ -78,7 +78,7 @@ test('charging UI and comparison UI are clickable on responsive screens',async({
 });
 test('feed and free/pluss pages are accessible with no false checkout',async({page})=>{
  await page.goto('/priser.html',{waitUntil:'domcontentloaded'});
- await expect(page.getByRole('heading',{name:'Gratis'})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Gratis',exact:true})).toBeVisible();
  await expect(page.getByText('Ingen betalt tjeneste er lansert ennå.')).toBeVisible();
  await page.goto('/nytt.html',{waitUntil:'domcontentloaded'});
  await expect(page.getByRole('heading',{name:'Nye prisrapporter'})).toBeVisible();
