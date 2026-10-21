@@ -67,6 +67,14 @@ header{height:72px;position:fixed;inset:0 0 auto;z-index:15;background:#0e1b29;c
 <div class="city-wrap"><div class="cities" id="city-buttons"><button data-city="Oslo">Oslo</button><button data-city="Bergen">Bergen</button><button data-city="Trondheim">Trondheim</button><button data-city="Tromsø">Tromsø</button><button data-city="Stavanger">Stavanger</button><button data-city="Bodø">Bodø</button></div><button id="near-me" class="near-me" title="Bruk posisjonen din hvis du gir tillatelse" aria-label="Vis stasjoner i nærheten av meg">⌖ Nær meg</button></div></section>
 <section class="filters" id="filters">
 <div class="segment" id="category"><button class="active" data-mode="all">Alle</button><button data-mode="fuel">⛽ Drivstoff</button><button data-mode="charge">⚡ Lading</button></div>
+<div id="charger-filters" class="charger-filters" hidden>
+ <div class="formfield"><label for="charge-power">Ladeeffekt</label><select id="charge-power">
+  <option value="all">Alle ladeeffekter</option><option value="50">Hurtiglading (50+ kW)</option><option value="150">Lynlading (150+ kW)</option>
+ </select></div>
+ <div class="formfield"><label for="charge-plug">Kontakt</label><select id="charge-plug">
+  <option value="all">Alle kontakter</option><option value="ccs">CCS</option><option value="type2">Type 2</option><option value="chademo">CHAdeMO</option>
+ </select></div><p class="helper">Effekt og kontakt vises når stasjonens OSM-data inneholder dette. Pris per kWh er foreløpig brukerrapportert.</p>
+ </div>
 <div class="filtergrid">
 <div class="formfield"><label for="fuel-type">Pris på</label><select id="fuel-type"><option value="petrol95">Bensin 95</option><option value="diesel">Diesel</option><option value="petrol98">Bensin 98</option><option value="electric">Elbil kr/kWh</option></select></div>
 <div class="formfield"><label for="sort-by">Sorter</label><select id="sort-by"><option value="near">Nærmest kartmidten</option><option value="cheap">Laveste pris</option><option value="name">Navn A–Å</option><option value="recent">Nyest pris først</option></select></div>
