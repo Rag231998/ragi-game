@@ -23,8 +23,9 @@ function logoutUI(){
 }
 async function checkAuth(){
  if(!db){note('Supabase-koden kunne ikke lastes. Kontroller nettleserens skriptblokkering.',true,'auth-message');return}
+ const returnedError=new URLSearchParams(location.hash.replace(/^#/,'')).get('error_code')||new URLSearchParams(location.search).get('error_code');
  const {data,error}=await db.auth.getUser();
- if(error||!data.user){user=null;logoutUI();note('Logg inn med administratorkontoen.',false,'auth-message');return}
+ if(error||!data.user){user=null;logoutUI();note(returnedError==='otp_expired'?'Innloggingslenken er utløpt eller brukt. Be om én ny lenke etter at SMTP er konfigurert.':returnedError?'Innlogging ble avvist: '+returnedError:'Logg inn med administratorkontoen.',!!returnedError,'auth-message');return}
  user=data.user;
  const result=await db.from('admins').select('user_id').eq('user_id',user.id).maybeSingle();
  if(result.error||!result.data){isAdmin=false;logoutUI();note('Du er innlogget, men denne kontoen er ikke oppført som administrator. Kontakt prosjektets eier.',true,'auth-message');return}
