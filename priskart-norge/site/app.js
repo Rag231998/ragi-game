@@ -504,11 +504,13 @@ function consentChoice(choice){
 }
 function initConsent(){
  const panel=$('privacy-prompt');
- try{panel.hidden=Boolean(localStorage.getItem(CONSENT_KEY))}
- catch(e){panel.hidden=false}
+ // Opt-in only: no non-essential preference storage before the visitor chooses it.
+ // Avoid a blocking banner over the mobile map or station-list controls.
+ panel.hidden=!new URLSearchParams(location.search).has('cookievalg');
  $('privacy-necessary').addEventListener('click',()=>consentChoice('necessary'));
  $('privacy-preferences').addEventListener('click',()=>{consentChoice('preferences');savePreferences()});
  window.addEventListener('priskart-show-consent',()=>{panel.hidden=false});
+ $('privacy-settings-menu').addEventListener('click',()=>{$('main-menu').open=false;panel.hidden=false});
  document.addEventListener('change',e=>{
   if(e.target?.closest?.('.filters'))setTimeout(savePreferences,0);
  });
