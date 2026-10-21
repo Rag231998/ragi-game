@@ -8,7 +8,12 @@
 const $=id=>document.getElementById(id),fuelUrl='https://drivstoffpriser.github.io/Drivstoffpriser-App/data/';
 const cities={Oslo:[10.7522,59.9139],Bergen:[5.3221,60.393],Trondheim:[10.3951,63.4305],Tromsø:[18.9553,69.6496],Stavanger:[5.7331,58.969],Bodø:[14.4049,67.2804],Jessheim:[11.171,60.143],Lillestrøm:[11.049,59.956],Kristiansand:[8.003,58.147],Ålesund:[6.154,62.472],Fredrikstad:[10.939,59.219],Hamar:[11.067,60.794]};
 const labels={petrol95:'Bensin 95',petrol98:'Bensin 98',diesel:'Diesel',electric:'Elbillading'};
-const state={map:null,lib:null,stations:new Map(),fuelPrices:new Map(),reports:new Map(),selected:null,mode:'all',fuel:'petrol95',sort:'near',recent:false,priced:false,feedAt:null,chargersError:null,loadingChargers:false,chargersLoaded:false,backend:false,siteKey:null,token:null,turnstileWidget:null,chargerRequestCache:new Set(),search:'',origin:'feed',searchId:0,loadedFuel:false,debounce:null,chargePower:0,chargePlug:'all'};
+const SUPABASE_URL='https://pryrgwfjniggjlrizenh.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_nMwAplLiIZ-p9zIu8F3yPQ_-_XwiMM9';
+const productToDB={petrol95:'95',petrol98:'98',diesel:'diesel',electric:'ccs'};
+const productFromDB={'95':'petrol95','98':'petrol98','diesel':'diesel',ccs:'electric',type2:'electric',chademo:'electric'};
+
+const state={client:null,user:null,map:null,lib:null,stations:new Map(),fuelPrices:new Map(),reports:new Map(),selected:null,mode:'all',fuel:'petrol95',sort:'near',recent:false,priced:false,feedAt:null,chargersError:null,loadingChargers:false,chargersLoaded:false,backend:false,siteKey:null,token:null,turnstileWidget:null,chargerRequestCache:new Set(),search:'',origin:'feed',searchId:0,loadedFuel:false,debounce:null,chargePower:0,chargePlug:'all'};
 const fmtCurrency=new Intl.NumberFormat('nb-NO',{minimumFractionDigits:2,maximumFractionDigits:2});
 const formatDate=d=>{const ms=Date.parse(d||'');return Number.isFinite(ms)?new Intl.DateTimeFormat('nb-NO',{dateStyle:'short',timeStyle:'short',timeZone:'Europe/Oslo'}).format(ms):'Ukjent tidspunkt'};
 const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -58,20 +63,44 @@ function updateNote(){
 }
 async function loadFuel(){
  try{
-  const [sta,pri]=await Promise.all([apiOrDirect('/api/fuel/stations',fuelUrl+'stations.json'),apiOrDirect('/api/fuel/prices',fuelUrl+'prices.json')]);
-  const st=sta.stations||[],pr=pri.prices||[];
-  for(const raw of st){const v=fuelStation(raw);if(v)state.stations.set(v.id,v)}
-  for(const raw of pr){const id='fuel:'+raw.stationId,p=+raw.price;
-    if(!raw.stationId||!Number.isFinite(p)||p<=0||p>90||!labels[raw.fuelType])continue;
-    const list=state.fuelPrices.get(id)||[];list.push({fuelType:raw.fuelType,price:p,updatedAt:raw.updatedAt,reportCount:raw.reportCount,source:'Drivstoffpriser – brukerrapport',verified:false});state.fuelPrices.set(id,list);
+  if(!state.client)throw Error('Databasen er ikke tilgjengelig');
+  const all=[];
+  for(let offset=0;offset<30000;offset+=800){
+    const {data,error}=await state.client.from('stations').select('id,name,kind,operator,lat,lon,address,connectors,power_kw,source,status').eq('status','active').order('id').range(offset,offset+799);
+    if(error)throw error;
+    all.push(...data);
+    if(data.length<800)break;
   }
-  state.feedAt=sta.exportedAt||pri.exportedAt;
-  state.loadedFuel=true;updateNote();updateSources();refresh();
-  status('⛽ '+state.stations.size.toLocaleString('nb-NO')+' kartpunkter. Rapporter viser dato – prisene er ikke garantert sanntid.');
+  if(!all.length)throw Error('Stasjonsdatabasen er tom');
+  state.stations.clear();
+  for(const item of all){
+    const type=item.kind==='charge'?'charge':'fuel';
+    state.stations.set(item.id,{
+      id:item.id,sourceId:item.id,name:item.name,brand:item.operator||'',address:item.address||'',
+      city:'',lat:+item.lat,lon:+item.lon,type,kw:item.power_kw?+item.power_kw:null,
+      connectors:Array.isArray(item.connectors)?item.connectors:[],
+      origin:item.source||'PrisKart'
+    });
+  }
+  state.loadedFuel=true;
+  await loadReports();
+  updateNote();updateSources();refresh();
+  status('⛽ '+all.filter(x=>x.kind==='fuel').length+' bensinstasjoner · ⚡ '+all.filter(x=>x.kind==='charge').length+' registrerte ladepunkter. Ladeoversikten utvides med OpenStreetMap når du zoomer inn.');
  }catch(err){
-  state.loadedFuel=false;updateNote();status('⛽ Kunne ikke laste stasjonslisten: '+err.message+'. Kartet kan fortsatt brukes til å søke etter ladere.');
-  $('summary').textContent='Datakilde utilgjengelig';
-  $('results').innerHTML='<p class="empty">Stasjonslisten kunne ikke lastes. Sjekk nettverk/innholdsblokkering, eller prøv igjen senere.</p>';
+  console.warn('Database utilgjengelig; viser åpen reserveeksport',err);
+  try{
+    const [sta,pri]=await Promise.all([apiOrDirect('/api/fuel/stations',fuelUrl+'stations.json'),apiOrDirect('/api/fuel/prices',fuelUrl+'prices.json')]);
+    for(const raw of sta.stations||[]){const v=fuelStation(raw);if(v)state.stations.set(v.id,v)}
+    for(const raw of pri.prices||[]){const id='fuel:'+raw.stationId,p=+raw.price;if(!Number.isFinite(p)||!labels[raw.fuelType])continue;
+      const list=state.fuelPrices.get(id)||[];list.push({fuelType:raw.fuelType,price:p,updatedAt:raw.updatedAt,source:'Drivstoffpriser – historisk'});state.fuelPrices.set(id,list)
+    }
+    state.feedAt=sta.exportedAt;state.loadedFuel=true;updateNote();updateSources();refresh();
+    status('⚠️ Databasen kunne ikke lastes. Viser historisk åpen eksport; nye brukerpriser kan være utilgjengelige.');
+  }catch(e){
+    $('summary').textContent='Kunne ikke hente stasjoner';
+    $('results').textContent='Datakildene svarer ikke akkurat nå. Prøv å laste siden på nytt.';
+    status('Kartet er tilgjengelig, men stasjonsdata er ikke lastet.');
+  }
  }
 }
 function matchesFilters(s){
@@ -250,20 +279,27 @@ async function loadChargers(){
  finally{state.loadingChargers=false}
 }
 async function loadReports(){
- if(!state.backend||!state.map)return;
- const b=state.map.getBounds();
- const bbox=[b.getWest(),b.getSouth(),b.getEast(),b.getNorth()].map(x=>x.toFixed(4)).join(',');
+ if(!state.client)return;
  try{
-  const r=await fetch('/api/reports?bbox='+encodeURIComponent(bbox));
-  if(!r.ok)throw Error('HTTP '+r.status);
-  const obj=await r.json();
-  for(const p of obj.reports||[]){
-   if(!state.reports.has(p.stationId))state.reports.set(p.stationId,[]);
-   const arr=state.reports.get(p.stationId);
-   if(!arr.some(x=>x.id===p.id))arr.push({id:p.id,fuelType:p.fuelType,price:p.price,updatedAt:p.updatedAt,source:'PrisKart – brukerrapport',verified:false});
-  }
-  refresh();
- }catch(e){console.warn('Kunne ikke laste nye prisrapporter',e.message)}
+   const [external,reported]=await Promise.all([
+      state.client.from('external_prices').select('station_id,product_code,price,observed_at,source').limit(2000),
+      state.client.from('price_reports').select('id,station_id,product_code,price,created_at,status').eq('status','approved').order('created_at',{ascending:false}).limit(1500)
+   ]);
+   if(external.error)throw external.error;
+   if(reported.error)throw reported.error;
+   state.fuelPrices.clear();state.reports.clear();
+   for(const p of external.data||[]){
+     const k=productFromDB[p.product_code];if(!k)continue;
+     if(!state.fuelPrices.has(p.station_id))state.fuelPrices.set(p.station_id,[]);
+     state.fuelPrices.get(p.station_id).push({fuelType:k,price:+p.price,updatedAt:p.observed_at,source:p.source||'Historisk import',verified:false});
+   }
+   for(const p of reported.data||[]){
+     const k=productFromDB[p.product_code];if(!k)continue;
+     if(!state.reports.has(p.station_id))state.reports.set(p.station_id,[]);
+     state.reports.get(p.station_id).push({id:p.id,fuelType:k,price:+p.price,updatedAt:p.created_at,source:'PrisKart – brukerinnmeldt pris (ikke kontrollert)',verified:false});
+   }
+   refresh();if(state.selected)showDetails(state.selected);
+ }catch(err){console.warn('Kunne ikke oppdatere live-priser',err.message)}
 }
 function moveCity(name){
  const xy=cities[name];if(!xy)return;
@@ -272,70 +308,92 @@ function moveCity(name){
  if(window.innerWidth<=760){$('sidebar').classList.remove('collapsed');$('mobile-toggle').setAttribute('aria-expanded','true');$('mobile-toggle').textContent='Vis kart ↓'}
 }
 async function config(){
- try{
-  const r=await fetch('/api/config',{cache:'no-store'});if(!r.ok)throw Error('Not hosted');
-  const j=await r.json();state.backend=!!j.reportingEnabled;state.siteKey=j.turnstileSiteKey||null;
-  $('d-report').textContent=state.backend?'＋ Meld inn pris':'＋ Prisrapportering (snart)';
-  if(state.backend)loadReports();
- }catch(e){state.backend=false;state.siteKey=null;$('d-report').textContent='＋ Prisrapportering (snart)'}
+ state.backend=!!state.client;
+ $('d-report').textContent=state.backend?'＋ Meld inn pris':'＋ Rapporter priser (utilgjengelig)';
+ if(!state.client)return;
+ const {data}=await state.client.auth.getUser();
+ state.user=data?.user||null;
+ updateAuthUI();
+ state.client.auth.onAuthStateChange((event,session)=>{
+  state.user=session?.user||null;
+  updateAuthUI();
+  if(event==='SIGNED_IN')loadReports();
+ });
+ state.client.channel('priskart_live_reports')
+ .on('postgres_changes',{event:'INSERT',schema:'public',table:'price_reports'},()=>loadReports())
+ .on('postgres_changes',{event:'UPDATE',schema:'public',table:'price_reports'},()=>loadReports()).subscribe();
+}
+function updateAuthUI(){
+ const auth=$('auth-info'),user=state.user;
+ if(!auth)return;
+ auth.textContent=user?'Innlogget: '+(user.email||'bruker')+'. Du kan melde inn pris som andre vil se.':'Logg inn for å publisere priser i hele Norge.';
+ $('logout-btn').hidden=!user;
+ $('login-send').disabled=!!user;
+ $('login-password-btn').disabled=!!user;
+ $('login-email').disabled=!!user;
+ $('login-password').disabled=!!user;
+ if(state.selected&&$('report-modal').hidden===false)$('report-submit').disabled=!user;
+}
+async function emailLogin(){
+ const email=$('login-email').value.trim();
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){$('auth-info').textContent='Skriv en gyldig e-postadresse.';return}
+ $('login-send').disabled=true;
+ const {error}=await state.client.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname,shouldCreateUser:true}});
+ $('login-send').disabled=false;
+ $('auth-info').textContent=error?'Kunne ikke sende lenken: '+error.message:'Sjekk e-posten din og åpne innloggingslenken. Etter innlogging kan du melde inn pris.';
+}
+async function passwordLogin(){
+ const email=$('login-email').value.trim(),password=$('login-password').value;
+ if(!email||!password){$('auth-info').textContent='Skriv e-post og passord.';return}
+ const {error}=await state.client.auth.signInWithPassword({email,password});
+ $('auth-info').textContent=error?'Innlogging mislyktes: '+error.message:'Du er logget inn.';
+ if(!error){state.user=(await state.client.auth.getUser()).data.user;updateAuthUI()}
 }
 function startReport(){
  if(!state.selected)return;
- $('report-modal').hidden=false;$('report-station').textContent=state.selected.name;
+ $('report-modal').hidden=false;$('report-title').textContent='Meld inn pris';$('report-station').textContent=state.selected.name;
  $('report-status').classList.remove('visible');$('report-status').textContent='';
  const type=state.selected.type==='charge'?'electric':(state.fuel==='electric'?'petrol95':state.fuel);
  $('report-type').value=type;
  $('report-type').querySelectorAll('option').forEach(x=>x.disabled=state.selected.type==='charge'?(x.value!=='electric'):(x.value==='electric'));
- $('report-price').value='';
- const box=$('turnstile');box.replaceChildren();state.token=null;
- if(!state.backend){
-  const msg=document.createElement('p');msg.className='warn';msg.textContent='Deling med andre er ikke aktiv i denne forhåndsvisningen. Publisering krever en oppsatt database og bot-beskyttelse på nettsidens server.';box.append(msg);
-  $('report-submit').disabled=true;return;
- }
- $('report-submit').disabled=false;
- if(!state.siteKey){box.textContent='Bot-beskyttelse mangler; rapportering er midlertidig stengt.';$('report-submit').disabled=true;return}
- function renderTurnstile(){
-  if(!window.turnstile){box.textContent='Sikkerhetskontroll kunne ikke lastes';$('report-submit').disabled=true;return}
-  state.turnstileWidget=window.turnstile.render(box,{sitekey:state.siteKey,callback:t=>state.token=t,'expired-callback':()=>state.token=null});
- }
- if(window.turnstile)renderTurnstile();
- else{
-  const script=document.createElement('script');script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';script.onload=renderTurnstile;script.onerror=()=>{box.textContent='Sikkerhetskontrollen kunne ikke lastes';$('report-submit').disabled=true};document.head.append(script);
- }
+ $('report-price').value='';updateAuthUI();
+ $('report-submit').disabled=!state.user;
+ if(!state.backend){$('auth-info').textContent='Databaseforbindelse utilgjengelig – kan ikke publisere rapporter.';$('report-submit').disabled=true}
 }
 async function submitReport(e){
  e.preventDefault();
- if(!state.backend||!state.selected){return}
- const price=Number($('report-price').value.trim().replace(',','.'));const type=$('report-type').value;
- const max=type==='electric'?30:45,min=type==='electric'?.1:10;
+ if(!state.selected||!state.client)return;
  const msg=$('report-status');msg.className='report-status visible';
- if(!Number.isFinite(price)||price<min||price>max){msg.textContent='Kontroller pris. Tillatt intervall: '+min+'–'+max+' kr.';return}
- if(!state.token){msg.textContent='Fullfør sikkerhetskontrollen før du sender.';return}
- $('report-submit').disabled=true;msg.textContent='Sender prisrapport …';
+ const {data:{user},error:sessionError}=await state.client.auth.getUser();
+ if(sessionError||!user){msg.textContent='Logg inn først for å melde inn pris.';return}
+ const raw=Number($('report-price').value.trim().replace(',','.')),type=$('report-type').value;
+ const min=type==='electric'?0.1:10,max=type==='electric'?30:45;
+ if(!Number.isFinite(raw)||raw<min||raw>max){msg.textContent='Pris må være mellom '+min+' og '+max+' kroner.';return}
+ const product=type==='electric'?(state.selected.connectors.some(x=>/chademo/i.test(x))?'chademo':state.selected.connectors.some(x=>/type.?2/i.test(x))&&!state.selected.connectors.some(x=>/ccs/i.test(x))?'type2':'ccs'):productToDB[type];
+ $('report-submit').disabled=true;msg.textContent='Lagrer pris i databasen …';
  try{
-  const s=state.selected;
-  const r=await fetch('/api/report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({stationId:s.id,stationName:s.name,latitude:s.lat,longitude:s.lon,fuelType:type,price,token:state.token})});
-  const j=await r.json();if(!r.ok)throw Error(j.error||'Kunne ikke lagre pris');
-  msg.textContent='Takk! Prisen er publisert som brukerrapport. Andre kan se den når kartet oppdateres.';
-  if(!state.reports.has(s.id))state.reports.set(s.id,[]);
-  state.reports.get(s.id).push({id:j.id,fuelType:type,price,updatedAt:j.updatedAt,source:'PrisKart – brukerrapport',verified:false});
-  state.fuel=type;$('fuel-type').value=type;showDetails(s);refresh();
-  state.token=null;setTimeout(()=>{$('report-modal').hidden=true},2200);
- }catch(err){msg.textContent='Kunne ikke publisere: '+err.message}
- finally{$('report-submit').disabled=false}
+   const {error}=await state.client.from('price_reports').insert({
+     station_id:state.selected.id,product_code:product,price:raw,reporter_id:user.id,status:'approved',note:''
+   });
+   if(error)throw error;
+   msg.textContent='Prisen er lagret og blir synlig for andre brukere. Oppdaterer kartet …';
+   await loadReports();
+   setTimeout(()=>{if($('report-modal').hidden===false)closeDialog()},1700);
+ }catch(err){msg.textContent='Prisrapporten kunne ikke lagres: '+err.message}
+ finally{$('report-submit').disabled=!state.user}
 }
 function infoDialog(){
  const dialog=$('report-modal');
  $('report-station').textContent='Hvor kommer prisene fra?';
  $('report-title').textContent='Om PrisKart Norge';
- $('report-form').querySelectorAll('label,input,select,#turnstile,.submitrow').forEach(el=>el.style.display='none');
+ $('report-form').querySelectorAll('label,input,select,.auth-box,.submitrow').forEach(el=>el.style.display='none');
  const m=$('report-status');m.className='report-status visible';
  m.textContent='⛽ Bensinstasjoner og historiske observasjoner: Drivstoffpriser sitt åpne datasett. ⚡ Ladere i kartutsnittet: OpenStreetMap. Komplette og oppdaterte laderdata krever NOBIL API. Brukerinnmeldte priser publiseres først når PrisKart sin database og sikkerhet er satt opp. Tjenesten er uoffisiell og prisene må bekreftes på stasjonen.';
  dialog.hidden=false;
 }
 function closeDialog(){
  $('report-modal').hidden=true;$('report-title').textContent='Meld inn pris';
- $('report-form').querySelectorAll('label,input,select,#turnstile,.submitrow').forEach(el=>el.style.display='');
+ $('report-form').querySelectorAll('label,input,select,.auth-box,.submitrow').forEach(el=>el.style.display='');
 }
 function controls(){
  $('city-buttons').addEventListener('click',e=>{const b=e.target.closest('[data-city]');if(b)moveCity(b.dataset.city)});
@@ -386,6 +444,10 @@ function controls(){
  $('details-close').addEventListener('click',()=>{state.selected=null;$('details').hidden=true;refresh()});
  $('d-report').addEventListener('click',startReport);
  $('report-form').addEventListener('submit',submitReport);
+ $('login-send').addEventListener('click',emailLogin);
+ $('login-password-btn').addEventListener('click',passwordLogin);
+ $('logout-btn').addEventListener('click',async()=>{await state.client?.auth.signOut();state.user=null;updateAuthUI()});
+
  $('report-close').addEventListener('click',closeDialog);
  $('report-cancel').addEventListener('click',closeDialog);
  $('report-modal').addEventListener('click',e=>{if(e.target===$('report-modal'))closeDialog()});
@@ -414,7 +476,8 @@ function controls(){
 function init(){
  if(!window.priskartMap)return;
  state.map=window.priskartMap.map;state.lib=window.priskartMap.lib;
- controls();createMapLayers();updateSources();loadFuel();config();refresh();
+ state.client=window.supabase?.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})||null;
+ controls();createMapLayers();updateSources();config();loadFuel();refresh();
  if(window.innerWidth<=760){$('sidebar').classList.remove('collapsed');$('mobile-toggle').textContent='Vis kart ↓';$('mobile-toggle').setAttribute('aria-expanded','true')}
  state.map.on('moveend',()=>{
   clearTimeout(state.debounce);
