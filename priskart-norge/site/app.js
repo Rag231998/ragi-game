@@ -356,7 +356,7 @@ function infoDialog(){
  $('report-title').textContent='Om PrisKart Norge';
  $('report-form').querySelectorAll('label,input,select,.auth-box,.submitrow').forEach(el=>el.style.display='none');
  const m=$('report-status');m.className='report-status visible';
- m.textContent='⛽ Bensinstasjoner og historiske observasjoner: Drivstoffpriser sitt åpne datasett. ⚡ Ladere i kartutsnittet: OpenStreetMap. Komplette og oppdaterte laderdata krever NOBIL API. Brukerinnmeldte priser publiseres først når PrisKart sin database og sikkerhet er satt opp. Tjenesten er uoffisiell og prisene må bekreftes på stasjonen.';
+ m.textContent='⛽ Bensinstasjoner og historiske drivstoffpriser: Drivstoffpriser sin åpne eksport. ⚡ Landsdekkende ladestasjoner: Stavanger kommunes NOBIL-baserte datasett (NLOD, eksport oktober 2026), med koordinater, operatør og effekt når tilgjengelig. Nye prisinnmeldinger lagres i PrisKart-databasen fra innloggede brukere og er ikke uavhengig verifisert. Automatisk livepris og live-status for hver lader er ikke tilgjengelig uten særskilt operatør-/NOBIL-integrasjon. Dette er en uoffisiell informasjonstjeneste.';
  dialog.hidden=false;
 }
 function closeDialog(){
