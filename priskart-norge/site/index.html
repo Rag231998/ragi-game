@@ -55,7 +55,25 @@ header{height:72px;position:fixed;inset:0 0 auto;z-index:15;background:#0e1b29;c
 @media(max-width:1150px){#details{top:auto;right:18px;bottom:18px;height:min(440px,70vh)}.mapmsg{bottom:475px}}
 @media(max-width:760px){header{height:62px;padding:0 11px}.brandmark{width:32px;height:32px;font-size:18px}.brand strong{font-size:14px}.brand small{font-size:8px}.header-right small{display:none}.topbtn{font-size:10px;padding:8px}.counter{display:none}#map{inset:62px 0 0}#loader{inset:62px 0 0}.sidebar{left:8px;right:8px;top:auto;bottom:7px;width:auto;height:min(51vh,420px);border-radius:17px}.sidebar.collapsed{height:57px}.sidebar.collapsed .filters,.sidebar.collapsed .result-head,.sidebar.collapsed .result-list,.sidebar.collapsed .sidefooter,.sidebar.collapsed .intro h1,.sidebar.collapsed .intro p,.sidebar.collapsed .searchbox,.sidebar.collapsed .cities{display:none}.intro{padding:13px}.eyebrow{margin-right:100px}.mobiletoggle{display:block!important;position:absolute;right:13px;top:11px;background:#d7eee9;border:0;border-radius:8px;padding:7px 10px;color:#0b745d;font-weight:850;font-size:11px}.mapmsg{left:8px;right:8px;bottom:calc(min(51vh,420px) + 16px);max-width:none;font-size:9px;padding:8px}.maplibregl-ctrl-top-right{top:10px;right:10px}#details{left:8px;right:8px;top:auto;bottom:8px;width:auto;height:min(67vh,530px);border-radius:17px}.filtergrid{margin-top:7px}.intro h1{font-size:19px}}
 @media(min-width:761px){.mobiletoggle{display:none}}
-</style><link rel="stylesheet" href="./ux.css?v=3"><link rel="stylesheet" href="./theme.css?v=1"><style>
+</style><link rel="stylesheet" href="./ux.css?v=3"><style>
+.compare-modal{position:fixed;inset:0;z-index:65;display:grid;place-items:center;padding:13px;background:#071b26bf;backdrop-filter:blur(5px)}
+.compare-modal[hidden]{display:none!important}
+.compare-card{width:min(510px,100%);max-height:88dvh;overflow:auto;padding:22px;border-radius:18px;background:#fff;color:#133440;box-shadow:0 18px 55px #0005}
+.compare-top{display:flex;justify-content:space-between;gap:15px;align-items:start}
+.compare-card h2{font-size:21px;margin:3px 0 5px}
+.compare-card .eyebrow{font-size:10px;font-weight:800;letter-spacing:.09em;color:#128166}
+.compare-card p{font-size:11px;color:#6c8791;line-height:1.5}
+.compare-top button{width:34px;height:34px;background:#eff8f5;border-radius:9px;border:1px solid #bbdcd3;cursor:pointer}
+.compare-list{display:grid;gap:8px;padding:10px 0}
+.compare-list .compare-row{display:flex;align-items:center;gap:10px;padding:11px;border-radius:10px;background:#f1f8f8;border:1px solid #d6e7e7}
+.compare-row strong{display:block;font-size:12px}.compare-row small{font-size:10px;color:#62818b}
+.compare-row button{background:transparent;border:0;color:#a6483d;font-size:11px;font-weight:800;cursor:pointer;margin-left:auto}
+body.dark-theme .compare-card{background:#132b3a;color:#e3f3f4}
+body.dark-theme .compare-list .compare-row{background:#204050;border-color:#3b5c6a}
+body.dark-theme .compare-card p,body.dark-theme .compare-row small{color:#afcbd2}
+body.dark-theme .compare-top button{background:#284653;border-color:#507481;color:#ecf6f7}
+@media(max-width:760px){.compare-card{padding:15px;max-height:84dvh}.compare-card h2{font-size:18px}}
+</style><link rel="stylesheet" href="./theme.css?v=1"><style>
 .site-menu{position:relative;font-size:12px}
 .site-menu summary{cursor:pointer;min-height:41px;display:flex;align-items:center;color:#eafffa;padding:9px 13px;background:#1a3847;border:1px solid #587681;border-radius:10px;font-weight:800;list-style:none}
 .site-menu summary::-webkit-details-marker{display:none}
@@ -88,7 +106,7 @@ body.site-compact .sidebar .station-icon{height:34px;width:34px;flex-basis:34px}
 <a href="./personvern.html">Personvern og lagring</a>
 <a href="./priser.html">Gratis og Pluss</a>
 <a href="./nytt.html">Nye priser</a>
-<button type="button" id="share-map">Del kartet ↗</button><button type="button" id="btn-about">Om datakildene</button>
+<button type="button" id="compare-open">Sammenlign stasjoner (0)</button><button type="button" id="share-map">Del kartet ↗</button><button type="button" id="btn-about">Om datakildene</button>
 </nav></details></div></header>
 <div id="map" aria-label="Kart med norske ladestasjoner og bensinstasjoner"></div>
 <div id="loader">Laster kart og stasjonsdata …</div>
@@ -121,7 +139,7 @@ body.site-compact .sidebar .station-icon{height:34px;width:34px;flex-basis:34px}
 <div id="d-description" class="warn">Prisene er observasjoner fra brukere, ikke garantier.</div>
 <div class="info-title">Registrerte priser</div><div id="d-prices"></div>
 <div class="info-title">Informasjon</div><div id="d-meta"></div>
-<div class="actions"><a class="secondary" id="d-navigate" target="_blank" rel="noopener noreferrer">↗ Veibeskrivelse</a><button class="primary" id="d-report">＋ Meld inn pris</button></div><button type="button" class="secondary share-station" id="share-station">↗ Del stasjonen med venner</button>
+<div class="actions"><a class="secondary" id="d-navigate" target="_blank" rel="noopener noreferrer">↗ Veibeskrivelse</a><button class="primary" id="d-report">＋ Meld inn pris</button></div><div class="actions"><button type="button" class="secondary share-station" id="share-station">↗ Del stasjonen</button><button type="button" class="secondary" id="compare-add">＋ Sammenlign</button></div>
 </div></section>
 <div class="mapmsg" id="map-message" role="status">⛽ Stasjoner i Norge · Zoom inn for å se ladere.</div>
 <section id="privacy-prompt" class="privacy-prompt" hidden aria-label="Valg for informasjonslagring">
@@ -130,6 +148,13 @@ body.site-compact .sidebar .station-icon{height:34px;width:34px;flex-basis:34px}
  <div class="privacy-actions"><button id="privacy-necessary" type="button">Kun nødvendige</button><button id="privacy-preferences" type="button">Husk mine valg</button></div>
  <a href="./personvern.html">Les om personvern og informasjonskapsler</a>
 </section>
+<div id="compare-modal" hidden class="compare-modal" role="dialog" aria-modal="true" aria-labelledby="compare-heading">
+<section class="compare-card">
+<div class="compare-top"><div><span class="eyebrow">Del med venner</span><h2 id="compare-heading">Min sammenligning</h2></div><button id="compare-close" type="button" aria-label="Lukk sammenligning">×</button></div>
+<p>Velg opptil åtte stasjoner. Du kan sende en lenke til andre, slik at de ser de samme stasjonene med tilgjengelige prisopplysninger. Dette er ikke en live gruppechat.</p>
+<div id="compare-list" class="compare-list"></div>
+<div class="actions"><button class="primary" id="compare-share" type="button">↗ Del denne listen</button><button class="secondary" id="compare-clear" type="button">Tøm listen</button></div>
+</section></div>
 <div id="report-modal" hidden role="dialog" aria-modal="true" aria-labelledby="report-title"><form class="dialog" id="report-form">
 <div class="dialoghead"><div><h2 id="report-title">Meld inn pris</h2><p id="report-station">–</p></div><button type="button" id="report-close" class="xbtn" aria-label="Lukk skjema">×</button></div>
 <label for="report-type">Hva gjelder prisen?</label><select id="report-type"><option value="petrol95">Bensin 95 (kr/liter)</option><option value="petrol98">Bensin 98 (kr/liter)</option><option value="diesel">Diesel (kr/liter)</option><option value="electric">Lading (kr/kWh)</option></select>
