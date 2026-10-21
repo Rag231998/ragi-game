@@ -157,7 +157,7 @@ function cleanPrice(p){
  return p?fmtCurrency.format(+p.price)+' kr'+(p.fuelType==='electric'?'/kWh':'/l'):'Ukjent';
 }
 function filtered(){
- const query=norm(state.search.trim()),center=state.map.getCenter(),bounds=state.map.getBounds();
+ const query=norm(state.search.trim()),center=state.map?state.map.getCenter():{lng:10.7522,lat:59.9139},bounds=state.map?state.map.getBounds():{contains:()=>true};
  const n=Array.from(state.stations.values()).filter(s=>{
   if(!matchesFilters(s))return false;
   return query?true:bounds.contains([s.lon,s.lat]);
@@ -174,7 +174,7 @@ function filtered(){
 }
 function refresh(){
  $('charger-filters').hidden=state.mode!=='charge';
- if(!state.map)return;filterLayer();updateSources();
+ if(state.map){filterLayer();updateSources()}
  const list=$('results');const arr=filtered();list.replaceChildren();
  $('summary').textContent=arr.length.toLocaleString('nb-NO')+' treff'+(state.search?' for søket':' i kartet');
  $('result-title').textContent=state.mode==='charge'?'Ladestasjoner':state.mode==='fuel'?'Bensinstasjoner':'Stasjoner i området';
@@ -234,7 +234,7 @@ function showDetails(s){
  if(s.type==='charge')meta.append(makeMetaRow('Ladepris','Kun brukerinnmeldte priser – se dato'));
  meta.append(makeMetaRow('Koordinater',s.lat.toFixed(4)+', '+s.lon.toFixed(4)));
  $('d-navigate').href='https://www.google.com/maps/dir/?api=1&destination='+s.lat+','+s.lon;
- const m=state.map;m.flyTo({center:[s.lon,s.lat],zoom:Math.max(m.getZoom(),13),duration:850});
+ const m=state.map;if(m)m.flyTo({center:[s.lon,s.lat],zoom:Math.max(m.getZoom(),13),duration:850});
 }
 function selectStation(s){
  state.selected=s;showDetails(s);refresh();
