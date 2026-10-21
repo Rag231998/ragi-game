@@ -171,3 +171,83 @@ button {touch-action:manipulation}
 .station-tag-power{background:#e5f7ef;color:#127557}
 @media(max-width:760px){.charger-filters{margin-top:8px;padding:8px}.charger-filters .formfield select{font-size:10px;padding:6px}.charger-filters .helper{font-size:9px}}
 @media(max-height:650px) and (max-width:760px){.sidebar{height:min(72dvh,480px)}.sidebar .intro{padding-top:12px;padding-bottom:6px}.sidebar .intro .cities{max-height:36px}.sidebar .filters{padding-top:7px;padding-bottom:7px}}
+
+
+/* DESKTOP SCROLLING: natural document scroll on PC instead of trapped internal sidebar.
+ * Main document scroll drives the station list; map stays visible to the right.
+ * Scroll wheel is not consumed by map to avoid trapping users. */
+@media(min-width:761px){
+ html,body{
+  height:auto!important;
+  min-height:100%!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior-y:auto!important;
+  scrollbar-gutter:stable;
+ }
+ header{
+  position:sticky!important;
+  top:0!important;
+  left:auto!important;right:auto!important;bottom:auto!important;
+  width:100%;
+  z-index:30;
+ }
+ #map{
+  position:fixed!important;
+  top:72px!important;right:0!important;bottom:0!important;
+  left:427px!important;
+  height:auto!important;
+  width:auto!important;
+ }
+ .sidebar{
+  position:relative!important;
+  top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;
+  margin:15px 0 20px 16px!important;
+  width:395px!important;
+  height:auto!important;
+  min-height:calc(100vh - 109px)!important;
+  max-height:none!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:visible!important;
+  border-radius:18px;
+ }
+ .sidebar .intro,.sidebar .filters,.sidebar .result-head,.sidebar .sidefooter{
+  position:relative!important;
+  flex-shrink:0!important;
+ }
+ .sidebar .result-list{
+  flex:initial!important;
+  max-height:none!important;
+  height:auto!important;
+  overflow:visible!important;
+  min-height:180px!important;
+  padding-bottom:18px!important;
+ }
+ .sidebar .station{min-height:77px}
+ .sidebar .sidefooter{margin-top:auto}
+ #details{
+  top:88px!important;bottom:16px!important;
+  max-height:calc(100vh - 104px)!important;
+  overflow:hidden!important;
+ }
+ #details .detailbody{overscroll-behavior:auto;min-height:0}
+ #map-message{
+  bottom:16px!important;
+  right:16px!important;
+  z-index:10!important;
+ }
+ #loader{top:72px!important;left:427px!important}
+}
+@media(min-width:761px) and (max-width:1000px){
+ #map{left:382px!important}
+ #loader{left:382px!important}
+ .sidebar{width:350px!important}
+ #details{width:min(310px,calc(100vw - 390px))!important}
+}
+@media(min-width:761px) and (max-height:650px){
+ .sidebar .intro{padding-top:15px;padding-bottom:10px}
+ .sidebar .intro h1{font-size:21px}
+ .sidebar .filters{padding-top:10px;padding-bottom:10px}
+}
+/* Preserve a usable vertical mobile panel: desktop rule above never applies to phones. */
