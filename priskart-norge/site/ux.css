@@ -251,3 +251,6 @@ button {touch-action:manipulation}
  .sidebar .filters{padding-top:10px;padding-bottom:10px}
 }
 /* Preserve a usable vertical mobile panel: desktop rule above never applies to phones. */
+
+/* Standard hidden semantics override category/button author styles. */
+[hidden]{display:none!important}
