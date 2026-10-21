@@ -1,0 +1,25 @@
+<!doctype html><html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="Personvern og informasjonskapsler i PrisKart Norge"><title>Personvern – PrisKart Norge</title><link rel="stylesheet" href="./content.css"></head>
+<body data-page="privacy"><header><strong>⛽ PRIS<span>KART</span> NORGE</strong><a href="./index.html">← Til kartet</a></header>
+<main><div class="eyebrow">Åpenhet og kontroll</div><h1>Personvern og informasjonskapsler</h1>
+<p class="intro">Vi vil vise drivstoff- og ladepriser uten unødvendig sporing. Her beskriver vi hvordan denne versjonen av PrisKart er bygget, hvilke tekniske tjenester den bruker og hvilke valg du kan ta.</p>
+<section class="panel"><h2>Hvem er ansvarlig?</h2><dl><dt>Behandlingsansvarlig</dt><dd id="privacy-controller">Ikke registrert ennå</dd><dt>Organisasjonsnummer</dt><dd id="privacy-org">Ikke oppgitt</dd><dt>Kontakt</dt><dd id="privacy-contact">Ikke oppgitt</dd></dl>
+<div id="controller-warning" class="data-note">Før offentlig markedsføring må administrator fylle inn korrekt behandlingsansvarlig, kontaktadresse og eventuelt organisasjonsnummer. Denne siden er en teknisk personvernbeskrivelse, ikke en juridisk sluttgodkjent erklæring.</div></section>
+<section class="panel"><h2>Hvilke opplysninger behandles?</h2>
+<p><strong>Kart og stasjonssøk:</strong> Du kan se kartet uten konto. Når kartfliser og skript lastes inn, kommuniserer nettleseren med blant annet Vercel, OpenFreeMap og jsDelivr. Disse leverandørene kan motta IP-adresse og teknisk informasjon gjennom nettverksforespørsler.</p>
+<p><strong>Posisjon:</strong> «Nær meg» spør om tilgang gjennom nettleseren. Området brukes til å plassere kartet og hente geografiske kartfliser. Vi har ikke bygget en egen posisjonshistorikk. Kartleverandører kan likevel se hvilke kartområder som etterspørres.</p>
+<p><strong>Innlogging:</strong> Når du velger å opprette konto eller logge inn, behandler Supabase Authentication e-postadresse og tekniske øktopplysninger for å holde deg innlogget.</p>
+<p><strong>Innmeldte priser:</strong> Pris, produkttype, stasjon, tidspunkt og registrert brukerkonto lagres i Supabase for å publisere, moderere og forebygge misbruk. Offentlig visning skal ikke vise e-postadressen din.</p></section>
+<section class="panel"><h2>Informasjonskapsler og lagring</h2>
+<p><strong>Nødvendig:</strong> Teknisk lagring av øktdata brukes ved innlogging. Dette er nødvendig for at innloggingen skal fungere på enheten. Dersom du ikke logger inn, kan du fortsatt se stasjoner.</p>
+<p><strong>Valgfritt:</strong> Du kan velge at vi skal huske kartfiltre og drivstofftype på denne enheten. Dette lagres bare hvis du velger «Husk mine valg». Velger du «Kun nødvendige», brukes ikke denne valgfrie innstillingslagringen.</p>
+<p><strong>Statistikk og reklame:</strong> Det er ikke lagt inn egne analysepiksler eller markedsføringsskript i PrisKart-koden nå. Hvis dette endres, må valgfrie sporingsteknologier være deaktivert inntil gyldig samtykke foreligger.</p>
+<button class="button secondary" id="privacy-change-choice">Endre eller trekke tilbake valget om filterlagring</button><p id="privacy-choice-status" aria-live="polite"></p>
+<p>Les om regelverket hos <a href="https://nkom.no/internett/informasjonskapsler-cookies" target="_blank" rel="noopener noreferrer">Nasjonal kommunikasjonsmyndighet</a>.</p></section>
+<section class="panel"><h2>Formål og rettigheter</h2><p>Formålet med behandlingen er å levere kart- og prissammenligningstjenesten, administrere kontoer, publisere prisrapporter og håndtere misbruk. Behandlingsgrunnlag, oppbevaringstid, overføringer, og databehandleravtaler må vurderes og dokumenteres av den ansvarlige virksomheten før full lansering.</p>
+<p>Du kan kontakte den behandlingsansvarlige for innsyn, retting eller sletting av personopplysninger og for spørsmål om dine personvernrettigheter. Du kan også klage til <a href="https://www.datatilsynet.no/" target="_blank" rel="noopener noreferrer">Datatilsynet</a>.</p></section>
+<section class="panel"><h2>Hvor kommer pris- og ladedataene fra?</h2>
+<p>Bensinstasjoner og historiske priser er importert fra åpne data fra Drivstoffpriser. Ladestasjoner er fra et NOBIL-basert datasett formidlet av Stavanger kommune. Nye prisrapporter er brukerobservasjoner og kan være feil. Elbilladeres sanntidsstatus og automatisk oppdaterte priser er ikke koblet til.</p>
+<p>Datakilder har egne lisens- og krediteringsvilkår. <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap-bidragsytere</a>.</p>
+</section></main><footer>PrisKart Norge · Les også <a href="./faq.html">ofte stilte spørsmål</a>. Sist gjennomgått teknisk 21. oktober 2026.</footer>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./pages.js?v=1"></script>
+</body></html>
