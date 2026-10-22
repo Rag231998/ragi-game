@@ -152,7 +152,7 @@ function market(){
  frame.src='https://www.forbrukerradet.no/finansportalen/bank/iframe/lan/boliglan';
  frame.title='Finansportalen – Boliglån (Forbrukerrådets offisielle, uendrede sammenligning)';
  frame.loading='lazy';frame.referrerPolicy='no-referrer-when-downgrade';
- frame.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation-by-user-activation');
+ // Display Finansportalen's official portable calculator unmodified.
  container.append(frame);button.disabled=true;button.textContent='Bankoversikten er lastet inn';
  text('market-disclaimer','Du har åpnet Finansportalens uendrede tredjepartsverktøy. Dersom det ikke vises i denne nettleseren, åpne Finansportalen via lenken nedenfor.');
  const link=document.createElement('a');link.href='https://www.forbrukerradet.no/finansportalen/bank/';link.target='_blank';link.rel='noopener noreferrer';link.textContent='Åpne Finansportalen i ny fane ↗';
