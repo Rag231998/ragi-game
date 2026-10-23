@@ -16,15 +16,15 @@
  const periods=[['month','Per måned'],['week','Per uke'],['quarter','Per kvartal'],['year','Per år']];
  const palette=['#0a8778','#4286ba','#a183db','#edaf5c','#e37981','#4fbaab','#699ddd','#d690bf','#749e65','#af93b4','#b3a75e','#92a8b3'];
  const example=[
-  {kind:'income',category:'Lønn',description:'Netto månedslønn',bank:'DNB',amount:42000,period:'month'},
-  {kind:'income',category:'Annen inntekt',description:'Ekstra inntekt',bank:'DNB',amount:2000,period:'month'},
-  {kind:'expense',category:'Bolig',description:'Boliglån / husleie',bank:'DNB',amount:14500,period:'month'},
-  {kind:'expense',category:'Strøm',description:'Strøm og nettleie',bank:'DNB',amount:1800,period:'month'},
-  {kind:'expense',category:'Mat og drikke',description:'Dagligvarer',bank:'Nordea',amount:6500,period:'month'},
-  {kind:'expense',category:'Transport',description:'Bil og kollektiv',bank:'Nordea',amount:3800,period:'month'},
-  {kind:'expense',category:'Forsikring',description:'Innbo, bil og person',bank:'DNB',amount:1700,period:'month'},
-  {kind:'expense',category:'Abonnement',description:'Mobil, strømmetjenester',bank:'Nordea',amount:1300,period:'month'},
-  {kind:'expense',category:'Fritid',description:'Restaurant og fritid',bank:'DNB',amount:2600,period:'month'}
+  {kind:'income',category:'Lønn',description:'Netto månedslønn',bank:'',amount:42000,period:'month'},
+  {kind:'income',category:'Annen inntekt',description:'Ekstra inntekt',bank:'',amount:2000,period:'month'},
+  {kind:'expense',category:'Bolig',description:'Boliglån / husleie',bank:'',amount:14500,period:'month'},
+  {kind:'expense',category:'Strøm',description:'Strøm og nettleie',bank:'',amount:1800,period:'month'},
+  {kind:'expense',category:'Mat og drikke',description:'Dagligvarer',bank:'',amount:6500,period:'month'},
+  {kind:'expense',category:'Transport',description:'Bil og kollektiv',bank:'',amount:3800,period:'month'},
+  {kind:'expense',category:'Forsikring',description:'Innbo, bil og person',bank:'',amount:1700,period:'month'},
+  {kind:'expense',category:'Abonnement',description:'Mobil, strømmetjenester',bank:'',amount:1300,period:'month'},
+  {kind:'expense',category:'Fritid',description:'Restaurant og fritid',bank:'',amount:2600,period:'month'}
  ];
  const categoryRules=[
   [/lønn|salary|honorar|utbetaling fra arbeid/i,'Lønn'],
@@ -274,8 +274,8 @@
   return '"'+s.replaceAll('"','""')+'"';
  }
  function exportCSV(){
-  const headers=['Type','Kategori','Beskrivelse','Bank / konto','Beløp NOK','Periode','Beløp per måned NOK'];
-  const lines=allLines().map(row=>[row.kind==='income'?'Inntekt':'Utgift',row.category,row.description,row.bank,Number.isFinite(row.amount)?row.amount.toFixed(2):'',row.period,engine.monthly(row.amount,row.period).toFixed(2)]);
+  const headers=['Type','Kategori','Beskrivelse','Beløp NOK','Periode','Beløp per måned NOK'];
+  const lines=allLines().map(row=>[row.kind==='income'?'Inntekt':'Utgift',row.category,row.description,Number.isFinite(row.amount)?row.amount.toFixed(2):'',row.period,Number.isFinite(engine.monthly(row.amount,row.period))?engine.monthly(row.amount,row.period).toFixed(2):'']);
   const csv='\ufeff'+[headers,...lines].map(line=>line.map(csvField).join(';')).join('\r\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob);
@@ -284,7 +284,7 @@
  }
  function saveBudget(automatic=false){
   try{
-   const lines=allLines().map(x=>({...x,amount:Number.isFinite(x.amount)?x.amount:null}));
+   const lines=allLines().map(x=>({...x,bank:'',amount:Number.isFinite(x.amount)?x.amount:null}));
    if(lines.some(x=>x.amount===null)){
     $('budget-storage-status').textContent='Rett ugyldige beløp før budsjettet kan lagres.';
     return;
@@ -301,7 +301,7 @@
   try{
    const record=JSON.parse(localStorage.getItem(storageKey)||'null');
    if(record?.version===1&&Array.isArray(record.lines)&&record.lines.length<=250){
-    const clean=record.lines.filter(l=>l&&['income','expense'].includes(l.kind)&&typeof l.category==='string'&&typeof l.period==='string').map(l=>({...l,amount:Number(l.amount)||0}));
+    const clean=record.lines.filter(l=>l&&['income','expense'].includes(l.kind)&&typeof l.category==='string'&&typeof l.period==='string').map(l=>({...l,bank:'',amount:Number(l.amount)||0}));
     setLines(clean);loaded=true;exampleActive=false;
     $('budget-storage-status').textContent='Lagret budsjett lastet fra denne nettleseren. Ingen bankkonto er tilkoblet.';
    }
