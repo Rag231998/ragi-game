@@ -130,19 +130,24 @@
   const select=$('budget-bank-filter'),selected=select.value;
   const query=($('budget-bank-query')?.value||'').trim().toLocaleLowerCase('nb-NO');
   const assigned=[...new Set(lines.map(x=>x.bank.trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'nb'));
-  const known=[...new Set((window.LANEBANKER||[]).map(b=>b.name))].sort((a,b)=>a.localeCompare(b,'nb'));
-  const names=[...new Set([...assigned,...known])].filter(name=>!query||name.toLocaleLowerCase('nb-NO').includes(query));
-  select.replaceChildren(option('all','Alle banker og kontoer'));
-  const current=document.createElement('optgroup');current.label='Banker/kontoer i budsjettet';
-  assigned.filter(name=>names.includes(name)).forEach(name=>current.append(option(name,name)));
-  if(current.children.length)select.append(current);
-  const others=document.createElement('optgroup');others.label='Andre banker – velg for å filtrere';
-  names.filter(name=>!assigned.includes(name)).forEach(name=>others.append(option(name,name)));
-  if(others.children.length)select.append(others);
-  if(selected!=='all'&&!names.includes(selected))select.append(option(selected,selected));
-  select.value=selected;
-  const count=$('budget-bank-results');
-  if(count)count.textContent=names.length+' valg · '+assigned.length+' brukt i budsjettet';
+  const visible=assigned.filter(name=>name.toLocaleLowerCase('nb-NO').includes(query));
+  // Filters only accounts that actually have entries; the full bank directory is
+  // available as suggestions when entering a bank on any budget row.
+  const signature=visible.join('\u001f')+'|'+selected;
+  if(select.dataset.signature!==signature){
+   select.replaceChildren(option('all','Alle kontoer i budsjettet'));
+   for(const name of visible)select.append(option(name,name));
+   if(selected!=='all'&&!visible.includes(selected))select.append(option(selected,selected));
+   select.value=selected;
+   select.dataset.signature=signature;
+  }
+  const status=$('budget-bank-results');
+  if(status)status.textContent=visible.length+' kontoer med budsjettposter · Skriv banknavn i en rad for flere valg';
+ }
+ function focusNewRow(row){
+  const input=row.querySelector('[data-field="description"]');
+  row.scrollIntoView?.({behavior:'smooth',block:'nearest'});
+  input?.focus({preventScroll:true});
  }
  function drawDonut(rows,total){
   const target=$('budget-donut'),legend=$('budget-category-list');legend.replaceChildren();
@@ -325,8 +330,8 @@
    }
    if(e.target.closest('.budget-remove')){rememberUndo();e.target.closest('tr').remove();exampleActive=false;renderBudget();scheduleSave();}
   });
-  $('budget-add-income').addEventListener('click',()=>{addRow({kind:'income',category:'Lønn',description:'',bank:'',amount:0,period:'month'});exampleActive=false;renderBudget();scheduleSave()});
-  $('budget-add-expense').addEventListener('click',()=>{addRow({kind:'expense',category:'Annet',description:'',bank:'',amount:0,period:'month'});exampleActive=false;renderBudget();scheduleSave()});
+  $('budget-add-income').addEventListener('click',()=>{const row=addRow({kind:'income',category:'Lønn',description:'',bank:'',amount:0,period:'month'});exampleActive=false;renderBudget();scheduleSave();focusNewRow(row)});
+  $('budget-add-expense').addEventListener('click',()=>{const row=addRow({kind:'expense',category:'Annet',description:'',bank:'',amount:0,period:'month'});exampleActive=false;renderBudget();scheduleSave();focusNewRow(row)});
   $('budget-show-bank')?.addEventListener('change',event=>{
    document.querySelector('.budget-table')?.classList.toggle('budget-bank-visible',event.target.checked);
   });
