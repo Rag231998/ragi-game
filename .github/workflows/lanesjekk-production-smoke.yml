@@ -11,7 +11,7 @@ permissions:
 jobs:
   public-production-check:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 14
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -23,3 +23,14 @@ jobs:
         env:
           LANESJEKK_URL: https://lanesjekk-norge.vercel.app
         run: node lanesjekk-norge/tests/production-smoke.cjs
+      - name: Install browser test runner
+        working-directory: lanesjekk-norge/tests
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium and WebKit
+        working-directory: lanesjekk-norge/tests
+        run: npx playwright install --with-deps chromium webkit
+      - name: Exercise all real production browser flows
+        working-directory: lanesjekk-norge/tests
+        env:
+          LANESJEKK_BASE_URL: https://lanesjekk-norge.vercel.app
+        run: npm run test -- --config=playwright.config.cjs
