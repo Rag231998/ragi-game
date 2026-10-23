@@ -137,7 +137,9 @@ test('budget what-if graph calculates actual monthly and annual savings per cate
  await expect(page.locator('#budget-scenario-percent-value')).toHaveText('10 %');
  await expect(page.locator('#budget-scenario-month')).toContainText(/650/);
  await expect(page.locator('#budget-scenario-year')).toContainText(/7\s?800/);
- await page.locator('#budget-scenario-percent').fill('20');
+ await page.locator('#budget-scenario-percent').focus();
+ await page.locator('#budget-scenario-percent').press('ArrowRight');
+ await page.locator('#budget-scenario-percent').press('ArrowRight');
  await expect(page.locator('#budget-scenario-percent-value')).toHaveText('20 %');
  await expect(page.locator('#budget-scenario-month')).toContainText(/1\s?300/);
  await expect(page.locator('#budget-scenario-year')).toContainText(/15\s?600/);
