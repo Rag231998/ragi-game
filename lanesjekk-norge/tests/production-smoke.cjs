@@ -13,7 +13,7 @@ async function request(path,options={}){
 async function run(){
   const site=await request('/');
   assert.equal(site.response.status,200,'Website must be publicly reachable: '+site.url+' status '+site.response.status);
-  assert.match(site.body,/<title>Boliglånskalkulator og banksammenligning/i);
+  assert.match(site.body,/<title>Lånesjekk Norge \| Sammenlign boliglån, sparing og banker/i);
   assert.match(site.body,/id="bank-query"/);
   console.log('OK website accessible at '+site.url);
   const banks=await request('/banker.js');
@@ -31,6 +31,23 @@ async function run(){
   assert.equal(search.response.status,200);
   assert.match(search.body,/lanesjekkBankSearchTests/);
   console.log('OK bank-search script served');
+  const savingsPage=await request('/sparing.html');
+  assert.equal(savingsPage.response.status,200,'Savings comparison page must be public');
+  assert.match(savingsPage.body,/id="save-amount"/);
+  assert.match(savingsPage.body,/iframe\/innskudd/);
+  const savingsData=await request('/savings-data.js');
+  assert.equal(savingsData.response.status,200);
+  assert.match(savingsData.body,/historical_official_bank_page_snapshot_not_live/);
+  const savingsScript=await request('/savings.js');
+  assert.equal(savingsScript.response.status,200);
+  assert.match(savingsScript.body,/applicableRate/);
+  const portalCss=await request('/portal.css');
+  assert.equal(portalCss.response.status,200);
+  assert.match(portalCss.body,/savings-workspace/);
+  const guides=await request('/guider.html');
+  assert.equal(guides.response.status,200);
+  assert.match(guides.body,/innskuddsgaranti/);
+  console.log('OK independently served savings, 9 guides and dated rate source disclosures');
   const numbers=await request('/numbers.js');
   assert.equal(numbers.response.status,200);
   assert.match(numbers.body,/parseMoney/);

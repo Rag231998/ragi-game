@@ -100,3 +100,22 @@ Nettleserens `<form>` sendes ikke til serveren. Tast inn tom rente gir ugyldig b
 ### Før full markedsdekning eller automatiske renter
 - Nye bankkonsesjoner, nedleggelser og fusjoner må kunne oppdateres gjennom en pålitelig synkroniseringsprosess, helst mot Finanstilsynets offisielle API med riktig filtrering.
 - Live boliglånsrenter krever distribusjonsavtale med Finansportalen eller annen tillatt kilde: https://www.forbrukerradet.no/finansportalen/bank/bruk-av-vare-data/
+
+
+## Finansportal: sparing og kunnskap (23. oktober 2026)
+
+Denne versjonen bygger videre på eksisterende boliglånkalkulator uten å fjerne eller erstatte den. Forsiden har åtte navigerbare verktøykort og tre artikkelkort. Egne sider ligger på /sparing.html og /guider.html.
+
+**Sparing:** Interaktiv kalkulator sorterer et tydelig begrenset utvalg offentlige kontoeksempler etter et oppgitt innskudd mellom 1 000 og 2 000 000 kr. Filtre skiller frie uttak, begrensede uttak, uttaksvarsel og medlemskap. Det er ikke hele norske bankmarkedet. Alle satser og krav ligger i savings-data.js som et datert kildeøyeblikksbilde kontrollert 23.10.2026, med direkte kildelenke til hver banks publiserte vilkår. Beregningen viser enkel rente før skatt på valgt saldo over ett år, uten rentes rente. Bankenes egne prislister kan endres etter kontrollen; en serverlevering i dag betyr ikke at en sats ble oppdatert i dag.
+
+**Aktuelle kontoeksempler:** DNB, Nordea, SpareBank 1 Østlandet, KLP Banken, OBOS-banken, Storebrand Bank og Landkreditt Bank. OBOS-medlemskap skal aktiveres i filteret før slike kontoer vises. Rentetrinn, maksbeløp og gebyrfrie uttak er eksplisitt modellert, men betingelser skal alltid kontrolleres mot kilden. Logoer i denne visningen er kun bankinitialer i egne farger, ikke uautoriserte bankmerker.
+
+**Oppdaterte renter:** Original og uendret innskudds-iframe fra Finansportalen kan aktiveres manuelt på sparingssiden. Den er levert fra Forbrukerrådets domenenavn i en separat iframe og følger deres datakilder og tidsstempler. Iframen brukes uten distribusjonsavtale i tråd med Forbrukerrådets regelverk: https://www.forbrukerradet.no/finansportalen/bank/bruk-av-vare-data/. Uttrykkelig FORBUDT i dette prosjektet uten avtale: å skrape data fra iframen, hente fra dens interne feed eller kalle øyeblikksbildet en live-rente. Det er ikke etablert en autorisert maskinell sanntidsfeed ennå.
+
+**Spareprognose:** Inngående beløp + månedlig innbetaling over 1–30 år ved valgt hypotetisk nominell rente med månedlig kapitalisering. Grafen skiller egne innskudd fra antatt avkastning. Skatt, renteendringer, inflasjon og kostnader er ikke med i dette regneeksemplet.
+
+**Guider:** Ni artikler med direkte kildehenvisninger dekker buffer, innskuddsgaranti, rentevilkår, BSU, ASK, IPS, refinansiering, sparing vs lånenedbetaling og vår datametode. Norske skatteregler og renteopplysninger må vedlikeholdes ved lov- og satsendringer.
+
+**Test og publisering:** Node-regresjon: `cd lanesjekk-norge/tests && node --test api.spec.cjs seo.spec.cjs format.spec.cjs savings.spec.cjs`. Playwright: `npm run test -- --config=playwright.config.cjs` på desktop, nettbrett, iPhone WebKit og Android. Produksjonstest må bekrefte HTTP 200 for /, /sparing.html, /guider.html, scripts, sitemap og ekte kalkulasjons-API. Endringer publiseres til et eget Vercel-prosjekt med Root Directory lanesjekk-norge. Ikke endre andre prosjekter i repositoryet.
+
+Direkte bankkilder for det oppdaterte eksempelsamlingen (kildesjekk 23.10.2026): Nordea Sparekonto Ekstra https://www.nordea.no/privat/vare-produkter/priser/priser-for-innskuddskonto-og-plasseringer-personkunder.html og SpareBank 1 Østlandet prisliste https://www.sparebank1.no/nb/ostlandet/privat/kundeservice/bestill/prisliste.html .

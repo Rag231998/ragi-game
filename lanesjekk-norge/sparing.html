@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="nb"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#112239">
+<meta name="description" content="Sammenlign sparekontoer etter beløpet ditt, beregn renteinntekter og se oppdaterte innskuddsrenter i Finansportalens offisielle oversikt.">
+<link rel="canonical" href="https://lanesjekk-norge.vercel.app/sparing.html">
+<meta property="og:title" content="Sammenlign sparerenter og sparekontoer | Lånesjekk Norge"><meta property="og:type" content="website">
+<meta property="og:url" content="https://lanesjekk-norge.vercel.app/sparing.html">
+<title>Sparing – sammenlign sparekontoer og renter | Lånesjekk Norge</title>
+<link rel="stylesheet" href="./portal.css?v=2">
+</head><body>
+<div class="utility-bar"><div class="site-container utility-inner"><span>Uavhengig økonomioversikt</span><span>Ingen BankID · Ingen innlogging · Ingen betalte plasseringer</span></div></div>
+<header class="site-header"><div class="site-container nav-row">
+<a class="portal-logo" href="./"><span class="logo-emblem">◈</span><span>LÅNESJEKK <b>NORGE</b><small>Mer oversikt. Bedre valg.</small></span></a>
+<nav class="portal-nav" aria-label="Hovednavigasjon"><a href="./">Forside</a><a href="./#sjekk">Boliglån</a><a href="./sparing.html" aria-current="page">Sparing</a><a href="./guider.html">Guider og artikler</a><a href="./#banker">Bankoversikt</a></nav>
+<a class="nav-cta" href="#sparing-kalkulator">Sammenlign sparing <span>↗</span></a>
+<details class="mobile-menu"><summary aria-label="Åpne meny">☰ Meny</summary><div><a href="./">Forside</a><a href="./#sjekk">Boliglån</a><a href="./sparing.html">Sparing</a><a href="./guider.html">Guider og artikler</a><a href="./#banker">Bankoversikt</a></div></details>
+</div></header>
+<main>
+<section class="portal-hero savings-hero"><div class="site-container savings-hero-grid"><div>
+<div class="eyebrow-light"><span class="sparkle-dot"></span> SPARING · BANKER · SAMMENLIGNING</div>
+<h1>La sparepengene <em>jobbe smartere.</em></h1>
+<p>Få oversikt over hva ulike sparekontoer kan gi for beløpet ditt. Sammenlign rentetrinn, uttaksregler og bankenes egne vilkår – før du bestemmer deg.</p>
+<div class="hero-actions"><a class="action-white" href="#sparing-kalkulator">Sammenlign sparekontoer <span>↗</span></a><a class="action-outline" href="#offisielle-renter">Se oppdatert bankoversikt ↗</a></div>
+<div class="hero-evidence"><span>◉ Beløpstilpasset</span><span>◉ Offisielle bankkilder</span><span>◉ Gratis og uavhengig</span></div>
+</div><div class="hero-visual" aria-hidden="true"><div class="visual-shine"></div><div class="visual-heading">Ditt mulige renteutbytte</div><div class="visual-money">Hvilken konto passer deg?</div><div class="fake-chart"><i style="height:36%"></i><i style="height:50%"></i><i style="height:43%"></i><i style="height:67%"></i><i style="height:75%"></i><i style="height:92%"></i><i style="height:80%"></i></div><div class="visual-bottom"><span>Rente</span><strong>+ Bedre innsikt ↗</strong></div><span class="floating-chip">Sammenlign med samme beløp</span></div></div></section>
+<div class="site-container floating-benefits"><div><span class="benefit-icon">⌕</span><strong>Sammenlign på likt grunnlag</strong><small>Oppdag forskjellene mellom rente, beløp og vilkår</small></div><div><span class="benefit-icon">⇆</span><strong>Filtrer etter behov</strong><small>Frie uttak, begrensninger og medlemskrav</small></div><div><span class="benefit-icon">◷</span><strong>Sjekk alltid oppdateringsdato</strong><small>Bankrenter kan endres uten varsel</small></div></div>
+<section class="site-container portal-section" id="sparing-kalkulator">
+<div class="section-intro"><div><span class="section-overline">SAMMENLIGN SPAREKONTOER</span><h2>Hva kan pengene dine <em>tjene på ett år?</em></h2><p>Beløpet ditt avgjør hvilke rentetrinn du får. Resultatene oppdateres mens du skriver.</p></div><div class="status-box"><span class="status-circle"></span><div><strong>Kildekontroll: 23.10.2026</strong><small>Kontrollerte priseksempler – ikke sanntid</small></div></div></div>
+<div class="savings-workspace">
+ <aside class="calc-panel" aria-label="Spareberegning">
+  <div class="calc-head"><span class="round-icon">◎</span><div><h3>Din spareprofil</h3><p>Tilpass beregningen til deg.</p></div></div>
+  <div class="portal-field"><label for="save-amount">Hvor mye vil du sette inn?</label><div class="large-money-input"><input id="save-amount" data-money-input type="text" inputmode="decimal" value="100 000" autocomplete="off" aria-describedby="save-amount-hint"><span>kr</span></div><small id="save-amount-hint">Fra 1 000 til 2 000 000 kr i eksempelsammenligningen</small></div>
+  <input id="save-slider" aria-label="Velg innskuddsbeløp" class="portal-range" type="range" min="1000" max="2000000" step="1000" value="100000">
+  <div class="range-ticks"><span>1 000 kr</span><span>2 mill. kr</span></div>
+  <div class="portal-field"><label for="save-search">Søk etter bank eller sparekonto</label><div class="search-field"><span>⌕</span><input id="save-search" type="search" placeholder="F.eks. DNB, KLP, Storebrand..." autocomplete="off"></div></div>
+  <div class="portal-field"><label for="save-filter">Hvilken type sparing?</label><select id="save-filter" class="portal-select"><option value="all">Alle kontotypene</option><option value="fri">Frie uttak</option><option value="begrenset">Begrensede uttak</option><option value="varsel">Uttak med varsel</option></select></div>
+  <label class="portal-check"><input id="save-members" type="checkbox"><span>Vis kontoer som krever medlemskap</span></label>
+  <div class="calc-tip"><strong>Visste du?</strong><p>To kontoer med samme nominelle rente kan ha ulike vilkår. Se spesielt etter uttaksgrenser og rentetrinn.</p></div>
+  <div class="calc-actions"><button type="button" id="save-reset" class="subtle-button">↺ Nullstill</button><button type="button" id="save-share" class="subtle-button">⧉ Kopier oversikt</button></div>
+ </aside>
+ <div class="results-panel" aria-label="Sammenligningsresultater">
+  <div class="result-head"><div><span class="section-overline">DITT RESULTAT</span><h3>Sparekontoer for <span id="save-amount-title">100 000 kr</span></h3><p id="save-result-count" aria-live="polite">Beregner ...</p></div><span class="results-badge">Eksempler fra bankenes nettsider</span></div>
+  <div id="save-error" class="error-inline" role="status" hidden></div>
+  <div class="winner-strip"><div><span class="winner-eye">HØYEST ÅRLIG RENTE I UTVALGET*</span><h4 id="winner-name">–</h4><p id="winner-description">–</p></div><div class="winner-right"><strong id="winner-profit">–</strong><small>beregnet rente på ett år, før skatt</small></div></div>
+  <div class="results-label-row"><span>KONTO OG VILKÅR</span><span>RENTEINNTEKT / ÅR</span></div>
+  <div id="save-results" class="savings-results" aria-live="polite"></div>
+  <div class="compare-note">* Rangeringen gjelder <strong>bare produktene i vårt begrensede, daterte utvalg</strong> og oppgitte filtervalg. Den er ikke en rangering av hele bankmarkedet. Bruk Finansportalens offisielle oversikt nedenfor for oppdaterte markedsdata.</div>
+ </div>
+</div></section>
+<section class="light-strip"><div class="site-container">
+<div class="section-intro compact"><div><span class="section-overline">SPAREPROGNOSE</span><h2>Hva kan sparepengene <em>vokse til?</em></h2><p>En egen, hypotetisk spareplan med månedlig innbetaling og uendret rente. Ingen garantier.</p></div></div>
+<div class="projection-layout"><div class="projection-controls">
+<div class="portal-field"><label for="projection-monthly">Månedlig sparing</label><div class="large-money-input"><input id="projection-monthly" data-money-input value="2 000" inputmode="decimal" type="text"><span>kr</span></div></div>
+<div class="portal-field"><label for="projection-years">Sparehorisont</label><div class="inline-select"><input id="projection-years" type="range" min="1" max="30" step="1" value="10"><strong id="projection-years-label">10 år</strong></div></div>
+<div class="portal-field"><label for="projection-rate">Antatt nominell årlig rente</label><div class="large-money-input"><input id="projection-rate" data-decimal-input type="text" inputmode="decimal" value="4,00"><span>%</span></div></div>
+<p class="projection-caption">Beregningen antar månedlig rentesrente og innbetaling ved slutten av hver måned. Skatt, inflasjon og renteendringer er ikke inkludert.</p>
+</div><div class="projection-chart-card"><div class="projection-total"><div><small>Estimert verdi etter perioden</small><strong id="projection-total">–</strong></div><span class="growth-pill">Illustrasjon</span></div><div id="projection-chart" class="projection-chart" role="img" aria-label="Estimert sparevekst over tid"></div><div class="projection-legend"><span>● Egne innbetalinger</span><span>● Hypotetisk rentegevinst</span></div><div class="projection-stats"><div><small>Innbetalt totalt</small><strong id="projection-deposit">–</strong></div><div><small>Renter før skatt</small><strong id="projection-interest">–</strong></div></div></div></div>
+</div></section>
+<section class="site-container portal-section" id="offisielle-renter">
+<div class="section-intro"><div><span class="section-overline">MARKEDSOVERSIKT FRA FORBRUKERRÅDET</span><h2>Se bankenes <em>oppdaterte innskuddsrenter</em></h2><p>Forbrukerrådets offisielle sammenligningsverktøy gir bredere markedsdekning. Vi viser originalverktøyet uendret, og henter ikke data fra det inn i vår egen rangering.</p></div></div>
+<div class="official-box"><div class="official-top"><span class="round-icon white">↗</span><div><h3>Finansportalen · innskudd</h3><p>Originalt sammenligningsverktøy, levert og oppdatert av Forbrukerrådet. Innhold og datoer kontrolleres hos kilden.</p><div class="official-actions"><button id="official-launch" type="button" class="action-white">Åpne offisiell sammenligning ↓</button><a href="https://www.forbrukerradet.no/finansportalen/bank/iframe/innskudd" target="_blank" rel="noopener noreferrer" class="action-outline">Åpne hos Forbrukerrådet ↗</a></div></div></div><div id="official-container" class="official-embed" hidden></div></div>
+</section>
+<section class="site-container portal-section"><div class="section-intro compact"><div><span class="section-overline">LÆR MER</span><h2>Små grep. <em>Bedre sparevaner.</em></h2></div><a class="text-link" href="./guider.html">Alle guider ↗</a></div>
+<div class="topic-cards"><a class="topic-card" href="./guider.html#buffer"><span class="topic-illustration teal">◉</span><span class="topic-label">SPARING</span><h3>Hvor stor buffer bør du ha?</h3><p>Hva bør stå lett tilgjengelig, og hva kan settes til langsiktig sparing?</p><span class="topic-cta">Les guiden ↗</span></a><a class="topic-card" href="./guider.html#innskuddsgaranti"><span class="topic-illustration peach">♙</span><span class="topic-label">TRYGGHET</span><h3>Slik fungerer innskuddsgarantien</h3><p>Forstå grensen per kunde og bank – og særlige regler for utenlandske filialer.</p><span class="topic-cta">Les guiden ↗</span></a><a class="topic-card" href="./guider.html#rente"><span class="topic-illustration violet">↗</span><span class="topic-label">RENTE</span><h3>Nominell og effektiv rente</h3><p>Lær forskjellen, og hvorfor rentetrinn er viktig for beløpet ditt.</p><span class="topic-cta">Les guiden ↗</span></a></div></section>
+</main>
+<footer class="portal-footer"><div class="site-container footer-grid"><div><a class="portal-logo on-dark" href="./"><span class="logo-emblem">◈</span><span>LÅNESJEKK <b>NORGE</b></span></a><p>Uavhengig informasjon og kalkulatorer. Vi er ikke en bank, långiver eller finansiell rådgiver.</p></div><div><strong>Utforsk</strong><a href="./">Boliglån</a><a href="./sparing.html">Sparing</a><a href="./guider.html">Guider</a></div><div><strong>Kilder og ansvar</strong><a href="https://www.forbrukerradet.no/finansportalen/" target="_blank" rel="noopener noreferrer">Finansportalen ↗</a><a href="https://www.finanstilsynet.no/virksomhetsregisteret/" target="_blank" rel="noopener noreferrer">Finanstilsynet ↗</a><a href="https://www.bankenessikringsfond.no/om-garantien/hvor-mye-dekker-garantien/" target="_blank" rel="noopener noreferrer">Bankenes sikringsfond ↗</a></div></div><div class="site-container footer-end">© Lånesjekk Norge · Sammenlign med åpne øyne · Ingen kontoopprettelse eller markedsføringssporing.</div></footer>
+<script src="./numbers.js" defer></script><script src="./savings-data.js" defer></script><script src="./savings.js" defer></script>
+</body></html>
