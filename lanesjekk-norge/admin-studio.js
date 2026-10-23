@@ -231,6 +231,21 @@ function boot(){
  if(!window.supabase){msg('Supabase-biblioteket kunne ikke lastes. Kontroller innholdsblokkering.',true,'auth-status');return}
  db=window.supabase.createClient(BASE,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  $('admin-login-form').addEventListener('submit',login);
+ const forgotForm=$('admin-forgot-form'),forgotStatus=$('admin-forgot-status');
+ $('admin-forgot-open').addEventListener('click',()=>{forgotForm.hidden=false;$('admin-forgot-email').value=$('admin-email').value.trim();$('admin-forgot-open').hidden=true;$('admin-forgot-email').focus()});
+ $('admin-forgot-cancel').addEventListener('click',()=>{forgotForm.hidden=true;$('admin-forgot-open').hidden=false;forgotStatus.textContent=''});
+ forgotForm.addEventListener('submit',async e=>{
+  e.preventDefault();const email=$('admin-forgot-email').value.trim();
+  if(!email)return;
+  const btn=$('admin-forgot-send');btn.disabled=true;forgotStatus.textContent='Forsøker å sende lenke …';
+  try{
+   const redirectTo=new URL('./studio-admin.html',location.href).origin+new URL('./studio-admin.html',location.href).pathname;
+   const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo});
+   if(error){const detail=(error.message||'').toLowerCase();forgotStatus.textContent=detail.includes('rate limit')||error.status===429?'Supabase har midlertidig stoppet flere e-poster. Prøv igjen senere. Vi kan ikke omgå denne grensen.':'Kunne ikke sende lenke: '+error.message;return}
+   forgotStatus.textContent='Hvis adressen er registrert og e-postutsending er tilgjengelig, får du en lenke for å velge nytt passord. Sjekk innboksen og søppelpost.';
+  }catch(err){forgotStatus.textContent='Kunne ikke sende forespørselen. Sjekk internettforbindelsen og prøv igjen.'}
+  finally{btn.disabled=false}
+ });
  $('admin-signout').addEventListener('click',async()=>{
   await db.auth.signOut();authUser=null;ready=false;published=null;draft=null;await check();
  });
@@ -252,7 +267,7 @@ function boot(){
  db.auth.onAuthStateChange((event)=>{if(event==='PASSWORD_RECOVERY'){showRecovery();return}if(!recoveryMode)setTimeout(check,0)});
  if(new URLSearchParams(location.hash.slice(1)).get('type')==='recovery')showRecovery();
  $('admin-recovery-form').addEventListener('submit',async e=>{e.preventDefault();const pass=$('admin-new-password').value,again=$('admin-repeat-password').value,out=$('admin-recovery-status');if(pass!==again){out.textContent='Passordene er ikke like.';return}if(pass.length<12){out.textContent='Bruk minst 12 tegn.';return}const btn=$('admin-recovery-save');btn.disabled=true;const {error}=await db.auth.updateUser({password:pass});btn.disabled=false;if(error){out.textContent='Kunne ikke lagre passord: '+error.message;return}out.textContent='Passordet er oppdatert. Du kan nå logge inn.';await db.auth.signOut();recoveryMode=false;recovery.hidden=true;$('admin-auth').hidden=false;history.replaceState(null,'',location.pathname);$('admin-password').value='';});
- check();
+ if(!recoveryMode)check();
 }
 document.addEventListener('DOMContentLoaded',boot);
 })();
