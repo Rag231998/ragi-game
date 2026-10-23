@@ -105,19 +105,41 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 @media(max-width:1020px){.layout{grid-template-columns:minmax(0,1fr)}.loan-form{position:static}.metric-grid{grid-template-columns:repeat(3,1fr)}.hero-inner{gap:24px}}
 @media(max-width:690px){header{padding:12px 14px;min-height:65px}.brandmark{height:36px;width:36px;font-size:19px}.brand strong{font-size:13px}.brand small{font-size:8px}header nav{gap:8px}header nav a{font-size:10px}.header-pill{display:none}.hero{padding:37px 14px 80px}.hero-inner{grid-template-columns:1fr}.hero-card{display:none}h1{font-size:34px}.hero p{font-size:13px}.hero .btn{width:auto}.layout{gap:11px}main{padding:0 10px 45px;margin-top:-52px}.loan-form{padding:20px 16px}.metric-grid{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/-1}.metric strong{font-size:21px}.summary-card,.offer-panel{padding:19px 15px}.offer-fields{grid-template-columns:1fr 1fr}.offer-fields .field:first-child{grid-column:1/-1}.offer-fields .field:last-child{grid-column:1/-1}.two{gap:9px}.offer-title{align-items:start}.offer-title h2{font-size:18px}.market{padding:18px 14px}.market-inner{grid-template-columns:1fr}.market .btn{width:100%}.market iframe{height:1100px}.steps{grid-template-columns:1fr}.step-card{padding:15px}.market p{font-size:11px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-</style><link rel="stylesheet" href="./premium.css?v=1"></head><body>
-<header>
- <a href="#" class="brand"><span class="brandmark" aria-hidden="true">⌁</span><span><strong>LÅNESJEKK NORGE</strong><small>Enklere å forstå boliglånet</small></span></a>
- <nav aria-label="Hovedmeny"><a href="#sjekk">Lånesjekk</a><a href="#banker">Finn bank</a><a href="#marked">Bankoversikt</a><a href="#slik">Slik fungerer det</a><span class="header-pill">Ingen innlogging</span></nav>
-</header>
+</style><link rel="stylesheet" href="./premium.css?v=1"><link rel="stylesheet" href="./portal.css?v=2"></head><body class="portal-home">
+<div class="utility-bar"><div class="site-container utility-inner"><span>Uavhengig økonomioversikt</span><span>Gratis verktøy · Kilder fra banker og offentlige etater</span></div></div>
+<header class="site-header"><div class="site-container nav-row">
+<a class="portal-logo" href="./"><span class="logo-emblem">◈</span><span>LÅNESJEKK <b>NORGE</b><small>Mer oversikt. Bedre valg.</small></span></a>
+<nav class="portal-nav" aria-label="Hovednavigasjon"><a href="./" aria-current="page">Forside</a><a href="#sjekk">Boliglån</a><a href="./sparing.html">Sparing</a><a href="./guider.html">Guider og artikler</a><a href="#banker">Bankoversikt</a></nav>
+<a class="nav-cta" href="./sparing.html">Sammenlign sparing <span>↗</span></a>
+<details class="mobile-menu"><summary aria-label="Åpne meny">☰ Meny</summary><div><a href="./">Forside</a><a href="#sjekk">Boliglån</a><a href="./sparing.html">Sparing</a><a href="./guider.html">Guider og artikler</a><a href="#banker">Bankoversikt</a></div></details>
+</div></header>
 <section class="hero"><div class="hero-inner"><div>
- <div class="eyebrow">Din rente. Dine penger.</div>
- <h1>Betaler du for mye <em>på boliglånet?</em></h1>
- <p>Se hva lånet faktisk koster, sammenlign tilbud på like vilkår og finn ut hva en lavere rente kan bety for økonomien din. Gratis og uten konto.</p>
- <div class="cta-row"><a class="btn" href="#sjekk">Sjekk boliglånet ditt ↓</a><a class="btn dark-outline" href="#marked">Se banker hos Finansportalen ↗</a></div>
- </div><div class="hero-card"><span class="tag">Eksempel · ikke banktilbud</span><div class="mini">Å spare 0,50 prosentpoeng på 3 mill. kr</div><div class="number">15 000 kr</div><div class="mini">omtrent i rente første år før nedbetaling og skatt. Faktiske beløp beregnes nedenfor.</div>
+ <div class="eyebrow">SMARTERE PRIVATØKONOMI · HELT GRATIS</div>
+ <h1>Få mer ut av <em>pengene dine.</em></h1>
+ <p>Et nytt perspektiv på sparing, bankrenter og boliglån. Sammenlign med innsikt, regn ut mulige besparelser og lær hva du bør se etter – uavhengig av hvilken bank du bruker.</p>
+ <div class="cta-row"><a class="btn" href="./sparing.html">Sammenlign sparing ↗</a><a class="btn dark-outline" href="#sjekk">Sjekk boliglånet ↓</a></div>
+ </div><div class="hero-card"><span class="tag">Ditt økonomiverktøy</span><div class="mini">Små renteforskjeller blir store beløp</div><div class="number">Bedre valg.</div><div class="mini">Sjekk ulike kontoer, beregn lånekostnaden og les bankenes betingelser før du bestemmer deg.</div>
  <hr><div class="card-foot"><span>✓ Ingen innlogging</span><span>✓ Ingen lagring av lånet ditt</span></div></div></div></section>
 <main>
+<section class="home-navigation" aria-label="Velg hva du ønsker å sammenligne">
+ <div class="home-intro"><span class="section-overline">UTFORSK ALLE MULIGHETENE</span><h2>Hva vil du <em>utforske i dag?</em></h2><p>Velg et tema. Hvert kort åpner et verktøy eller en guide som hjelper deg videre.</p></div>
+ <div class="home-tool-grid">
+   <a class="home-tool featured" href="./sparing.html"><span class="home-tool-art">◉</span><span class="home-tool-category">SPARING</span><strong>Sammenlign sparekontoer</strong><small>Se hvilke renter og vilkår som kan passe for innskuddet ditt.</small><span class="home-tool-arrow">Utforsk sparing ↗</span></a>
+   <a class="home-tool" href="#sjekk"><span class="home-tool-art">⌂</span><span class="home-tool-category">BOLIGLÅN</span><strong>Sjekk boliglånet</strong><small>Regn ut månedskostnad og vurder lavere rente.</small><span class="home-tool-arrow">Åpne kalkulator ↗</span></a>
+   <a class="home-tool" href="#banker"><span class="home-tool-art">⌕</span><span class="home-tool-category">BANKOVERSIKT</span><strong>Søk etter banker</strong><small>Søk blant 97 kildebelagte bankoppføringer i Norge.</small><span class="home-tool-arrow">Finn bank ↗</span></a>
+   <a class="home-tool" href="./sparing.html#offisielle-renter"><span class="home-tool-art">↗</span><span class="home-tool-category">OPPDATERTE RENTER</span><strong>Offisiell rentesjekk</strong><small>Åpne Finansportalens originale innskuddssammenligning.</small><span class="home-tool-arrow">Åpne oversikten ↗</span></a>
+   <a class="home-tool" href="./guider.html#bsu"><span class="home-tool-art">♧</span><span class="home-tool-category">SPARING FOR UNGE</span><strong>BSU og skattefradrag</strong><small>Les om sparegrenser, renter og fradragsvilkår.</small><span class="home-tool-arrow">Les BSU-guiden ↗</span></a>
+   <a class="home-tool" href="./guider.html#ask"><span class="home-tool-art">◈</span><span class="home-tool-category">INVESTERING</span><strong>Aksjesparekonto (ASK)</strong><small>Forstå investering, skatt og hva ASK innebærer.</small><span class="home-tool-arrow">Les om ASK ↗</span></a>
+   <a class="home-tool" href="./guider.html#ips"><span class="home-tool-art">◷</span><span class="home-tool-category">PENSJON</span><strong>Planlegg pensjonssparing</strong><small>IPS, bindingstid, skattefordeler og kostnader.</small><span class="home-tool-arrow">Les IPS-guiden ↗</span></a>
+   <a class="home-tool" href="./guider.html#innskuddsgaranti"><span class="home-tool-art">♙</span><span class="home-tool-category">TRYGGHET</span><strong>Innskuddsgaranti</strong><small>Se hva som er dekket per kunde og per bank.</small><span class="home-tool-arrow">Les om trygghet ↗</span></a>
+ </div>
+</section>
+<section class="home-knowledge"><div class="home-knowledge-heading"><div><span class="section-overline">AKTUELLE VERKTØY OG TIPS</span><h2>Ta smartere valg <em>med kunnskap.</em></h2></div><a href="./guider.html">Se alle ni guider ↗</a></div><div class="home-editorial">
+<a href="./guider.html#renteforskjell"><span>STRATEGI · 5 MIN</span><strong>Sparekonto eller ekstra nedbetaling på boliglånet?</strong><small>Rente er bare én del av regnestykket. Les om likviditet og trygghet.</small><b>Les artikkelen ↗</b></a>
+<a href="./guider.html#rente"><span>RENTER · 4 MIN</span><strong>Renten du ser er ikke alltid renten du får.</strong><small>Forstå rentetrinn, nominell rente og beløpsgrenser.</small><b>Les artikkelen ↗</b></a>
+<a href="./guider.html#buffer"><span>SPARING · 4 MIN</span><strong>Hvor mye bør du egentlig ha i buffer?</strong><small>Finn et bufferbeløp som passer økonomien din.</small><b>Les artikkelen ↗</b></a>
+</div></section>
+<div class="home-mortgage-heading"><span class="section-overline">BOLIGLÅN · INTERAKTIV KALKULATOR</span><h2>Få full kontroll på <em>boliglånet ditt.</em></h2><p>Beregn lånet ditt, sjekk restgjelden og sammenlign banktilbud du selv har fått.</p></div>
  <div class="layout" id="sjekk">
  <section class="box loan-form" aria-label="Opplysninger om ditt boliglån">
  <div class="section-heading"><span class="step">1</span><div><h2>Ditt boliglån</h2><p class="subtitle">Endre tallene til det du faktisk betaler.</p></div></div>
@@ -210,7 +232,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
  <details><summary>Er tjenesten gratis, og blir opplysningene lagret?</summary><p>Ja, denne versjonen er gratis. Tall du skriver i kalkulatoren behandles lokalt i nettleseren og sendes ikke til vår server. Klikker du på Finansportalens verktøy, lastes det fra Forbrukerrådet og deres personvernvilkår gjelder.</p></details>
  </section>
 </main>
-<footer class="foot">Lånesjekk Norge – uavhengig beregningsverktøy. Ikke finansrådgivning, lånetilbud eller søknadsformidling. <a href="https://www.forbrukerradet.no/finansportalen/" target="_blank" rel="noopener noreferrer">Forbrukerrådet / Finansportalen</a> · Ingen innlogging eller markedsføringssporing i denne versjonen.</footer>
+<footer class="foot">Lær mer: <a href="./sparing.html">Sammenlign sparing</a> · <a href="./guider.html">Guider og artikler</a> · Lånesjekk Norge – uavhengig beregningsverktøy. Ikke finansrådgivning, lånetilbud eller søknadsformidling. <a href="https://www.forbrukerradet.no/finansportalen/" target="_blank" rel="noopener noreferrer">Forbrukerrådet / Finansportalen</a> · Ingen innlogging eller markedsføringssporing i denne versjonen.</footer>
 <script src="./banker.js" defer></script>
 <script src="./numbers.js" defer></script>
 <script src="./app.js" defer></script>
