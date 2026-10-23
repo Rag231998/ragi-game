@@ -39,7 +39,7 @@
   [/kinobillett|restaurant|kafe|konsert/i,'Fritid']
  ];
  function suggestCategory(text,kind){
-  if(kind==='income')return /lønn|salary|honorar/i.test(text)?'Lønn':'Annen inntekt';
+  if(kind==='income'){if(/leieinntekt|utleie|husleie fra/i.test(text))return 'Leieinntekter';if(/overtid|ekstravakt/i.test(text))return 'Overtid';if(/biinntekt|sidejobb|ekstrajobb/i.test(text))return 'Biinntekt';if(/pensjon|trygd/i.test(text))return 'Pensjon og trygd';if(/bonus|provisjon/i.test(text))return 'Bonus og provisjon';if(/renteinntekt|utbytte/i.test(text))return 'Renter og utbytte';return /lønn|salary|honorar/i.test(text)?'Lønn':'Annen inntekt'}
   return categoryRules.find(([pattern])=>pattern.test(text))?.[1]||null;
  }
  let exampleActive=true;
@@ -79,7 +79,7 @@
   const kindSpan=document.createElement('span');kindSpan.className='line-kind '+kind;
   kindSpan.textContent=kind==='income'?'↑ Inntekt':'↓ Utgift';const typeCell=cell(row,kindSpan);const marked=document.createElement('input');marked.type='checkbox';marked.className='budget-mark';marked.setAttribute('aria-label','Velg post for summering');marked.checked=!!p.selected;typeCell.prepend(marked);row.classList.add(kind==='income'?'budget-income-row':'budget-expense-row');
   cell(row,createSelect(
-   (kind==='income'?['Lønn','Annen inntekt']:categories).map(c=>[c,c]),
+   (kind==='income'?['Lønn','Biinntekt','Overtid','Leieinntekter','Bonus og provisjon','Pensjon og trygd','Renter og utbytte','Annen inntekt']:categories).map(c=>[c,c]),
    p.category||(kind==='income'?'Lønn':'Annet'),'category'));
   cell(row,createInput(p.description,'description'));
   cell(row,createInput(p.bank,'bank'));
