@@ -133,3 +133,73 @@ html{scroll-padding-top:92px}
  .portal-home .guides-zone .long-guide summary.guide-toggle span{white-space:normal;text-align:right;flex:0 0 81px}
  .portal-home .guides-zone .guide-full{padding:13px}
 }
+
+
+/* Distinct application views: never stack tools and long articles at once. */
+.portal-home[data-active-view]:not([data-active-view="home"]) main{
+ margin-top:0;padding-top:20px;
+}
+.portal-home [data-portal-view][hidden]{display:none!important}
+.portal-home .portal-viewbar{
+ background:rgba(255,255,255,.98);border:1px solid #e2ebef;
+ border-radius:17px;box-shadow:0 12px 34px rgba(16,43,61,.06);
+ display:flex;justify-content:space-between;align-items:center;gap:18px;
+ padding:13px 19px;margin:3px 0 24px;
+}
+.portal-home .portal-viewbar[hidden]{display:none!important}
+.portal-home .viewbar-crumb{display:flex;align-items:center;gap:12px;color:#80919d;font-size:11px;font-weight:750;min-width:0}
+.portal-home .viewbar-crumb a{color:#0e806f;font-weight:850}
+.portal-home .viewbar-crumb strong{font-size:12px;color:#1c3c49;white-space:nowrap}
+.portal-home .viewbar-shortcuts{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.portal-home .viewbar-shortcuts a{display:inline-flex;align-items:center;justify-content:center;min-height:39px;padding:8px 13px;border-radius:9px;font-size:11px;font-weight:850;color:#526d78;white-space:nowrap}
+.portal-home .viewbar-shortcuts a:hover{background:#eaf7f2;color:#0b8572}
+.portal-home .viewbar-shortcuts a[aria-current="page"]{background:#e2f4eb;color:#086f61}
+.portal-home .portal-feature-view{min-width:0}
+.portal-home .savings-zone{margin-top:0}
+.portal-home .guides-zone{margin-top:0}
+.portal-home .portal-nav a[aria-current="page"]{color:#087e70}
+.portal-home[data-active-view="loans"] .home-mortgage-heading{text-align:left;margin:8px auto 29px;max-width:1100px}
+.portal-home[data-active-view="loans"] .home-mortgage-heading h2{font-size:clamp(29px,3.4vw,39px)}
+.portal-home[data-active-view="loans"] .home-mortgage-heading p{max-width:700px}
+.portal-home[data-active-view="loans"] .layout{margin-top:0}
+.portal-home[data-active-view="banks"] .bank-directory-view{
+ background:linear-gradient(145deg,#ffffff,#f7fafb);
+ border:1px solid #e2eced;border-radius:23px;padding:27px;
+ box-shadow:var(--shadow);
+}
+.portal-home .feature-view-heading{margin:0 0 27px;position:relative;border-radius:17px;padding:35px 39px;background:linear-gradient(118deg,#132b40,#124951);color:#fff;overflow:hidden}
+.portal-home .feature-view-heading:after{content:"⌕";font-size:155px;font-weight:100;position:absolute;right:25px;top:-40px;color:#ffffff0c;pointer-events:none}
+.portal-home .feature-eyebrow{font-size:10px;letter-spacing:.15em;color:#9eebce;font-weight:900}
+.portal-home .feature-view-heading h1{font-size:clamp(32px,4vw,50px);letter-spacing:-.05em;max-width:700px;margin:10px 0}
+.portal-home .feature-view-heading h1 em{color:#91f0c9;font-style:normal}
+.portal-home .feature-view-heading p{font-size:13px;line-height:1.8;color:#cbdce4;max-width:690px;margin:0}
+.portal-home .bank-directory-view .bank-discovery{width:100%;max-width:none;min-width:0}
+.portal-home .bank-feature-note{margin:20px 0 0;background:#e9f7f1;padding:20px 23px;border-radius:12px;border:1px solid #d7efe6}
+.portal-home .bank-feature-note strong{font-size:14px;color:#0e584e}
+.portal-home .bank-feature-note p{font-size:12px;line-height:1.7;color:#51786c;max-width:900px}
+.portal-home .bank-feature-note a{display:inline-flex;color:#086b5e;font-size:12px;font-weight:850;text-decoration:underline;text-underline-offset:3px}
+.portal-home[data-active-view="guides"] .guides-zone .guide-grid{gap:19px}
+.portal-home[data-active-view="savings"] .savings-zone{box-shadow:0 18px 55px rgba(20,56,63,.05)}
+/* Keep the header stable and all controls functional when changing modules. */
+.portal-home [data-portal-view]:not([hidden]){animation:portal-view-in .22s ease both}
+@keyframes portal-view-in{from{opacity:.75;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:850px){
+ .portal-home .portal-viewbar{flex-wrap:wrap;gap:7px}
+ .portal-home .viewbar-shortcuts{width:100%;justify-content:space-between;gap:3px}
+ .portal-home .viewbar-shortcuts a{min-height:43px;flex:1;padding:8px 6px;font-size:11px}
+}
+@media(max-width:680px){
+ .portal-home[data-active-view]:not([data-active-view="home"]) main{padding:13px 12px 48px}
+ .portal-home .portal-viewbar{padding:12px 11px;border-radius:12px;margin:0 0 15px}
+ .portal-home .feature-view-heading{padding:29px 18px;border-radius:12px}
+ .portal-home .feature-view-heading h1{font-size:34px}
+ .portal-home .feature-view-heading p{font-size:12px}
+ .portal-home[data-active-view="banks"] .bank-directory-view{padding:10px}
+ .portal-home .bank-directory-view .bank-discovery{padding:15px 11px}
+ .portal-home .bank-feature-note{padding:15px}
+ .portal-home[data-active-view="loans"] .home-mortgage-heading{margin:14px 0 17px;text-align:left}
+ .portal-home[data-active-view="guides"] .guides-zone{margin:0}
+}
+@media(prefers-reduced-motion:reduce){
+ .portal-home [data-portal-view]:not([hidden]){animation:none}
+}

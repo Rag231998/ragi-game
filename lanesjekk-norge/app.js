@@ -198,7 +198,9 @@ function init(){
  $('loan-form').addEventListener('input',compute);
  $('loan-form').addEventListener('submit',event=>event.preventDefault());
  $('add-offer').addEventListener('click',()=>{
-  const input=$('bank-query');input.scrollIntoView({behavior:'smooth',block:'center'});input.focus();
+  if(typeof window.lanesjekkNavigate==='function')window.lanesjekkNavigate('banker');
+  const input=$('bank-query');
+  window.requestAnimationFrame(()=>{input?.focus({preventScroll:true})});
  });
  $('copy-request').addEventListener('click',negotiation);
  $('copy-summary').addEventListener('click',summary);

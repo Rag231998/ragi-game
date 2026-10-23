@@ -17,7 +17,7 @@ async function run(){
   const expectedTitle=/<title>Lånesjekk Norge \| Sammenlign boliglån, sparing og banker/i;
   for(let attempt=0;attempt<12;attempt++){
     site=await request('/');
-    if(site.response.status===200&&expectedTitle.test(site.body)&&site.body.includes('id="sparing"')&&site.body.includes('id="guider"'))break;
+    if(site.response.status===200&&expectedTitle.test(site.body)&&site.body.includes('id="sparing" data-portal-view="savings"')&&site.body.includes('id="bankoversikt"')&&site.body.includes('id="guider" data-portal-view="guides"'))break;
     if(attempt<11)await new Promise(resolve=>setTimeout(resolve,5000));
   }
   assert.equal(site.response.status,200,'Website must be publicly reachable: '+site.url+' status '+site.response.status);
@@ -33,8 +33,13 @@ async function run(){
   assert.equal((site.body.match(/<details class="long-guide"/g)||[]).length,9);
   const onePage=await request('/single-page.js');
   assert.equal(onePage.response.status,200);
-  assert.match(onePage.body,/openTarget/);
-  console.log('OK single-page navigation, savings and 9 guides included on homepage');
+  assert.match(onePage.body,/lanesjekkPortal/);
+  assert.match(onePage.body,/history\.pushState/);
+  assert.match(site.body,/data-portal-view="savings" hidden/);
+  assert.match(site.body,/data-portal-view="banks" hidden/);
+  assert.match(site.body,/data-portal-view="guides" hidden/);
+  assert.match(site.body,/id="portal-viewbar" hidden/);
+  console.log('OK distinct in-page views for mortgages, savings, banks and 9 guides');
   console.log('OK website accessible at '+site.url);
   const banks=await request('/banker.js');
   assert.equal(banks.response.status,200);

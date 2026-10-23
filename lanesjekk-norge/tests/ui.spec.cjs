@@ -1,9 +1,10 @@
 const {test,expect}=require('@playwright/test');
 test.beforeEach(async({page})=>{
  await page.route('**/favicon.ico',route=>route.abort());
- await page.goto('/',{waitUntil:'domcontentloaded'});
+ await page.goto('/#sjekk',{waitUntil:'domcontentloaded'});
 });
 test('renders all curated banks without invented rates',async({page})=>{
+ await page.goto('/#banker',{waitUntil:'domcontentloaded'});
  await expect(page.getByRole('heading',{name:'Finn og sammenlign banker'})).toBeVisible();
  const count=await page.evaluate(()=>window.LANEBANKER.length);
  expect(count).toBeGreaterThan(80);
@@ -12,6 +13,7 @@ test('renders all curated banks without invented rates',async({page})=>{
  await expect(page.locator('#offer-rate-1')).toHaveCount(0);
 });
 test('instant searchable verified banks with normalised names and no results',async({page})=>{
+ await page.goto('/#banker',{waitUntil:'domcontentloaded'});
  const input=page.locator('#bank-query');
  await input.fill('klp');
  await expect(page.locator('.bank-card')).toHaveCount(1);
@@ -32,6 +34,7 @@ test('instant searchable verified banks with normalised names and no results',as
  await expect(page.locator('.bank-card')).toHaveCount(8);
 });
 test('selects vetted bank, accepts real user rate and calculates immediately',async({page})=>{
+ await page.goto('/#banker',{waitUntil:'domcontentloaded'});
  await page.locator('#bank-query').fill('DNB');
  await page.locator('[data-bank="dnb"] .bank-select').click();
  await expect(page.locator('#offers .offer')).toHaveCount(1);
@@ -65,9 +68,12 @@ test('layout fits viewport with usable fields and controls',async({page,isMobile
   }).slice(0,12).map(el=>({tag:el.tagName,className:String(el.className).slice(0,80),id:el.id,right:Math.round(el.getBoundingClientRect().right)}))
  }));
  expect(dim.scrollWidth,JSON.stringify(dim.overflowing)).toBeLessThanOrEqual(dim.width+3);
- await expect(page.locator('#bank-query')).toBeVisible();
  await expect(page.locator('#scenario-cut')).toBeVisible();
  await expect(page.locator('#balance')).toBeVisible();
+ await expect(page.locator('#bank-query')).toBeHidden();
+ await page.goto('/#banker',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#bank-query')).toBeVisible();
+ await expect(page.locator('#balance')).toBeHidden();
 });
 
 test('blank interest rate cannot silently become a zero-interest loan',async({page})=>{
@@ -82,6 +88,7 @@ test('blank interest rate cannot silently become a zero-interest loan',async({pa
 });
 
 test('loan form Enter key does not reload or discard the comparison',async({page})=>{
+ await page.goto('/#banker',{waitUntil:'domcontentloaded'});
  await page.locator('[data-bank="dnb"] .bank-select').click();
  await page.locator('#offer-rate-1').fill('5.0');
  await page.evaluate(()=>{window.__loanPageNotReloaded=true});
@@ -130,6 +137,7 @@ test('bank combobox searches instead of showing all banks in a select list',asyn
  await expect(page.locator('#currentbank-results')).toBeHidden();
 });
 test('search finds regionally listed banks and shows their truthful source',async({page})=>{
+ await page.goto('/#banker',{waitUntil:'domcontentloaded'});
  await page.locator('#bank-query').fill('Rørosbanken');
  await expect(page.locator('.bank-card')).toHaveCount(1);
  await expect(page.locator('.bank-name')).toHaveText('Rørosbanken Røros Sparebank');
@@ -140,6 +148,7 @@ test('search finds regionally listed banks and shows their truthful source',asyn
  await expect(page.locator('#results')).toContainText('Rørosbanken');
 });
 test('manual bank rates and fees support Norwegian decimal/grouping',async({page})=>{
+ await page.goto('/#banker',{waitUntil:'domcontentloaded'});
  await page.locator('[data-bank="dnb"] .bank-select').click();
  await page.locator('#offer-rate-1').fill('4,99');
  await page.locator('#offer-fee-1').fill('1299');
@@ -150,9 +159,46 @@ test('manual bank rates and fees support Norwegian decimal/grouping',async({page
  await expect(page.locator('#result-table-wrap')).toBeVisible();
 });
 test('incremental bank results do not render all banks at once',async({page})=>{
+ await page.goto('/#banker',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.bank-card')).toHaveCount(8);
  await page.locator('#bank-more').click();
  await expect(page.locator('.bank-card')).toHaveCount(20);
  await page.locator('#bank-query').fill('sparebank 1');
  expect(await page.locator('.bank-card').count()).toBeGreaterThan(1);
+});
+
+test('separate views protect the user from seeing every calculator at once',async({page})=>{
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.hero')).toBeVisible();
+ await expect(page.locator('#sparing')).toBeHidden();
+ await expect(page.locator('#sjekk')).toBeHidden();
+ await expect(page.locator('#bankoversikt')).toBeHidden();
+ await expect(page.locator('#guider')).toBeHidden();
+ await page.goto('/#sjekk',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#balance')).toBeVisible();
+ await expect(page.locator('#sparing')).toBeHidden();
+ await expect(page.locator('.hero')).toBeHidden();
+ await page.goto('/#banker',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#bank-query')).toBeVisible();
+ await expect(page.locator('#balance')).toBeHidden();
+});
+test('bank selection automatically opens the separate mortgage comparison window',async({page})=>{
+ await page.goto('/#banker',{waitUntil:'domcontentloaded'});
+ await page.locator('#bank-query').fill('DNB');
+ await page.locator('[data-bank="dnb"] .bank-select').click();
+ await expect(page).toHaveURL(/\/#sammenlign$/);
+ await expect(page.locator('#sammenlign')).toBeVisible();
+ await expect(page.locator('#bankoversikt')).toBeHidden();
+ await expect(page.locator('#offers .offer')).toHaveCount(1);
+});
+
+test('Legg til bank finds the bank in its own window and returns to actual comparison',async({page})=>{
+ await page.locator('#add-offer').click();
+ await expect(page).toHaveURL(/\/#banker$/);
+ await expect(page.locator('#bank-query')).toBeVisible();
+ await page.locator('#bank-query').fill('Nordea');
+ await page.locator('[data-bank="nordea"] .bank-select').click();
+ await expect(page).toHaveURL(/\/#sammenlign$/);
+ await expect(page.locator('#offer-rate-1')).toBeVisible();
+ await expect(page.locator('#sparing')).toBeHidden();
 });

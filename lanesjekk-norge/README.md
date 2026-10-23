@@ -128,3 +128,11 @@ Hovedadressen `https://lanesjekk-norge.vercel.app/` viser **alle funksjoner i et
 **Bakoverkompatibilitet:** De gamle HTML-filene `sparing.html` og `guider.html` beholdes midlertidig for besøkende med lagrede lenker. De eksponeres ikke i hovednavigasjonen og ligger ikke lenger i den primære XML-sitemapen. For nye besøkende er det bare hovedadressen som trengs.
 
 **Verifisering:** `tests/portal.spec.cjs` tester navigasjon uten sidelasting, rentesammenligning, guidepaneler og bredde på mobil/PC. Produksjonssjekken kontrollerer at alle seksjoner, scripts og kildeopplysninger er levert på den faktiske hovedsiden. Den opprinnelige boliglånkalkulatoren og API-et bevares.
+
+## Egen visning for hver tjeneste (oppdatering 23. oktober 2026)
+
+Viktig presisering av tidligere «én nettside»: **Dette er én app på ett domene, men ikke én sammenhengende lang side.** Appen viser nøyaktig én av fem hovedvisninger om gangen: Forside, Boliglån, Sparing, Bankoversikt og Guider/artikler. Funksjonaliteten bevares i DOM-en, men de inaktive visningene er skjult og utilgjengelige for tastatur/skjermleser.
+
+single-page.js ruter hash-adresser til riktig visning, åpner dyplenker til guideartikler, synkroniserer hovedmeny/mobilmeny og støtter Tilbake/Frem. Utfylte kalkulatorverdier beholdes ved navigasjon. Banksøket er flyttet ut av boliglånsvisningen og har egen bankkatalog. Velg «Sammenlign bank» eller «Legg til bank» for å navigere mellom bankoversikt og boliglånstilbud.
+
+Produksjons- og Playwright-testene er endret for å kontrollere at kun aktiv visning er synlig, at ulike skjermstørrelser fungerer, og at banksammenligninger fortsatt oppdaterer resultatene. Den opprinnelige datakildebegrensningen for renter gjelder fortsatt: egne kontoeksempler er et datert utvalg, ikke sanntidsdata.
