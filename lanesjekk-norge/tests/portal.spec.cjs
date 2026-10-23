@@ -84,19 +84,20 @@ test('new pages have no horizontal overflow at configured device size',async({pa
  }
 });
 
-test('all primary menu and cards stay on one document and use section anchors',async({page,isMobile})=>{
+test('all primary menu and cards stay on one document and use section anchors',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const origin=new URL(page.url()).origin;
  const mainNav=page.locator('.portal-nav');
- const savingsLink=isMobile?page.locator('.mobile-menu a[href="#sparing"]').first():mainNav.locator('a[href="#sparing"]');
- if(isMobile){await page.locator('.mobile-menu summary').click()}
+ const compactMenu=!(await mainNav.isVisible());
+ const savingsLink=compactMenu?page.locator('.mobile-menu a[href="#sparing"]').first():mainNav.locator('a[href="#sparing"]');
+ if(compactMenu){await page.locator('.mobile-menu summary').click()}
  await savingsLink.click();
  await expect(page).toHaveURL(origin+'/#sparing');
  await expect(page.locator('#save-amount')).toBeAttached();
  await expect(page.locator('#bank-query')).toBeAttached();
  await expect(page.locator('#monthly')).toBeAttached();
- const learnLink=isMobile?page.locator('.mobile-menu a[href="#guider"]').first():mainNav.locator('a[href="#guider"]');
- if(isMobile)await page.locator('.mobile-menu summary').click();
+ const learnLink=compactMenu?page.locator('.mobile-menu a[href="#guider"]').first():mainNav.locator('a[href="#guider"]');
+ if(compactMenu)await page.locator('.mobile-menu summary').click();
  await learnLink.click();
  await expect(page).toHaveURL(origin+'/#guider');
  await expect(page.locator('#artikler .guide-article')).toHaveCount(9);
