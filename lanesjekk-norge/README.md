@@ -136,3 +136,29 @@ Viktig presisering av tidligere «én nettside»: **Dette er én app på ett dom
 single-page.js ruter hash-adresser til riktig visning, åpner dyplenker til guideartikler, synkroniserer hovedmeny/mobilmeny og støtter Tilbake/Frem. Utfylte kalkulatorverdier beholdes ved navigasjon. Banksøket er flyttet ut av boliglånsvisningen og har egen bankkatalog. Velg «Sammenlign bank» eller «Legg til bank» for å navigere mellom bankoversikt og boliglånstilbud.
 
 Produksjons- og Playwright-testene er endret for å kontrollere at kun aktiv visning er synlig, at ulike skjermstørrelser fungerer, og at banksammenligninger fortsatt oppdaterer resultatene. Den opprinnelige datakildebegrensningen for renter gjelder fortsatt: egne kontoeksempler er et datert utvalg, ikke sanntidsdata.
+
+## Økonomiverktøy med separate faner og egne grafer (23.10.2026)
+
+Lånesjekk har nå åtte separate app-visninger: Forside, Boliglån, Sparing, Bankoversikt, Guider, Budsjett, Billån/Forbrukslån og Akademi. Forbrukslån har en egen fane i finansieringsvisningen og kan åpnes direkte via #forbrukslan. Vi bruker egen HTML, CSS og JavaScript uten en ferdigkjøpt bankdesignmal.
+
+### Budsjett
+- Redigerbart regneark med inntekt, utgift, kategori, beskrivelse, bank/konto, beløp og periode (uke, måned, kvartal, år). Omregnes til en månedlig basis.
+- Egne grafer: en ringgraf over kategorier, horisontale bankfordelingsgrafer og 12-måneders akkumulert overskudd. Alle grafer beregnes fra brukerens utfylte rader.
+- Oppstartsdata er et MERKET EKSEMPEL (fiktive beløp). Poster kan legges til/fjernes. Bankfelt kan søkes mot banknavn fra vår kildebelagte, statiske katalog og kan også fylles fritt.
+- «Lagre lokalt» lagrer budsjettet i brukerens egen nettleser (localStorage), og ingenting sendes til vår server. Funksjonen er frivillig; brukeren kan slette den. Vær oppmerksom på at andre brukere av samme nettleser kan få tilgang til lagrede tall.
+- CSV-eksport med semikolon og UTF-8 BOM er egnet for Excel i Norge. Ikke et ekte XLSX-dokument, ingen oppkobling til banktransaksjoner. Regnearket lar brukeren gjøre sine egne budsjettkontroller.
+- Tips er matematiske, ikke individualisert rådgivning. Kategoriandeler, 10 % reduksjon av største utgiftsgruppe og 20 % reduksjon av abonnement bygger på inntastede tall. SIFO er generell referanse; husk å supplere med bolig, strøm og individuelle forhold: https://www.oslomet.no/no/om/sifo/referansebudsjettet
+
+### Billån og forbrukslån
+- Beregningsmotoren er egen `finance-tools.js`, testet i `tests/finance.spec.cjs`.
+- Billån: kjøpesum, egenkapital, rente, løpetid, etableringsgebyr, termingebyr, restverdi/ballong og driftsutgifter. Forbrukslån: lånebeløp, rente, løpetid og gebyrer. Begge har egne skjema-tilstander.
+- Regner annuitet med månedlig rente nominell/12, løser effektiv årsrente med biseksjon av netto låneutbetaling og fremtidige terminer, og illustrerer terminbeløp, samlet rente/gebyr, restgjeld og en hypotetisk reduksjon på 0,5 prosentpoeng i nominell rente.
+- Grafer over fordeling av hovedstol, rente og gebyr og årlig restgjeld. Regnestykket forutsetter uendret rente, ingen ekstra nedbetaling og gebyrer som oppgitt. Effektiv rente kan avvike fra bankens offisielle beregning; den er ikke en bindende sats og er ikke hentet live.
+
+### Lånesjekk Akademi
+- Fire egenutviklede quizspørsmål med umiddelbar forklaring, progresjon og kildelenker. Egen visning og korte lenker til kunnskapsguidene.
+
+### UI og regresjon
+- Den tidligere toppseksjonens overflyt og lyse tekst på lys knapp er rettet gjennom `finance-style.css`, med egne målrettede mobilstilregler.
+- CI kjører eksisterende testpakke pluss `finance.spec.cjs` og Playwright `finance-ui.spec.cjs` på desktop Chromium, nettbrett Chromium, iPhone WebKit og Android Chromium. Produksjonssmoke bekrefter riktige filer og visninger.
+- Den originale Finansportalen-iframe kan brukes i henhold til deres kildevilkår, men ingen sanntidsrådata fra den eller fra bankene kopieres til vår egen beregningsmotor uten tillatelse: https://www.forbrukerradet.no/finansportalen/bank/bruk-av-vare-data/
