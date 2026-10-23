@@ -30,3 +30,52 @@
 @media(max-width:910px){.site-container{width:min(100% - 36px,760px)}.nav-row{min-height:67px}.portal-nav,.nav-cta{display:none}.mobile-menu{display:block;margin-left:auto;position:relative;font-size:12px}.mobile-menu summary{list-style:none;background:#eaf8f3;border-radius:9px;color:#096f62;padding:10px 13px;font-weight:850;cursor:pointer}.mobile-menu>div{position:absolute;top:45px;right:0;width:230px;border:1px solid #d7e7e2;border-radius:11px;background:#fff;box-shadow:0 20px 44px #102a3330;padding:9px;display:flex;flex-direction:column}.mobile-menu a{padding:10px;font-size:12px;font-weight:750;color:#244556}.mobile-menu a:hover{background:#edf7f3}.savings-hero-grid{grid-template-columns:1fr .85fr;gap:24px;padding:63px 0 95px}.portal-hero h1{font-size:clamp(37px,4vw,50px)}.hero-visual{padding:23px;min-height:290px}.visual-money{font-size:21px}.floating-chip{right:-6px;font-size:9px}.savings-workspace{grid-template-columns:300px minmax(0,1fr)}.results-panel,.calc-panel{padding:17px}.results-badge{display:none}.winner-strip{padding:17px;flex-wrap:wrap}.saving-result{grid-template-columns:25px 38px 1fr auto;gap:8px}.saving-symbol{width:38px;height:38px;font-size:10px}.saving-amount{min-width:110px}.saving-amount strong{font-size:15px}.saving-source{grid-column:2/-1}.projection-layout{grid-template-columns:.9fr 1.1fr}.topic-cards{gap:10px}.topic-card{padding:18px}}
 @media(max-width:680px){.site-container{width:calc(100% - 30px)}.utility-inner>span:last-child{display:none}.savings-hero-grid{grid-template-columns:1fr;padding:55px 0 78px;gap:27px}.portal-hero h1{font-size:43px}.portal-hero p{font-size:13px}.hero-visual{display:none}.hero-actions{flex-direction:column}.hero-actions a{width:100%}.hero-evidence{gap:10px 17px}.floating-benefits{grid-template-columns:1fr;gap:0;padding:0;margin-top:-26px}.floating-benefits>div{padding:11px 14px}.floating-benefits>div+div{border-left:0;border-top:1px solid #e9eef1}.floating-benefits small{margin-top:2px}.portal-section{padding-top:55px;padding-bottom:57px}.section-intro{display:block}.section-intro h2{font-size:30px}.section-intro p{font-size:12px}.status-box{margin-top:17px;width:max-content;max-width:100%}.savings-workspace{grid-template-columns:1fr;gap:14px}.calc-panel{position:static;padding:19px}.results-panel{padding:18px 13px}.result-head{padding:0 4px}.result-head h3{font-size:19px}.winner-strip{margin:17px 0;padding:15px 13px}.winner-strip h4{font-size:17px}.winner-right strong{font-size:25px}.winner-right{text-align:left}.saving-result{grid-template-columns:20px 37px 1fr auto;gap:6px}.saving-bank{font-size:12px}.saving-account,.saving-flags span{font-size:10px}.saving-amount strong{font-size:14px}.saving-amount{min-width:92px}.saving-source{grid-column:3/-1;flex-wrap:wrap}.saving-source .saving-terms{font-size:9px}.results-label-row{font-size:8px}.projection-layout{grid-template-columns:1fr}.projection-controls,.projection-chart-card{padding:20px}.projection-chart{height:165px}.light-strip{padding-bottom:53px}.topic-cards{grid-template-columns:1fr}.topic-card{min-height:210px}.topic-illustration{margin-bottom:10px}.official-top{padding:21px 17px}.official-top h3{font-size:19px}.official-top .round-icon{display:none}.official-actions a,.official-actions button{width:100%}.official-embed{padding:3px}.official-embed iframe{height:1450px}.footer-grid{grid-template-columns:1fr 1fr;gap:29px}.footer-grid>div:first-child{grid-column:1/-1}.guide-hero{padding:53px 0 80px}.guide-categories{grid-template-columns:1fr 1fr;gap:9px}.guide-categories a{padding:13px;font-size:11px}.guide-grid{grid-template-columns:1fr}.guide-article{display:flex;min-height:140px}.guide-article .article-cover{flex:0 0 110px;height:auto}.article-body{padding:15px}.article-body h3{font-size:16px}.long-guide{padding:21px 16px}.long-guide h2{font-size:22px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+/* Portal home: legacy mortgage calculator remains operational below new sections. */
+.portal-home{background:#f5f8f9}
+.portal-home header.site-header{display:block;min-height:0;padding:0;color:var(--ink);background:#fff;box-shadow:0 4px 14px #1230440c;position:sticky;top:0;z-index:70}
+.portal-home header.site-header a{color:inherit}
+.portal-home header.site-header .nav-cta{color:white}
+.portal-home header.site-header .portal-logo{color:#143b42}
+.portal-home header.site-header .portal-logo b{color:#0d9075}
+.portal-home header.site-header .portal-nav a{color:#3d5b6a}
+.portal-home header.site-header .portal-nav a:hover,.portal-home header.site-header .portal-nav a[aria-current=page]{color:#087c6a}
+.portal-home header.site-header .mobile-menu a{display:block}
+.portal-home header.site-header .mobile-menu summary{color:#087c6a}
+.portal-home main{margin-top:-39px;max-width:1228px;padding:0 18px 85px;z-index:2}
+.portal-home .hero{background:radial-gradient(ellipse at 85% 0%,#275a61 0%,#142d45 43%,#101e35 100%);padding:70px 22px 106px}
+.portal-home .hero .number{font-size:clamp(30px,3.2vw,45px);letter-spacing:-.04em}
+.portal-home .hero .hero-inner{gap:65px}
+.portal-home .home-navigation{border-radius:21px;background:white;box-shadow:0 30px 70px #112b401c;border:1px solid #e4eaed;padding:27px;margin-bottom:32px;position:relative}
+.home-intro{text-align:center;margin:9px 0 25px}.home-intro h2,.home-knowledge h2,.home-mortgage-heading h2{font-size:clamp(25px,3vw,35px);margin:9px 0;letter-spacing:-.045em;line-height:1.2}.home-intro h2 em,.home-knowledge h2 em,.home-mortgage-heading h2 em{font-style:normal;color:#0b8a78}.home-intro p,.home-mortgage-heading p{font-size:12px;color:#71838d;margin:0}
+.home-tool-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.home-tool{display:flex;flex-direction:column;align-items:flex-start;gap:7px;min-width:0;border:1px solid #e0e9ea;border-radius:15px;padding:19px;min-height:218px;background:#fdfefe;transition:transform .2s,box-shadow .2s,border-color .2s;text-decoration:none;color:#143347!important}
+.home-tool:hover{transform:translateY(-3px);box-shadow:0 15px 25px #12304b10;border-color:#b1dacd}
+.home-tool.featured{background:linear-gradient(140deg,#0c6f68,#103e49);color:white!important;border-color:#176964;box-shadow:0 13px 31px #0b796d20}
+.home-tool-art{width:43px;height:43px;display:grid;place-items:center;border-radius:13px;background:#e9f6f2;color:#088670;font-size:22px}
+.home-tool.featured .home-tool-art{background:#ffffff21;color:#ccffec}
+.home-tool-category{font-size:9px;color:#16927c;letter-spacing:.1em;font-weight:940;margin-top:3px}
+.home-tool.featured .home-tool-category{color:#9df3d2}
+.home-tool strong{font-size:15px;line-height:1.3;letter-spacing:-.02em}
+.home-tool small{font-size:10px;line-height:1.55;color:#80929b}
+.home-tool.featured small{color:#c4dce0}
+.home-tool-arrow{font-weight:900;font-size:10px;color:#087b68;margin-top:auto;padding-top:8px}
+.home-tool.featured .home-tool-arrow{color:#b7ffe3}
+.home-knowledge{margin:33px 0 52px}.home-knowledge-heading{display:flex;justify-content:space-between;align-items:end;margin-bottom:18px;gap:14px}
+.home-knowledge-heading a{font-size:11px;font-weight:850;color:#087f71;text-decoration:none}
+.home-editorial{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.home-editorial a{display:flex;flex-direction:column;align-items:start;border-radius:16px;border:1px solid #e0e9ec;padding:23px;background:#fff;min-height:207px;text-decoration:none;color:#1b384b;box-shadow:0 8px 27px #13304408}
+.home-editorial a:hover{border-color:#89cdb9;box-shadow:0 17px 34px #12304314}
+.home-editorial a>span{font-size:9px;color:#0b8e7d;letter-spacing:.1em;font-weight:940}
+.home-editorial strong{font-size:17px;line-height:1.38;letter-spacing:-.03em;margin-top:11px}
+.home-editorial small{font-size:11px;line-height:1.65;color:#768995;margin-top:8px}
+.home-editorial b{font-size:11px;color:#087f70;margin-top:auto;padding-top:16px}
+.home-mortgage-heading{text-align:center;margin:29px auto 24px}
+.portal-home #sjekk{scroll-margin-top:99px}
+.portal-home #banker,.portal-home #marked,.portal-home #slik{scroll-margin-top:99px}
+.portal-home .loan-form{top:98px}
+.portal-home .foot a{color:#8becd6}
+@media(max-width:1020px){.home-tool-grid{grid-template-columns:repeat(4,1fr);gap:9px}.home-tool{padding:14px;min-height:215px}.home-tool strong{font-size:13px}.home-editorial{gap:9px}.home-editorial a{padding:18px}}
+@media(max-width:810px){.home-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.home-tool{min-height:185px;padding:17px}.home-tool strong{font-size:15px}.home-editorial{grid-template-columns:1fr}.home-editorial a{min-height:165px}.portal-home .loan-form{top:85px}}
+@media(max-width:680px){.portal-home .site-header{min-height:0}.portal-home .nav-row{min-height:66px}.portal-home .hero{padding:53px 17px 84px}.portal-home .hero-inner{gap:18px}.portal-home main{padding:0 12px 56px;margin-top:-30px}.portal-home .home-navigation{padding:18px 12px;margin-bottom:25px}.home-intro{margin:7px 0 21px}.home-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.home-tool{min-height:206px;padding:13px 11px}.home-tool-art{width:38px;height:38px;font-size:21px}.home-tool-category{font-size:8px}.home-tool strong{font-size:13px}.home-tool small{font-size:10px}.home-knowledge{margin:32px 0}.home-editorial a{min-height:163px}.home-mortgage-heading{margin-top:27px}.portal-home .loan-form{position:static}}
