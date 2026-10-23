@@ -148,3 +148,6 @@
 .receipt-hero-art{animation:receiptFloat 5s ease-in-out infinite alternate}@keyframes receiptFloat{to{transform:translateY(-9px)}}
 @media(max-width:750px){.receipt-tour{padding:17px;border-radius:18px}.receipt-tour-top{align-items:start}.receipt-tour-screen{min-height:260px}.receipt-workflow-heading{align-items:flex-start;flex-direction:column}.receipt-workflow-privacy{white-space:normal}.receipt-tour-controls>span{min-width:110px}}
 @media(prefers-reduced-motion:reduce){.receipt-tour *,.receipt-hero-art{animation:none!important;transition:none!important}}
+
+/* Quantity × unit price: keep the line total visible and noneditable */
+.receipt-table{min-width:710px}.receipt-table td:nth-child(2){min-width:75px;width:80px}.receipt-table td:nth-child(3){min-width:105px;width:115px}.receipt-table td:nth-child(4){min-width:145px}.receipt-table td:nth-child(5){min-width:130px}.receipt-table input[readonly]{font-weight:850;color:#087f68;background:#edf8f3;border-color:#cde9dd;cursor:default}
