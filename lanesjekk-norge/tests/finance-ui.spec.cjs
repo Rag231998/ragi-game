@@ -196,3 +196,39 @@ test('dashboard cards use distinct category colors and accessible tap targets',a
  expect(look.uniques).toBeGreaterThan(6);
  expect(look.smallButtonHeight).toBeGreaterThanOrEqual(180);
 });
+
+
+test('budget autosaves edits and restores them on refresh',async({page})=>{
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('#budget-rows tr').first().locator('[data-field=amount]').fill('57000');
+ await expect(page.locator('#budget-storage-status')).toContainText('automatisk');
+ await page.reload();
+ await expect(page.locator('#budget-rows tr').first().locator('[data-field=amount]')).toHaveValue('57 000');
+});
+test('budget undo restores deleted rows and their totals',async({page})=>{
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#budget-rows tr')).toHaveCount(9);
+ await page.locator('#budget-rows tr').first().locator('.budget-remove').click();
+ await expect(page.locator('#budget-rows tr')).toHaveCount(8);
+ await page.locator('.budget-advanced-tools > summary').click();
+ await page.locator('#budget-undo').click();
+ await expect(page.locator('#budget-rows tr')).toHaveCount(9);
+ await expect(page.locator('#budget-income')).toContainText(/44\\s?000/);
+});
+test('budget salary transfer updates income and subtotal of chosen rows',async({page})=>{
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('#budget-salary-gross').fill('60000');
+ await page.locator('#budget-salary-tax').fill('25');
+ await page.locator('#budget-salary-other').fill('1000');
+ await expect(page.locator('#budget-salary-net')).toContainText(/44\\s?000/);
+ await page.locator('#budget-salary-use').click();
+ await expect(page.locator('#budget-income')).toContainText(/46\\s?000/);
+ await page.locator('#budget-rows tr').first().locator('.budget-mark').check();
+ await expect(page.locator('#budget-selected-total')).toContainText(/44\\s?000/);
+});
+test('invalid amounts display an error and prevent saving bad values',async({page})=>{
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('#budget-rows tr').first().locator('[data-field=amount]').fill('');
+ await expect(page.locator('#budget-error-count')).toContainText('feil beløp');
+ await expect(page.locator('#budget-rows tr').first().locator('[data-field=amount]')).toHaveAttribute('aria-invalid','true');
+});
