@@ -136,6 +136,23 @@
    col.append(bar,label);root.append(col);
   }
  }
+
+ function renderBudgetScenario(totals){
+  const picker=$('budget-scenario-category'),slider=$('budget-scenario-percent');
+  if(!picker||!slider)return;
+  const previous=picker.value;
+  picker.replaceChildren();
+  for(const entry of totals.categories)picker.append(option(entry.name,entry.name));
+  const match=totals.categories.find(x=>x.name===previous);
+  if(match)picker.value=previous;
+  picker.disabled=totals.categories.length===0;
+  slider.disabled=totals.categories.length===0;
+  const fraction=Number(slider.value)/100;
+  const amount=totals.categories.find(x=>x.name===picker.value)?.amount||0;
+  $('budget-scenario-percent-value').textContent=slider.value+' %';
+  $('budget-scenario-month').textContent=money(amount*fraction);
+  $('budget-scenario-year').textContent=money(amount*fraction*12);
+ }
  function renderBudget(){
   const lines=allLines();
   for(const tr of $('budget-rows').querySelectorAll('tr')){
@@ -162,6 +179,7 @@
   $('budget-row-count').textContent=lines.length+' poster';
   $('budget-empty').hidden=lines.length>0;
   drawDonut(totals.categories,totals.expense);drawBanks(totals.banks);drawTimeline(totals.balance);
+  renderBudgetScenario(totals);
   const tips=$('budget-insights');tips.replaceChildren();
   for(const message of engine.budgetInsights(totals,lines)){
    const p=document.createElement('div');p.className='insight-item';p.textContent=message;tips.append(p);
@@ -213,6 +231,8 @@
   $('budget-bank-filter').addEventListener('change',renderBudget);
   $('budget-demo').addEventListener('click',()=>{exampleActive=true;setLines(example);$('budget-storage-status').textContent='Eksempelbudsjett vises. Beløpene er oppdiktede illustrasjoner.'});
   $('budget-reset').addEventListener('click',()=>{exampleActive=false;setLines([]);$('budget-storage-status').textContent='Budsjettet er tømt i skjemaet. Bruk «Slett lokal lagring» dersom du har lagret tidligere.'});
+  $('budget-scenario-category').addEventListener('change',renderBudget);
+  $('budget-scenario-percent').addEventListener('input',renderBudget);
   $('budget-export').addEventListener('click',exportCSV);
   $('budget-save').addEventListener('click',saveBudget);
   $('budget-clear-save').addEventListener('click',()=>{
