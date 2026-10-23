@@ -23,6 +23,18 @@ async function run(){
   assert.equal(site.response.status,200,'Website must be publicly reachable: '+site.url+' status '+site.response.status);
   assert.ok(expectedTitle.test(site.body),'Expected new portal title; got '+(site.body.match(/<title>[^<]*<\/title>/i)||['no title'])[0]);
   assert.match(site.body,/id="bank-query"/);
+  for(const marker of ['id="sparing"','id="sparing-kalkulator"','id="offisielle-renter"','id="guider"','id="artikler"','id="sjekk"']){
+    assert.ok(site.body.includes(marker),'Missing unified homepage area: '+marker);
+  }
+  assert.ok(site.body.includes('href="#sparing"'),'Savings navigation should be a same-page anchor');
+  assert.ok(site.body.includes('href="#guider"'),'Guide navigation should be a same-page anchor');
+  assert.ok(!site.body.includes('href="./sparing.html"'),'Homepage must not send users to old savings page');
+  assert.ok(!site.body.includes('href="./guider.html"'),'Homepage must not send users to old guides page');
+  assert.equal((site.body.match(/<details class="long-guide"/g)||[]).length,9);
+  const onePage=await request('/single-page.js');
+  assert.equal(onePage.response.status,200);
+  assert.match(onePage.body,/openTarget/);
+  console.log('OK single-page navigation, savings and 9 guides included on homepage');
   console.log('OK website accessible at '+site.url);
   const banks=await request('/banker.js');
   assert.equal(banks.response.status,200);
