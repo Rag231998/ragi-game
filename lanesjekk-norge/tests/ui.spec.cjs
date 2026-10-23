@@ -191,3 +191,14 @@ test('bank selection automatically opens the separate mortgage comparison window
  await expect(page.locator('#bankoversikt')).toBeHidden();
  await expect(page.locator('#offers .offer')).toHaveCount(1);
 });
+
+test('Legg til bank finds the bank in its own window and returns to actual comparison',async({page})=>{
+ await page.locator('#add-offer').click();
+ await expect(page).toHaveURL(/\/#banker$/);
+ await expect(page.locator('#bank-query')).toBeVisible();
+ await page.locator('#bank-query').fill('Nordea');
+ await page.locator('[data-bank="nordea"] .bank-select').click();
+ await expect(page).toHaveURL(/\/#sammenlign$/);
+ await expect(page.locator('#offer-rate-1')).toBeVisible();
+ await expect(page.locator('#sparing')).toBeHidden();
+});
