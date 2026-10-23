@@ -189,6 +189,10 @@ function scenarioPreview(){
 }
 
 function init(){
+ const bankSelect=$('currentbank');
+ for(const b of (window.LANEBANKER||[])){
+  const opt=document.createElement('option');opt.value=b.name;opt.textContent=b.name;bankSelect.append(opt);
+ }
  $('loan-form').addEventListener('input',compute);
  $('add-offer').addEventListener('click',()=>{
   const input=$('bank-query');input.scrollIntoView({behavior:'smooth',block:'center'});input.focus();
