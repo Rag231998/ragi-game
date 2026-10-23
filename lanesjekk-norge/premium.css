@@ -118,3 +118,32 @@
  .bank-autocomplete-option{min-height:48px}
  #bank-more{width:100%}
 }
+
+/* Annual repayment insight */
+.repayment-panel{padding:24px;background:linear-gradient(145deg,#fff,#f7fbfb)}
+.repayment-head{display:flex;gap:15px;align-items:center;justify-content:space-between}
+.repayment-head h2{font-size:22px;letter-spacing:-.035em;margin:5px 0 4px}
+.repayment-head .eyebrow{color:#0b8172}
+.repayment-mark{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:#e5f6ef;color:#128672;font-size:23px;flex-shrink:0}
+.repayment-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin:22px 0}
+.repayment-stats>div{border:1px solid #deebeb;border-radius:12px;padding:14px;background:white;min-width:0}
+.repayment-stats span{display:block;font-size:10px;font-weight:750;color:#647d86}
+.repayment-stats strong{display:block;font-size:clamp(13px,1.8vw,20px);margin-top:7px;color:#0c7568;overflow-wrap:anywhere;line-height:1.3}
+.repayment-panel details{border:1px solid #dbe8e8;border-radius:12px;background:#fff}
+.repayment-panel summary{padding:13px 15px;cursor:pointer;font-weight:800;font-size:12px;list-style:none}
+.repayment-panel summary::after{content:'＋';float:right;color:#0a8070}
+.repayment-panel details[open] summary::after{content:'−'}
+.repayment-table{min-width:480px}
+.repayment-table tbody tr:hover{background:#f4faf8}
+.repayment-table tbody tr:first-child{background:#f0f8f5}
+.repayment-table td:last-child{position:relative}
+.repayment-bar{display:block;background:#cbeae2;height:3px;border-radius:100px;margin-top:6px}
+.repayment-panel .table-scroll{max-height:410px;overflow:auto;margin:0 10px 10px}
+.repayment-disclaimer{font-size:10px;color:#6e8790;line-height:1.55;margin:13px 0 0}
+@media(max-width:700px){
+ .repayment-panel{padding:18px 15px}
+ .repayment-stats{grid-template-columns:1fr 1fr;gap:8px;margin:16px 0}
+ .repayment-stats>div:last-child{grid-column:1/-1}
+ .repayment-stats>div{padding:12px}
+ .repayment-stats strong{font-size:17px}
+}
