@@ -76,3 +76,27 @@ Nettleserens `<form>` sendes ikke til serveren. Tast inn tom rente gir ugyldig b
 **Automatiske SEO-regresjonstester:** `cd lanesjekk-norge/tests && node --test seo.spec.cjs`. Disse testene sjekker samsvar mellom metadata, sitemap og robots. Testsuiten hindrer ikke at innholdet kan være feil eller utdatert; kildene og faktiske brukertilstander må også kontrolleres.
 
 **Viktig:** Ikke endre GitHub Pages' repo-globale custom domain eller DNS for andre prosjekter i monorepoet. Bruk Vercels prosjektspesifikke domeneadministrasjon.
+
+
+## Oppgradering: norske tall og utvidet banksøk (23. oktober 2026)
+
+### Norske inndata
+- numbers.js håndterer tallformatet «3 109 049» kr, beløp med norske desimaler («3 109 049,50») og renter som «5,25 %». Tall med punktum som tusenskille kan limes inn.
+- Beregningene utføres med gyldige numeriske verdier, ikke formatert tekst. Tomme felt gir ikke en falsk 0 %-rente.
+- Fungerer for restgjeld, boligverdi, gebyr, engangskostnad og nominell rente.
+
+### Banksøk og kildegrunnlag
+- 11 manuelt kontrollerte oppføringer med direkte lenke til Finanstilsynets register samt ytterligere 86 navn fra Norges Banks bankliste per 25. juni 2026: https://www.norges-bank.no/en/topics/Norges-Banks-settlement-system/Banks-with-accounts-in-Norges-Bank/
+- Totalt 97 søkbare oppføringer. Kilden er en datert snapshot, ikke et komplett sanntidsregister eller bekreftelse på at alle bankene tilbyr boliglån. Banker fra Norges Banks liste har ikke individuell konsesjonskontroll i denne versjonen.
+- Banksøket bruker input/autocomplete fremfor en stor nedtrekksliste. Bankkort viser åtte banker i første omgang og søker gjennom alle oppføringene.
+- Logoer som er identifisert mot riktig merkevare kan vises via Wikimedia Commons; deretter bankens offisielle favicon der dette er kjent, ellers initialer. Banklogoene indikerer ingen sponsoravtale eller partnerskap. Kontroller opphavsrett og varemerker før kommersiell lansering.
+- Beregnings-API-et bruker samme bank-ID-register som nettsiden. Ingen renter oppgis automatisk.
+
+### Nedbetalingsplan og tester
+- repayment.js beregner år-for-år renter, avdrag og restgjeld ved månedlig annuitet og uendret nominell rente i 1–40 år. Gebyr og ekstra avdrag er ikke med i de enkelte årsradene.
+- Kjør lokale tall- og API-regresjonstester med: node --test tests/format.spec.cjs tests/api.spec.cjs tests/seo.spec.cjs.
+- Playwright dekker desktop, nettbrett, iPhone WebKit og Android Chromium.
+
+### Før full markedsdekning eller automatiske renter
+- Nye bankkonsesjoner, nedleggelser og fusjoner må kunne oppdateres gjennom en pålitelig synkroniseringsprosess, helst mot Finanstilsynets offisielle API med riktig filtrering.
+- Live boliglånsrenter krever distribusjonsavtale med Finansportalen eller annen tillatt kilde: https://www.forbrukerradet.no/finansportalen/bank/bruk-av-vare-data/
