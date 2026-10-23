@@ -199,3 +199,9 @@
 .portal-home .hero .hero-finance-illustration{display:block;width:100%;height:auto;max-height:265px;object-fit:cover;object-position:center;border-radius:15px;margin-bottom:18px;border:1px solid #ffffff25}
 .cms-hide-hero-visual .hero-finance-illustration{display:none!important}
 @media(max-width:700px){.portal-home .hero .hero-finance-illustration{max-height:210px}.portal-home .hero .hero-card{max-width:100%}}
+
+.receipt-feature-illustration{display:block;width:100%;height:auto;max-height:170px;object-fit:cover;border-radius:14px;margin-bottom:16px;background:#e7f6f1}
+.receipt-home-feature{overflow:hidden}
+.receipt-home-feature:hover .receipt-feature-illustration{transform:scale(1.025)}
+.receipt-feature-illustration{transition:transform .35s ease}
+@media(prefers-reduced-motion:reduce){.receipt-feature-illustration{transition:none}}
