@@ -56,3 +56,20 @@ test('paying monthly fees affects APR and invalid loan inputs fail closed',()=>{
  assert.equal(f.loan({kind:'car',amount:100000,down:0,rate:6,years:5,balloon:100000}),null);
  assert.equal(f.loan({kind:'consumer',amount:100000,rate:6,years:5,down:1}),null);
 });
+
+test('invalid budget entries are reported rather than hidden in totals',()=>{
+ const lines=[
+  {kind:'income',amount:35000,period:'month'},
+  {kind:'expense',amount:5000,period:'month',category:'Bolig'},
+  {kind:'expense',amount:NaN,period:'month',category:'Transport'},
+  {kind:'expense',amount:250,period:'invalid',category:'Annet'},
+  {kind:'expense',amount:-50,period:'month'},
+  {kind:'expense',amount:'2000',period:'month'}
+ ];
+ const result=f.budget(lines);
+ assert.equal(result.income,35000);
+ assert.equal(result.expense,5000);
+ assert.equal(result.balance,30000);
+ assert.equal(result.invalidLines,4);
+ assert.ok(f.budgetInsights(result,lines)[0].includes('4 budsjettpost'));
+});
