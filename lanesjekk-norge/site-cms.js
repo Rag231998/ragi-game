@@ -5,6 +5,7 @@
 'use strict';
 const base='https://pryrgwfjniggjlrizenh.supabase.co';
 const key='sb_publishable_nMwAplLiIZ-p9zIu8F3yPQ_-_XwiMM9';
+const SLIDE_IDS=Object.freeze(['loan','budget','receipts','invest','property']);
 const SECTIONS=Object.freeze(['quick','hero','stats','workbook','insights']);
 const CARD_IDS=Object.freeze(['sjekk','budsjett','kvitteringer','sparing','utleie','billan','forbrukslan','akademi','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti']);
 const nodes=()=>({quick:document.querySelector('#budsjett > .budget-start-panel'),hero:document.querySelector('#budsjett > .budget-hero'),
@@ -20,6 +21,7 @@ function configClean(input){
  const inputCardOrder=Array.isArray(a.cards?.order)?a.cards.order.filter(id=>CARD_IDS.includes(id)):CARD_IDS;
  for(const id of SECTIONS)if(!order.includes(id))order.push(id);
  return {
+ slides:{visible:a.slides?.visible!==false,order:[...new Set([...(Array.isArray(a.slides?.order)?a.slides.order.filter(id=>SLIDE_IDS.includes(id)):[]),...SLIDE_IDS])],items:Object.fromEntries(SLIDE_IDS.map(id=>[id,{title:plain(a.slides?.items?.[id]?.title,95),description:plain(a.slides?.items?.[id]?.description,220),enabled:a.slides?.items?.[id]?.enabled!==false}]))},
  brand:{
  name:plain(b.name,70)||defaults.brand.name,tagline:plain(b.tagline,130)||defaults.brand.tagline,
  accent:/^#[0-9a-fA-F]{6}$/.test(b.accent)?b.accent:defaults.brand.accent,
@@ -43,6 +45,11 @@ function configClean(input){
 }
 function apply(input){
  const cfg=configClean(input);
+ const showcase=document.getElementById('loan-showcase');
+ if(showcase){showcase.hidden=!cfg.slides.visible;const holder=showcase.querySelector('.sc-slides');
+  for(const id of cfg.slides.order){const slide=holder?.querySelector('.sc-'+id);if(!slide)continue;const settings=cfg.slides.items[id];slide.dataset.cmsEnabled=String(settings.enabled);slide.hidden=!settings.enabled;const heading=slide.querySelector('h1,h2'),description=slide.querySelector('.sc-copy p');if(settings.title&&heading)heading.textContent=settings.title;if(settings.description&&description)description.textContent=settings.description;holder.append(slide)}
+  window.dispatchEvent(new CustomEvent('lanesjekk-slides-config',{detail:cfg.slides}));
+ }
  document.documentElement.style.setProperty('--cms-accent',cfg.brand.accent);
  document.documentElement.classList.toggle('cms-hide-hero-visual',cfg.brand.heroVisual===false);
  document.documentElement.classList.toggle('cms-pause-hero-motion',cfg.brand.heroMotion===false);
