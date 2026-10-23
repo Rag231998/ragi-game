@@ -114,17 +114,6 @@ const allowed=(value)=>{
   return url.protocol==='https:'&&(['finn.no','www.finn.no','m.finn.no'].includes(url.hostname))?url:null;
  }catch(e){return null}
 };
-function fromAd(){
- const t=$('rental-ad-text').value,parsed=parseAd(t);
- const map={price:'rental-price',sharedDebt:'rental-shared-debt',common:'rental-common',buyCosts:'rental-buy-costs',area:'rental-area'};
- let changed=0;
- for(const [key,id] of Object.entries(map)){
-  if(parsed[key]!==null){$(id).value=String(parsed[key]);changed++}
- }
- $('rental-url-note').textContent=changed?'Foreslo '+changed+' opplysninger fra teksten. Kontroller alle tall mot salgsoppgaven og fyll inn husleie manuelt.':
-  'Fant ingen tydelige nøkkeltall. Fyll inn feltene manuelt. Ingenting er hentet automatisk fra eksterne kilder.';
- update();
-}
 function updateValuation(){
  const area=Number($('rental-area')?.value);
  const comps=['rental-comp-1','rental-comp-2','rental-comp-3'].map(id=>Number($(id)?.value)).filter((v,i)=>$('rental-comp-'+(i+1))?.value&&valid(v,1000,1000000));
