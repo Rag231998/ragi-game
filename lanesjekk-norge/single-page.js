@@ -3,14 +3,14 @@
  * or reloading a form. Deep links and browser Back/Forward are supported. */
 (()=>{
  'use strict';
- const LABELS=Object.freeze({home:'Forside',loans:'Boliglån',savings:'Sparing',banks:'Bankoversikt',guides:'Guider og artikler'});
+ const LABELS=Object.freeze({home:'Forside',loans:'Boliglån',savings:'Sparing',banks:'Bankoversikt',guides:'Guider og artikler',budget:'Budsjett',financing:'Billån og forbrukslån',academy:'Lånesjekk Akademi'});
  const SELECTORS='[data-portal-view]';
  function closeMenu(){
   document.querySelectorAll('.mobile-menu[open]').forEach(menu=>{menu.open=false});
  }
  function resolve(id){
   if(!id||id==='topp'||id==='forside')return {view:'home',target:document.getElementById('topp')};
-  const target=document.getElementById(id);
+  const target=document.getElementById(id==='forbrukslan'?'billan':id);
   if(!target)return {view:'home',target:document.getElementById('topp')};
   const panel=target.closest(SELECTORS);
   return {view:panel?.dataset.portalView||'home',target};
@@ -47,6 +47,7 @@
   document.body.dataset.activeView=view;
   syncMenus(view);
   openArticle(target);
+  if(view==='financing'&&typeof window.lanesjekkFinanceChooseMode==='function')window.lanesjekkFinanceChooseMode(id==='forbrukslan'?'consumer':'car');
   closeMenu();
   if(scroll){
    // Ensure the newly visible target has been laid out before scrolling.
@@ -74,7 +75,7 @@
    const raw=link.getAttribute('href')||'#topp';
    if(raw==='#')return;
    const id=raw.slice(1);
-   if(!document.getElementById(id)&&id!=='topp')return;
+   if(!document.getElementById(id)&&id!=='forbrukslan'&&id!=='topp')return;
    event.preventDefault();
    navigate(id);
   });
