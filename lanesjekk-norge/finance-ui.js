@@ -179,7 +179,7 @@
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download='lanesjekk-budsjett.csv';
-  document.body.append(a);a.click();a.remove();URL.revokeObjectURL(url);
+  document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),1500);
  }
  function saveBudget(){
   try{
