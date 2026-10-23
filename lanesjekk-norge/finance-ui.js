@@ -74,7 +74,7 @@
   const row=document.createElement('tr');row.dataset.lineId=String(count);
   const kind=p.kind==='income'?'income':'expense';
   const kindSpan=document.createElement('span');kindSpan.className='line-kind '+kind;
-  kindSpan.textContent=kind==='income'?'↑ Inntekt':'↓ Utgift';cell(row,kindSpan);
+  kindSpan.textContent=kind==='income'?'↑ Inntekt':'↓ Utgift';const typeCell=cell(row,kindSpan);const marked=document.createElement('input');marked.type='checkbox';marked.className='budget-mark';marked.setAttribute('aria-label','Velg post for summering');marked.checked=!!p.selected;typeCell.prepend(marked);row.classList.add(kind==='income'?'budget-income-row':'budget-expense-row');
   cell(row,createSelect(
    (kind==='income'?['Lønn','Annen inntekt']:categories).map(c=>[c,c]),
    p.category||(kind==='income'?'Lønn':'Annet'),'category'));
@@ -83,7 +83,11 @@
   cell(row,createInput(String(p.amount??0),'amount'));
   cell(row,createSelect(periods,p.period||'month','period'));
   const result=document.createElement('strong');result.className='budget-month-value';result.textContent='–';cell(row,result);
-  const remove=document.createElement('button');remove.type='button';remove.className='budget-remove';remove.title='Fjern post';remove.setAttribute('aria-label','Fjern budsjettpost');remove.textContent='×';cell(row,remove);
+  const actions=document.createElement('div');actions.className='budget-row-actions';
+  for(const [dir,symbol,label] of [['up','↑','Flytt opp'],['down','↓','Flytt ned']]){
+   const button=document.createElement('button');button.type='button';button.className='budget-move';button.dataset.move=dir;button.textContent=symbol;button.title=label;button.setAttribute('aria-label',label);actions.append(button);
+  }
+  const remove=document.createElement('button');remove.type='button';remove.className='budget-remove';remove.title='Fjern post';remove.setAttribute('aria-label','Fjern budsjettpost');remove.textContent='×';actions.append(remove);cell(row,actions);
   $('budget-rows').append(row);
   window.LANENUMBERS?.formatAll(row);
   return row;
@@ -94,7 +98,7 @@
    return {kind:tr.querySelector('.line-kind').classList.contains('income')?'income':'expense',
     category:get('category'),description:get('description').trim().slice(0,180),
     bank:get('bank').trim().slice(0,100),
-    amount:parse(get('amount')),period:get('period')};
+    amount:parse(get('amount')),period:get('period'),selected:!!tr.querySelector('.budget-mark')?.checked};
   });
  }
  function setLines(lines){
@@ -180,8 +184,25 @@
   $('budget-scenario-month').textContent=money(amount*fraction);
   $('budget-scenario-year').textContent=money(amount*fraction*12);
  }
+ function renderSelection(){
+  const selected=allLines().filter(line=>line.selected);const total=selected.reduce((sum,line)=>{const n=engine.monthly(line.amount,line.period);return sum+(Number.isFinite(n)?(line.kind==='income'?n:-n):0)},0);
+  $('budget-selected-total').textContent=money(total);
+  $('budget-selected-count').textContent=selected.length+' valgt';
+  $('budget-selected-hint').textContent='Inntekter legges til, utgifter trekkes fra. Beløpene er omregnet til måned.';
+ }
+ function renderSalary(){
+  const gross=parse($('budget-salary-gross').value),tax=parseDecimal($('budget-salary-tax').value),other=parse($('budget-salary-other').value);
+  const valid=Number.isFinite(gross)&&gross>=0&&Number.isFinite(tax)&&tax>=0&&tax<=100&&Number.isFinite(other)&&other>=0;
+  const net=valid?Math.max(0,gross*(1-tax/100)-other):NaN;
+  $('budget-salary-net').textContent=money(net);
+  $('budget-salary-deduction').textContent=money(valid?gross-net:NaN);
+  $('budget-salary-use').disabled=!valid;
+  $('budget-salary-message').textContent=valid?'Forenklet anslag basert på oppgitt trekkprosent. Ikke en skattekort- eller skatteberegning.':'Fyll inn gyldig bruttolønn, skattetrekk 0–100 % og andre trekk.';
+  return net;
+ }
  function renderBudget(){
   const lines=allLines();
+  renderSelection();
   for(const tr of $('budget-rows').querySelectorAll('tr')){
    const raw=tr.querySelector('[data-field="amount"]').value;
    const amount=parse(raw);
@@ -264,12 +285,29 @@
   });
   $('budget-rows').addEventListener('change',()=>{exampleActive=false;renderBudget()});
   $('budget-rows').addEventListener('click',e=>{
-   if(!e.target.closest('.budget-remove'))return;
-   e.target.closest('tr').remove();exampleActive=false;renderBudget();
+   const move=e.target.closest('[data-move]');
+   if(move){
+    const tr=move.closest('tr'),other=move.dataset.move==='up'?tr.previousElementSibling:tr.nextElementSibling;
+    if(!other)return;
+    if(move.dataset.move==='up')other.before(tr);else other.after(tr);
+    exampleActive=false;renderBudget();move.focus();return;
+   }
+   if(e.target.closest('.budget-remove')){e.target.closest('tr').remove();exampleActive=false;renderBudget();}
   });
   $('budget-add-income').addEventListener('click',()=>{addRow({kind:'income',category:'Lønn',description:'',bank:'',amount:0,period:'month'});exampleActive=false;renderBudget()});
   $('budget-add-expense').addEventListener('click',()=>{addRow({kind:'expense',category:'Annet',description:'',bank:'',amount:0,period:'month'});exampleActive=false;renderBudget()});
   $('budget-bank-filter').addEventListener('change',renderBudget);
+  for(const id of ['budget-salary-gross','budget-salary-tax','budget-salary-other'])$(id)?.addEventListener('input',renderSalary);
+  $('budget-salary-use')?.addEventListener('click',()=>{
+   const net=renderSalary();if(!Number.isFinite(net))return;
+   const existing=[...$('budget-rows').querySelectorAll('tr')].find(tr=>tr.querySelector('.line-kind.income')&&tr.querySelector('[data-field="category"]').value==='Lønn');
+   const row=existing||addRow({kind:'income',category:'Lønn',description:'Netto lønn (beregnet)',bank:'',amount:net,period:'month'});
+   row.querySelector('[data-field="amount"]').value=window.LANENUMBERS.displayMoney(String(Math.round(net*100)/100).replace('.',','));
+   row.querySelector('[data-field="description"]').value='Netto lønn (fra brutto og oppgitt skattetrekk)';
+   row.querySelector('[data-field="period"]').value='month';
+   exampleActive=false;renderBudget();$('budget-salary-message').textContent='Nettoanslaget er overført til budsjettposten Lønn.';
+  });
+  renderSalary();
   $('budget-bank-query')?.addEventListener('input',renderBudget);
   $('budget-demo').addEventListener('click',()=>{exampleActive=true;setLines(example);$('budget-storage-status').textContent='Eksempelbudsjett vises. Beløpene er oppdiktede illustrasjoner.'});
   $('budget-reset').addEventListener('click',()=>{exampleActive=false;setLines([]);$('budget-storage-status').textContent='Budsjettet er tømt i skjemaet. Bruk «Slett lokal lagring» dersom du har lagret tidligere.'});
