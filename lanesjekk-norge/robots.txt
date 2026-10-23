@@ -1,0 +1,6 @@
+# Public pages are allowed to be indexed.
+# The canonical host will be changed when a custom .no domain is connected.
+User-agent: *
+Allow: /
+
+Sitemap: https://lanesjekk-norge.vercel.app/sitemap.xml
