@@ -105,13 +105,37 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 @media(max-width:1020px){.layout{grid-template-columns:minmax(0,1fr)}.loan-form{position:static}.metric-grid{grid-template-columns:repeat(3,1fr)}.hero-inner{gap:24px}}
 @media(max-width:690px){header{padding:12px 14px;min-height:65px}.brandmark{height:36px;width:36px;font-size:19px}.brand strong{font-size:13px}.brand small{font-size:8px}header nav{gap:8px}header nav a{font-size:10px}.header-pill{display:none}.hero{padding:37px 14px 80px}.hero-inner{grid-template-columns:1fr}.hero-card{display:none}h1{font-size:34px}.hero p{font-size:13px}.hero .btn{width:auto}.layout{gap:11px}main{padding:0 10px 45px;margin-top:-52px}.loan-form{padding:20px 16px}.metric-grid{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/-1}.metric strong{font-size:21px}.summary-card,.offer-panel{padding:19px 15px}.offer-fields{grid-template-columns:1fr 1fr}.offer-fields .field:first-child{grid-column:1/-1}.offer-fields .field:last-child{grid-column:1/-1}.two{gap:9px}.offer-title{align-items:start}.offer-title h2{font-size:18px}.market{padding:18px 14px}.market-inner{grid-template-columns:1fr}.market .btn{width:100%}.market iframe{height:1100px}.steps{grid-template-columns:1fr}.step-card{padding:15px}.market p{font-size:11px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-</style><link rel="stylesheet" href="./premium.css?v=1"><link rel="stylesheet" href="./portal.css?v=2"><link rel="stylesheet" href="./finance-style.css?v=1"><link rel="stylesheet" href="./daily-studio.css?v=1"><link rel="stylesheet" href="./receipts.css?v=1"></head><body class="portal-home" id="topp">
+</style><link rel="stylesheet" href="./premium.css?v=1"><link rel="stylesheet" href="./portal.css?v=2"><link rel="stylesheet" href="./finance-style.css?v=1"><link rel="stylesheet" href="./daily-studio.css?v=1"><link rel="stylesheet" href="./receipts.css?v=1"><link rel="stylesheet" href="./studio-cms.css?v=1"><link rel="stylesheet" href="./rental.css?v=1"></head><body class="portal-home" id="topp">
 <div class="utility-bar"><div class="site-container utility-inner"><span>Uavhengig økonomioversikt</span><span>Gratis verktøy · Kilder fra banker og offentlige etater</span></div></div>
 <header class="site-header"><div class="site-container nav-row">
 <a class="portal-logo" href="#topp"><span class="logo-emblem">◈</span><span>LÅNESJEKK <b>NORGE</b><small>Mer oversikt. Bedre valg.</small></span></a>
-<nav class="portal-nav" aria-label="Hovednavigasjon"><a href="#topp" aria-current="page">Forside</a><a href="#budsjett">Budsjett</a><a href="#kvitteringer">Kvitteringer</a><a href="#billan">Billån</a><a href="#forbrukslan">Forbrukslån</a><a href="#sjekk">Boliglån</a><a href="#sparing">Sparing</a><a href="#investering">Fond og aksjer</a><a href="#banker">Banker</a><a href="#akademi">Læring</a><a href="#guider">Guider</a></nav>
+<nav class="portal-nav portal-group-nav" aria-label="Hovednavigasjon">
+<a href="#topp">Forside</a>
+<details class="nav-group"><summary>Lån <span>⌄</span></summary><div class="nav-drop">
+<a href="#sjekk">Boliglån</a><a href="#billan">Billån</a><a href="#forbrukslan">Forbrukslån</a><a href="#banker">Bankoversikt</a>
+</div></details>
+<details class="nav-group"><summary>Budsjett og forbruk <span>⌄</span></summary><div class="nav-drop">
+<a href="#budsjett">Mitt budsjett</a><a href="#kvitteringer">Kvitteringsstudio</a>
+</div></details>
+<details class="nav-group"><summary>Sparing og investering <span>⌄</span></summary><div class="nav-drop">
+<a href="#sparing">Sparing</a><a href="#investering">Fond og aksjer</a>
+</div></details>
+<details class="nav-group"><summary>Eiendom <span>⌄</span></summary><div class="nav-drop">
+<a href="#utleie">Utleieanalyse</a>
+</div></details>
+<details class="nav-group"><summary>Læring <span>⌄</span></summary><div class="nav-drop">
+<a href="#akademi">Akademiet</a><a href="#guider">Artikler og guider</a>
+</div></details>
+</nav>
 <a class="nav-cta" href="#sparing">Sammenlign sparing <span>↗</span></a>
-<details class="mobile-menu"><summary aria-label="Åpne meny">☰ Meny</summary><div><a href="#topp">Forside</a><a href="#sjekk">Boliglån</a><a href="#sparing">Sparing</a><a href="#budsjett">Budsjett</a><a href="#kvitteringer">Kvitteringer</a><a href="#billan">Billån</a><a href="#forbrukslan">Forbrukslån</a><a href="#investering">Fond og aksjer</a><a href="#akademi">Læringsplattform</a><a href="#guider">Guider og artikler</a><a href="#banker">Bankoversikt</a></div></details>
+<details class="mobile-menu"><summary aria-label="Åpne hovedmeny">☰ Meny</summary><div>
+<a href="#topp">Forside</a>
+<strong>LÅN</strong><a href="#sjekk">Boliglån</a><a href="#billan">Billån</a><a href="#forbrukslan">Forbrukslån</a><a href="#banker">Banker</a>
+<strong>BUDSJETT OG FORBRUK</strong><a href="#budsjett">Budsjett</a><a href="#kvitteringer">Kvitteringer</a>
+<strong>SPARING OG INVESTERING</strong><a href="#sparing">Sparing</a><a href="#investering">Fond og aksjer</a>
+<strong>EIENDOM</strong><a href="#utleie">Utleieanalyse</a>
+<strong>LÆRING</strong><a href="#akademi">Læringsplattform</a><a href="#guider">Artikler og guider</a>
+</div></details>
 </div></header>
 <section class="hero" data-portal-view="home"><div class="hero-inner"><div>
  <div class="eyebrow">SMARTERE PRIVATØKONOMI · HELT GRATIS</div>
@@ -129,6 +153,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
  <div class="home-intro"><span class="section-overline">UTFORSK ALLE MULIGHETENE</span><h2>Hva vil du <em>utforske i dag?</em></h2><p>Velg et tema. Hvert kort åpner et verktøy eller en guide som hjelper deg videre.</p></div>
  <div class="home-tool-grid">
    <a class="home-tool receipt-home-feature" href="#kvitteringer"><span class="home-tool-art">🧾</span><span class="home-tool-category">NYTT · KVITTERINGSSTUDIO</span><strong>Skann. Forstå. Prioriter.</strong><small>Ta bilde av en kvittering, se hver vare, forbruksgrafer og hva du kunne brukt pengene på.</small><span class="home-tool-arrow">Åpne kvitteringsstudio ↗</span></a>
+   <a class="home-tool home-tool-property" href="#utleie"><span class="home-tool-art">⌂</span><span class="home-tool-category">EIENDOM · UTLEIE</span><strong>Hva lønner det seg å leie ut?</strong><small>Legg inn boligannonsen og vurder leieinntekt, renter, tomgang, skatt og kontantstrøm.</small><span class="home-tool-arrow">Analyser en utleiebolig ↗</span></a>
    <a class="home-tool featured-purple" href="#budsjett"><span class="home-tool-art">▦</span><span class="home-tool-category">BUDSJETT</span><strong>Mitt personlige budsjett</strong><small>Få oversikt over inntekt, forbruk og sparing – med grafer og utskriftsklar PDF.</small><span class="home-tool-arrow">Åpne budsjettet ↗</span></a>
    <a class="home-tool" href="#billan"><span class="home-tool-art">🚗</span><span class="home-tool-category">BILLÅN</span><strong>Billånskalkulator</strong><small>Renter, gebyrer, avdrag, restgjeld og effektiv rente visualisert.</small><span class="home-tool-arrow">Beregn billån ↗</span></a>
    <a class="home-tool" href="#forbrukslan"><span class="home-tool-art">▥</span><span class="home-tool-category">FORBRUKSLÅN</span><strong>Hva koster et forbrukslån?</strong><small>Se total lånekostnad, månedsbeløp og forskjeller ved lavere rente.</small><span class="home-tool-arrow">Beregn forbrukslån ↗</span></a>
@@ -435,6 +460,58 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
  </div>
 </section>
 
+
+<section id="utleie" class="tool-view rental-studio" data-portal-view="property" hidden aria-label="Kalkulator for utleie og investeringseiendom">
+ <div class="rental-hero"><div><span class="section-overline">EIENDOMSSTUDIO · NORSKE FORUTSETNINGER</span><h1>Kan denne boligen bli <em>en god utleieinvestering?</em></h1>
+ <p>Lim inn annonselenken, kontroller nøkkeltallene og se avkastning, risiko, skattemessig anslag og månedlig kontantstrøm. Ingen tall fra FINN blir gjettet.</p></div><span class="rental-hero-icon" aria-hidden="true">⌂</span></div>
+ <div class="rental-workspace">
+ <section class="rental-card rental-inputs">
+ <div class="rental-card-title"><span class="rental-step">1</span><div><h2>Eiendommen</h2><p>Start med pris og leiepotensial.</p></div></div>
+ <label for="rental-finn-url">Boligannonse på FINN (valgfritt)</label>
+ <div class="rental-url"><input id="rental-finn-url" type="url" placeholder="https://www.finn.no/realestate/..." inputmode="url" autocomplete="url"><button type="button" id="rental-open">Åpne ↗</button></div>
+ <p id="rental-url-note" class="rental-note" role="status">Vi henter ikke FINN-annonser automatisk uten avtale. Lenken brukes som din referanse.</p>
+ <details class="rental-paste"><summary>▤ Lim inn annonseteksten og foreslå tall</summary><p>Marker og kopier annonsedetaljene fra FINN. Analysen vil foreslå pris, areal og felleskostnader når teksten er tydelig, men du må kontrollere opplysningene.</p>
+ <textarea id="rental-ad-text" rows="5" placeholder="Prisantydning 3 990 000 kr&#10;Felleskostnader 3 500 kr/mnd&#10;BRA-i 62 m²"></textarea><button type="button" id="rental-parse-ad" class="rental-button secondary">Foreslå tall fra teksten</button></details>
+ <div class="rental-fields">
+ <label>Prisantydning / kjøpesum (kr)<input id="rental-price" type="number" min="0" max="100000000" step="10000" inputmode="numeric" placeholder="Fyll inn"></label>
+ <label>Fellesgjeld (kr)<input id="rental-shared-debt" type="number" min="0" max="50000000" step="10000" value="0"></label>
+ <label>Kjøpsomkostninger (kr)<input id="rental-buy-costs" type="number" min="0" max="10000000" step="1000" value="0"></label>
+ <label>Antatt månedlig husleie (kr)<input id="rental-rent" type="number" min="0" max="500000" step="500" placeholder="Fyll inn"></label>
+ <label>Kontant egenkapital (kr)<input id="rental-equity" type="number" min="0" max="100000000" step="10000" placeholder="Fyll inn"></label>
+ <label>Nominell lånerente (%)<input id="rental-interest" type="number" min="0" max="30" step=".05" value="5.25" inputmode="decimal"></label>
+ <label>Nedbetalingstid (år)<input id="rental-years" type="number" min="1" max="40" step="1" value="25"></label>
+ <label>Felleskostnader / mnd (kr)<input id="rental-common" type="number" min="0" max="100000" step="100" value="0"></label>
+ <label>Forsikring, kommunale avgifter m.m. / mnd<input id="rental-running" type="number" min="0" max="100000" step="100" value="0"></label>
+ <label>Vedlikeholdsreserve / mnd (kr)<input id="rental-maintenance" type="number" min="0" max="100000" step="100" value="0"></label>
+ <label>Forventet tomgang (måneder/år)<input id="rental-vacancy" type="number" min="0" max="12" step=".5" value="1"></label>
+ <label>Skattesituasjon<select id="rental-tax"><option value="taxable">Skattepliktig utleie – forenklet anslag</option><option value="unspecified">Annen/ukjent – ingen skatteberegning</option></select></label>
+ </div>
+ <div class="rental-actions"><button class="rental-button main" type="button" id="rental-example">Se eksempel</button><button class="rental-button secondary" id="rental-reset" type="button">Tøm beregning</button></div>
+ <p class="rental-note">Innskutt kapital, bankvilkår, eventuelt fradragsberettigede kostnader og skattesituasjon må kontrolleres. Fellesgjeld og finansiering kan være mer komplisert enn modellen viser.</p>
+ </section>
+ <section class="rental-card rental-dashboard">
+ <div class="rental-card-title"><span class="rental-step">2</span><div><h2>Resultat og risiko</h2><p>Beregnes når du skriver – uten å sende boligtall til vår server.</p></div></div>
+ <p id="rental-validation" class="rental-validation" role="status">Fyll inn kjøpesum, månedlig leie og egenkapital for å beregne.</p>
+ <div class="rental-kpis"><div><small>Brutto leie / år</small><strong id="rental-gross">–</strong></div>
+ <div><small>Netto driftsresultat / år</small><strong id="rental-noi">–</strong></div>
+ <div><small>Kontantstrøm / mnd før skatt</small><strong id="rental-cash">–</strong></div>
+ <div><small>Kontantstrøm / mnd etter anslått skatt</small><strong id="rental-cash-after">–</strong></div>
+ <div><small>Brutto direkteavkastning</small><strong id="rental-gross-yield">–</strong></div>
+ <div><small>Netto direkteavkastning</small><strong id="rental-net-yield">–</strong></div></div>
+ <h3>Hvor går den årlige husleien?</h3><div class="rental-chart" id="rental-chart"></div>
+ <div class="rental-bar-legend" id="rental-bar-legend"></div>
+ <div class="rental-risk"><h3>Hva hvis forutsetningene endrer seg?</h3>
+ <label>Leien reduseres med <output id="rental-rent-cut-value">10 %</output><input id="rental-rent-cut" type="range" min="0" max="40" step="5" value="10"></label>
+ <p id="rental-stress">–</p>
+ <p id="rental-break-even">–</p></div>
+ <div class="rental-sources"><strong>Viktig om skatt og sikkerhet</strong>
+ <p>Normalt 22 % skatt på skattepliktig overskudd, men utleie av egen bolig kan være fritatt. Vedlikehold er ikke det samme som påkostning. Skatt på renteutgifter/fradrag og kjøpskostnader krever individuell vurdering. Verktøyet gir ingen finansieringsgaranti.</p>
+ <a href="https://www.skatteetaten.no/person/skatt/hjelp-til-riktig-skatt/bolig-og-eiendeler/bolig-eiendom-tomt/utleie/" target="_blank" rel="noopener noreferrer">Skatteetaten: utleie og fradrag ↗</a>
+ <a href="https://www.finn.no/api/" target="_blank" rel="noopener noreferrer">FINN: tilgang til annonsedata / API ↗</a>
+ </div>
+ </section></div>
+</section>
+
 <section class="tool-view" id="budsjett" data-portal-view="budget" hidden aria-label="Personlig budsjett">
  <div class="tool-hero budget-hero"><div><span class="tool-eyebrow">ØKONOMISK OVERSIKT · GRATIS</span><h1>Ditt budsjett.<br><em>Din økonomiske kontroll.</em></h1><p>Legg inn nettoinntekt og utgifter i en redigerbar tabell. Få full oversikt over inntekter, utgifter og spareevne – uten komplisert bankføring.</p><div class="tool-hero-tags"><span>◉ Ingen banktilkobling</span><span>◉ Beregning mens du skriver</span><span>◉ Eksporter CSV eller skriv ut som PDF</span></div></div><div class="tool-hero-decoration" aria-hidden="true"><strong>DIN ØKONOMI</strong><div class="decor-bars"><i></i><i></i><i></i><i></i><i></i></div><small>Full oversikt på ett sted ↗</small></div></div>
  <div class="tool-overview" aria-live="polite">
@@ -581,5 +658,5 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 <script src="./finance-ui.js" defer></script>
 <script src="./investing.js" defer></script>
 <script src="./academy.js" defer></script>
-<script src="./daily-studio.js?v=1" defer></script><script src="./receipts.js?v=1" defer></script>
+<script src="./daily-studio.js?v=1" defer></script><script src="./receipts.js?v=1" defer></script><script src="./rental.js?v=1" defer></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script><script src="./site-cms.js?v=1" defer></script>
 </body></html>
