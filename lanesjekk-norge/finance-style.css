@@ -178,3 +178,5 @@
 }
 
 .portal-home #add-offer{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+
+.portal-home #add-offer[aria-disabled="true"]{opacity:.48;pointer-events:none;cursor:not-allowed}
