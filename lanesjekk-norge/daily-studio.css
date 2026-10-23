@@ -1,0 +1,114 @@
+/* LÅNESJEKK / DAILY STUDIO — simplified daily budget and richer investing.
+   Deliberately layered AFTER existing finance and portal styles. */
+:root{--daily-ink:#142c3f;--daily-teal:#087f75;--daily-mint:#a1eed3;--daily-line:#dce9e7}
+.portal-home .viewbar-shortcuts{display:none!important}
+.portal-home .portal-viewbar{padding:13px 18px!important;min-height:60px!important;justify-content:flex-start!important;gap:8px!important}
+.portal-home .viewbar-crumb{width:100%;justify-content:flex-start!important}
+.portal-home .portal-viewbar strong{font-size:14px}
+.portal-home .tool-hero{margin-top:14px}
+.portal-home .budget-bank-cell,
+.portal-home .budget-table :is(th,td):nth-child(4),
+.portal-home .budget-table tr>:nth-child(4),
+.portal-home .budget-table.budget-bank-visible tr>:nth-child(4),
+.portal-home .budget-insights-grid .tool-pane:has(#budget-bank-chart),
+.portal-home label:has(#budget-show-bank),
+.portal-home #budget-bank-query,
+.portal-home #budget-bank-filter,
+.portal-home label[for="budget-bank-filter"],
+.portal-home #budget-bank-results{display:none!important}
+.portal-home .budget-table{min-width:680px}
+.portal-home .budget-table th:nth-child(3){width:25%}
+.portal-home .budget-workbook>.tool-pane-head{gap:15px}
+.portal-home .budget-workbook>.tool-pane-head .tool-actions{display:none}
+.portal-home .budget-workbook>.tool-pane-head p{max-width:650px}
+.portal-home .budget-hero .tool-hero-decoration{opacity:.7}
+.budget-start-panel{background:#fff;border:1px solid #d9e8e6;border-radius:22px;padding:24px;box-shadow:0 12px 32px #1235450d;margin:20px 0 22px;display:grid;grid-template-columns:1fr auto;gap:18px 24px;align-items:center}
+.budget-start-copy{min-width:0}.budget-start-copy h2{font-size:clamp(20px,2.3vw,27px);letter-spacing:-.03em;margin:7px 0}
+.budget-start-copy p{margin:0;color:#5a7581;font-size:12px;line-height:1.8}.budget-start-copy b{color:#0c8875}
+.budget-primary-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;max-width:520px}
+.budget-primary-actions .tool-button{min-height:43px;border-radius:11px;font-size:11px;padding:10px 13px}
+.budget-print-button{background:linear-gradient(135deg,#1b8c79,#076657)!important;color:white!important;border-color:transparent!important;box-shadow:0 5px 16px #187c6536}
+.budget-health{grid-column:1/-1;background:linear-gradient(125deg,#f2faf8,#f5f8fd);border:1px solid #ddebe7;border-radius:15px;padding:15px 19px;min-width:0}
+.budget-health-head{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:12px}
+.budget-health-head strong{font-size:13px;color:#21485a}
+.budget-health-head span{font-size:13px;font-weight:900;color:#097660}
+.budget-health-track{height:13px;overflow:hidden;border-radius:999px;background:#e0e9ef;margin:11px 0 8px}
+.budget-health-track span{display:block;height:100%;width:0;background:linear-gradient(90deg,#168e9b,#53cf97);border-radius:999px;transition:width .23s ease}
+.budget-health.is-negative .budget-health-track span{background:linear-gradient(90deg,#ef8b6a,#b75e5b)}
+.budget-health.is-negative .budget-health-head span{color:#b7574f}
+.budget-health p{font-size:11px;line-height:1.6;color:#64808a;margin:0}
+.portal-home .budget-workbook .budget-table-controls{border-top:1px solid #e6eeee;margin-top:8px}
+.portal-home .budget-insights-grid{gap:17px}
+.portal-home .budget-advanced-tools summary{font-size:12px}
+.invest-playground{margin:23px 0 22px}
+.invest-intro{margin:23px 0 16px}.invest-intro h2{margin:8px 0;font-size:clamp(23px,3vw,31px);line-height:1.2;letter-spacing:-.035em;color:#183a4f}
+.invest-intro p{font-size:13px;color:#627c89;max-width:750px;margin:0;line-height:1.7}
+.invest-workbench{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.invest-work-card{background:white;border:1px solid #dbe8e9;border-radius:18px;padding:22px;box-shadow:0 8px 26px #0d344212;min-width:0}
+.invest-work-card h3{font-size:18px;letter-spacing:-.02em;margin:7px 0 7px;color:#1c3c4f}
+.invest-work-card p{color:#607a89;font-size:11px;line-height:1.7;margin:7px 0 14px}
+.invest-work-card>a{display:inline-block;font-size:11px;font-weight:800;color:#117967;line-height:1.5}
+.invest-kicker{color:#0a9177;font-size:10px;font-weight:900;letter-spacing:.08em}
+.invest-dual,.invest-fee-result{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:14px 0}
+.invest-work-card label{font-size:11px;color:#375a69;line-height:1.45;display:block;font-weight:760}
+.invest-work-card input[type=number]{width:100%;min-height:42px;padding:8px 10px;margin:7px 0 0;border:1px solid #bfd6d6;border-radius:10px;background:#fbfefe;color:#1d3748}
+.invest-work-card input[type=range]{width:100%;accent-color:#168c79;cursor:pointer;margin:15px 0}
+.invest-work-card output{float:right;color:#127967;font-weight:900}
+.invest-fee-result>div,.invest-risk-grid>div{border-radius:11px;background:#f3f8f8;padding:11px;min-width:0}
+.invest-work-card small{display:block;color:#607b8a;font-size:10px;line-height:1.5}
+.invest-fee-result strong,.invest-risk-grid strong{display:block;font-size:16px;margin-top:5px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.invest-result-highlight{border-radius:13px;background:linear-gradient(120deg,#ddf7ed,#f0fbf7);padding:14px;margin:14px 0}
+.invest-result-highlight strong{display:block;font-size:24px;color:#06735c;letter-spacing:-.035em;margin-top:5px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.invest-risk-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.invest-risk-grid strong{font-size:15px}
+.invest-allocation-bar{display:flex;border-radius:999px;overflow:hidden;height:18px;margin-top:8px;background:#ddd}
+#invest-allocation-stock{width:70%;background:linear-gradient(90deg,#17898a,#3baebe)}#invest-allocation-bond{width:30%;background:#a5c9eb}
+.invest-allocation-meta{display:flex;justify-content:space-between;margin:9px 0 11px;gap:5px;font-size:11px;color:#4a6d7e}
+.invest-learning{margin-top:23px}
+.invest-topic-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.invest-topic-grid details{border-radius:13px;background:white;border:1px solid #dce7eb;padding:15px;align-self:start}
+.invest-topic-grid summary{cursor:pointer;min-height:38px;font-weight:850;color:#21445a;font-size:12px;line-height:1.5;list-style:none}
+.invest-topic-grid summary::-webkit-details-marker{display:none}
+.invest-topic-grid summary:after{content:'+';float:right;font-size:16px;color:#08916d}
+.invest-topic-grid details[open] summary:after{content:'−'}
+.invest-topic-grid p{color:#607b87;font-size:11px;line-height:1.8}
+.invest-topic-grid a{color:#087a6c;font-weight:800;font-size:11px}
+.portal-home .budget-bank-hidden [data-field=bank]{display:none!important}
+#budget-print-sheet{display:none}
+@media(max-width:1120px){.budget-start-panel{grid-template-columns:1fr}.budget-primary-actions{justify-content:flex-start;max-width:none}}
+@media(max-width:780px){.invest-workbench{grid-template-columns:1fr}.invest-work-card{padding:18px}.invest-topic-grid{grid-template-columns:1fr}}
+@media(max-width:620px){.portal-home .portal-viewbar{margin:6px 0 10px!important;padding:10px 12px!important;min-height:50px!important}.budget-start-panel{margin:12px 0 15px;padding:16px;gap:12px}.budget-primary-actions{display:grid;grid-template-columns:1fr 1fr;width:100%}.budget-primary-actions .tool-button{font-size:10px;padding:9px 6px;min-height:44px}.budget-primary-actions #budget-print{grid-column:1/-1}.invest-dual{grid-template-columns:1fr 1fr}.invest-risk-grid{grid-template-columns:1fr 1fr}.invest-risk-grid>div:last-child{grid-column:1/-1}.invest-work-card{border-radius:14px}.budget-start-copy h2{font-size:21px}}
+@media(prefers-reduced-motion:reduce){.budget-health-track span{transition:none}}
+/* A4 professional print/PDF: only the generated budget report is printable.
+   Avoid raster screenshots: selectable, searchable text. */
+@page{size:A4 portrait;margin:13mm 14mm}
+@media print{
+ html,body{background:#fff!important;width:auto!important;overflow:visible!important;height:auto!important}
+ body.print-budget>:not(#budget-print-sheet){display:none!important}
+ body.print-budget #budget-print-sheet{display:block!important;position:static!important;width:100%;max-width:none;margin:0!important;padding:0!important;background:#fff!important;color:#17374a!important;font-family:Arial,Helvetica,sans-serif;font-size:10pt;line-height:1.4;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ #budget-print-sheet .print-brand{display:flex;align-items:center;gap:12px;padding-bottom:15px;border-bottom:3px solid #0f8678}
+ #budget-print-sheet .print-logo{width:40px;height:40px;display:grid;place-items:center;border-radius:10px;background:#0c8477!important;color:#fff!important;font-size:23px}
+ #budget-print-sheet .print-brand strong{display:block;font-size:16pt;letter-spacing:.015em}
+ #budget-print-sheet .print-brand small{display:block;font-size:9pt;color:#547680}
+ #budget-print-sheet .print-title{margin:23px 0 13px}
+ #budget-print-sheet .print-title h1{font-size:22pt;color:#152d42;margin:0 0 3px;font-weight:800}
+ #budget-print-sheet .print-title p{font-size:9pt;color:#637f87;margin:0}
+ #budget-print-sheet .print-kpis{display:table;width:100%;border-spacing:8px 0;margin:14px -8px}
+ #budget-print-sheet .print-kpis>div{display:table-cell;width:33%;border:1px solid #deebe8;background:#f3faf8!important;border-radius:8px;padding:11px}
+ #budget-print-sheet .print-kpis small{display:block;color:#66818b;font-size:9pt}
+ #budget-print-sheet .print-kpis strong{display:block;color:#0a7165;font-size:15pt;margin-top:3px}
+ #budget-print-sheet .print-report-subtitle{font-size:12pt;margin:20px 0 6px;color:#194655}
+ #budget-print-sheet .print-table{width:100%;border-collapse:collapse;page-break-inside:auto}
+ #budget-print-sheet .print-table thead{display:table-header-group}
+ #budget-print-sheet .print-table th{background:#e8f5f1!important;text-align:left;font-size:9pt;padding:8px;color:#255363;border-bottom:1px solid #aacbc2}
+ #budget-print-sheet .print-table td{padding:7px 8px;border-bottom:1px solid #e7eef0;font-size:9pt;vertical-align:top}
+ #budget-print-sheet .print-table td:last-child,#budget-print-sheet .print-table th:last-child{text-align:right;font-variant-numeric:tabular-nums}
+ #budget-print-sheet .print-table tr{break-inside:avoid}
+ #budget-print-sheet .print-table .group-row td{background:#f4f8f9!important;font-weight:800;color:#1b4656}
+ #budget-print-sheet .print-breakdown{margin-top:12px}
+ #budget-print-sheet .print-bar{display:flex;gap:0;height:14px;border-radius:3px;overflow:hidden;margin:7px 0 10px}
+ #budget-print-sheet .print-bar span{display:block;height:14px}
+ #budget-print-sheet .print-foot{margin-top:21px;border-top:1px solid #dde9e9;padding-top:10px;font-size:8pt;color:#6e858e;page-break-inside:avoid}
+ #budget-print-sheet .print-privacy{font-weight:700;color:#376b68}
+ #budget-print-sheet .print-note{font-size:9pt;color:#597580;margin:10px 0;line-height:1.55}
+}
