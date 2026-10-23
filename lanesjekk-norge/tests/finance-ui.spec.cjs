@@ -218,6 +218,7 @@ test('budget undo restores deleted rows and their totals',async({page})=>{
 });
 test('budget salary transfer updates income and subtotal of chosen rows',async({page})=>{
  await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('.budget-deep-tools > summary').click();
  await page.locator('#budget-salary-gross').fill('60000');
  await page.locator('#budget-salary-tax').fill('25');
  await page.locator('#budget-salary-other').fill('1000');
