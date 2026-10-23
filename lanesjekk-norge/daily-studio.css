@@ -124,3 +124,10 @@
 .portal-home #budsjett>.tool-hero h1{font-size:clamp(31px,3vw,43px)}
 .portal-home #budsjett>.tool-hero p{line-height:1.65}
 @media(max-width:640px){.portal-home #budsjett>.tool-hero{padding:22px 18px}.portal-home #budsjett>.tool-hero .tool-hero-decoration{display:none}.portal-home .budget-deep-tools>summary{padding:11px;font-size:11px}}
+
+/* 2026 Norwegian tax card: clear percentage/table switch, no fake deductions. */
+.budget-tax-method{display:grid;grid-template-columns:1fr 1fr;gap:12px;background:#f1faf8;border:1px solid #d6e8e4;padding:13px;border-radius:12px;margin:12px 0}
+.budget-tax-method label{display:grid;gap:6px;color:#456c79;font-size:11px;font-weight:850}
+.budget-tax-method select,.budget-tax-method input{border:1px solid #bfd8d9;border-radius:9px;min-height:44px;padding:9px 11px;color:#1c4c59;background:#fff;font-size:12px;width:100%}
+.budget-tax-method label[hidden],.budget-salary-fields>label[hidden]{display:none!important}
+@media(max-width:570px){.budget-tax-method{grid-template-columns:1fr}}
