@@ -81,7 +81,7 @@
   select.setAttribute('aria-label','Legg til '+bank.name+' for sammenligning');
   select.addEventListener('click',()=>{
     const success=window.lanesjekkAddBank?.(bank.id);
-    if(success){$('bank-query').value='';query='';limit=8;render();$('sammenlign').scrollIntoView({behavior:'smooth',block:'start'})}
+    if(success){$('bank-query').value='';query='';limit=8;render();if(typeof window.lanesjekkNavigate==='function')window.lanesjekkNavigate('sammenlign');else $('sammenlign').scrollIntoView({behavior:'smooth',block:'start'})}
   });
   actions.append(select);
   actions.append(link(bank.registryVerified?'Se registrering ↗':'Søk i Finanstilsynet ↗',bank.register,'bank-register'));
