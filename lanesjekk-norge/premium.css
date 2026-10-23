@@ -390,3 +390,8 @@
 @media(max-width:580px){.ad-hero{min-height:720px!important}.ad-slide-inner{padding:45px 18px 115px}.ad-copy h1{font-size:clamp(37px,10vw,49px)!important}.ad-copy p{font-size:14px!important}.ad-visual{max-width:270px}.ad-mockup svg{max-height:80px}.ad-mockup strong{font-size:26px}.ad-progress{gap:5px}.ad-dot{width:26px}.ad-slider-controls{left:18px;right:18px}}
 @media(prefers-reduced-motion:reduce){.ad-slide,.ad-mockup,.ad-orb,.ad-ring,.ad-bars i,.ad-graph-line,.ad-dot span{animation:none!important;transition:none!important}}
 .cms-pause-hero-motion .ad-slide .ad-mockup,.cms-pause-hero-motion .ad-slide .ad-orb,.cms-pause-hero-motion .ad-slide .ad-ring{animation:none!important}
+
+/* SAFE HOMEPAGE RESTORATION: static hero overrides experimental cinematic/ad rules. */
+.portal-home .hero:not(.cinematic-hero){position:relative;isolation:auto;min-height:360px;overflow:visible}
+.portal-home .hero:not(.cinematic-hero) .hero-inner{position:relative;z-index:1}
+.portal-home .hero:not(.cinematic-hero) .hero-card{position:relative;z-index:1}
