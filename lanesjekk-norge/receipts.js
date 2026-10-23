@@ -39,12 +39,15 @@ function parseText(raw){
   const qtyPattern=name.match(/(?:^|\s)(\d{1,3})\s*[x×]\s*(?=\S)/i)||name.match(/(?:^|\s)[x×]\s*(\d{1,3})(?=\s|$)/i);
   const qty=qtyPattern?Math.max(1,Math.min(999,Number(qtyPattern[1]))):1;
   const cleanName=name.replace(/(?:^|\s)\d{1,3}\s*[x×]\s*/i,' ').replace(/(?:^|\s)[x×]\s*\d{1,3}(?=\s|$)/i,' ').trim()||name;
-  next.push({name:cleanName.slice(0,90),category:discount?'Annet':category(cleanName),quantity:qty,amount:discount&&amount>0?-amount:amount});
+  const lineAmount=discount&&amount>0?-amount:amount;
+  next.push({name:cleanName.slice(0,90),category:discount?'Annet':category(cleanName),quantity:qty,unitPrice:Math.round(lineAmount/qty*100)/100,amount:lineAmount});
  }
  return {items:next.slice(0,160),total,merchant};
 }
+const round2=n=>Math.round((Number(n)+Number.EPSILON)*100)/100;
+function normalize(item){const q=Math.max(1,Math.min(999,Math.round(Number(item.quantity)||1)));item.quantity=q;if(!Number.isFinite(Number(item.unitPrice)))item.unitPrice=round2(Number(item.amount||0)/q);item.amount=round2(item.unitPrice*q);return item}
 function stats(){
- const valid=items.filter(x=>Number.isFinite(x.amount)),total=valid.reduce((s,x)=>s+x.amount,0),map=new Map();
+ const valid=items.map(normalize).filter(x=>Number.isFinite(x.amount)),total=valid.reduce((s,x)=>s+x.amount,0),map=new Map();
  for(const row of valid)map.set(row.category,(map.get(row.category)||0)+row.amount);
  const cats=[...map].filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);
  return {total,valid:valid.length,cats};
@@ -94,18 +97,20 @@ function refresh(){
 function render(){
  const root=$('receipt-items');root.replaceChildren();const empty=$('receipt-empty');if(empty)empty.hidden=items.length>0;
  items.forEach((item,index)=>{
+  normalize(item);
   const tr=el('tr'),namecell=el('td'),name=el('input');name.type='text';name.value=item.name;name.maxLength=90;name.setAttribute('aria-label','Varenavn '+(index+1));
   name.oninput=()=>{item.name=name.value;refresh()};namecell.append(name);
   const qtycell=el('td'),qty=el('input');qty.type='number';qty.min='1';qty.max='999';qty.step='1';qty.inputMode='numeric';qty.value=String(item.quantity||1);qty.setAttribute('aria-label','Antall '+item.name);
-  qty.onchange=()=>{item.quantity=Math.max(1,Math.min(999,Math.round(Number(qty.value)||1)));qty.value=item.quantity;refresh()};qtycell.append(qty);
+  qty.oninput=()=>{const next=Number(qty.value);if(!Number.isInteger(next)||next<1||next>999)return;item.quantity=next;item.amount=round2(item.unitPrice*next);line.value=item.amount.toFixed(2);refresh()};qtycell.append(qty);
   const catcell=el('td'),select=el('select');
   for(const [c] of C){const opt=el('option',c);opt.value=c;select.append(opt)}
   select.value=item.category;select.setAttribute('aria-label','Kategori for '+item.name);select.onchange=()=>{item.category=select.value;refresh()};catcell.append(select);
-  const moneycell=el('td'),amount=el('input');amount.type='number';amount.step='.01';amount.min='-100000';amount.max='100000';amount.inputMode='decimal';amount.value=String(item.amount);amount.setAttribute('aria-label','Beløp for '+item.name);
-  amount.oninput=()=>{item.amount=price(amount.value);refresh()};moneycell.append(amount);
+  const unitcell=el('td'),unit=el('input');unit.type='number';unit.step='.01';unit.min='-100000';unit.max='100000';unit.inputMode='decimal';unit.value=String(item.unitPrice);unit.setAttribute('aria-label','Stykkpris for '+item.name);
+  const moneycell=el('td'),line=el('input');line.type='number';line.step='.01';line.min='-100000';line.max='100000';line.inputMode='decimal';line.value=String(item.amount);line.readOnly=true;line.setAttribute('aria-label','Linjesum for '+item.name);
+  unit.oninput=()=>{const v=price(unit.value);if(!Number.isFinite(v))return;item.unitPrice=v;item.amount=round2(v*item.quantity);line.value=item.amount.toFixed(2);refresh()};unitcell.append(unit);moneycell.append(line);
   const action=el('td'),remove=el('button','×','receipt-delete');remove.type='button';remove.setAttribute('aria-label','Fjern '+item.name);
   remove.onclick=()=>{items.splice(index,1);render()};action.append(remove);
-  tr.append(namecell,qtycell,catcell,moneycell,action);root.append(tr);
+  tr.append(namecell,qtycell,unitcell,catcell,moneycell,action);root.append(tr);
  });refresh();
 }
 function applyText(){
@@ -173,7 +178,7 @@ function save(){
   $('receipt-save-status').textContent='Kontroller navn og beløp på alle varelinjer.';return
  }
  const record={id:crypto.randomUUID(),date:$('receipt-date').value||date(),merchant:$('receipt-merchant').value.trim().slice(0,90),
-  items:items.map(i=>({name:i.name.slice(0,90),category:i.category,quantity:i.quantity||1,amount:i.amount}))};
+  items:items.map(i=>({name:i.name.slice(0,90),category:i.category,quantity:i.quantity||1,unitPrice:i.unitPrice,amount:i.amount}))};
  if(store([record,...history()])){
   $('receipt-save-status').textContent='Kvitteringen er lagret på denne enheten, uten bilde.';$('receipt-save-optin').checked=false;renderHistory();
  }
@@ -235,7 +240,7 @@ function boot(){
   $('receipt-ocr-status').textContent='Bilde limt inn. Trykk Les kvitteringen.';
  });
  $('receipt-demo').addEventListener('click',()=>{reset();$('receipt-raw').value=sample;$('receipt-raw').closest('details').open=true;applyText();$('receipt-merchant').value='Fiktiv eksempelbutikk'});
- $('receipt-add-item').addEventListener('click',()=>{if(items.length>=160)return;items.push({name:'Ny vare',category:'Annet',quantity:1,amount:0});render()});
+ $('receipt-add-item').addEventListener('click',()=>{if(items.length>=160)return;items.push({name:'Ny vare',category:'Annet',quantity:1,unitPrice:0,amount:0});render()});
  $('receipt-clear').addEventListener('click',reset);
  $('receipt-save').addEventListener('click',save);
  $('receipt-export').addEventListener('click',exportCSV);
