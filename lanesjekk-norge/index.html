@@ -406,12 +406,12 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
    </label>
    <p id="receipt-image-note" class="receipt-helper">Bildet blir ikke lastet opp til Lånesjekk. Første skanning laster ned OCR-komponenter og norsk/engelsk språkmodell fra en ekstern CDN. Kun OCR-modellen, ikke kvitteringsbildet, lastes ned.</p>
    <img id="receipt-preview" alt="Forhåndsvisning av valgt kvittering" hidden>
-   <button type="button" id="receipt-ocr" class="receipt-btn main" disabled>✦ Les kvitteringen fra bildet</button>
+   <button type="button" id="receipt-paste-image" class="receipt-btn minor">⎘ Lim inn bilde fra utklippstavlen</button><p class="receipt-helper">Tips: Bruk et skarpt bilde med hele kvitteringen, rett ovenfra, uten gjenskinn. Kontroller særlig pant, rabatter og linjesummer.</p><button type="button" id="receipt-ocr" class="receipt-btn main" disabled>✦ Les kvitteringen fra bildet</button>
    <p id="receipt-ocr-status" class="receipt-status" role="status" aria-live="polite">Velg en kvittering for å starte.</p>
    <details class="receipt-textentry"><summary>▤ Lim inn eller rett OCR-teksten</summary>
     <label for="receipt-raw">Tekst fra kvitteringen – én linje per vare</label>
     <textarea id="receipt-raw" rows="7" spellcheck="false" placeholder="MELK LETT 1L   24,90&#10;BRØD GROVT   32,90&#10;KAFFE 250G   69,90&#10;SUM   127,70"></textarea>
-    <button type="button" id="receipt-parse" class="receipt-btn minor">Analyser teksten</button>
+    <button type="button" id="receipt-parse" class="receipt-btn minor">Oppdater varelisten fra korrigert tekst</button>
    </details>
    <div class="receipt-sample-box"><button id="receipt-demo" type="button" class="receipt-btn minor">Prøv med eksempelkvittering</button><span>Ingen bilde nødvendig</span></div>
    <div class="receipt-fields">
@@ -422,10 +422,10 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
   </div>
   <div class="receipt-pane receipt-results">
    <div class="receipt-step"><span>02</span><div><h2>Hva kjøpte du?</h2><p>Alle varer kan redigeres før analysen beregnes.</p></div></div>
-   <div class="receipt-summary-row"><div><small>Sum varer</small><strong id="receipt-sum">0 kr</strong></div><div><small>Antall linjer</small><strong id="receipt-count">0</strong></div><div><small>Kontroll</small><strong id="receipt-check">Ikke kontrollert</strong></div></div>
+   <div class="receipt-summary-row"><div><small>Sum varer</small><strong id="receipt-sum">0 kr</strong></div><div><small>Antall produkter</small><strong id="receipt-count">0</strong></div><div><small>Kontroll</small><strong id="receipt-check">Ikke kontrollert</strong></div></div>
    <div id="receipt-reconcile" class="receipt-reconcile" role="status">Skann eller legg inn en kvittering for å starte.</div>
    <div class="receipt-table-scroll"><table class="receipt-table" aria-label="Varer fra kvitteringen">
-    <thead><tr><th>Vare</th><th>Kategori</th><th>Beløp</th><th></th></tr></thead>
+    <thead><tr><th>Vare</th><th>Antall</th><th>Kategori</th><th>Linjesum</th><th></th></tr></thead>
     <tbody id="receipt-items"></tbody></table></div>
    <div class="receipt-add"><button id="receipt-add-item" type="button" class="receipt-btn minor">＋ Legg til vare manuelt</button><button id="receipt-clear" type="button" class="receipt-btn subtle">Tøm</button></div>
    <label class="receipt-local-save"><input type="checkbox" id="receipt-save-optin"> Jeg ønsker å lagre bekreftede kjøp lokalt i denne nettleseren (ingen bilder). Ikke huk av på en delt PC.</label>
