@@ -35,19 +35,20 @@ test('menu dropdowns are exclusive and close with Escape',async({page},testInfo)
  await expect(groups.nth(1)).not.toHaveAttribute('open','');
 });
 
-test('cinematic homepage supports pause and play without disrupting navigation',async({page})=>{
+test('advertising slider navigates scenes and pauses',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
- const scene=page.locator('.cinematic-hero');
- await expect(scene).toBeVisible();
- await expect(page.locator('.cinema-landscape')).toHaveAttribute('src','./cinematic-fjord.svg');
- const toggle=page.locator('.cinema-motion-toggle');
- await expect(toggle).toBeVisible();
+ const hero=page.locator('.ad-hero');
+ await expect(hero).toBeVisible();
+ await expect(page.locator('.ad-slide')).toHaveCount(5);
+ await expect(page.locator('.ad-slide.is-active')).toHaveCount(1);
+ await page.locator('.ad-next').click();
+ await expect(page.locator('.ad-slide[data-slide="1"]')).toHaveClass(/is-active/);
+ const toggle=page.locator('.ad-pause');
  await toggle.click();
- await expect(scene).toHaveClass(/cinema-paused/);
+ await expect(hero).toHaveClass(/ad-paused/);
  await expect(toggle).toHaveAttribute('aria-pressed','true');
  await toggle.click();
- await expect(scene).not.toHaveClass(/cinema-paused/);
- await expect(toggle).toHaveAttribute('aria-pressed','false');
- await page.locator('.cinema-copy a[href="#budsjett"]').click();
+ await expect(hero).not.toHaveClass(/ad-paused/);
+ await page.locator('.ad-slide.is-active .ad-cta').click();
  await expect(page.locator('#budsjett')).toBeVisible();
 });
