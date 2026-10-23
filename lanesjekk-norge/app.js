@@ -198,7 +198,6 @@ function init(){
  $('loan-form').addEventListener('input',compute);
  $('loan-form').addEventListener('submit',event=>event.preventDefault());
  $('add-offer').addEventListener('click',()=>{
-  if(typeof window.lanesjekkNavigate==='function')window.lanesjekkNavigate('banker');
   const input=$('bank-query');
   window.requestAnimationFrame(()=>{input?.focus({preventScroll:true})});
  });
