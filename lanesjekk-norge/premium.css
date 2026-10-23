@@ -193,3 +193,9 @@
 /* Website visual configuration: set by published CMS, or transient admin preview */
 .cms-hide-hero-visual .portal-home .hero::after{display:none!important}
 .cms-hide-hero-visual .portal-home .hero .hero-card{animation:none!important}
+
+/* Self-hosted hero illustration is illustrative, never live financial data */
+.portal-home .hero .hero-card{max-width:440px;padding:18px;overflow:hidden}
+.portal-home .hero .hero-finance-illustration{display:block;width:100%;height:auto;max-height:265px;object-fit:cover;object-position:center;border-radius:15px;margin-bottom:18px;border:1px solid #ffffff25}
+.cms-hide-hero-visual .hero-finance-illustration{display:none!important}
+@media(max-width:700px){.portal-home .hero .hero-finance-illustration{max-height:210px}.portal-home .hero .hero-card{max-width:100%}}
