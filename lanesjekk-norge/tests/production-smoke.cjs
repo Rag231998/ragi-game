@@ -17,7 +17,7 @@ async function run(){
   const expectedTitle=/<title>Lånesjekk Norge \| Sammenlign boliglån, sparing og banker/i;
   for(let attempt=0;attempt<12;attempt++){
     site=await request('/');
-    if(site.response.status===200&&expectedTitle.test(site.body))break;
+    if(site.response.status===200&&expectedTitle.test(site.body)&&site.body.includes('id="sparing"')&&site.body.includes('id="guider"'))break;
     if(attempt<11)await new Promise(resolve=>setTimeout(resolve,5000));
   }
   assert.equal(site.response.status,200,'Website must be publicly reachable: '+site.url+' status '+site.response.status);
