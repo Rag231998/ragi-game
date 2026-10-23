@@ -5,8 +5,8 @@ test.beforeEach(async({page})=>{
 });
 test('renders all curated banks without invented rates',async({page})=>{
  await expect(page.getByRole('heading',{name:'Finn banken du vil sammenligne'})).toBeVisible();
- await expect(page.locator('.bank-card')).toHaveCount(8);
- await expect(page.locator('#bank-count')).toContainText('8 av 8');
+ await expect(page.locator('.bank-card')).toHaveCount(11);
+ await expect(page.locator('#bank-count')).toContainText('11 av 11');
  await expect(page.locator('#offer-rate-1')).toHaveCount(0);
 });
 test('instant searchable verified banks with normalised names and no results',async({page})=>{
@@ -14,15 +14,20 @@ test('instant searchable verified banks with normalised names and no results',as
  await input.fill('klp');
  await expect(page.locator('.bank-card')).toHaveCount(1);
  await expect(page.locator('.bank-name')).toHaveText('KLP Banken');
- await expect(page.locator('#bank-count')).toContainText('1 av 8');
+ await expect(page.locator('#bank-count')).toContainText('1 av 11');
  await input.fill('nordeá');
  await expect(page.locator('.bank-card')).toHaveCount(1);
  await expect(page.locator('.bank-name')).toHaveText('Nordea');
+ await input.fill('bulder');
+ await expect(page.locator('.bank-card')).toHaveCount(1);
+ await expect(page.locator('.bank-proof')).toContainText('Merkevare under registrert bank');
+ await input.fill('sbanken');
+ await expect(page.locator('.bank-card')).toHaveCount(1);
  await input.fill('ikke en bank');
  await expect(page.locator('.bank-card')).toHaveCount(0);
  await expect(page.locator('.bank-empty')).toBeVisible();
  await page.getByRole('button',{name:'Vis alle banker'}).click();
- await expect(page.locator('.bank-card')).toHaveCount(8);
+ await expect(page.locator('.bank-card')).toHaveCount(11);
 });
 test('selects vetted bank, accepts real user rate and calculates immediately',async({page})=>{
  await page.locator('#bank-query').fill('DNB');
