@@ -341,3 +341,13 @@
 .cms-hide-hero-visual .cinematic-hero{background:linear-gradient(115deg,#071b2d,#125268)!important}
 .cms-pause-hero-motion .cinema-hud{animation:none!important}
 @media(prefers-reduced-motion:reduce){.cinema-stage .cinema-landscape{animation:none!important}}
+
+/* Film footage is layered over local SVG and gracefully falls back if blocked */
+.cinema-human-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;filter:saturate(.76) contrast(1.07) brightness(.78);pointer-events:none;transition:opacity 1.1s ease}
+.cinema-human-video.is-ready{opacity:.67}
+.cinema-stage:has(.cinema-human-video.is-ready) .cinema-landscape{opacity:.62}
+.cinema-paused .cinema-human-video{filter:saturate(.68) contrast(1.07) brightness(.78)}
+.cms-pause-hero-motion .cinema-human-video{display:none!important}
+.cms-hide-hero-visual .cinema-human-video{display:none!important}
+@media(prefers-reduced-motion:reduce){.cinema-human-video{display:none!important}}
+@media(max-width:680px){.cinema-human-video{object-position:55% center;opacity:0}.cinema-human-video.is-ready{opacity:.46}}
