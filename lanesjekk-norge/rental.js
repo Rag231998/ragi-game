@@ -150,7 +150,14 @@ function boot(){
  document.querySelector('#utleie').addEventListener('change',update);
  document.querySelector('#utleie').addEventListener('input',updateValuation);
  document.querySelector('#utleie').addEventListener('change',updateValuation);
- $('rental-parse-ad').addEventListener('click',fromAd);
+ $('rental-import-url').addEventListener('click',()=>{
+  const raw=$('rental-finn-url').value.trim(),url=allowed(raw);
+  if(!url){$('rental-url-note').textContent='Ugyldig FINN-lenke. Kontroller adressen.';return}
+  const code=url.searchParams.get('finnkode')||url.pathname.match(/(?:\/)(\d{6,12})(?:\/|$)/)?.[1];
+  $('rental-url-note').textContent=code?'FINN-annonsen '+code+' er registrert som referanse. Automatisk annonseuthenting er ikke aktiv uten lisensiert datakilde. Lim inn annonsens nøkkeltall i feltet under.':'Lenken er registrert. Automatisk uthenting er ikke aktiv uten lisensiert datakilde. Lim inn annonsens nøkkeltall under.';
+  document.querySelector('.rental-paste').open=true;
+ });
+  $('rental-parse-ad').addEventListener('click',fromAd);
  $('rental-example').addEventListener('click',()=>{
   const values={price:3500000,sharedDebt:0,buyCosts:90000,rent:16500,equity:900000,rate:5.25,years:25,common:2200,running:900,maintenance:1200,vacancy:1};
   const mapping={price:'rental-price',sharedDebt:'rental-shared-debt',buyCosts:'rental-buy-costs',rent:'rental-rent',equity:'rental-equity',rate:'rental-interest',years:'rental-years',common:'rental-common',running:'rental-running',maintenance:'rental-maintenance',vacancy:'rental-vacancy'};
@@ -162,7 +169,7 @@ function boot(){
  $('rental-reset').addEventListener('click',()=>{
   for(const id of ['rental-price','rental-rent','rental-equity','rental-shared-debt','rental-buy-costs','rental-common','rental-running','rental-maintenance'])$(id).value='';
   $('rental-years').value='25';$('rental-interest').value='5.25';$('rental-vacancy').value='1';$('rental-ad-text').value='';
-  for(const id of ['rental-area','rental-comp-1','rental-comp-2','rental-comp-3'])$(id).value='';$('rental-growth').value='2';
+  $('rental-finn-url').value='';for(const id of ['rental-area','rental-comp-1','rental-comp-2','rental-comp-3'])$(id).value='';$('rental-growth').value='2';
   $('rental-tax').value='taxable';$('rental-url-note').textContent='Legg inn en annonsetekst eller fyll inn nøkkeltallene manuelt.';update();
  });
  update();updateValuation();window.lanesjekkRental={realEstate,parseAd,allowed};
