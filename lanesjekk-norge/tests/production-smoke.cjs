@@ -13,7 +13,7 @@ async function request(path,options={}){
 async function run(){
   const site=await request('/');
   assert.equal(site.response.status,200,'Website must be publicly reachable: '+site.url+' status '+site.response.status);
-  assert.match(site.body,/<title>Boliglånskalkulator og banksammenligning/i);
+  assert.match(site.body,/<title>Lånesjekk Norge \| Sammenlign boliglån, sparing og banker/i);
   assert.match(site.body,/id="bank-query"/);
   console.log('OK website accessible at '+site.url);
   const banks=await request('/banker.js');
