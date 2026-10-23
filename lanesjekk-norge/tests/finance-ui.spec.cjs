@@ -13,6 +13,7 @@ test('homepage has new clickable budget, car, consumer and academy tools',async(
 });
 test('editable budget computes accurate totals, insights and custom charts',async({page})=>{
  await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('.budget-advanced-tools > summary').click();
  await expect(page.locator('.budget-table tbody tr')).toHaveCount(9);
  await expect(page.locator('#budget-income')).toContainText(/44\s?000/);
  await expect(page.locator('#budget-expenses')).toContainText(/32\s?200/);
@@ -32,6 +33,7 @@ test('editable budget computes accurate totals, insights and custom charts',asyn
 });
 test('budget preserves opt-in local data, exports semicolon CSV and can remove saved values',async({page})=>{
  await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('.budget-advanced-tools > summary').click();
  await page.locator('#budget-rows tr').first().locator('[data-field=amount]').fill('55000');
  await page.locator('#budget-save').click();
  await expect(page.locator('#budget-storage-status')).toContainText('Lagret lokalt');
@@ -132,6 +134,7 @@ test('four quiz questions can be completed and restarted',async({page})=>{
 
 test('budget what-if graph calculates actual monthly and annual savings per category',async({page})=>{
  await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('.budget-advanced-tools > summary').click();
  await expect(page.locator('#budget-scenario-category')).toBeVisible();
  await page.locator('#budget-scenario-category').selectOption('Mat og drikke');
  await expect(page.locator('#budget-scenario-percent-value')).toHaveText('10 %');
