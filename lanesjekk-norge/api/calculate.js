@@ -4,7 +4,7 @@
  */
 'use strict';
 function valid(n,min,max){return typeof n==='number'&&Number.isFinite(n)&&n>=min&&n<=max}
-const allowedBanks=Object.freeze({dnb:'DNB',nordea:'Nordea',obos:'OBOS-banken',storebrand:'Storebrand',landkreditt:'Landkreditt',klp:'KLP Banken',sparebank1ost:'SpareBank 1 Østlandet',bnbank:'BN Bank'});
+const allowedBanks=Object.freeze({dnb:'DNB',nordea:'Nordea',obos:'OBOS-banken',storebrand:'Storebrand',landkreditt:'Landkreditt',klp:'KLP Banken',sparebank1ost:'SpareBank 1 Østlandet',bnbank:'BN Bank',sparebankennorge:'Sparebanken Norge',bulder:'Bulder',sbanken:'Sbanken'});
 function payment(principal,annualNominal,months){
  const r=annualNominal/1200;
  if(r===0)return principal/months;
