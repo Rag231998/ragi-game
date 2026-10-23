@@ -147,3 +147,16 @@
  .repayment-stats>div{padding:12px}
  .repayment-stats strong{font-size:17px}
 }
+
+/* Comfortable information density on high-resolution mobile and desktop screens */
+.bank-card .bank-name{font-size:14px;line-height:1.3}
+.bank-card .bank-legal{font-size:11px;line-height:1.45}
+.bank-card .bank-proof{font-size:10px}
+.bank-card .bank-register,.bank-card .bank-website{font-size:11px;min-height:30px}
+.bank-searchbar #bank-query{font-size:14px}
+.bank-discovery .subtitle{font-size:13px}
+.bank-current-field .bank-autocomplete-option span{overflow-wrap:anywhere;min-width:0}
+@media(max-width:700px){
+ .bank-card .bank-name{font-size:14px}
+ .bank-card .bank-select{font-size:12px}
+}
