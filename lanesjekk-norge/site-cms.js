@@ -6,7 +6,7 @@
 const base='https://pryrgwfjniggjlrizenh.supabase.co';
 const key='sb_publishable_nMwAplLiIZ-p9zIu8F3yPQ_-_XwiMM9';
 const SECTIONS=Object.freeze(['quick','hero','stats','workbook','insights']);
-const CARD_IDS=Object.freeze(['kvitteringer','utleie','budsjett','billan','forbrukslan','akademi','sparing','sjekk','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti']);
+const CARD_IDS=Object.freeze(['sjekk','budsjett','kvitteringer','sparing','utleie','billan','forbrukslan','akademi','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti']);
 const nodes=()=>({quick:document.querySelector('#budsjett > .budget-start-panel'),hero:document.querySelector('#budsjett > .budget-hero'),
 stats:document.querySelector('#budsjett > .tool-overview'),workbook:document.querySelector('#budsjett > .budget-workbook'),insights:document.querySelector('#budsjett > .budget-insights-grid')});
 const defaults={brand:{name:'LÅNESJEKK NORGE',tagline:'Mer oversikt. Bedre valg.',accent:'#0c8878',logoUrl:'',heroVisual:true},
