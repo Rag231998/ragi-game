@@ -105,7 +105,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 @media(max-width:1020px){.layout{grid-template-columns:minmax(0,1fr)}.loan-form{position:static}.metric-grid{grid-template-columns:repeat(3,1fr)}.hero-inner{gap:24px}}
 @media(max-width:690px){header{padding:12px 14px;min-height:65px}.brandmark{height:36px;width:36px;font-size:19px}.brand strong{font-size:13px}.brand small{font-size:8px}header nav{gap:8px}header nav a{font-size:10px}.header-pill{display:none}.hero{padding:37px 14px 80px}.hero-inner{grid-template-columns:1fr}.hero-card{display:none}h1{font-size:34px}.hero p{font-size:13px}.hero .btn{width:auto}.layout{gap:11px}main{padding:0 10px 45px;margin-top:-52px}.loan-form{padding:20px 16px}.metric-grid{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/-1}.metric strong{font-size:21px}.summary-card,.offer-panel{padding:19px 15px}.offer-fields{grid-template-columns:1fr 1fr}.offer-fields .field:first-child{grid-column:1/-1}.offer-fields .field:last-child{grid-column:1/-1}.two{gap:9px}.offer-title{align-items:start}.offer-title h2{font-size:18px}.market{padding:18px 14px}.market-inner{grid-template-columns:1fr}.market .btn{width:100%}.market iframe{height:1100px}.steps{grid-template-columns:1fr}.step-card{padding:15px}.market p{font-size:11px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-</style><link rel="stylesheet" href="./premium.css?v=1"><link rel="stylesheet" href="./portal.css?v=2"><link rel="stylesheet" href="./finance-style.css?v=1"></head><body class="portal-home" id="topp">
+</style><link rel="stylesheet" href="./premium.css?v=1"><link rel="stylesheet" href="./portal.css?v=2"><link rel="stylesheet" href="./finance-style.css?v=1"><link rel="stylesheet" href="./daily-studio.css?v=1"></head><body class="portal-home" id="topp">
 <div class="utility-bar"><div class="site-container utility-inner"><span>Uavhengig økonomioversikt</span><span>Gratis verktøy · Kilder fra banker og offentlige etater</span></div></div>
 <header class="site-header"><div class="site-container nav-row">
 <a class="portal-logo" href="#topp"><span class="logo-emblem">◈</span><span>LÅNESJEKK <b>NORGE</b><small>Mer oversikt. Bedre valg.</small></span></a>
@@ -123,14 +123,12 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 <main>
 <div class="portal-viewbar" id="portal-viewbar" hidden>
   <div class="viewbar-crumb"><a href="#topp" aria-label="Tilbake til forsiden">⌂ Forside</a><span aria-hidden="true">›</span><strong id="viewbar-title">Velg tjeneste</strong></div>
-  <nav class="viewbar-shortcuts" aria-label="Bytt tjeneste">
-   <a href="#budsjett">Budsjett</a><a href="#billan">Billån</a><a href="#forbrukslan">Forbrukslån</a><a href="#sjekk">Boliglån</a><a href="#sparing">Sparing</a><a href="#investering">Fond og aksjer</a><a href="#banker">Banker</a><a href="#akademi">Læring</a><a href="#guider">Guider</a>
-  </nav>
+  
 </div>
 <section class="home-navigation" data-portal-view="home" aria-label="Velg hva du ønsker å sammenligne">
  <div class="home-intro"><span class="section-overline">UTFORSK ALLE MULIGHETENE</span><h2>Hva vil du <em>utforske i dag?</em></h2><p>Velg et tema. Hvert kort åpner et verktøy eller en guide som hjelper deg videre.</p></div>
  <div class="home-tool-grid">
-   <a class="home-tool featured-purple" href="#budsjett"><span class="home-tool-art">▦</span><span class="home-tool-category">BUDSJETT</span><strong>Mitt personlige budsjett</strong><small>Rediger inntekter, faste utgifter og banker i en Excel-lignende oversikt med grafer.</small><span class="home-tool-arrow">Åpne budsjettet ↗</span></a>
+   <a class="home-tool featured-purple" href="#budsjett"><span class="home-tool-art">▦</span><span class="home-tool-category">BUDSJETT</span><strong>Mitt personlige budsjett</strong><small>Få oversikt over inntekt, forbruk og sparing – med grafer og utskriftsklar PDF.</small><span class="home-tool-arrow">Åpne budsjettet ↗</span></a>
    <a class="home-tool" href="#billan"><span class="home-tool-art">🚗</span><span class="home-tool-category">BILLÅN</span><strong>Billånskalkulator</strong><small>Renter, gebyrer, avdrag, restgjeld og effektiv rente visualisert.</small><span class="home-tool-arrow">Beregn billån ↗</span></a>
    <a class="home-tool" href="#forbrukslan"><span class="home-tool-art">▥</span><span class="home-tool-category">FORBRUKSLÅN</span><strong>Hva koster et forbrukslån?</strong><small>Se total lånekostnad, månedsbeløp og forskjeller ved lavere rente.</small><span class="home-tool-arrow">Beregn forbrukslån ↗</span></a>
    <a class="home-tool featured-teal" href="#akademi"><span class="home-tool-art">✦</span><span class="home-tool-category">LÆRINGSPLATTFORM</span><strong>Lånesjekk Akademi</strong><small>Interaktive kunnskapstester, økonomileksjoner og konkrete eksempler.</small><span class="home-tool-arrow">Start å lære ↗</span></a>
@@ -308,18 +306,87 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
   <article><span>02 · KOSTNADER</span><h3>Små gebyrer blir store beløp</h3><p>Fond kan ha løpende kostnader og plattformgebyrer. Samme fond kan koste ulikt hos forskjellige tilbydere. Utforsk forskjellen med kostnadsslideren.</p><a href="https://www.forbrukerradet.no/siste-nytt/na-kan-du-sjekke-om-du-betaler-for-mye-for-fondet-ditt/" target="_blank" rel="noopener noreferrer">Forbrukerrådet om fondspriser ↗</a></article>
   <article><span>03 · SKATT</span><h3>Hva er en aksjesparekonto?</h3><p>ASK gir mulighet til å bytte kvalifiserte EØS-aksjer og aksjefond innenfor kontoen uten løpende gevinstbeskatning. Det gjelder særskilte regler for uttak.</p><a href="https://www.skatteetaten.no/person/skatt/hjelp-til-rett-skatt/aksjar-og-verdipapir/om/aksjesparekonto-ask/" target="_blank" rel="noopener noreferrer">Se vilkårene hos Skatteetaten ↗</a></article>
  </div>
+
+<div class="invest-playground" aria-label="Utvidede investeringsverktøy">
+ <div class="invest-intro"><span class="section-overline">UTFORSK MER</span><h2>Forstå investering – med tallene dine</h2><p>Velg en idé, se resultatet og lær hva som påvirker risiko og avkastning. Verktøyene er pedagogiske eksempler, ikke kjøpsråd eller sanntidskurser.</p></div>
+ <div class="invest-workbench">
+  <section class="invest-work-card" aria-labelledby="fee-title">
+   <span class="invest-kicker">01 · FONDSKOSTNADER</span><h3 id="fee-title">Hva gjør fondsgebyrene med pengene?</h3>
+   <p>Samme tenkte avkastning, men ulike årlige kostnader. Prøv en billig og en dyrere løsning.</p>
+   <div class="invest-dual"><label>Lavere årlig kostnad (%)<input id="fund-low-fee" type="number" min="0" max="5" step=".05" value=".20" inputmode="decimal"></label>
+   <label>Høyere årlig kostnad (%)<input id="fund-high-fee" type="number" min="0" max="5" step=".05" value="1.20" inputmode="decimal"></label></div>
+   <div class="invest-fee-result"><div><small>Beregnet verdi med lavere kostnad</small><strong id="fund-low-value">–</strong></div>
+   <div><small>Beregnet verdi med høyere kostnad</small><strong id="fund-high-value">–</strong></div></div>
+   <div class="invest-result-highlight"><small>Hypotetisk forskjell i sluttverdi</small><strong id="fund-fee-difference">–</strong></div>
+   <p id="fund-fee-status" class="tool-hint" aria-live="polite"></p>
+   <a href="https://www.forbrukerradet.no/siste-nytt/na-kan-du-sjekke-om-du-betaler-for-mye-for-fondet-ditt/" target="_blank" rel="noopener noreferrer">Sammenlign faktiske fondspriser hos Forbrukerrådet ↗</a>
+  </section>
+  <section class="invest-work-card" aria-labelledby="risk-title">
+   <span class="invest-kicker">02 · RISIKOLABORATORIET</span><h3 id="risk-title">Hva tåler du at porteføljen faller?</h3>
+   <p>Se hva et midlertidig kursfall innebærer for pengene du har investert. Ikke en spådom.</p>
+   <label for="invest-drawdown">Hypotetisk fall i markedsverdi <output id="invest-drawdown-label">−20 %</output></label>
+   <input id="invest-drawdown" type="range" min="0" max="60" step="5" value="20">
+   <div class="invest-risk-grid"><div><small>Verdi etter fall</small><strong id="invest-after-fall">–</strong></div><div><small>Tap i kroner</small><strong id="invest-fall-amount">–</strong></div><div><small>Oppgang for å komme tilbake</small><strong id="invest-recover-pct">–</strong></div></div>
+   <p class="tool-hint">Et fall på 50 % krever en oppgang på 100 % for å nå samme verdi igjen.</p>
+  </section>
+  <section class="invest-work-card" aria-labelledby="alloc-title">
+   <span class="invest-kicker">03 · PORTEFØLJELAB</span><h3 id="alloc-title">Prøv ulik fordeling</h3>
+   <p>Fordel penger mellom aksjefond og lavere-risiko rentefond. Tallene er ikke forventet avkastning.</p>
+   <label for="invest-share-stock">Andel aksjefond <output id="invest-share-stock-value">70 %</output></label>
+   <input type="range" id="invest-share-stock" min="0" max="100" step="5" value="70">
+   <div class="invest-allocation-bar" aria-label="Valgt fordeling"><span id="invest-allocation-stock"></span><span id="invest-allocation-bond"></span></div>
+   <div class="invest-allocation-meta"><strong id="invest-stock-part">70 % aksjefond</strong><strong id="invest-bond-part">30 % rentefond</strong></div>
+   <p id="invest-allocation-copy" class="tool-hint">Historisk har mer aksjer gitt større svingninger enn renteplasseringer.</p>
+  </section>
+  <section class="invest-work-card" aria-labelledby="goal-title">
+   <span class="invest-kicker">04 · SPAREMÅL</span><h3 id="goal-title">Hva sparer du til?</h3>
+   <p>Velg et mål og sjekk om egen sparing kan dekke målet uten avkastning. Dette er en enkel spareplan, ikke en investeringsanbefaling.</p>
+   <div class="invest-dual"><label>Målbeløp (kr)<input id="invest-goal" type="number" min="1" max="100000000" step="1000" value="500000"></label>
+   <label>År til målet<input id="invest-goal-years" type="number" min="1" max="40" step="1" value="10"></label></div>
+   <div class="invest-result-highlight"><small>Månedlig sparing som trengs uten avkastning</small><strong id="invest-goal-monthly">–</strong></div>
+   <p id="invest-goal-note" class="tool-hint">Inflasjon, skatt, prisendringer og avkastning inngår ikke.</p>
+  </section>
+ </div>
+ <div class="invest-learning">
+ <div class="invest-intro"><span class="section-overline">INVESTERINGSAKADEMIET</span><h2>Lær forskjellene før du investerer</h2><p>Åpne temaene du lurer på. Innholdet bygger på offentlige norske veiledninger.</p></div>
+ <div class="invest-topic-grid">
+  <details><summary>🌐 Globale indeksfond</summary><p>Et globalt indeksfond forsøker å følge en markedsindeks og gir spredning på tvers av mange selskaper. Fondets indeks, geografi, valutasammensetning og gebyrer er viktige å undersøke. Globale indeksfond har aksjemarkedsrisiko.</p><a href="https://www.forbrukerradet.no/sparing-i-fond-og-spareprofiler/" target="_blank" rel="noopener noreferrer">Forbrukerrådet om indeksfond ↗</a></details>
+  <details><summary>🎯 Enkeltaksjer og konsentrasjon</summary><p>En enkeltaksje representerer eierskap i ett selskap. Selskapsrisikoen kan bli stor, selv om markedet samlet utvikler seg godt. Et bredt aksjefond fordeler risikoen på flere virksomheter, men beskytter ikke mot store markedsfall.</p></details>
+  <details><summary>⚖️ Indeksfond eller aktive fond?</summary><p>Et indeksfond følger en indeks, mens aktive fond forsøker å velge verdipapirer som gjør det bedre enn markedet. Sammenlign alltid total løpende pris, indeks, mandat og risiko – det finnes ingen garanti for meravkastning.</p><a href="https://www.forbrukerradet.no/siste-nytt/na-kan-du-sjekke-om-du-betaler-for-mye-for-fondet-ditt/" target="_blank" rel="noopener noreferrer">Fondets pris hos ulike tilbydere ↗</a></details>
+  <details><summary>🏦 Rentefond og kombinasjonsfond</summary><p>Rentefond investerer i rentebærende verdipapirer og har rente- og kredittrisiko. Kombinasjonsfond blander aksjer og renter. Kontroller hvilken aksjeandel fondet har, og hvordan den kan endres.</p></details>
+  <details><summary>🧾 Aksjesparekonto (ASK)</summary><p>ASK kan brukes for kvalifiserte børsnoterte EØS-aksjer og aksjefond. Du kan normalt ta ut innskutt beløp uten skatt; uttak over innskuddet kan utløse skatt etter skjermingsfradrag. Rene rentefond kan ikke ligge på ASK.</p><a href="https://www.skatteetaten.no/person/skatt/hjelp-til-rett-skatt/aksjar-og-verdipapir/om/aksjesparekonto-ask/" target="_blank" rel="noopener noreferrer">Skatteetatens oppdaterte ASK-regler ↗</a></details>
+  <details><summary>🕰️ IPS og pensjonssparing</summary><p>Skattefavorisert individuell pensjonssparing (IPS) har særlige uttaksregler og bindingstid. Årlig fradragsgrense for 2026 er 25 000 kroner etter gjeldende regler. Dette er ikke det samme som en ASK eller fritt tilgjengelig sparekonto.</p><a href="https://www.skatteetaten.no/rettskilder/type/handboker/skatte-abc/gjeldende/p-4-pensjon--individuell-sparing-til-pensjon/P-4.001/" target="_blank" rel="noopener noreferrer">Skatteetatens IPS-regler ↗</a></details>
+  <details><summary>⚠️ Hvorfor tidligere avkastning ikke er en garanti</summary><p>Avkastning svinger. Det kan gå flere år med svak eller negativ utvikling. Simuleringene på denne siden er hypotetiske og bruker faste rater; de er ikke prognoser og inkluderer ikke inflasjon eller skatt.</p></details>
+  <details><summary>🔎 Slik sammenligner du faktiske fond</summary><p>Søk etter fondets fulle navn eller ISIN hos en autorisert tilbyder og se etter samme fondsandelklasse hos ulike distributører. Sammenlign løpende forvaltningsgebyr og plattformkostnader – ikke bare avkastning.</p><a href="https://www.forbrukerradet.no/siste-nytt/na-kan-du-sjekke-om-du-betaler-for-mye-for-fondet-ditt/" target="_blank" rel="noopener noreferrer">Finansportalens fondsprissammenligning ↗</a></details>
+ </div></div>
+</div>
 </section>
 <section class="tool-view" id="budsjett" data-portal-view="budget" hidden aria-label="Personlig budsjett">
- <div class="tool-hero budget-hero"><div><span class="tool-eyebrow">ØKONOMISK OVERSIKT · GRATIS</span><h1>Ditt budsjett.<br><em>Din økonomiske kontroll.</em></h1><p>Legg inn nettoinntekt og utgifter i en redigerbar tabell. Se hvor pengene går, fordeling per bank og hva du realistisk kan sette av til sparing.</p><div class="tool-hero-tags"><span>◉ Ingen banktilkobling</span><span>◉ Beregning mens du skriver</span><span>◉ Eksporter til Excel (CSV)</span></div></div><div class="tool-hero-decoration" aria-hidden="true"><strong>DIN ØKONOMI</strong><div class="decor-bars"><i></i><i></i><i></i><i></i><i></i></div><small>Full oversikt på ett sted ↗</small></div></div>
+ <div class="tool-hero budget-hero"><div><span class="tool-eyebrow">ØKONOMISK OVERSIKT · GRATIS</span><h1>Ditt budsjett.<br><em>Din økonomiske kontroll.</em></h1><p>Legg inn nettoinntekt og utgifter i en redigerbar tabell. Få full oversikt over inntekter, utgifter og spareevne – uten komplisert bankføring.</p><div class="tool-hero-tags"><span>◉ Ingen banktilkobling</span><span>◉ Beregning mens du skriver</span><span>◉ Eksporter CSV eller skriv ut som PDF</span></div></div><div class="tool-hero-decoration" aria-hidden="true"><strong>DIN ØKONOMI</strong><div class="decor-bars"><i></i><i></i><i></i><i></i><i></i></div><small>Full oversikt på ett sted ↗</small></div></div>
  <div class="tool-overview" aria-live="polite">
   <div class="tool-kpi"><span>Netto inntekt / mnd</span><strong id="budget-income">0 kr</strong><small>Sum inntekter</small></div>
   <div class="tool-kpi"><span>Utgifter / mnd</span><strong id="budget-expenses">0 kr</strong><small>Faste og variable utgifter</small></div>
   <div class="tool-kpi accent"><span>Til overs / mnd</span><strong id="budget-balance">0 kr</strong><small id="budget-balance-caption">Basert på dine tall</small></div>
   <div class="tool-kpi"><span>Spareandel</span><strong id="budget-ratio">–</strong><small>Av netto inntekt</small></div>
  </div>
- <div class="tool-pane budget-workbook">
-  <div class="tool-pane-head"><div><span class="section-overline">REDIGERBART BUDSJETT</span><h2>Fyll inn tallene dine</h2><p>Som et enkelt regneark. Velg kategori, periode og eventuelt hvilken bank eller konto posten hører til.</p></div><div class="tool-actions"><button class="tool-button primary" id="budget-add-income" type="button">+ Inntekt</button><button class="tool-button primary" id="budget-add-expense" type="button">+ Utgift</button></div></div>
-  <details class="budget-advanced-tools"><summary>⚙ Flere valg: bankfilter, eksport og lagring <span>Åpne</span></summary><div class="budget-toolbar">
+ <section class="budget-start-panel" aria-label="Kom raskt i gang med budsjettet">
+  <div class="budget-start-copy"><span class="section-overline">DIN MÅNEDSPLAN</span><h2>Tre steg til økonomisk oversikt</h2><p><b>1.</b> Fyll inn det du får utbetalt. <b>2.</b> Legg til månedens kostnader. <b>3.</b> Se hva du har igjen og lag en rapport.</p></div>
+  <div class="budget-primary-actions">
+    <button id="budget-quick-income" type="button" class="tool-button primary">＋ Legg til inntekt</button>
+    <button id="budget-quick-expense" type="button" class="tool-button primary">＋ Legg til utgift</button>
+    <button id="budget-quick-sample" type="button" class="tool-button">Se eksempel</button>
+    <button id="budget-quick-csv" type="button" class="tool-button">↓ Excel (CSV)</button>
+    <button id="budget-print" type="button" class="tool-button budget-print-button">▤ Skriv ut / Lagre PDF</button>
+  </div>
+  <div class="budget-health" aria-live="polite">
+    <div class="budget-health-head"><strong id="budget-health-title">Ditt månedlige resultat</strong><span id="budget-health-ratio">–</span></div>
+    <div class="budget-health-track"><span id="budget-health-fill"></span></div>
+    <p id="budget-health-description">Tallene oppdateres mens du endrer budsjettet.</p>
+  </div>
+</section>
+<div class="tool-pane budget-workbook">
+  <div class="tool-pane-head"><div><span class="section-overline">REDIGERBART BUDSJETT</span><h2>Fyll inn tallene dine</h2><p>Start med inntekten din, legg til faste og variable utgifter, og se resultatet med én gang. Bank og konto er ikke nødvendig.</p></div><div class="tool-actions"><button class="tool-button primary" id="budget-add-income" type="button">+ Inntekt</button><button class="tool-button primary" id="budget-add-expense" type="button">+ Utgift</button></div></div>
+  <details class="budget-advanced-tools"><summary>⚙ Flere verktøy: Excel og lagring <span>Åpne</span></summary><div class="budget-toolbar">
    <label for="budget-bank-filter">Vis poster fra bank/konto</label><input id="budget-bank-query" type="search" placeholder="Søk blant norske banker" aria-label="Søk etter bank eller konto" autocomplete="off"><select id="budget-bank-filter"><option value="all">Alle banker og kontoer</option></select><small id="budget-bank-results" role="status"></small><label class="budget-auto-switch"><input id="budget-auto-category" type="checkbox" checked> Foreslå kategori fra beskrivelsen</label>
    <button id="budget-demo" type="button" class="tool-button">Vis eksempelbudsjett</button>
    <button id="budget-reset" type="button" class="tool-button">Tøm skjema</button>
@@ -339,8 +406,8 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
  <p id="budget-salary-message" class="tool-hint" role="status"></p>
  </section>
  <section class="budget-selection-studio" aria-label="Summér valgte budsjettposter"><div><strong>↕ Flytt og summér poster</strong><p>Bruk pilene på radene for ønsket rekkefølge. Kryss av postene du vil summere. Regnestykket oppdateres automatisk.</p></div><div class="budget-selection-result"><small id="budget-selected-count">0 valgt</small><strong id="budget-selected-total">0 kr</strong><small id="budget-selected-hint">Netto per måned</small></div></section>
- <div id="budget-error-count" role="status" aria-live="polite" class="budget-error-summary"></div><div class="budget-table-controls"><span> <button id="budget-undo" type="button" class="tool-button budget-undo" hidden>↶ Angre siste sletting</button> ✦ Rediger budsjettet direkte – endringene beregnes med én gang</span><label class="budget-auto-switch"><input type="checkbox" id="budget-show-bank"> Vis bank/konto på hver post</label></div>
-  <div class="budget-table-wrap"><table class="budget-table" aria-label="Redigerbart husholdningsbudsjett"><thead><tr><th scope="col">Velg / type</th><th scope="col">Kategori</th><th scope="col">Beskrivelse</th><th scope="col">Bank / konto</th><th scope="col">Beløp (kr)</th><th scope="col">Periode</th><th scope="col">Per måned</th><th scope="col"><span class="sr-only">Handling</span></th></tr></thead><tbody id="budget-rows"></tbody></table></div>
+ <div id="budget-error-count" role="status" aria-live="polite" class="budget-error-summary"></div><div class="budget-table-controls"><span> <button id="budget-undo" type="button" class="tool-button budget-undo" hidden>↶ Angre siste sletting</button> ✦ Rediger budsjettet direkte – endringene beregnes med én gang</span><label class="budget-auto-switch"><input type="checkbox" id="budget-show-bank"> Vis kontofelt (valgfritt)</label></div>
+  <div class="budget-table-wrap"><table class="budget-table" aria-label="Redigerbart husholdningsbudsjett"><thead><tr><th scope="col">Velg / type</th><th scope="col">Kategori</th><th scope="col">Beskrivelse</th><th scope="col" class="budget-bank-cell">Bank / konto</th><th scope="col">Beløp (kr)</th><th scope="col">Periode</th><th scope="col">Per måned</th><th scope="col"><span class="sr-only">Handling</span></th></tr></thead><tbody id="budget-rows"></tbody></table></div>
   <p id="budget-empty" class="tool-empty" hidden>Ingen poster her. Velg «+ Inntekt» eller «+ Utgift», eller prøv et eksempelbudsjett.</p>
   <div class="budget-table-bottom"><span id="budget-row-count">0 poster</span><span>Beløpene omregnes til månedlige kostnader.</span></div>
  </div>
@@ -348,7 +415,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
   <div class="tool-pane"><div class="tool-pane-head"><div><span class="section-overline">FORBRUK</span><h2>Hvor går pengene?</h2><p>Fordeling av månedlige utgifter per kategori.</p></div></div>
    <div class="budget-donut-layout"><div id="budget-donut" class="budget-donut" role="img" aria-label="Fordeling av budsjettets utgifter"><div><strong id="budget-donut-value">0 kr</strong><small>Utgifter / mnd</small></div></div><div id="budget-category-list" class="budget-legend"></div></div>
   </div>
-  <div class="tool-pane"><div class="tool-pane-head"><div><span class="section-overline">BANKER OG KONTOER</span><h2>Utgifter fordelt på bank</h2><p>Basert på banken du selv har angitt på hver post – ingen kontotilgang.</p></div></div><div id="budget-bank-chart" class="tool-bar-list"></div></div>
+  <div class="tool-pane"><div class="tool-pane-head"><div><span class="section-overline">EKSTRA ANALYSE</span><h2>Kostnadsfordeling på bank (valgfritt)</h2><p>Dette skjules som standard. Bruk kategorifordelingen for vanlig budsjett.</p></div></div><div id="budget-bank-chart" class="tool-bar-list"></div></div>
   <div class="tool-pane"><div class="tool-pane-head"><div><span class="section-overline">12 MÅNEDER</span><h2>Mulig spareutvikling</h2><p>Forutsetter samme månedlige overskudd hele året, uten renteinntekter.</p></div></div><div id="budget-timeline" class="budget-timeline" role="img" aria-label="Prognose for akkumulert sparebeløp i tolv måneder"></div><div class="budget-summary-strip"><span>Mulig sparebeløp / år</span><strong id="budget-annual">0 kr</strong></div></div>
   <div class="tool-pane"><div class="tool-pane-head"><div><span class="section-overline">PERSONLIG INNSIKT</span><h2>Hva kan du forbedre?</h2><p>Regneeksempler ut fra tallene du har skrevet inn.</p></div></div><div id="budget-insights" class="insight-list"></div>
   <div class="budget-scenario">
@@ -439,4 +506,5 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 <script src="./finance-ui.js" defer></script>
 <script src="./investing.js" defer></script>
 <script src="./academy.js" defer></script>
+<script src="./daily-studio.js?v=1" defer></script>
 </body></html>
