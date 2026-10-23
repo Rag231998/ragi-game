@@ -1,0 +1,60 @@
+/* Premium bank search / scenario experience. Independently styled from mortgage calculation. */
+:root{--lux-ink:#112a3c;--lux-border:#d7e5e6;--lux-shadow:0 14px 46px #0e38451a}
+.scenario-card{position:relative;overflow:hidden;padding:23px 25px 21px;background:radial-gradient(circle at 85% -30%,#167f7b 0%,#123949 56%,#14253c 100%);color:#fff;border-color:#214f5a;box-shadow:0 15px 38px #082f452a}
+.scenario-card .eyebrow{color:#81f2d5}
+.scenario-card h2{font-size:23px;margin:8px 0 4px}
+.scenario-card .subtitle{color:#bed8df;line-height:1.6}
+.scenario-card .scenario-icon{background:#ffffff1c;border:1px solid #a5e9d638;color:#c8f8e8;height:43px;width:43px;flex:0 0 43px;border-radius:12px;display:grid;place-items:center;font-size:23px}
+.scenario-top{display:flex;justify-content:space-between;gap:15px;align-items:flex-start}
+.scenario-value{display:flex;align-items:baseline;flex-wrap:wrap;gap:11px;margin:22px 0 14px}
+.scenario-value strong{font-size:clamp(29px,4vw,39px);letter-spacing:-.05em;color:#a0ffe3;line-height:1.1;font-variant-numeric:tabular-nums}
+.scenario-value span{font-size:11px;color:#cbdfdf}
+.scenario-slide{display:flex;justify-content:space-between;gap:12px;font-size:12px;margin-bottom:13px}
+.scenario-slide label{color:#c9e5e3}
+.scenario-slide strong{color:#a2ffdf;font-variant-numeric:tabular-nums}
+#scenario-cut{width:100%;height:8px;border-radius:999px;appearance:none;background:linear-gradient(90deg,#7de7cb,#92eeda 30%,#3b6473);cursor:pointer}
+#scenario-cut::-webkit-slider-thumb{appearance:none;height:23px;width:23px;border-radius:100%;background:#fff;border:4px solid #24ba95;box-shadow:0 2px 10px #0005}
+#scenario-cut::-moz-range-thumb{height:17px;width:17px;border:4px solid #24ba95;border-radius:100%;background:#fff;box-shadow:0 2px 10px #0005}
+.slider-labels{display:flex;justify-content:space-between;color:#a1bdc9;font-size:10px;margin-top:7px}
+.scenario-card .scenario-foot{font-size:10px;line-height:1.5;color:#b4d0da;margin:18px 0 0}
+.bank-discovery{padding:25px;background:linear-gradient(180deg,#fff,#fcfefe)}
+.bank-discovery-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px}
+.bank-discovery h2{font-size:23px;margin:7px 0 6px}
+.bank-discovery .subtitle{max-width:600px;font-size:12px;line-height:1.6}
+.bank-trust{flex-shrink:0;white-space:nowrap;font-size:10px;font-weight:900;color:#116b58;background:#e6f8f1;padding:7px 10px;border-radius:100px}
+.bank-searchbar{height:53px;display:flex;align-items:center;gap:11px;border:1.5px solid #b6d8d2;border-radius:12px;background:#f8fcfc;padding:0 14px;transition:box-shadow .2s,border-color .2s}
+.bank-searchbar:focus-within{border-color:#159d81;box-shadow:0 0 0 4px #119d8122}
+.bank-searchbar svg{color:#257d71;flex:0 0 19px}
+#bank-query{appearance:none;outline:0;border:0;background:none;color:#183644;min-width:0;flex:1;width:100%;font-size:13px;height:100%;font-weight:650}
+#bank-query::-webkit-search-cancel-button{-webkit-appearance:none}
+#bank-clear{flex:0 0 auto;border:0;background:#e9f4f2;color:#20695b;border-radius:8px;font-size:11px;padding:7px 9px;font-weight:800}
+.bank-search-meta{display:flex;align-items:center;justify-content:space-between;gap:11px;margin:12px 2px 13px;font-size:10px;color:#6c8792}
+.bank-search-meta span:first-child{color:#217d66;font-weight:850}
+.bank-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-height:530px;overflow-y:auto;padding:2px 4px 6px;scrollbar-color:#cbdce0 transparent;scrollbar-width:thin}
+.bank-card{border:1px solid var(--lux-border);border-radius:15px;padding:13px;display:grid;grid-template-columns:42px minmax(0,1fr);gap:11px;background:#fff;transition:box-shadow .2s,border-color .2s,transform .2s}
+.bank-card:hover,.bank-card-focus,.bank-card:focus-within{border-color:#8ccfc0;box-shadow:0 5px 22px #186c6320;transform:translateY(-1px)}
+.bank-symbol{height:42px;width:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bank-tint,#157f73);color:#fff;box-shadow:0 4px 12px #173e4131}
+.bank-initials{font-size:12px;font-weight:900;letter-spacing:-.025em;color:#fff}
+.bank-favicon{width:32px;height:32px;border-radius:7px;object-fit:contain;background:#fff}
+.bank-favicon[hidden]{display:none}
+.bank-desc{min-width:0}.bank-name{font-size:12px;display:block;color:#18313f;line-height:1.25}
+.bank-legal{font-size:10px;display:block;color:#718693;line-height:1.45;margin-top:3px;overflow-wrap:anywhere}
+.bank-proof{font-size:9px;margin-top:8px;color:#157965;font-weight:800;line-height:1.4}
+.bank-cta{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:5px;align-items:center}
+.bank-select{grid-column:1/-1;min-height:39px;background:#0e806d;color:white;border:0;border-radius:9px;font-weight:850;font-size:11px;padding:8px}
+.bank-select:hover{background:#0b6a58}
+.bank-register,.bank-website{font-size:10px;color:#597983;text-decoration:none;display:flex;align-items:center;min-height:28px;line-height:1.3}
+.bank-register:hover,.bank-website:hover{text-decoration:underline}
+.bank-foot{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:10px;color:#66808a;line-height:1.6;border-top:1px solid #e6efef;padding-top:13px;margin-top:14px}
+.bank-foot a{font-size:10px;white-space:nowrap;font-weight:800}
+.bank-empty{grid-column:1/-1;border:1px dashed #b9d6d2;background:#f5fbfa;text-align:center;padding:22px;border-radius:12px}
+.bank-empty strong{display:block;font-size:13px}
+.bank-empty p{font-size:11px;color:#617b87}
+.offer-licence{display:inline-block;margin:10px 0 2px;color:#0a7561;font-size:10px;font-weight:850;text-decoration:none}
+.offer-data-note{font-size:10px!important;color:#67828e;margin:3px 0 0;line-height:1.5}
+.offer .offer-fields input[readonly]{background:#eef6f3;color:#1b6256;cursor:not-allowed}
+.offer:focus-within{border-color:#8dcbbc}
+.hero-card{backdrop-filter:blur(6px)}
+@media(max-width:980px){.bank-results{grid-template-columns:repeat(2,minmax(0,1fr))}.bank-card{grid-template-columns:36px minmax(0,1fr);gap:8px}.bank-symbol{width:36px;height:36px}}
+@media(max-width:700px){.scenario-card{padding:20px 17px}.scenario-card h2{font-size:20px}.scenario-value strong{font-size:30px}.bank-discovery{padding:20px 15px}.bank-discovery h2{font-size:21px}.bank-discovery-head{flex-direction:column;gap:7px}.bank-search-meta span:last-child{display:none}.bank-results{grid-template-columns:1fr;max-height:500px}.bank-card{grid-template-columns:42px minmax(0,1fr)}.bank-symbol{height:42px;width:42px}.bank-cta{grid-column:2/-1;grid-template-columns:1fr 1fr}.bank-select{grid-column:1/-1}.bank-foot{align-items:start;flex-direction:column}.bank-searchbar{height:50px}.offer-data-note{font-size:11px!important}}
+@media(prefers-reduced-motion:reduce){.bank-card,.bank-searchbar{transition:none}}
