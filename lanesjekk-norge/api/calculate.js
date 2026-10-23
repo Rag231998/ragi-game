@@ -4,7 +4,8 @@
  */
 'use strict';
 function valid(n,min,max){return typeof n==='number'&&Number.isFinite(n)&&n>=min&&n<=max}
-const allowedBanks=Object.freeze({dnb:'DNB',nordea:'Nordea',obos:'OBOS-banken',storebrand:'Storebrand',landkreditt:'Landkreditt',klp:'KLP Banken',sparebank1ost:'SpareBank 1 Østlandet',bnbank:'BN Bank',sparebankennorge:'Sparebanken Norge',bulder:'Bulder',sbanken:'Sbanken'});
+/* Reuse the very same curated directory as the browser to avoid drifting IDs. */
+const allowedBanks=Object.freeze(Object.fromEntries(require('../banker.js').map(bank=>[bank.id,bank.name])));
 function payment(principal,annualNominal,months){
  const r=annualNominal/1200;
  if(r===0)return principal/months;
@@ -45,7 +46,7 @@ module.exports=function handler(req,res){
    currency:'NOK',loan:{principal,propertyValue,years,ltvPercent:Math.round(principal/propertyValue*10000)/100},
    assumption:'Annuity; nominal yearly interest; monthly repayment; constant rates; excludes tax effects and future changes.',
    current:{nominalRate:current.rate,...baseline},comparisons,
-   source:'user_supplied_rates_only',bankDirectory:'finanstilsynet_registry_curated_as_of_2026_10_23',financialAdvice:false,
+   source:'user_supplied_rates_only',bankDirectory:'finanstilsynet_verified_entries_plus_norges_bank_list_2026_06_25',financialAdvice:false,
    marketDataStatus:'No Finansportalen feed credentials. Compare with official embedded Finansportalen widget on the website.'});
  }catch(e){return res.status(400).json({error:String(e.message||'Ugyldige data').slice(0,200)})}
 };
