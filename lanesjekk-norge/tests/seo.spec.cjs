@@ -18,7 +18,7 @@ test('site has a single valid absolute HTTPS canonical URL',()=>{
   assert.ok(!canonical.includes('github.io'),'GitHub preview is not the canonical website');
 });
 test('sitemap and robots.txt refer to the current canonical production host',()=>{
-  assert.equal((sitemap.match(/<loc>/g)||[]).length,3);
+  assert.equal((sitemap.match(/<loc>/g)||[]).length,1);
   assert.ok(sitemap.includes('<loc>'+canonical+'</loc>'));
   const sitemapUrl=new URL('sitemap.xml',canonical).href;
   assert.ok(robots.includes('Sitemap: '+sitemapUrl));
@@ -52,14 +52,29 @@ test('the portal savings and guides pages have canonical addresses and helpful d
   const page=read(file);
   const url='https://lanesjekk-norge.vercel.app/'+file;
   assert.ok(page.includes('<link rel="canonical" href="'+url+'">'),file+' must have absolute canonical URL');
-  assert.ok(sitemap.includes('<loc>'+url+'</loc>'),file+' must be discoverable');
+  assert.ok(!sitemap.includes('<loc>'+url+'</loc>'),file+' is a legacy page, not a primary sitemap URL');
   assert.match(page,/<meta name="description" content="[^"]+"/);
   assert.match(page,/<html lang="nb">/);
  }
 });
-test('homepage has real navigation to savings, knowledge and existing mortgage calculator',()=>{
- assert.ok(html.includes('href="./sparing.html"'));
- assert.ok(html.includes('href="./guider.html"'));
+test('homepage has anchored navigation to savings, guides and mortgage calculation',()=>{
+ assert.ok(html.includes('href="#sparing"'));
+ assert.ok(html.includes('href="#guider"'));
+ assert.ok(!html.includes('href="./sparing.html"'));
+ assert.ok(!html.includes('href="./guider.html"'));
+ assert.match(html,/id="sparing-kalkulator"/);
+ assert.match(html,/id="offisielle-renter"/);
+ assert.match(html,/id="artikler"/);
  assert.ok(html.includes('id="sjekk"'));
  assert.ok(html.includes('id="banker"'));
+});
+
+test('all nine full-length guides are embedded inline and discoverable by anchor',()=>{
+ const guideBlocks=(html.match(/<details class="long-guide" id="/g)||[]).length;
+ assert.equal(guideBlocks,9);
+ assert.ok(html.includes('id="innskuddsgaranti"'));
+ assert.ok(html.includes('id="bsu"'));
+ assert.ok(html.includes('id="ips"'));
+ assert.ok(html.includes('<script src="./single-page.js" defer></script>'));
+ assert.ok(html.includes('<script src="./savings.js" defer></script>'));
 });
