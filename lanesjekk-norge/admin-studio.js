@@ -6,9 +6,9 @@ const BASE='https://pryrgwfjniggjlrizenh.supabase.co',KEY='sb_publishable_nMwApl
 const $=id=>document.getElementById(id);
 const DEFAULT_IDS=['quick','hero','stats','workbook','insights'];
 const SECTION_NAMES={quick:'Månedsplan + handlingsknapper',hero:'Budsjettets overskrift',stats:'Resultat og nøkkeltall',workbook:'Redigerbart regneark',insights:'Grafer og økonomiske analyser'};
-const CARD_IDS=['kvitteringer','utleie','budsjett','billan','forbrukslan','akademi','sparing','sjekk','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti'];
+const CARD_IDS=['sjekk','budsjett','kvitteringer','sparing','utleie','billan','forbrukslan','akademi','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti'];
 const CARD_NAMES={kvitteringer:'Kvitteringsstudio',utleie:'Utleieanalyse',budsjett:'Personlig budsjett',billan:'Billån',forbrukslan:'Forbrukslån',akademi:'Læringsplattform',sparing:'Sparing',sjekk:'Boliglån',banker:'Bankoversikt','offisielle-renter':'Offisielle renter',bsu:'BSU',ask:'ASK',ips:'IPS',innskuddsgaranti:'Innskuddsgaranti'};
-const CARDS_DEFAULT=['kvitteringer','utleie','budsjett','billan','forbrukslan','akademi','sparing','sjekk','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti'];
+const CARDS_DEFAULT=['sjekk','budsjett','kvitteringer','sparing','utleie','billan','forbrukslan','akademi','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti'];
 let db=null,authUser=null,published=null,draft=null,revision=0,ready=false,busy=false;
 const create=(tag,value,cls)=>{const n=document.createElement(tag);if(value!==undefined)n.textContent=String(value);if(cls)n.className=cls;return n};
 const msg=(value,error=false,target='admin-message')=>{const n=$(target);n.textContent=value;n.classList.toggle('error',error)};
