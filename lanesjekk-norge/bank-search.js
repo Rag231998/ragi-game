@@ -171,7 +171,7 @@
   });
   input.addEventListener('blur',()=>{
    // Browser click follows pointerdown; the option prevents focus loss.
-   window.setTimeout(()=>{close();if(input.value.trim()&&!input.dataset.bankId)input.value=''},120);
+   window.setTimeout(()=>{close();if(input.value.trim()&&!input.dataset.bankId){input.value='';$('loan-form').dispatchEvent(new Event('input',{bubbles:true}))}},120);
   });
  }
  function boot(){
