@@ -78,10 +78,10 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 @media(max-width:1020px){.layout{grid-template-columns:minmax(0,1fr)}.loan-form{position:static}.metric-grid{grid-template-columns:repeat(3,1fr)}.hero-inner{gap:24px}}
 @media(max-width:690px){header{padding:12px 14px;min-height:65px}.brandmark{height:36px;width:36px;font-size:19px}.brand strong{font-size:13px}.brand small{font-size:8px}header nav{gap:8px}header nav a{font-size:10px}.header-pill{display:none}.hero{padding:37px 14px 80px}.hero-inner{grid-template-columns:1fr}.hero-card{display:none}h1{font-size:34px}.hero p{font-size:13px}.hero .btn{width:auto}.layout{gap:11px}main{padding:0 10px 45px;margin-top:-52px}.loan-form{padding:20px 16px}.metric-grid{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/-1}.metric strong{font-size:21px}.summary-card,.offer-panel{padding:19px 15px}.offer-fields{grid-template-columns:1fr 1fr}.offer-fields .field:first-child{grid-column:1/-1}.offer-fields .field:last-child{grid-column:1/-1}.two{gap:9px}.offer-title{align-items:start}.offer-title h2{font-size:18px}.market{padding:18px 14px}.market-inner{grid-template-columns:1fr}.market .btn{width:100%}.market iframe{height:1100px}.steps{grid-template-columns:1fr}.step-card{padding:15px}.market p{font-size:11px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-</style></head><body>
+</style><link rel="stylesheet" href="./premium.css?v=1"></head><body>
 <header>
  <a href="#" class="brand"><span class="brandmark" aria-hidden="true">⌁</span><span><strong>LÅNESJEKK NORGE</strong><small>Enklere å forstå boliglånet</small></span></a>
- <nav aria-label="Hovedmeny"><a href="#sjekk">Lånesjekk</a><a href="#marked">Bankoversikt</a><a href="#slik">Slik fungerer det</a><span class="header-pill">Ingen innlogging</span></nav>
+ <nav aria-label="Hovedmeny"><a href="#sjekk">Lånesjekk</a><a href="#banker">Finn bank</a><a href="#marked">Bankoversikt</a><a href="#slik">Slik fungerer det</a><span class="header-pill">Ingen innlogging</span></nav>
 </header>
 <section class="hero"><div class="hero-inner"><div>
  <div class="eyebrow">Din rente. Dine penger.</div>
@@ -122,10 +122,29 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
     <div class="legend"><span>Nedbetaling av lån</span><span>Renter og gebyrer</span></div>
     <p class="description">Dette er en forenklet annuitetsberegning. Eventuelle endringer i rente, ekstra innbetalinger og skattefradrag er ikke inkludert.</p>
   </section>
+
+  <section class="box scenario-card" aria-label="Illustrer sparepotensial ved lavere rente">
+   <div class="scenario-top"><div><span class="eyebrow">Se effekten på økonomien</span><h2>Hva om renten din gikk ned?</h2><p class="subtitle">Dra i skyveknappen og se en <strong>hypotetisk</strong> besparelse. Dette er ikke et banktilbud.</p></div><span class="scenario-icon" aria-hidden="true">↗</span></div>
+   <div class="scenario-value"><strong id="scenario-year">–</strong><span>mulig spart første 12 måneder*</span></div>
+   <div class="scenario-slide"><label for="scenario-cut">Reduksjon fra dagens rente</label><strong id="scenario-cut-label">0,50 prosentpoeng</strong></div>
+   <input id="scenario-cut" type="range" min="0" max="2" step="0.05" value="0.5" aria-label="Hypotetisk reduksjon i rente">
+   <div class="slider-labels"><span>0,00 pp</span><span>2,00 pp</span></div>
+   <p id="scenario-detail" class="scenario-foot">* Forutsetter uendret restgjeld, lik løpetid og gebyr. Besparelsen er et regneeksempel.</p>
+  </section>
+  <section class="box bank-discovery" id="banker" aria-label="Søk etter banker med dokumentert tillatelse">
+    <div class="bank-discovery-head"><div><span class="eyebrow">Norske bankforetak</span><h2>Finn banken du vil sammenligne</h2><p class="subtitle">Kun et utvalg banker med dokumentert tillatelse i Finanstilsynets register. Ingen lånemeglere eller annonser.</p></div><span class="bank-trust">✓ Registerkilder</span></div>
+    <div class="bank-searchbar"><svg viewBox="0 0 24 24" aria-hidden="true" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
+      <input id="bank-query" type="search" placeholder="Søk DNB, KLP, Nordea, OBOS eller org.nr." autocomplete="off" spellcheck="false" aria-label="Søk i listen over registrerte banker" aria-controls="bank-results">
+      <button id="bank-clear" type="button" hidden aria-label="Tøm banksøket">Tøm ×</button>
+    </div>
+    <div class="bank-search-meta"><span id="bank-count" aria-live="polite">Laster banker …</span><span>Søk oppdateres mens du skriver</span></div>
+    <div id="bank-results" class="bank-results" role="list" aria-live="polite"></div>
+    <div class="bank-foot"><span id="bank-help">Velg en bank for å sammenligne et faktisk tilbud.</span><a href="https://www.finanstilsynet.no/virksomhetsregisteret/" target="_blank" rel="noopener noreferrer">Finanstilsynets virksomhetsregister ↗</a></div>
+  </section>
   <section class="box offer-panel" id="sammenlign" aria-label="Sammenlign banktilbud">
    <div class="section-heading" style="margin-bottom:8px"><span class="step">2</span><div><h2>Sammenlign med banktilbud</h2><p class="subtitle">Legg inn faktiske vilkår du finner hos bankene. Vi regner alt på samme lånebeløp og løpetid.</p></div></div>
-   <div class="offer-title"><span class="label" style="background:#ecf3fb;color:#336a90">Ingen oppdiktede bankrenter</span><button type="button" class="light-button" id="add-offer">＋ Legg til banktilbud</button></div>
-   <div id="offers"></div><div id="offers-empty" class="empty-state">Ingen tilbud lagt inn ennå. Bruk «Legg til banktilbud», eller finn faktiske listepriser hos Finansportalen nedenfor.</div>
+   <div class="offer-title"><span class="label" style="background:#ecf3fb;color:#336a90">Ingen oppdiktede bankrenter</span><button type="button" class="light-button" id="add-offer">⌕ Finn bank</button></div>
+   <div id="offers"></div><div id="offers-empty" class="empty-state">Ingen banktilbud lagt inn. Velg en bank i søket ovenfor og tast inn den faktiske nominelle renten fra bankens tilbud.</div>
    <div class="table-scroll" id="result-table-wrap" hidden><table aria-label="Sammenligning av banktilbud">
       <thead><tr><th>Bank / tilbud</th><th>Rente</th><th>Per måned</th><th>Totalkostnad</th><th>Forskjell</th></tr></thead>
       <tbody id="results"></tbody></table></div>
@@ -153,5 +172,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
  </section>
 </main>
 <footer class="foot">Lånesjekk Norge – uavhengig beregningsverktøy. Ikke finansrådgivning, lånetilbud eller søknadsformidling. <a href="https://www.forbrukerradet.no/finansportalen/" target="_blank" rel="noopener noreferrer">Forbrukerrådet / Finansportalen</a> · Ingen innlogging eller markedsføringssporing i denne versjonen.</footer>
+<script src="./banker.js" defer></script>
 <script src="./app.js" defer></script>
+<script src="./bank-search.js" defer></script>
 </body></html>
