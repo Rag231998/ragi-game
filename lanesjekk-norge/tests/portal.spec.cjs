@@ -71,7 +71,7 @@ test('guide articles have sources and are reachable from homepage',async({page})
  await expect(page.locator('#innskuddsgaranti')).toContainText('2 millioner');
  await expect(page.locator('#bsu')).toContainText('27 500');
  await expect(page.locator('#ips')).toContainText('25 000');
- await expect(page.locator('#kilder a')).toContainText('Sjekk hovedkilden');
+ await expect(page.locator('#kilder a').first()).toContainText('Sjekk hovedkilden');
 });
 test('new pages have no horizontal overflow at configured device size',async({page})=>{
  for(const path of ['/','/sparing.html','/guider.html']){
