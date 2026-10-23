@@ -58,3 +58,8 @@
 @media(max-width:980px){.bank-results{grid-template-columns:repeat(2,minmax(0,1fr))}.bank-card{grid-template-columns:36px minmax(0,1fr);gap:8px}.bank-symbol{width:36px;height:36px}}
 @media(max-width:700px){.scenario-card{padding:20px 17px}.scenario-card h2{font-size:20px}.scenario-value strong{font-size:30px}.bank-discovery{padding:20px 15px}.bank-discovery h2{font-size:21px}.bank-discovery-head{flex-direction:column;gap:7px}.bank-search-meta span:last-child{display:none}.bank-results{grid-template-columns:1fr;max-height:500px}.bank-card{grid-template-columns:42px minmax(0,1fr)}.bank-symbol{height:42px;width:42px}.bank-cta{grid-column:2/-1;grid-template-columns:1fr 1fr}.bank-select{grid-column:1/-1}.bank-foot{align-items:start;flex-direction:column}.bank-searchbar{height:50px}.offer-data-note{font-size:11px!important}}
 @media(prefers-reduced-motion:reduce){.bank-card,.bank-searchbar{transition:none}}
+
+#currentbank{width:100%;border:0;outline:0;background:#fbfdfd;color:#234858;min-height:45px;padding:10px;font-size:12px;font-weight:730}
+#currentbank:focus{box-shadow:0 0 0 3px #129d7e26}
+.bank-searchbar:focus-within #bank-query{box-shadow:none}
+.offer-licence:focus-visible,.bank-register:focus-visible,.bank-website:focus-visible{outline:3px solid #2bbe9e;outline-offset:2px}
