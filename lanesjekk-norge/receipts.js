@@ -91,7 +91,7 @@ function refresh(){
  updateWhatIf();
 }
 function render(){
- const root=$('receipt-items');root.replaceChildren();
+ const root=$('receipt-items');root.replaceChildren();const empty=$('receipt-empty');if(empty)empty.hidden=items.length>0;
  items.forEach((item,index)=>{
   const tr=el('tr'),namecell=el('td'),name=el('input');name.type='text';name.value=item.name;name.maxLength=90;name.setAttribute('aria-label','Varenavn '+(index+1));
   name.oninput=()=>{item.name=name.value;refresh()};namecell.append(name);
