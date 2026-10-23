@@ -19,7 +19,7 @@ function normalize(data){
  const order=[...new Set([...(Array.isArray(budget.order)?budget.order.filter(x=>DEFAULT_IDS.includes(x)):[]),...DEFAULT_IDS])];
  const cardOrder=[...new Set([...(Array.isArray(cards.order)?cards.order.filter(x=>CARD_IDS.includes(x)):[]),...CARDS_DEFAULT])];
  return {
- brand:{name:clamp(brand.name||'LÅNESJEKK NORGE',70),tagline:clamp(brand.tagline||'Mer oversikt. Bedre valg.',130),accent:/^#[0-9A-Fa-f]{6}$/.test(brand.accent)?brand.accent:'#0c8878',logoUrl:clamp(brand.logoUrl,500),heroVisual:brand.heroVisual!==false},
+ brand:{name:clamp(brand.name||'LÅNESJEKK NORGE',70),tagline:clamp(brand.tagline||'Mer oversikt. Bedre valg.',130),accent:/^#[0-9A-Fa-f]{6}$/.test(brand.accent)?brand.accent:'#0c8878',logoUrl:clamp(brand.logoUrl,500),heroVisual:brand.heroVisual!==false,heroMotion:brand.heroMotion!==false},
  budget:{order,visible:Object.fromEntries(DEFAULT_IDS.map(id=>[id,id==='workbook'?true:budget.visible?.[id]!==false])),
  title:clamp(budget.title||'Ditt budsjett.',90),subtitle:clamp(budget.subtitle||'Din økonomiske kontroll.',120),
  quickTitle:clamp(budget.quickTitle||'Tre steg til økonomisk oversikt',100)},
@@ -62,6 +62,7 @@ async function loadPublished(){
  published=normalize(r.data.config);draft=clone(published);revision=r.data.revision||1;ready=true;
  $('admin-revision').textContent='Publisert versjon '+revision;
  render();await loadRevisions();
+ $('admin-frame').src='./index.html#topp';
  msg('Nettstedsoppsettet er hentet. Du kan endre og forhåndsvise før du publiserer.');
 }
 function rowEl(id,type,label){
@@ -134,6 +135,7 @@ function render(){
  $('site-tagline').value=draft.brand.tagline;
  $('site-color').value=draft.brand.accent;
  $('site-hero-visual').checked=draft.brand.heroVisual!==false;
+ $('site-hero-motion').checked=draft.brand.heroMotion!==false;
  $('budget-title').value=draft.budget.title;
  $('budget-subtitle').value=draft.budget.subtitle;
  $('budget-quick-title').value=draft.budget.quickTitle;
@@ -147,6 +149,7 @@ function gather(){
  draft.brand.tagline=clamp($('site-tagline').value,130);
  draft.brand.accent=$('site-color').value;
  draft.brand.heroVisual=$('site-hero-visual').checked;
+ draft.brand.heroMotion=$('site-hero-motion').checked;
  draft.budget.title=clamp($('budget-title').value,90);
  draft.budget.subtitle=clamp($('budget-subtitle').value,120);
  draft.budget.quickTitle=clamp($('budget-quick-title').value,100);
@@ -154,7 +157,7 @@ function gather(){
  return normalize(draft);
 }
 function showPreview(){
- const doc=$('admin-frame').contentWindow;
+ const frame=$('admin-frame'),doc=frame.contentWindow;
  if(!doc)return;
  const config=gather();
  doc.postMessage({type:'lanesjekk-cms-preview',config},location.origin);
@@ -188,7 +191,7 @@ async function publish(){
   published=normalize(config);draft=clone(published);revision=data.revision;
   $('site-logo').value='';$('admin-revision').textContent='Publisert versjon '+revision;
   render();await loadRevisions();
-  $('admin-frame').src='./index.html#budsjett';
+  $('admin-frame').src='./index.html#topp';
   msg('Publisert! Alle besøkende ser endringen når de laster nettsiden på nytt. Revisjon '+revision+'.');
  }catch(e){msg('Kunne ikke publisere: '+(e?.message||String(e)),true)}
  finally{statusDisabled(false)}
@@ -215,10 +218,10 @@ function boot(){
  });
  $('admin-preview').addEventListener('click',showPreview);
  $('admin-publish').addEventListener('click',publish);
- $('admin-restore').addEventListener('click',()=>{if(published){draft=clone(published);render();$('admin-frame').src='./index.html#budsjett';msg('Utkastet er nullstilt til sist publiserte versjon.')}} );
+ $('admin-restore').addEventListener('click',()=>{if(published){draft=clone(published);render();$('admin-frame').src='./index.html#topp';msg('Utkastet er nullstilt til sist publiserte versjon.')}} );
  $('preview-mobile').addEventListener('click',()=>$('preview-viewport').classList.add('mobile'));
  $('preview-desktop').addEventListener('click',()=>$('preview-viewport').classList.remove('mobile'));
- $('preview-refresh').addEventListener('click',()=>{$('admin-frame').src='./index.html#budsjett';msg('Forhåndsvisningen er oppdatert – bare publisert design vises.');});
+ $('preview-refresh').addEventListener('click',()=>{$('admin-frame').src='./index.html#topp';msg('Forhåndsvisningen er oppdatert – bare publisert design vises.');});
  $('site-logo-reset').addEventListener('click',()=>{draft.brand.logoUrl='';$('site-logo').value='';$('site-logo-preview').hidden=true;msg('Standardlogo er valgt i utkastet.')});
  $('site-logo').addEventListener('change',e=>{
   const file=e.target.files?.[0];if(!file)return;
