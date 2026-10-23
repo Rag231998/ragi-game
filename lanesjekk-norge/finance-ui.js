@@ -109,7 +109,8 @@
   renderBudget();
  }
  function scheduleSave(){
-  if(exampleActive||preventAutosave)return;
+  if(exampleActive)return;
+  preventAutosave=false;
   clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>saveBudget(true),450);
  }
