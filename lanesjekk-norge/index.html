@@ -302,7 +302,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
   <details class="budget-advanced-tools"><summary>⚙ Flere valg: bankfilter, eksport og lagring <span>Åpne</span></summary><div class="budget-toolbar">
    <label for="budget-bank-filter">Vis poster fra bank/konto</label><input id="budget-bank-query" type="search" placeholder="Søk blant norske banker" aria-label="Søk etter bank eller konto" autocomplete="off"><select id="budget-bank-filter"><option value="all">Alle banker og kontoer</option></select><small id="budget-bank-results" role="status"></small><label class="budget-auto-switch"><input id="budget-auto-category" type="checkbox" checked> Foreslå kategori fra beskrivelsen</label>
    <button id="budget-demo" type="button" class="tool-button">Vis eksempelbudsjett</button>
-   <button id="budget-reset" type="button" class="tool-button">Tøm skjema</button>
+   <button id="budget-reset" type="button" class="tool-button">Tøm skjema</button><button id="budget-undo" type="button" class="tool-button budget-undo" hidden>↶ Angre siste sletting</button>
    <button id="budget-export" type="button" class="tool-button">↓ Last ned CSV</button>
    <button id="budget-save" type="button" class="tool-button">Lagre lokalt</button>
    <button id="budget-clear-save" type="button" class="tool-button subtle">Slett lokal lagring</button>
@@ -319,7 +319,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
  <p id="budget-salary-message" class="tool-hint" role="status"></p>
  </section>
  <section class="budget-selection-studio" aria-label="Summér valgte budsjettposter"><div><strong>↕ Flytt og summér poster</strong><p>Bruk pilene på radene for ønsket rekkefølge. Kryss av postene du vil summere. Regnestykket oppdateres automatisk.</p></div><div class="budget-selection-result"><small id="budget-selected-count">0 valgt</small><strong id="budget-selected-total">0 kr</strong><small id="budget-selected-hint">Netto per måned</small></div></section>
- <div class="budget-table-controls"><span>✦ Rediger budsjettet direkte – endringene beregnes med én gang</span><label class="budget-auto-switch"><input type="checkbox" id="budget-show-bank"> Vis bank/konto på hver post</label></div>
+ <div id="budget-error-count" role="status" aria-live="polite" class="budget-error-summary"></div><div class="budget-table-controls"><span>✦ Rediger budsjettet direkte – endringene beregnes med én gang</span><label class="budget-auto-switch"><input type="checkbox" id="budget-show-bank"> Vis bank/konto på hver post</label></div>
   <div class="budget-table-wrap"><table class="budget-table" aria-label="Redigerbart husholdningsbudsjett"><thead><tr><th scope="col">Velg / type</th><th scope="col">Kategori</th><th scope="col">Beskrivelse</th><th scope="col">Bank / konto</th><th scope="col">Beløp (kr)</th><th scope="col">Periode</th><th scope="col">Per måned</th><th scope="col"><span class="sr-only">Handling</span></th></tr></thead><tbody id="budget-rows"></tbody></table></div>
   <p id="budget-empty" class="tool-empty" hidden>Ingen poster her. Velg «+ Inntekt» eller «+ Utgift», eller prøv et eksempelbudsjett.</p>
   <div class="budget-table-bottom"><span id="budget-row-count">0 poster</span><span>Beløpene omregnes til månedlige kostnader.</span></div>
