@@ -4,9 +4,11 @@ test.beforeEach(async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
 });
 test('renders all curated banks without invented rates',async({page})=>{
- await expect(page.getByRole('heading',{name:'Finn banken du vil sammenligne'})).toBeVisible();
- await expect(page.locator('.bank-card')).toHaveCount(11);
- await expect(page.locator('#bank-count')).toContainText('11 av 11');
+ await expect(page.getByRole('heading',{name:'Finn og sammenlign banker'})).toBeVisible();
+ const count=await page.evaluate(()=>window.LANEBANKER.length);
+ expect(count).toBeGreaterThan(80);
+ await expect(page.locator('.bank-card')).toHaveCount(8);
+ await expect(page.locator('#bank-count')).toContainText('Viser 8 av');
  await expect(page.locator('#offer-rate-1')).toHaveCount(0);
 });
 test('instant searchable verified banks with normalised names and no results',async({page})=>{
@@ -14,20 +16,20 @@ test('instant searchable verified banks with normalised names and no results',as
  await input.fill('klp');
  await expect(page.locator('.bank-card')).toHaveCount(1);
  await expect(page.locator('.bank-name')).toHaveText('KLP Banken');
- await expect(page.locator('#bank-count')).toContainText('1 av 11');
+ await expect(page.locator('#bank-count')).toContainText('1 av 1 treff');
  await input.fill('nordeá');
  await expect(page.locator('.bank-card')).toHaveCount(1);
  await expect(page.locator('.bank-name')).toHaveText('Nordea');
  await input.fill('bulder');
  await expect(page.locator('.bank-card')).toHaveCount(1);
- await expect(page.locator('.bank-proof')).toContainText('Merkevare under registrert bank');
+ await expect(page.locator('.bank-proof')).toContainText('Bankkonsept under registrert bank');
  await input.fill('sbanken');
  await expect(page.locator('.bank-card')).toHaveCount(1);
  await input.fill('ikke en bank');
  await expect(page.locator('.bank-card')).toHaveCount(0);
  await expect(page.locator('.bank-empty')).toBeVisible();
- await page.getByRole('button',{name:'Vis alle banker'}).click();
- await expect(page.locator('.bank-card')).toHaveCount(11);
+ await page.getByRole('button',{name:'Nullstill søket'}).click();
+ await expect(page.locator('.bank-card')).toHaveCount(8);
 });
 test('selects vetted bank, accepts real user rate and calculates immediately',async({page})=>{
  await page.locator('#bank-query').fill('DNB');
@@ -99,4 +101,58 @@ test('bank additions reject duplicates, enforce eight maximum and allow removal'
  await page.locator('#offers .offer').first().getByRole('button',{name:'Fjern banktilbud'}).click();
  await expect(page.locator('#offers .offer')).toHaveCount(7);
  await expect(page.locator('#add-offer')).toBeEnabled();
+});
+
+test('groups full Norwegian currency amounts while keeping calculation correct',async({page})=>{
+ const balance=page.locator('#balance');
+ await balance.fill('3109049');
+ await expect(balance).toHaveValue('3 109 049');
+ await expect(page.locator('#monthly')).not.toHaveText('–');
+ await page.locator('#rate').fill('5,25');
+ await expect(page.locator('#rate')).toHaveValue('5,25');
+ await expect(page.locator('#monthly')).not.toHaveText('–');
+ await page.locator('#property').fill('4000000');
+ await expect(page.locator('#property')).toHaveValue('4 000 000');
+ await expect(page.locator('#ltv')).toContainText('77,73');
+ await page.locator('#balance').fill('');
+ await expect(page.locator('#monthly')).toHaveText('–');
+ await page.locator('#balance').fill('3109049');
+ await expect(page.locator('#monthly')).not.toHaveText('–');
+});
+test('bank combobox searches instead of showing all banks in a select list',async({page})=>{
+ await expect(page.locator('#currentbank')).toHaveAttribute('type','search');
+ await expect(page.locator('#currentbank')).toHaveValue('');
+ await page.locator('#currentbank').fill('sparebank 1 smn');
+ await expect(page.locator('.bank-autocomplete-option')).toHaveCount(1);
+ await page.locator('.bank-autocomplete-option').first().click();
+ await expect(page.locator('#currentbank')).toHaveValue('SpareBank 1 SMN');
+ await expect(page.locator('#currentbank')).toHaveAttribute('data-bank-id',/nb-sparebank/);
+ await expect(page.locator('#currentbank-results')).toBeHidden();
+});
+test('search finds regionally listed banks and shows their truthful source',async({page})=>{
+ await page.locator('#bank-query').fill('Rørosbanken');
+ await expect(page.locator('.bank-card')).toHaveCount(1);
+ await expect(page.locator('.bank-name')).toHaveText('Rørosbanken Røros Sparebank');
+ await expect(page.locator('.bank-proof')).toContainText('Norges Bank');
+ await page.locator('.bank-select').click();
+ await page.locator('#offer-rate-1').fill('4,95');
+ await expect(page.locator('#result-table-wrap')).toBeVisible();
+ await expect(page.locator('#results')).toContainText('Rørosbanken');
+});
+test('manual bank rates and fees support Norwegian decimal/grouping',async({page})=>{
+ await page.locator('[data-bank="dnb"] .bank-select').click();
+ await page.locator('#offer-rate-1').fill('4,99');
+ await page.locator('#offer-fee-1').fill('1299');
+ await page.locator('#offer-setup-1').fill('25000');
+ await expect(page.locator('#offer-rate-1')).toHaveValue('4,99');
+ await expect(page.locator('#offer-fee-1')).toHaveValue('1 299');
+ await expect(page.locator('#offer-setup-1')).toHaveValue('25 000');
+ await expect(page.locator('#result-table-wrap')).toBeVisible();
+});
+test('incremental bank results do not render all banks at once',async({page})=>{
+ await expect(page.locator('.bank-card')).toHaveCount(8);
+ await page.locator('#bank-more').click();
+ await expect(page.locator('.bank-card')).toHaveCount(20);
+ await page.locator('#bank-query').fill('sparebank 1');
+ expect(await page.locator('.bank-card').count()).toBeGreaterThan(1);
 });
