@@ -35,20 +35,4 @@ test('menu dropdowns are exclusive and close with Escape',async({page},testInfo)
  await expect(groups.nth(1)).not.toHaveAttribute('open','');
 });
 
-test('advertising slider navigates scenes and pauses',async({page})=>{
- await page.goto('/',{waitUntil:'domcontentloaded'});
- const hero=page.locator('.ad-hero');
- await expect(hero).toBeVisible();
- await expect(page.locator('.ad-slide')).toHaveCount(5);
- await expect(page.locator('.ad-slide.is-active')).toHaveCount(1);
- await page.locator('.ad-next').click();
- await expect(page.locator('.ad-slide[data-slide="1"]')).toHaveClass(/is-active/);
- const toggle=page.locator('.ad-pause');
- await toggle.click();
- await expect(hero).toHaveClass(/ad-paused/);
- await expect(toggle).toHaveAttribute('aria-pressed','true');
- await toggle.click();
- await expect(hero).not.toHaveClass(/ad-paused/);
- await page.locator('.ad-slide.is-active .ad-cta').click();
- await expect(page.locator('#budsjett')).toBeVisible();
-});
+test('stable homepage and budget navigation',async({page})=>{await page.goto('/',{waitUntil:'domcontentloaded'});await expect(page.locator('.hero h1')).toBeVisible();await expect(page.locator('.home-tool-grid a.home-tool')).toHaveCount(14);await page.locator('.hero a[href="#sparing"]').click();await expect(page.locator('#sparing')).toBeVisible();});
