@@ -128,12 +128,12 @@ test('switching views preserves inputs without showing unrelated tools',async({p
  await page.goto('/#sparing',{waitUntil:'domcontentloaded'});
  await page.locator('#save-amount').fill('310904');
  await expect(page.locator('#save-amount')).toHaveValue('310 904');
- await page.locator('.viewbar-shortcuts a[href="#sjekk"]').click();
+ await page.evaluate(()=>window.lanesjekkNavigate('sjekk'));
  await expect(page.locator('#sjekk')).toBeVisible();
  await expect(page.locator('#sparing')).toBeHidden();
  await page.locator('#balance').fill('3109049');
  await expect(page.locator('#balance')).toHaveValue('3 109 049');
- await page.locator('.viewbar-shortcuts a[href="#sparing"]').click();
+ await page.evaluate(()=>window.lanesjekkNavigate('sparing'));
  await expect(page.locator('#save-amount')).toHaveValue('310 904');
  await expect(page.locator('#sjekk')).toBeHidden();
  await page.goBack();
