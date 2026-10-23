@@ -112,3 +112,15 @@
  #budget-print-sheet .print-privacy{font-weight:700;color:#376b68}
  #budget-print-sheet .print-note{font-size:9pt;color:#597580;margin:10px 0;line-height:1.55}
 }
+
+/* Advanced salary and row-sum tools are available, but no longer block budgeting. */
+.portal-home .budget-deep-tools{margin:15px 0 10px;border:1px solid #dce8e6;background:#f7fbfa;border-radius:14px;overflow:hidden}
+.portal-home .budget-deep-tools>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 17px;color:#426778;font-size:12px;font-weight:850;min-height:47px}
+.portal-home .budget-deep-tools>summary::-webkit-details-marker{display:none}
+.portal-home .budget-deep-tools>summary span{font-size:10px;color:#11836e}
+.portal-home .budget-deep-tools[open]>summary{border-bottom:1px solid #deecea;background:#e9f7f2}
+.portal-home .budget-deep-tools .budget-salary-studio,.portal-home .budget-deep-tools .budget-selection-studio{margin:12px}
+.portal-home #budsjett>.tool-hero{padding:25px 32px;gap:17px;margin-bottom:15px}
+.portal-home #budsjett>.tool-hero h1{font-size:clamp(31px,3vw,43px)}
+.portal-home #budsjett>.tool-hero p{line-height:1.65}
+@media(max-width:640px){.portal-home #budsjett>.tool-hero{padding:22px 18px}.portal-home #budsjett>.tool-hero .tool-hero-decoration{display:none}.portal-home .budget-deep-tools>summary{padding:11px;font-size:11px}}
