@@ -128,3 +128,68 @@ test('four quiz questions can be completed and restarted',async({page})=>{
  await page.locator('#academy-next').click();
  await expect(page.locator('#academy-count')).toHaveText('1 av 4');
 });
+
+
+test('budget what-if graph calculates actual monthly and annual savings per category',async({page})=>{
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#budget-scenario-category')).toBeVisible();
+ await page.locator('#budget-scenario-category').selectOption('Mat og drikke');
+ await expect(page.locator('#budget-scenario-percent-value')).toHaveText('10 %');
+ await expect(page.locator('#budget-scenario-month')).toContainText(/650/);
+ await expect(page.locator('#budget-scenario-year')).toContainText(/7\s?800/);
+ await page.locator('#budget-scenario-percent').focus();
+ await page.locator('#budget-scenario-percent').press('ArrowRight');
+ await page.locator('#budget-scenario-percent').press('ArrowRight');
+ await expect(page.locator('#budget-scenario-percent-value')).toHaveText('20 %');
+ await expect(page.locator('#budget-scenario-month')).toContainText(/1\s?300/);
+ await expect(page.locator('#budget-scenario-year')).toContainText(/15\s?600/);
+ // Edit the source amount by its real category, then verify the what-if estimate.
+ const row=page.locator('#budget-rows tr').filter({has:page.locator('select[data-field="category"]')}).nth(4);
+ await row.locator('[data-field="amount"]').fill('7000');
+ await expect(page.locator('#budget-scenario-month')).toContainText(/1\s?400/);
+ await expect(page.locator('#budget-scenario-year')).toContainText(/16\s?800/);
+});
+test('compact mobile navigation is colorful, responsive and switches only the active view',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const nav=page.locator('.mobile-bottom-tabs');
+ await expect(nav).toBeVisible();
+ await expect(nav.locator('a')).toHaveCount(5);
+ await expect(nav.locator('a[href="#topp"]')).toHaveAttribute('aria-current','page');
+ await nav.locator('a[href="#budsjett"]').click();
+ await expect(page).toHaveURL(/#budsjett$/);
+ await expect(page.locator('#budsjett')).toBeVisible();
+ await expect(page.locator('#sparing')).toBeHidden();
+ await expect(nav.locator('a[href="#budsjett"]')).toHaveAttribute('aria-current','page');
+ await nav.locator('a[href="#sparing"]').click();
+ await expect(page.locator('#sparing')).toBeVisible();
+ await expect(page.locator('#budsjett')).toBeHidden();
+ await expect(nav.locator('a[href="#sparing"]')).toHaveAttribute('aria-current','page');
+ const size=await page.evaluate(()=>({width:document.documentElement.clientWidth,overflow:document.documentElement.scrollWidth}));
+ expect(size.overflow).toBeLessThanOrEqual(size.width+2);
+});
+test('financing tabs update the URL, active navigation and retain individual values',async({page})=>{
+ await page.goto('/#billan',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.viewbar-shortcuts a[href="#billan"]')).toHaveAttribute('aria-current','page');
+ await page.locator('#finance-amount').fill('425000');
+ await page.locator('#loan-tab-consumer').click();
+ await expect(page).toHaveURL(/#forbrukslan$/);
+ await expect(page.locator('.viewbar-shortcuts a[href="#forbrukslan"]')).toHaveAttribute('aria-current','page');
+ await expect(page.locator('.viewbar-shortcuts a[href="#billan"]')).not.toHaveAttribute('aria-current','page');
+ await page.locator('#loan-tab-car').click();
+ await expect(page).toHaveURL(/#billan$/);
+ await expect(page.locator('#finance-amount')).toHaveValue('425 000');
+ await expect(page.locator('#loan-tab-car')).toHaveAttribute('aria-selected','true');
+});
+test('dashboard cards use distinct category colors and accessible tap targets',async({page})=>{
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const look=await page.evaluate(()=>{
+  const tiles=[...document.querySelectorAll('.home-tool')];
+  const colors=tiles.map(x=>getComputedStyle(x).backgroundImage);
+  return {count:tiles.length,uniques:new Set(colors).size,
+   smallButtonHeight:document.querySelector('.home-tool').getBoundingClientRect().height};
+ });
+ expect(look.count).toBe(12);
+ expect(look.uniques).toBeGreaterThan(6);
+ expect(look.smallButtonHeight).toBeGreaterThanOrEqual(180);
+});

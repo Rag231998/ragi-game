@@ -18,17 +18,28 @@
  function readHash(){
   try{return decodeURIComponent(window.location.hash.slice(1))}catch{return 'topp'}
  }
- function syncMenus(view){
-  document.querySelectorAll('.portal-nav a,.mobile-menu a,.viewbar-shortcuts a').forEach(link=>{
+ function syncMenus(view,id){
+  document.querySelectorAll('.portal-nav a,.mobile-menu a,.viewbar-shortcuts a,.mobile-bottom-tabs a').forEach(link=>{
    const hash=link.getAttribute('href')?.replace(/^#/,'')||'topp';
-   const active=resolve(hash).view===view;
+   // Car and consumer loans share one calculator but are separate user tabs.
+   const isLoanShortcut=link.closest('.mobile-bottom-tabs')&&hash==='billan';
+   const active=view==='financing'&&(hash==='billan'||hash==='forbrukslan')
+    ? (isLoanShortcut||hash===(id==='forbrukslan'?'forbrukslan':'billan'))
+    : resolve(hash).view===view;
    if(active)link.setAttribute('aria-current','page');
    else link.removeAttribute('aria-current');
   });
   const bar=document.getElementById('portal-viewbar');
   if(bar)bar.hidden=view==='home';
   const name=document.getElementById('viewbar-title');
-  if(name)name.textContent=LABELS[view]||'Forside';
+  if(name)name.textContent=view==='financing'?(id==='forbrukslan'?'Forbrukslån':'Billån'):LABELS[view]||'Forside';
+  // Keep the active shortcut in view on narrow screens without shifting the page.
+  const strip=bar?.querySelector('.viewbar-shortcuts');
+  const selected=strip?.querySelector('a[aria-current="page"]');
+  if(strip&&selected&&strip.scrollWidth>strip.clientWidth){
+   const left=selected.offsetLeft-strip.offsetLeft-(strip.clientWidth-selected.offsetWidth)/2;
+   strip.scrollTo({left:Math.max(0,left),behavior:'auto'});
+  }
  }
  function openArticle(target){
   if(!target)return;
@@ -45,7 +56,7 @@
    panel.setAttribute('aria-hidden',String(!active));
   }
   document.body.dataset.activeView=view;
-  syncMenus(view);
+  syncMenus(view,id);
   openArticle(target);
   if(view==='financing'&&typeof window.lanesjekkFinanceChooseMode==='function')window.lanesjekkFinanceChooseMode(id==='forbrukslan'?'consumer':'car');
   closeMenu();

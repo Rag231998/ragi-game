@@ -45,6 +45,12 @@ async function run(){
   }
   assert.match(site.body,/href="#forbrukslan"/);
   console.log('OK budget, vehicle/consumer loans, academy and custom visuals served from production');
+  assert.match(site.body,/class="mobile-bottom-tabs"/);
+  assert.match(site.body,/id="budget-scenario-category"/);
+  assert.match(site.body,/id="budget-scenario-percent"/);
+  assert.match(site.body,/id="budget-scenario-month"/);
+  assert.match(site.body,/id="budget-scenario-year"/);
+  console.log('OK mobile navigation and interactive savings-scenario controls are live');
   assert.match(site.body,/data-portal-view="savings" hidden/);
   assert.match(site.body,/data-portal-view="banks" hidden/);
   assert.match(site.body,/data-portal-view="guides" hidden/);
