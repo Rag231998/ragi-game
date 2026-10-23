@@ -5,6 +5,10 @@ on:
     paths:
       - 'lanesjekk-norge/**'
       - '.github/workflows/lanesjekk-browser-tests.yml'
+  pull_request:
+    paths:
+      - 'lanesjekk-norge/**'
+      - '.github/workflows/lanesjekk-browser-tests.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -24,6 +28,8 @@ jobs:
           node-version: '22'
       - name: Install tests
         run: npm install --no-audit --no-fund
+      - name: Validate API calculations and bank allowlist
+        run: node --test api.spec.cjs
       - name: Install browser engines
         run: npx playwright install --with-deps chromium webkit
       - name: Exercise bank search and mortgage flow
