@@ -76,7 +76,7 @@ test('guide articles have sources and are reachable from homepage',async({page})
  await expect(page.locator('#kilder a').first()).toContainText('Sjekk hovedkilden');
 });
 test('new pages have no horizontal overflow at configured device size',async({page})=>{
- for(const path of ['/','/#sparing','/#guider','/#sjekk']){
+ for(const path of ['/','/#sparing','/#guider','/#sjekk','/#banker']){
   await page.goto(path,{waitUntil:'domcontentloaded'});
   const dimensions=await page.evaluate(()=>({
     document:document.documentElement.scrollWidth,
