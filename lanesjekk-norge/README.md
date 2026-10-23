@@ -30,7 +30,7 @@ Ved overgang fra kalkulator til personlig finansrådgivning, lånesøknad eller 
 Statisk Javascript-syntaks, UI-referanser, annuitetsmatematikk (inkludert nullrente, renter og gebyrer) samt gyldige/ugyldige API-data er kontrollert. Interaktiv e2e-test i ekte nettleser og faktisk produksjonsdeploy av API-et gjenstår.
 
 ## Publisering
-Opprett et eget Vercel-prosjekt, legg index.html, app.js og api/calculate.js i prosjektroten; framework None. Deploy må utføres når Vercel-tilgangen til brukerens team er godkjent. En statisk HTML-forhåndsvisning kan ikke kjøre serverless API-endepunktet.
+Koble et **eget Vercel-prosjekt** til eksisterende GitHub-repository `Rag231998/ragi-game`. Sett **Root Directory** til `lanesjekk-norge`, **Framework Preset** til `Other` / `None`, og la **Build Command** og **Output Directory** stå tomme. IKKE flytt filene fra undermappen; `index.html` og `api/calculate.js` er allerede plassert riktig når Root Directory brukes. Test både `/` og `POST /api/calculate` på preview-URL før produksjon. Domene/DNS må knyttes til dette prosjektet separat. GitHub Pages kan vise den statiske nettsiden, men kjører **ikke** Vercel-funksjonen `/api/calculate`.
 
 ## Oppgradert bankoversikt og premium-UX – 23. oktober 2026
 
@@ -46,3 +46,18 @@ Opprett et eget Vercel-prosjekt, legg index.html, app.js og api/calculate.js i p
 **Viktig:** Ikke vis en bank som «anbefalt», «billigst» eller «best» på bakgrunn av registeroppføring. Publiserte banktilbud krever faktiske data, tydelige betingelser og lisensiert datatilgang. Banker og logoer er ikke sponsorer eller partnere i tjenesten.
 
 **Bankkonsepter:** Bulder er et konsept levert under Sparebanken Norges banktillatelse (Finanstilsynet ID 99313) og Sbanken er et konsept under DNB Bank ASA (ID 98973). Disse merkes eksplisitt som bankkonsepter, ikke egne konsesjonsbanker. Kilder: https://www.bulder.no/om-oss og https://www.dnb.no/hjelp-og-veiledning/sbanken-fusjonen .
+
+
+## Kvalitetssikring av videreutviklingen – 23. oktober 2026
+
+Regresjonstester i `tests/api.spec.cjs` verifiserer matematikk, 0 %-rente, ugyldige forespørsler, alle tillatte bank-ID-er og samsvar med nettleserens bankliste. UI-testene er utvidet med validering av tom rente, innsendelse med Enter, duplikat-/maksbegrensning og detaljerte feilsøkingstall ved mobil-overflyt. Pull requests utløser begge testtypene via GitHub Actions.
+
+**Lokal kontroll (fra repository):**
+```bash
+cd lanesjekk-norge/tests
+npm install
+node --test api.spec.cjs
+npm run test
+```
+
+Nettleserens `<form>` sendes ikke til serveren. Tast inn tom rente gir ugyldig beregning i stedet for en feilaktig rente på null. Husk at en vellykket CI-test ikke bekrefter at banktillatelser, banklogos eller bankrenter fortsatt er oppdaterte; bankkildene krever separat vedlikehold.
