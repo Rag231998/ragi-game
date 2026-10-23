@@ -29,6 +29,7 @@ test('sitemap and robots.txt refer to the current canonical production host',()=
 test('search and social metadata is descriptive and points to one origin',()=>{
   assert.match(html,/<html lang="nb">/);
   assert.match(html,/<meta name="description" content="[^"]+">/);
+  assert.match(html,/<title>Lånesjekk Norge \\| Sammenlign boliglån, sparing og banker<\\/title>/);
   assert.match(html,/name="robots" content="index,follow/);
   assert.match(html,/<meta property="og:title"/);
   assert.ok(html.includes('<meta property="og:url" content="'+canonical+'">'));
