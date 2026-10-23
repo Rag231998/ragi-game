@@ -350,6 +350,8 @@
   $('budget-export').addEventListener('click',exportCSV);
   $('budget-save').addEventListener('click',saveBudget);
   $('budget-clear-save').addEventListener('click',()=>{
+   clearTimeout(saveTimer);
+   preventAutosave=true;
    try{localStorage.removeItem(storageKey);$('budget-storage-status').textContent='Lokal lagring er slettet. Gjeldende tall i skjemaet beholdes til siden lastes på nytt.'}
    catch{$('budget-storage-status').textContent='Kunne ikke slette lokal lagring.'}
   });
