@@ -4,6 +4,7 @@
  */
 'use strict';
 function valid(n,min,max){return typeof n==='number'&&Number.isFinite(n)&&n>=min&&n<=max}
+const allowedBanks=Object.freeze({dnb:'DNB',nordea:'Nordea',obos:'OBOS-banken',storebrand:'Storebrand',landkreditt:'Landkreditt',klp:'KLP Banken',sparebank1ost:'SpareBank 1 Østlandet',bnbank:'BN Bank'});
 function payment(principal,annualNominal,months){
  const r=annualNominal/1200;
  if(r===0)return principal/months;
@@ -34,9 +35,9 @@ module.exports=function handler(req,res){
   if(!Array.isArray(offers)||offers.length>8)throw Error('Maks åtte banktilbud.');
   const months=years*12,baseline=calculate(principal,current.rate,months,current.monthlyFee,0);
   const comparisons=offers.map((offer,i)=>{
-   if(!offer||!valid(offer.rate,0,35)||!valid(offer.monthlyFee,0,2000)||!valid(offer.startupFee,0,500000))throw Error('Ugyldig banktilbud '+(i+1)+'.');
+   if(!offer||typeof offer.bankId!=='string'||!Object.hasOwn(allowedBanks,offer.bankId)||!valid(offer.rate,0,35)||!valid(offer.monthlyFee,0,2000)||!valid(offer.startupFee,0,500000))throw Error('Ugyldig banktilbud eller ikke-verifisert bank '+(i+1)+'.');
    const result=calculate(principal,offer.rate,months,offer.monthlyFee,offer.startupFee);
-   return {name:typeof offer.name==='string'?offer.name.slice(0,80):'Banktilbud '+(i+1),
+   return {bankId:offer.bankId,name:allowedBanks[offer.bankId],
     nominalRate:offer.rate,...result,monthlyDifference:Math.round((baseline.monthlyPayment-result.monthlyPayment)*100)/100,
     totalSavings:Math.round((baseline.totalPayment-result.totalPayment)*100)/100};
   }).sort((a,b)=>a.totalPayment-b.totalPayment);
@@ -44,7 +45,7 @@ module.exports=function handler(req,res){
    currency:'NOK',loan:{principal,propertyValue,years,ltvPercent:Math.round(principal/propertyValue*10000)/100},
    assumption:'Annuity; nominal yearly interest; monthly repayment; constant rates; excludes tax effects and future changes.',
    current:{nominalRate:current.rate,...baseline},comparisons,
-   source:'user_supplied_rates_only',financialAdvice:false,
+   source:'user_supplied_rates_only',bankDirectory:'finanstilsynet_registry_curated_as_of_2026_10_23',financialAdvice:false,
    marketDataStatus:'No Finansportalen feed credentials. Compare with official embedded Finansportalen widget on the website.'});
  }catch(e){return res.status(400).json({error:String(e.message||'Ugyldige data').slice(0,200)})}
 };
