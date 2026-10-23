@@ -3,10 +3,10 @@
  * or reloading a form. Deep links and browser Back/Forward are supported. */
 (()=>{
  'use strict';
- const LABELS=Object.freeze({home:'Forside',loans:'Boliglån',savings:'Sparing',banks:'Bankoversikt',guides:'Guider og artikler',budget:'Budsjett',receipts:'Kvitteringer',financing:'Billån og forbrukslån',academy:'Lånesjekk Akademi',investing:'Fond og aksjer'});
+ const LABELS=Object.freeze({home:'Forside',loans:'Boliglån',savings:'Sparing',banks:'Bankoversikt',guides:'Guider og artikler',budget:'Budsjett',receipts:'Kvitteringer',property:'Utleieanalyse',financing:'Billån og forbrukslån',academy:'Lånesjekk Akademi',investing:'Fond og aksjer'});
  const SELECTORS='[data-portal-view]';
  function closeMenu(){
-  document.querySelectorAll('.mobile-menu[open]').forEach(menu=>{menu.open=false});
+  document.querySelectorAll('.mobile-menu[open],.nav-group[open]').forEach(menu=>{menu.open=false});
  }
  function resolve(id){
   if(!id||id==='topp'||id==='forside')return {view:'home',target:document.getElementById('topp')};
