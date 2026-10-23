@@ -7,7 +7,7 @@ const number=new Intl.NumberFormat('nb-NO',{maximumFractionDigits:1});
 const pct=new Intl.NumberFormat('nb-NO',{minimumFractionDigits:2,maximumFractionDigits:2});
 let offerId=0;let offers=[];
 const opts={balance:3000000,property:4500000,rate:5.5,years:25,currentfee:65};
-function val(id){const raw=$(id).value.trim();return raw===''?NaN:Number(raw)}
+function val(id){const raw=$(id).value.trim();return id==='rate'?window.LANENUMBERS.parseDecimal(raw):window.LANENUMBERS.parseMoney(raw)}
 function validNumber(n,min,max){return Number.isFinite(n)&&n>=min&&n<=max}
 function money(v){return Number.isFinite(v)?nok.format(Math.round(v)):'–'}
 function annuity(principal,annualRate,months){
@@ -48,9 +48,9 @@ function addOffer(bank){
  div.innerHTML='<div class="offer-head"><h3>Banktilbud '+id+'</h3><button class="remove" type="button" aria-label="Fjern banktilbud">Fjern ×</button></div>'+
  '<div class="offer-fields">'+
  '<div class="field"><label for="offer-name-'+id+'">Bank / produkt</label><div class="input-wrap"><input data-field="name" id="offer-name-'+id+'" placeholder="F.eks. bankens navn" type="text" maxlength="80" autocomplete="off"></div></div>'+
- '<div class="field"><label for="offer-rate-'+id+'">Nominell rente</label><div class="input-wrap"><input data-field="rate" id="offer-rate-'+id+'" type="number" inputmode="decimal" min="0" max="35" step="0.01" placeholder="5,10" required><span>%</span></div></div>'+
- '<div class="field"><label for="offer-fee-'+id+'">Gebyr per måned</label><div class="input-wrap"><input data-field="fee" id="offer-fee-'+id+'" type="number" inputmode="numeric" min="0" max="2000" step="1" value="0"><span>kr</span></div></div>'+
- '<div class="field"><label for="offer-setup-'+id+'">Engangskostnad</label><div class="input-wrap"><input data-field="setup" id="offer-setup-'+id+'" type="number" inputmode="numeric" min="0" max="500000" step="1" value="0"><span>kr</span></div></div>'+
+ '<div class="field"><label for="offer-rate-'+id+'">Nominell rente</label><div class="input-wrap"><input data-field="rate" data-decimal-input id="offer-rate-'+id+'" type="text" inputmode="decimal" placeholder="5,10" required><span>%</span></div></div>'+
+ '<div class="field"><label for="offer-fee-'+id+'">Gebyr per måned</label><div class="input-wrap"><input data-field="fee" data-money-input id="offer-fee-'+id+'" type="text" inputmode="decimal" value="0"><span>kr</span></div></div>'+
+ '<div class="field"><label for="offer-setup-'+id+'">Engangskostnad</label><div class="input-wrap"><input data-field="setup" data-money-input id="offer-setup-'+id+'" type="text" inputmode="decimal" value="0"><span>kr</span></div></div>'+
  '</div><div class="conditions"><label for="offer-notes-'+id+'" style="font-size:10px;color:#607887;font-weight:800">Vilkår, medlemskap eller merknad (valgfritt)</label><input data-field="notes" id="offer-notes-'+id+'" type="text" maxlength="160" placeholder="F.eks. krav om lønnskonto eller medlemskap"></div>';
  const offer={id,bankId:bank.id,element:div};offers.push(offer);
  const title=div.querySelector('.offer-head h3');title.textContent=bank.name;
@@ -64,6 +64,7 @@ function addOffer(bank){
  });
  div.addEventListener('input',compute);
  $('offers').append(div);
+ window.LANENUMBERS.formatAll(div);
  $('add-offer').disabled=offers.length>=8;
  compute();
  div.querySelector('[data-field="rate"]').focus();
@@ -73,7 +74,7 @@ function extractOffers(loan){
  const list=[];
  for(const o of offers){
   const raw=offerValue(o,'rate');if(raw.trim()==='')continue;
-  const rate=Number(raw),fee=Number(offerValue(o,'fee')),setup=Number(offerValue(o,'setup'));
+  const rate=window.LANENUMBERS.parseDecimal(raw),fee=window.LANENUMBERS.parseMoney(offerValue(o,'fee')),setup=window.LANENUMBERS.parseMoney(offerValue(o,'setup'));
   if(!validNumber(rate,0,35)||!validNumber(fee,0,2000)||!validNumber(setup,0,500000))continue;
   const calc=scenario(loan.balance,rate,loan.months,fee,setup);
   if(!calc)continue;
@@ -172,7 +173,8 @@ function market(){
 }
 function reset(){
  for(const [id,v] of Object.entries(opts))$(id).value=String(v);
- $('currentbank').value='';$('offers').replaceChildren();offers=[];offerId=0;
+ window.LANENUMBERS.formatAll();
+ $('currentbank').value='';$('currentbank').dataset.bankId='';$('offers').replaceChildren();offers=[];offerId=0;
  $('scenario-cut').value='0.5';
  $('add-offer').disabled=false;
  text('action-status','Eksempelverdiene er gjenopprettet.');compute();
@@ -193,9 +195,6 @@ function scenarioPreview(){
 
 function init(){
  const bankSelect=$('currentbank');
- for(const b of (window.LANEBANKER||[])){
-  const opt=document.createElement('option');opt.value=b.name;opt.textContent=b.name;bankSelect.append(opt);
- }
  $('loan-form').addEventListener('input',compute);
  $('loan-form').addEventListener('submit',event=>event.preventDefault());
  $('add-offer').addEventListener('click',()=>{
