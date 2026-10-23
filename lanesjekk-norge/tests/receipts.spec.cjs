@@ -34,3 +34,20 @@ test('menu dropdowns are exclusive and close with Escape',async({page},testInfo)
  await page.keyboard.press('Escape');
  await expect(groups.nth(1)).not.toHaveAttribute('open','');
 });
+
+test('cinematic homepage supports pause and play without disrupting navigation',async({page})=>{
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const scene=page.locator('.cinematic-hero');
+ await expect(scene).toBeVisible();
+ await expect(page.locator('.cinema-landscape')).toHaveAttribute('src','./cinematic-fjord.svg');
+ const toggle=page.locator('.cinema-motion-toggle');
+ await expect(toggle).toBeVisible();
+ await toggle.click();
+ await expect(scene).toHaveClass(/cinema-paused/);
+ await expect(toggle).toHaveAttribute('aria-pressed','true');
+ await toggle.click();
+ await expect(scene).not.toHaveClass(/cinema-paused/);
+ await expect(toggle).toHaveAttribute('aria-pressed','false');
+ await page.locator('.cinema-copy a[href="#budsjett"]').click();
+ await expect(page.locator('#budsjett')).toBeVisible();
+});
