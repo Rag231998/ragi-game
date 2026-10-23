@@ -385,3 +385,7 @@
  .portal-home .budget-table tbody .budget-row-actions{justify-content:flex-start}
 }
 @media(prefers-reduced-motion:reduce){.portal-home .budget-table tbody tr{transition:none}}
+
+/* Respect filtered rows and optional account column even in card layout */
+.portal-home .budget-table tbody tr[hidden]{display:none!important}
+@media(max-width:950px){.portal-home .budget-table:not(.budget-bank-visible) tbody td:nth-child(4){display:none!important}}
