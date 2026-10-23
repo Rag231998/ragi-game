@@ -150,6 +150,18 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
     <p class="description">Dette er en forenklet annuitetsberegning. Eventuelle endringer i rente, ekstra innbetalinger og skattefradrag er ikke inkludert.</p>
   </section>
 
+  <section class="box repayment-panel" id="nedbetalingsplan" aria-label="Nedbetalingsplan år for år">
+    <div class="repayment-head"><div><span class="eyebrow">Forstå hele lånet</span><h2>Hvor raskt betaler du ned?</h2><p class="subtitle">Se utviklingen i restgjeld, renteutgifter og avdrag – år for år.</p></div><span class="repayment-mark" aria-hidden="true">↘</span></div>
+    <div class="repayment-stats">
+      <div><span>Avdrag første år</span><strong id="repayment-year-principal">–</strong></div>
+      <div><span>Renter første år</span><strong id="repayment-year-interest">–</strong></div>
+      <div><span>Restgjeld etter 5 år*</span><strong id="repayment-five-years">–</strong></div>
+    </div>
+    <details id="repayment-details"><summary>Vis nedbetalingsplan for hvert år</summary>
+      <div class="table-scroll"><table class="repayment-table" aria-label="Estimert nedbetalingsplan"><thead><tr><th>År</th><th>Avdrag</th><th>Renter</th><th>Restgjeld</th></tr></thead><tbody id="repayment-rows"></tbody></table></div>
+    </details>
+    <p class="repayment-disclaimer">* Hvis løpetiden er kortere enn 5 år, vises restgjelden ved utløpet. Faste renter, månedlig annuitet og ingen ekstra innbetalinger er forutsatt. Gebyr er ikke inkludert i kolonnene for avdrag og renter.</p>
+  </section>
   <section class="box scenario-card" aria-label="Illustrer sparepotensial ved lavere rente">
    <div class="scenario-top"><div><span class="eyebrow">Se effekten på økonomien</span><h2>Hva om renten din gikk ned?</h2><p class="subtitle">Dra i skyveknappen og se en <strong>hypotetisk</strong> besparelse. Dette er ikke et banktilbud.</p></div><span class="scenario-icon" aria-hidden="true">↗</span></div>
    <div class="scenario-value"><strong id="scenario-year">–</strong><span>lavere sum terminbetalinger over 12 måneder*</span></div>
@@ -203,4 +215,5 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 <script src="./numbers.js" defer></script>
 <script src="./app.js" defer></script>
 <script src="./bank-search.js" defer></script>
+<script src="./repayment.js" defer></script>
 </body></html>
