@@ -38,3 +38,10 @@
 @media(max-width:960px){.portal-home .portal-group-nav{display:none}.portal-home .mobile-menu{display:block}.portal-home .nav-row{min-height:63px}}
 @media(min-width:961px){.portal-home .mobile-menu{display:none}}
 @media(max-width:620px){.portal-home .home-tool-grid>.home-tool{min-height:0}.portal-home .home-tool-grid>.home-tool strong{font-size:15px}}
+
+/* Homepage card themes are always pale enough for dark high-contrast text. */
+.portal-home .home-tool-grid>.home-tool[data-cms-tone="mint"]{background:linear-gradient(140deg,#e7faf2,#fff)!important}
+.portal-home .home-tool-grid>.home-tool[data-cms-tone="blue"]{background:linear-gradient(140deg,#e9f3ff,#fff)!important}
+.portal-home .home-tool-grid>.home-tool[data-cms-tone="violet"]{background:linear-gradient(140deg,#f1edff,#fff)!important}
+.portal-home .home-tool-grid>.home-tool[data-cms-tone="peach"]{background:linear-gradient(140deg,#fff1e7,#fff)!important}
+.portal-home .home-tool-grid>.home-tool[hidden]{display:none!important}
