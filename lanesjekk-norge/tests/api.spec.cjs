@@ -53,7 +53,7 @@ test('bank IDs in API match precisely the manually curated browser directory',()
     assert.equal(r.statusCode,200,'Missing server-side bank: '+bankId);
   }
   assert.ok(browserIds.length>85,'Official directory should expand beyond the original 11 entries');
-  assert.equal(new Set(browserIds).size,11);
+  assert.equal(new Set(browserIds).size,browserIds.length,'Directory IDs must be unique');
   for(const bank of context.window.LANEBANKER)assert.match(bank.register,/^https:\/\/www\.finanstilsynet\.no\//);
 });
 test('malformed numeric values, missing terms and too many offers are rejected',()=>{
