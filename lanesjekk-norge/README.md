@@ -162,3 +162,17 @@ Lånesjekk har nå åtte separate app-visninger: Forside, Boliglån, Sparing, Ba
 - Den tidligere toppseksjonens overflyt og lyse tekst på lys knapp er rettet gjennom `finance-style.css`, med egne målrettede mobilstilregler.
 - CI kjører eksisterende testpakke pluss `finance.spec.cjs` og Playwright `finance-ui.spec.cjs` på desktop Chromium, nettbrett Chromium, iPhone WebKit og Android Chromium. Produksjonssmoke bekrefter riktige filer og visninger.
 - Den originale Finansportalen-iframe kan brukes i henhold til deres kildevilkår, men ingen sanntidsrådata fra den eller fra bankene kopieres til vår egen beregningsmotor uten tillatelse: https://www.forbrukerradet.no/finansportalen/bank/bruk-av-vare-data/
+
+## Oppdatering 23. oktober 2026: Budsjett, fond og PDF
+
+**Budsjett PC/mobil:** Én navigasjon. Synlige knapper for inntekt, utgift, eksempel, CSV, utskrift/PDF. Månedsresultat og kategorigrafer oppdateres mens man skriver. Bank/konto per post er fjernet fra synlig skjema, CSV og ny lokal lagring. Gamle bankverdier nulles ved lasting. Avanserte lønns- og rad-summeringsverktøy er sammenklappbare.
+
+**Profesjonell A4-rapport:** Skriv ut / Lagre PDF bygger en separat rapport med Lånesjekk-logo, dato, inntekter, utgifter, nøkkeltall og utgiftsfordeling. Den sendes direkte til nettleserens utskriftsdialog, hvor brukeren velger Lagre som PDF. Dette er ikke en automatisk nedlastet PDF. Ingen ekstern konvertering eller opplasting av budsjettall.
+
+**Fond og aksjer:** Fire interaktive læringsverktøy med fondsgebyrer, drawdown/gjenhenting, aksje-/rentefordeling og spareplan mot mål. Åtte kildebaserte forklaringer (globale indeksfond, aktiv/passiv, enkeltaksjer, renter, ASK, IPS, usikkerhet og prissammenligning). Eksemplene er hypotetiske og viser ikke kurser eller personlige anbefalinger.
+
+**Kvalitetsstatus:** Javascript-syntaks, alle HTML-referanser og deterministiske matematikktester er kontrollert. Automatiske Playwright-tester for desktop, mobil og Chromium-PDF-eksport finnes i tests/daily-studio.spec.cjs; full vellykket nettleserkjøring er ikke bekreftet her. Produksjonspublisering via Vercel/ GitHub-integrasjon: READY.
+
+**Admin:** En egen sikker CMS-innlogging for tema/logo/layout er ikke ferdig. Ingen offentlig admin-redigering skal tilbys uten rollebasert autentisering og endringslogg.
+
+Kilder: https://www.forbrukerradet.no/sparing-i-fond-og-spareprofiler/ · https://www.forbrukerradet.no/siste-nytt/na-kan-du-sjekke-om-du-betaler-for-mye-for-fondet-ditt/ · https://www.skatteetaten.no/person/skatt/hjelp-til-rett-skatt/aksjar-og-verdipapir/om/aksjesparekonto-ask/ · https://www.oslomet.no/om/sifo/referansebudsjettet
