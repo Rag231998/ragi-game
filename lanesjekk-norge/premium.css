@@ -176,3 +176,16 @@
 @keyframes ln-arrive{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 @keyframes ln-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
 @media(prefers-reduced-motion:reduce){.portal-home .hero .eyebrow,.portal-home .hero h1,.portal-home .hero p,.portal-home .hero .cta-row,.portal-home .hero .hero-card{animation:none!important}.portal-home .home-tool{transition:none}}
+
+/* Premium motion artwork: lightweight procedural animation, no personal data or external images */
+.portal-home .hero{isolation:isolate}
+.portal-home .hero::after{content:"";position:absolute;z-index:0;pointer-events:none;width:min(46vw,600px);aspect-ratio:1;right:-7%;top:-22%;border-radius:50%;border:1px solid rgba(124,235,205,.2);background:radial-gradient(circle at 40% 35%,rgba(108,236,201,.29),transparent 43%),repeating-radial-gradient(circle at 52% 50%,transparent 0 38px,rgba(144,241,221,.13) 39px 40px,transparent 41px 77px);filter:drop-shadow(0 0 42px rgba(26,170,146,.23));animation:lanesjekk-orbit 18s ease-in-out infinite alternate}
+.portal-home .hero-inner{position:relative;z-index:1}
+.portal-home .hero-card{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.portal-home .home-tool:focus-visible{transform:translateY(-3px)}
+.rental-listing-note{background:linear-gradient(120deg,#e7f6f1,#f2f7fc);border:1px solid #b7ded2;border-radius:14px;padding:17px;margin:15px 0;color:#1f535a}
+.rental-listing-note strong{display:block;font-size:14px}
+.rental-listing-note p{font-size:12px;line-height:1.7;margin:6px 0 0}
+@keyframes lanesjekk-orbit{0%{transform:translate(0,0) rotate(0deg) scale(.94);opacity:.6}100%{transform:translate(-9%,13%) rotate(36deg) scale(1.13);opacity:1}}
+@media(max-width:800px){.portal-home .hero::after{width:76vw;right:-30%;top:-5%;opacity:.42}}
+@media(prefers-reduced-motion:reduce){.portal-home .hero::after{animation:none!important}}
