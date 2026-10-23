@@ -98,3 +98,31 @@ test('every new view is independent and avoids horizontal page scrolling',async(
   if(p!=='/')await expect(page.locator('.hero')).toBeHidden();
  }
 });
+
+test('hero text and CTA stay readable at the screenshot width of 725px',async({page})=>{
+ await page.setViewportSize({width:725,height:800});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const metrics=await page.evaluate(()=>{
+  const title=document.querySelector('.hero h1');
+  const cta=document.querySelector('.hero .btn:not(.dark-outline)');
+  return {right:title.getBoundingClientRect().right,
+    viewport:document.documentElement.clientWidth,
+    documentWidth:document.documentElement.scrollWidth,
+    buttonColor:getComputedStyle(cta).color};
+ });
+ expect(metrics.right).toBeLessThanOrEqual(metrics.viewport+3);
+ expect(metrics.documentWidth).toBeLessThanOrEqual(metrics.viewport+3);
+ expect(metrics.buttonColor).toBe('rgb(7, 63, 60)');
+});
+test('academy full completion and retry work without changing page',async({page})=>{
+ await page.goto('/#akademi',{waitUntil:'domcontentloaded'});
+ for(let i=0;i<4;i++){
+  await page.locator('#academy-options button').nth(1).click();
+  await expect(page.locator('#academy-feedback')).toBeVisible();
+  await page.locator('#academy-next').click();
+ }
+ await expect(page.locator('#academy-count')).toHaveText('Fullført');
+ await expect(page.locator('#academy-question')).toContainText('4 av 4');
+ await page.locator('#academy-next').click();
+ await expect(page.locator('#academy-count')).toHaveText('1 av 4');
+});
