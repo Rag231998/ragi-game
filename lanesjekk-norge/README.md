@@ -119,3 +119,12 @@ Denne versjonen bygger videre på eksisterende boliglånkalkulator uten å fjern
 **Test og publisering:** Node-regresjon: `cd lanesjekk-norge/tests && node --test api.spec.cjs seo.spec.cjs format.spec.cjs savings.spec.cjs`. Playwright: `npm run test -- --config=playwright.config.cjs` på desktop, nettbrett, iPhone WebKit og Android. Produksjonstest må bekrefte HTTP 200 for /, /sparing.html, /guider.html, scripts, sitemap og ekte kalkulasjons-API. Endringer publiseres til et eget Vercel-prosjekt med Root Directory lanesjekk-norge. Ikke endre andre prosjekter i repositoryet.
 
 Direkte bankkilder for det oppdaterte eksempelsamlingen (kildesjekk 23.10.2026): Nordea Sparekonto Ekstra https://www.nordea.no/privat/vare-produkter/priser/priser-for-innskuddskonto-og-plasseringer-personkunder.html og SpareBank 1 Østlandet prisliste https://www.sparebank1.no/nb/ostlandet/privat/kundeservice/bestill/prisliste.html .
+
+
+## Én samlet nettside – 23. oktober 2026
+
+Hovedadressen `https://lanesjekk-norge.vercel.app/` viser **alle funksjoner i ett dokument**: forside og navigasjonskort, sparekalkulator og produktutvalg (`#sparing` / `#sparing-kalkulator`), hypotetisk spareprognose, innskuddsoversikten fra Finansportalen (`#offisielle-renter`), boliglånkalkulatoren (`#sjekk`), banksøk (`#banker`) og alle ni guideartiklene (`#guider`). Trykk på en artikkel for å lese den i et utvidbart panel på samme side. `single-page.js` åpner riktig artikkel ved direkte lenke med fragment. Ingen av de viktigste knapper eller menylenker navigerer til `sparing.html` eller `guider.html`.
+
+**Bakoverkompatibilitet:** De gamle HTML-filene `sparing.html` og `guider.html` beholdes midlertidig for besøkende med lagrede lenker. De eksponeres ikke i hovednavigasjonen og ligger ikke lenger i den primære XML-sitemapen. For nye besøkende er det bare hovedadressen som trengs.
+
+**Verifisering:** `tests/portal.spec.cjs` tester navigasjon uten sidelasting, rentesammenligning, guidepaneler og bredde på mobil/PC. Produksjonssjekken kontrollerer at alle seksjoner, scripts og kildeopplysninger er levert på den faktiske hovedsiden. Den opprinnelige boliglånkalkulatoren og API-et bevares.
