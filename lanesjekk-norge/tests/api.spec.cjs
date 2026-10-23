@@ -52,7 +52,7 @@ test('bank IDs in API match precisely the manually curated browser directory',()
     const r=request(q);
     assert.equal(r.statusCode,200,'Missing server-side bank: '+bankId);
   }
-  assert.equal(browserIds.length,11);
+  assert.ok(browserIds.length>85,'Official directory should expand beyond the original 11 entries');
   assert.equal(new Set(browserIds).size,11);
   for(const bank of context.window.LANEBANKER)assert.match(bank.register,/^https:\/\/www\.finanstilsynet\.no\//);
 });
@@ -76,4 +76,20 @@ test('HTTP method and payload limits are enforced',()=>{
   const options=request({},'OPTIONS');
   assert.equal(options.statusCode,204);
   assert.equal(options.ended,true);
+});
+
+test('expanded banks carry public source records, not invented product rates',()=>{
+ const banks=require('../banker.js');
+ const ids=new Set();
+ for(const bank of banks){
+  assert.ok(bank.id&&bank.name);
+  assert.ok(!ids.has(bank.id),'Repeated bank ID: '+bank.id);
+  ids.add(bank.id);
+  assert.ok(bank.registryVerified===true||bank.registryVerified===false);
+  assert.ok(bank.source==='finanstilsynet'||bank.source==='norgesbank');
+  assert.ok(bank.sourceUrl.startsWith('https://'));
+  if(bank.logo)assert.ok(bank.logo.startsWith('https://commons.wikimedia.org/wiki/Special:FilePath/'));
+ }
+ assert.ok(banks.find(b=>b.name==='SpareBank 1 SMN'));
+ assert.ok(banks.find(b=>b.name==='Rørosbanken Røros Sparebank'));
 });
