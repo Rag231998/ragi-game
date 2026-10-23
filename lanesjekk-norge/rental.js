@@ -61,7 +61,7 @@ function update(){
   $('rental-chart').replaceChildren();$('rental-bar-legend').replaceChildren();$('rental-stress').textContent='';
   $('rental-break-even').textContent='';return;
  }
- status.classList.add('good');status.textContent='Regnestykket oppdateres automatisk. Annonsedata og leieinntekter er oppgitt eller foreslått – ikke bekreftet av FINN eller en bank.';
+ status.classList.add('good');status.textContent='Regnestykket oppdateres automatisk. Annonsedata og leieinntekter er oppgitt eller foreslått – ikke bekreftet av en dataleverandør eller bank.';
  $('rental-gross').textContent=money(calc.billedRent);
  $('rental-noi').textContent=money(calc.netOperating);
  $('rental-cash').textContent=money(calc.pretaxCashFlow/12);
@@ -121,8 +121,8 @@ function fromAd(){
  for(const [key,id] of Object.entries(map)){
   if(parsed[key]!==null){$(id).value=String(parsed[key]);changed++}
  }
- $('rental-url-note').textContent=changed?'Foreslo '+changed+' opplysninger fra teksten. Kontroller alle tall mot FINN-annonsen og fyll inn husleie manuelt.':
-  'Fant ingen tydelige nøkkeltall. Fyll inn feltene manuelt. Ingenting er hentet fra FINN automatisk.';
+ $('rental-url-note').textContent=changed?'Foreslo '+changed+' opplysninger fra teksten. Kontroller alle tall mot salgsoppgaven og fyll inn husleie manuelt.':
+  'Fant ingen tydelige nøkkeltall. Fyll inn feltene manuelt. Ingenting er hentet automatisk fra eksterne kilder.';
  update();
 }
 function updateValuation(){
@@ -150,12 +150,6 @@ function boot(){
  document.querySelector('#utleie').addEventListener('change',update);
  document.querySelector('#utleie').addEventListener('input',updateValuation);
  document.querySelector('#utleie').addEventListener('change',updateValuation);
- $('rental-open').addEventListener('click',()=>{
-  const url=allowed($('rental-finn-url').value);
-  if(!url){$('rental-url-note').textContent='Bruk en gyldig HTTPS-lenke fra finn.no. Ingen andre domener åpnes her.';return}
-  window.open(url.href,'_blank','noopener,noreferrer');
-  $('rental-url-note').textContent='Annonsen er åpnet i ny fane. Kopier relevante detaljer til feltet under, og kontroller beregningene.';
- });
  $('rental-parse-ad').addEventListener('click',fromAd);
  $('rental-example').addEventListener('click',()=>{
   const values={price:3500000,sharedDebt:0,buyCosts:90000,rent:16500,equity:900000,rate:5.25,years:25,common:2200,running:900,maintenance:1200,vacancy:1};
@@ -167,9 +161,9 @@ function boot(){
  });
  $('rental-reset').addEventListener('click',()=>{
   for(const id of ['rental-price','rental-rent','rental-equity','rental-shared-debt','rental-buy-costs','rental-common','rental-running','rental-maintenance'])$(id).value='';
-  $('rental-years').value='25';$('rental-interest').value='5.25';$('rental-vacancy').value='1';$('rental-finn-url').value='';$('rental-ad-text').value='';
+  $('rental-years').value='25';$('rental-interest').value='5.25';$('rental-vacancy').value='1';$('rental-ad-text').value='';
   for(const id of ['rental-area','rental-comp-1','rental-comp-2','rental-comp-3'])$(id).value='';$('rental-growth').value='2';
-  $('rental-tax').value='taxable';$('rental-url-note').textContent='Legg inn en FINN-lenke eller fyll inn nøkkeltallene manuelt.';update();
+  $('rental-tax').value='taxable';$('rental-url-note').textContent='Legg inn en annonsetekst eller fyll inn nøkkeltallene manuelt.';update();
  });
  update();updateValuation();window.lanesjekkRental={realEstate,parseAd,allowed};
 }
