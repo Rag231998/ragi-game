@@ -14,7 +14,7 @@ async function run(){
   // A production URL can temporarily serve the previous release while Vercel
   // assigns its new alias. Require the exact new homepage before continuing.
   let site;
-  const expectedTitle=/<title>Lånesjekk Norge \| Sammenlign boliglån, sparing og banker/i;
+  const expectedTitle=/<title>Lånesjekk Norge \| Budsjett, sparing, billån og banksammenligning/i;
   for(let attempt=0;attempt<12;attempt++){
     site=await request('/');
     if(site.response.status===200&&expectedTitle.test(site.body)&&site.body.includes('id="sparing" data-portal-view="savings"')&&site.body.includes('id="bankoversikt"')&&site.body.includes('id="guider" data-portal-view="guides"'))break;
