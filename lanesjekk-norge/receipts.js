@@ -2,7 +2,7 @@
 (()=>{
 'use strict';
 const $=id=>document.getElementById(id),NOK=new Intl.NumberFormat('nb-NO',{style:'currency',currency:'NOK',maximumFractionDigits:2,minimumFractionDigits:0});
-const C=[['Mat og dagligvarer','#118672'],['Snacks og godteri','#ecae55'],['Drikke','#44a6b6'],['Hus og hjem','#758bc0'],['Elektronikk','#9277bd'],['Klær og sko','#e68ca9'],['Transport','#46789d'],['Helse og pleie','#90af69'],['Restaurant og kafé','#af8057'],['Annet','#8e9da9']];
+const C=[['Mat og dagligvarer','#118672'],['Pant og retur','#369a7d'],['Snacks og godteri','#ecae55'],['Drikke','#44a6b6'],['Hus og hjem','#758bc0'],['Elektronikk','#9277bd'],['Klær og sko','#e68ca9'],['Transport','#46789d'],['Helse og pleie','#90af69'],['Restaurant og kafé','#af8057'],['Annet','#8e9da9']];
 const KEY='lanesjekk_receipts_v1';let items=[],scanTotal=null,image=null,imageUrl=null,busy=false;
 const el=(tag,t,cls)=>{const x=document.createElement(tag);if(t!==undefined)x.textContent=String(t);if(cls)x.className=cls;return x};
 const money=n=>Number.isFinite(n)?NOK.format(Math.round(n*100)/100):'–';
@@ -10,6 +10,7 @@ const date=()=>new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOSt
 function price(v){const s=String(v??'').replace(/[\u00a0\s]|kr/gi,'').replace('−','-').replace(',','.');return /^[+\-]?\d{1,8}(?:\.\d{1,2})?$/.test(s)?Number(s):NaN}
 function category(s){
  s=s.toLowerCase();
+ if(/\bpant\b|returpant|panteflaske/.test(s))return 'Pant og retur';
  if(/sjokolade|chips|snacks|godter|kjek|popcorn|iskrem|smågodt/.test(s))return 'Snacks og godteri';
  if(/kaffe|brus|juice|cola|energi|drikke|øl|vann|fanta/.test(s))return 'Drikke';
  if(/tv\b|mobil|skjerm|data|hodetelefon|airpod|usb|kabel|lader|batteri/.test(s))return 'Elektronikk';
@@ -21,17 +22,17 @@ function category(s){
  if(/melk|brød|ost|egg|fisk|laks|kylling|kjøtt|ris\b|pasta|smør|banan|eple|frukt|yoghurt|potet/.test(s))return 'Mat og dagligvarer';
  return 'Annet';
 }
-const EXCLUDED=/^(?:kvittering|sum\b|sum varer|totalt?|beløp|å betale|betalt|kort|visa|mastercard|bankaxept|mva\b|moms|kontant|herav|org|terminal|betalingsmiddel|kasse|ordre|transaksjon|takk for handelen|av dette)/i;
+const EXCLUDED=/^(?:kvittering|sum\b|sum varer|totalt?|beløp|å betale|betalt|kort|visa|mastercard|bank(?:axept)?\b|mva\b|moms|kontant|herav|org|terminal|betalingsmiddel|kasse|ordre|transaksjon|takk for handelen|av dette)/i;
 function parseText(raw){
  const rows=String(raw).split(/\r?\n/).map(x=>x.trim()).filter(Boolean);let total=null,merchant='';
  const next=[];
  for(const [index,line] of rows.entries()){
   if(index<4&&!merchant&&!/\d/.test(line)&&line.length>2&&!/kvittering|takk/i.test(line))merchant=line.slice(0,90);
-  const found=line.match(/([−+\-]?\s*(?:\d{1,3}(?:[ .]\d{3})+|\d{1,7})[,.]\d{2})\s*(?:kr)?\s*$/i);
+  const found=line.match(/([−+\-]?\s*(?:\d{1,3}(?:[ .]\d{3})+|\d{1,7})[,.]\d{1,2})\s*(?:kr)?\s*$/i);
   if(!found)continue;
   const amount=price(found[1]);if(!Number.isFinite(amount)||Math.abs(amount)>100000)continue;
   if(/^(?:sum\b|totalt?|beløp|å betale)/i.test(line)){total=amount;continue}
-  if(EXCLUDED.test(line))continue;
+  if(EXCLUDED.test(line)||/\b(?:grunnlag|mva\s*%|kortinnehaverens|referanse|godkjent|autorisert|kredit|debet)\b/i.test(line))continue;
   const name=line.slice(0,found.index).replace(/[.·:|\s_\-]+$/,'').trim();
   if(name.length<2||/^\d{3,}$/.test(name))continue;
   const discount=/rabatt|avslag|kupong|tilbud/i.test(name);
