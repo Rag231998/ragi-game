@@ -1,0 +1,40 @@
+
+/* Accessible grouped navigation and CMS-controlled theme.
+   The original home cards had near-white text on pale backgrounds; explicit contrast fixed. */
+:root{--cms-accent:#0c8878}
+.portal-home .portal-group-nav{display:flex;align-items:center;gap:clamp(6px,1vw,16px)}
+.portal-home .portal-group-nav>a{font-weight:800;font-size:12px;color:#214658}
+.portal-home .nav-group{position:relative}
+.portal-home .nav-group>summary{font-size:11px;font-weight:850;color:#285165;list-style:none;cursor:pointer;display:flex;align-items:center;gap:6px;min-height:42px;padding:8px 7px;border-radius:9px}
+.portal-home .nav-group>summary::-webkit-details-marker{display:none}
+.portal-home .nav-group>summary span{font-size:13px;color:#287a72}
+.portal-home .nav-group[open]>summary,.portal-home .nav-group>summary:hover{background:#e8f5f1;color:#076758}
+.portal-home .nav-group .nav-drop{position:absolute;top:calc(100% + 6px);left:0;display:flex;flex-direction:column;min-width:218px;z-index:90;background:#fff;border:1px solid #d4e7e1;box-shadow:0 18px 52px #13374a2d;border-radius:13px;padding:8px}
+.portal-home .nav-group:nth-last-child(-n+2) .nav-drop{left:auto;right:0}
+.portal-home .nav-group .nav-drop a{color:#264b5a!important;display:flex;align-items:center;text-decoration:none;border-radius:9px;padding:12px 13px;font-size:12px;font-weight:770;white-space:nowrap}
+.portal-home .nav-group .nav-drop a:hover,.portal-home .nav-group .nav-drop a[aria-current="page"]{color:var(--cms-accent)!important;background:#e9f7f2}
+.portal-home .portal-nav a[aria-current=page]::after{display:none}
+.portal-home .nav-group summary:focus-visible{outline:3px solid #1cb593;outline-offset:3px}
+.portal-home .mobile-menu>div{max-height:calc(85dvh - 70px);overflow-y:auto}
+.portal-home .mobile-menu>div strong{color:#0d7865;font-size:10px;letter-spacing:.08em;font-weight:900;margin:9px 6px 0;border-top:1px solid #e0ebea;padding-top:8px}
+.portal-home .mobile-menu>div a{min-height:37px;padding:8px 12px}
+.portal-home .home-tool-grid>.home-tool{background:#fff;color:#1e4150!important;border:1px solid #d5e6e7;box-shadow:0 8px 23px #13364512}
+.portal-home .home-tool-grid>.home-tool strong{color:#16374b!important;text-shadow:none!important}
+.portal-home .home-tool-grid>.home-tool small{color:#496876!important;opacity:1!important;text-shadow:none!important}
+.portal-home .home-tool-grid>.home-tool .home-tool-category{color:#087b68!important;opacity:1!important;letter-spacing:.06em}
+.portal-home .home-tool-grid>.home-tool .home-tool-arrow{color:#076d61!important;font-weight:900!important;opacity:1!important}
+.portal-home .home-tool-grid>.home-tool .home-tool-art{color:#11675d!important;background:#e4f8ed!important;border:1px solid #c0e2d7!important;box-shadow:none!important;text-shadow:none!important}
+.portal-home .home-tool-grid>.home-tool:hover{border-color:#83cbb9;box-shadow:0 14px 35px #12675520}
+.portal-home .home-tool-grid>.home-tool.receipt-home-feature{background:linear-gradient(143deg,#def8ed,#f9fffc)!important}
+.portal-home .home-tool-grid>.home-tool.home-tool-property{background:linear-gradient(143deg,#eff2ff,#fff)!important}
+.portal-home .home-tool-grid>.home-tool.home-tool-property .home-tool-art{color:#484b9c!important;background:#e6e6ff!important}
+.portal-home .home-tool-grid>.home-tool.featured-purple{background:linear-gradient(140deg,#f2eeff,#fff)!important}
+.portal-home .home-tool-grid>.home-tool.featured-teal{background:linear-gradient(140deg,#e2f7f4,#fff)!important}
+.portal-home .logo-emblem{background:var(--cms-accent)!important;color:#fff!important}
+.portal-home .nav-cta,.portal-home .tool-button.primary,.portal-home .receipt-btn.main,.portal-home .rental-button.main{background:var(--cms-accent)!important;border-color:var(--cms-accent)!important;color:#fff!important}
+.portal-home .nav-cta{font-size:11px}
+.portal-home .portal-logo .cms-custom-logo{width:43px;height:43px;object-fit:contain;border-radius:9px}
+@media(max-width:1130px){.portal-home .portal-group-nav{gap:3px}.portal-home .nav-group>summary{font-size:10px;padding:7px 4px}.portal-home .nav-cta{display:none}}
+@media(max-width:960px){.portal-home .portal-group-nav{display:none}.portal-home .mobile-menu{display:block}.portal-home .nav-row{min-height:63px}}
+@media(min-width:961px){.portal-home .mobile-menu{display:none}}
+@media(max-width:620px){.portal-home .home-tool-grid>.home-tool{min-height:0}.portal-home .home-tool-grid>.home-tool strong{font-size:15px}}
