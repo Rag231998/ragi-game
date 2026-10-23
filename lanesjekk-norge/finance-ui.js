@@ -44,6 +44,9 @@
  }
  let exampleActive=true;
  let count=0;
+ let saveTimer=null;
+ let undoSnapshot=null;
+ let preventAutosave=false;
  const storageKey='lanesjekk-norge-budget-v1';
  const cell=(row,node)=>{const td=document.createElement('td');td.append(node);row.append(td);return td};
  const option=(value,label)=>{const o=document.createElement('option');o.value=value;o.textContent=label;return o};
@@ -104,6 +107,23 @@
  function setLines(lines){
   $('budget-rows').replaceChildren();for(const line of lines.slice(0,250))addRow(line);
   renderBudget();
+ }
+ function scheduleSave(){
+  if(exampleActive||preventAutosave)return;
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>saveBudget(true),450);
+ }
+ function rememberUndo(){
+  undoSnapshot=allLines().map(x=>({...x,amount:Number.isFinite(x.amount)?x.amount:0}));
+  const undo=$('budget-undo');
+  if(undo)undo.hidden=false;
+ }
+ function restoreUndo(){
+  if(!undoSnapshot)return;
+  const old=undoSnapshot;undoSnapshot=null;
+  $('budget-undo').hidden=true;
+  exampleActive=false;setLines(old);scheduleSave();
+  $('budget-storage-status').textContent='Forrige endring er angret. Budsjettet lagres automatisk.';
  }
  function updateFilter(lines){
   const select=$('budget-bank-filter'),selected=select.value;
@@ -234,6 +254,12 @@
   drawDonut(totals.categories,totals.expense);drawBanks(totals.banks);drawTimeline(totals.balance);
   renderBudgetScenario(totals);
   const tips=$('budget-insights');tips.replaceChildren();
+  $('budget-error-count')?.replaceChildren();
+  if(totals.invalidLines>0){
+   const warning=document.createElement('span');
+   warning.textContent=totals.invalidLines+' post(er) har feil beløp. Rett feltene markert med rødt.';
+   $('budget-error-count')?.append(warning);
+  }
   for(const message of engine.budgetInsights(totals,lines)){
    const p=document.createElement('div');p.className='insight-item';p.textContent=message;tips.append(p);
   }
@@ -252,11 +278,15 @@
   const a=document.createElement('a');a.href=url;a.download='lanesjekk-budsjett.csv';
   document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),1500);
  }
- function saveBudget(){
+ function saveBudget(automatic=false){
   try{
-   const lines=allLines().map(x=>({...x,amount:Number.isFinite(x.amount)?x.amount:0}));
+   const lines=allLines().map(x=>({...x,amount:Number.isFinite(x.amount)?x.amount:null}));
+   if(lines.some(x=>x.amount===null)){
+    $('budget-storage-status').textContent='Rett ugyldige beløp før budsjettet kan lagres.';
+    return;
+   }
    localStorage.setItem(storageKey,JSON.stringify({version:1,lines}));
-   $('budget-storage-status').textContent='Lagret lokalt i denne nettleseren. Ingen kontodata er sendt til serveren.';
+   $('budget-storage-status').textContent=automatic?'✓ Endringer lagret automatisk i denne nettleseren.':'✓ Budsjettet er lagret på denne enheten. Ingen kontodata sendes til serveren.';
   }catch{
    $('budget-storage-status').textContent='Kunne ikke lagre lokalt – sjekk nettleserens lagringsinnstillinger.';
   }
@@ -281,21 +311,21 @@
     const suggested=suggestCategory(event.target.value,kind);
     if(suggested)tr.querySelector('[data-field="category"]').value=suggested;
    }
-   exampleActive=false;renderBudget();
+   exampleActive=false;renderBudget();scheduleSave();
   });
-  $('budget-rows').addEventListener('change',()=>{exampleActive=false;renderBudget()});
+  $('budget-rows').addEventListener('change',()=>{exampleActive=false;renderBudget();scheduleSave()});
   $('budget-rows').addEventListener('click',e=>{
    const move=e.target.closest('[data-move]');
    if(move){
     const tr=move.closest('tr'),other=move.dataset.move==='up'?tr.previousElementSibling:tr.nextElementSibling;
     if(!other)return;
     if(move.dataset.move==='up')other.before(tr);else other.after(tr);
-    exampleActive=false;renderBudget();move.focus();return;
+    exampleActive=false;renderBudget();scheduleSave();move.focus();return;
    }
-   if(e.target.closest('.budget-remove')){e.target.closest('tr').remove();exampleActive=false;renderBudget();}
+   if(e.target.closest('.budget-remove')){rememberUndo();e.target.closest('tr').remove();exampleActive=false;renderBudget();scheduleSave();}
   });
-  $('budget-add-income').addEventListener('click',()=>{addRow({kind:'income',category:'Lønn',description:'',bank:'',amount:0,period:'month'});exampleActive=false;renderBudget()});
-  $('budget-add-expense').addEventListener('click',()=>{addRow({kind:'expense',category:'Annet',description:'',bank:'',amount:0,period:'month'});exampleActive=false;renderBudget()});
+  $('budget-add-income').addEventListener('click',()=>{addRow({kind:'income',category:'Lønn',description:'',bank:'',amount:0,period:'month'});exampleActive=false;renderBudget();scheduleSave()});
+  $('budget-add-expense').addEventListener('click',()=>{addRow({kind:'expense',category:'Annet',description:'',bank:'',amount:0,period:'month'});exampleActive=false;renderBudget();scheduleSave()});
   $('budget-show-bank')?.addEventListener('change',event=>{
    document.querySelector('.budget-table')?.classList.toggle('budget-bank-visible',event.target.checked);
   });
@@ -308,12 +338,13 @@
    row.querySelector('[data-field="amount"]').value=window.LANENUMBERS.displayMoney(String(Math.round(net*100)/100).replace('.',','));
    row.querySelector('[data-field="description"]').value='Netto lønn (fra brutto og oppgitt skattetrekk)';
    row.querySelector('[data-field="period"]').value='month';
-   exampleActive=false;renderBudget();$('budget-salary-message').textContent='Nettoanslaget er overført til budsjettposten Lønn.';
+   exampleActive=false;renderBudget();scheduleSave();$('budget-salary-message').textContent='Nettoanslaget er overført til budsjettposten Lønn.';
   });
   renderSalary();
   $('budget-bank-query')?.addEventListener('input',renderBudget);
-  $('budget-demo').addEventListener('click',()=>{exampleActive=true;setLines(example);$('budget-storage-status').textContent='Eksempelbudsjett vises. Beløpene er oppdiktede illustrasjoner.'});
-  $('budget-reset').addEventListener('click',()=>{exampleActive=false;setLines([]);$('budget-storage-status').textContent='Budsjettet er tømt i skjemaet. Bruk «Slett lokal lagring» dersom du har lagret tidligere.'});
+  $('budget-demo').addEventListener('click',()=>{rememberUndo();exampleActive=true;setLines(example);$('budget-storage-status').textContent='Eksempelbudsjett vises. Beløpene er oppdiktede illustrasjoner.'});
+  $('budget-reset').addEventListener('click',()=>{rememberUndo();exampleActive=false;setLines([]);scheduleSave();$('budget-storage-status').textContent='Skjemaet er tømt. Trykk «Angre» for å gjenopprette postene.'});
+  $('budget-undo')?.addEventListener('click',restoreUndo);
   $('budget-scenario-category').addEventListener('change',renderBudget);
   $('budget-scenario-percent').addEventListener('input',renderBudget);
   $('budget-export').addEventListener('click',exportCSV);
