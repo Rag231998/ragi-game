@@ -22,13 +22,13 @@ test('instant searchable verified banks with normalised names and no results',as
  await expect(page.locator('.bank-name')).toHaveText('Nordea');
  await input.fill('bulder');
  await expect(page.locator('.bank-card')).toHaveCount(1);
- await expect(page.locator('.bank-proof')).toContainText('Merkevare under registrert bank');
+ await expect(page.locator('.bank-proof')).toContainText('Bankkonsept under registrert bank');
  await input.fill('sbanken');
  await expect(page.locator('.bank-card')).toHaveCount(1);
  await input.fill('ikke en bank');
  await expect(page.locator('.bank-card')).toHaveCount(0);
  await expect(page.locator('.bank-empty')).toBeVisible();
- await page.getByRole('button',{name:'Vis alle banker'}).click();
+ await page.getByRole('button',{name:'Nullstill søket'}).click();
  await expect(page.locator('.bank-card')).toHaveCount(8);
 });
 test('selects vetted bank, accepts real user rate and calculates immediately',async({page})=>{
