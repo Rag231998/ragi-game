@@ -122,15 +122,15 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
  <section class="box loan-form" aria-label="Opplysninger om ditt boliglån">
  <div class="section-heading"><span class="step">1</span><div><h2>Ditt boliglån</h2><p class="subtitle">Endre tallene til det du faktisk betaler.</p></div></div>
  <form id="loan-form" autocomplete="off">
- <div class="field"><label for="balance">Hvor mye har du igjen på lånet?</label><div class="input-wrap"><input id="balance" type="number" min="10000" max="100000000" step="10000" value="3000000" required inputmode="numeric"><span>kr</span></div></div>
- <div class="field"><label for="property">Hva er boligen verdt?</label><div class="input-wrap"><input id="property" type="number" min="10000" max="200000000" step="10000" value="4500000" required inputmode="numeric"><span>kr</span></div></div>
+ <div class="field"><label for="balance">Hvor mye har du igjen på lånet?</label><small id="balance-tip">Bruk mellomrom for tusenskille, f.eks. 3 109 049 kr.</small><div class="input-wrap"><input id="balance" data-money-input type="text" value="3 000 000" required inputmode="decimal" autocomplete="off" aria-describedby="balance-tip"><span>kr</span></div></div>
+ <div class="field"><label for="property">Hva er boligen verdt?</label><div class="input-wrap"><input id="property" data-money-input type="text" value="4 500 000" required inputmode="decimal" autocomplete="off"><span>kr</span></div></div>
  <div class="two">
- <div class="field"><label for="rate">Nominell rente</label><div class="input-wrap"><input id="rate" type="number" min="0" max="35" step="0.01" value="5.50" required inputmode="decimal"><span>%</span></div></div>
+ <div class="field"><label for="rate">Nominell rente</label><div class="input-wrap"><input id="rate" data-decimal-input type="text" value="5,50" required inputmode="decimal" autocomplete="off"><span>%</span></div></div>
  <div class="field"><label for="years">År igjen</label><div class="input-wrap"><input id="years" type="number" min="1" max="40" step="1" value="25" required inputmode="numeric"><span>år</span></div></div>
  </div>
  <div class="two">
- <div class="field"><label for="currentfee">Termingebyr</label><div class="input-wrap"><input id="currentfee" type="number" min="0" max="2000" step="1" value="65" required inputmode="numeric"><span>kr/mnd</span></div></div>
- <div class="field"><label for="currentbank">Din bank (valgfritt)</label><div class="input-wrap"><select id="currentbank" aria-label="Velg din bank fra kontrollert registerliste"><option value="">Ikke valgt</option></select></div></div>
+ <div class="field"><label for="currentfee">Termingebyr</label><div class="input-wrap"><input id="currentfee" data-money-input type="text" value="65" required inputmode="decimal" autocomplete="off"><span>kr/mnd</span></div></div>
+ <div class="field bank-current-field"><label for="currentbank">Din bank (valgfritt)</label><div class="input-wrap"><input id="currentbank" type="search" placeholder="Søk etter banknavn…" autocomplete="off" spellcheck="false" aria-label="Søk etter din nåværende bank" aria-controls="currentbank-results" aria-expanded="false" aria-autocomplete="list"></div><div id="currentbank-results" class="bank-autocomplete" role="listbox" hidden></div></div>
  </div>
  <div class="info-band"><span>Belåningsgrad</span><strong id="ltv">–</strong></div>
  <p id="ltv-warning" class="status-text" role="status"></p>
@@ -159,14 +159,14 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
    <p id="scenario-detail" class="scenario-foot">* Forutsetter uendret restgjeld, lik løpetid og gebyr. Besparelsen er et regneeksempel.</p>
   </section>
   <section class="box bank-discovery" id="banker" aria-label="Søk etter banker med dokumentert tillatelse">
-    <div class="bank-discovery-head"><div><span class="eyebrow">Norske bankforetak</span><h2>Finn banken du vil sammenligne</h2><p class="subtitle">Kun banker med dokumentert banktillatelse – og tydelig merkede bankkonsepter under disse. Ingen lånemeglere eller betalte plasseringer.</p></div><span class="bank-trust">✓ Registerkilder</span></div>
+    <div class="bank-discovery-head"><div><span class="eyebrow">Norske bankforetak</span><h2>Finn og sammenlign banker</h2><p class="subtitle">Søk i vår utvidede oversikt med navn fra Norges Banks liste. Konsesjonsverifiserte foretak og bankkonsepter er merket særskilt. Ikke alle banker tilbyr boliglån.</p></div><span class="bank-trust">✓ Registerkilder</span></div>
     <div class="bank-searchbar"><svg viewBox="0 0 24 24" aria-hidden="true" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
       <input id="bank-query" type="search" placeholder="Søk DNB, KLP, Nordea, OBOS eller org.nr." autocomplete="off" spellcheck="false" aria-label="Søk i listen over registrerte banker" aria-controls="bank-results">
       <button id="bank-clear" type="button" hidden aria-label="Tøm banksøket">Tøm ×</button>
     </div>
-    <div class="bank-search-meta"><span id="bank-count" aria-live="polite">Laster banker …</span><span>Søk oppdateres mens du skriver</span></div>
-    <div id="bank-results" class="bank-results" role="list" aria-live="polite"></div>
-    <div class="bank-foot"><span id="bank-help">Velg en bank for å sammenligne et faktisk tilbud.</span><a href="https://www.finanstilsynet.no/virksomhetsregisteret/" target="_blank" rel="noopener noreferrer">Finanstilsynets virksomhetsregister ↗</a></div>
+    <div class="bank-search-meta"><span id="bank-count" aria-live="polite">Laster bankoversikt …</span><span>Søk på navn, selskap eller organisasjonsnummer</span></div>
+    <div id="bank-results" class="bank-results" role="list" aria-live="polite"></div><div class="bank-load-row"><button id="bank-more" type="button" class="light-button">Vis flere banker ↓</button></div>
+    <div class="bank-foot"><span id="bank-help">Utvalgte banker vises først. Søket dekker hele den oppførte listen – ikke alle aktører i det norske bankmarkedet.</span><a href="https://www.finanstilsynet.no/virksomhetsregisteret/" target="_blank" rel="noopener noreferrer">Finanstilsynets virksomhetsregister ↗</a></div>
   </section>
   <section class="box offer-panel" id="sammenlign" aria-label="Sammenlign banktilbud">
    <div class="section-heading" style="margin-bottom:8px"><span class="step">2</span><div><h2>Sammenlign med banktilbud</h2><p class="subtitle">Legg inn faktiske vilkår du finner hos bankene. Vi regner alt på samme lånebeløp og løpetid.</p></div></div>
@@ -200,6 +200,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 </main>
 <footer class="foot">Lånesjekk Norge – uavhengig beregningsverktøy. Ikke finansrådgivning, lånetilbud eller søknadsformidling. <a href="https://www.forbrukerradet.no/finansportalen/" target="_blank" rel="noopener noreferrer">Forbrukerrådet / Finansportalen</a> · Ingen innlogging eller markedsføringssporing i denne versjonen.</footer>
 <script src="./banker.js" defer></script>
+<script src="./numbers.js" defer></script>
 <script src="./app.js" defer></script>
 <script src="./bank-search.js" defer></script>
 </body></html>
