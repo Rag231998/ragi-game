@@ -7,8 +7,10 @@ test('homepage is a multi-category, navigable financial portal',async({page})=>{
  await expect(page.getByRole('heading',{name:/Få mer ut av/})).toBeVisible();
  await expect(page.locator('.home-tool')).toHaveCount(8);
  await expect(page.locator('.home-editorial a')).toHaveCount(3);
- await expect(page.locator('#sjekk')).toBeAttached();
- await expect(page.locator('#banker')).toBeAttached();
+ await expect(page.locator('#sjekk')).toBeHidden();
+ await expect(page.locator('#bankoversikt')).toBeHidden();
+ await expect(page.locator('#guider')).toBeHidden();
+ await expect(page.locator('#sparing')).toBeHidden();
  await expect(page.locator('.home-tool.featured')).toHaveAttribute('href','#sparing');
 });
 test('savings page compares real sourced product examples by selected deposit',async({page})=>{
@@ -93,17 +95,20 @@ test('all primary menu and cards stay on one document and use section anchors',a
  if(compactMenu){await page.locator('.mobile-menu summary').click()}
  await savingsLink.click();
  await expect(page).toHaveURL(origin+'/#sparing');
- await expect(page.locator('#save-amount')).toBeAttached();
- await expect(page.locator('#bank-query')).toBeAttached();
- await expect(page.locator('#monthly')).toBeAttached();
+ await expect(page.locator('#save-amount')).toBeVisible();
+ await expect(page.locator('#bank-query')).toBeHidden();
+ await expect(page.locator('#monthly')).toBeHidden();
+ await expect(page.locator('#guider')).toBeHidden();
  const learnLink=compactMenu?page.locator('.mobile-menu a[href="#guider"]').first():mainNav.locator('a[href="#guider"]');
  if(compactMenu)await page.locator('.mobile-menu summary').click();
  await learnLink.click();
  await expect(page).toHaveURL(origin+'/#guider');
  await expect(page.locator('#artikler .guide-article')).toHaveCount(9);
+ await expect(page.locator('#artikler')).toBeVisible();
+ await expect(page.locator('#sparing')).toBeHidden();
 });
 test('article cards open corresponding guides inline without navigation',async({page})=>{
- await page.goto('/',{waitUntil:'domcontentloaded'});
+ await page.goto('/#guider',{waitUntil:'domcontentloaded'});
  await page.locator('.guide-article a[href="#innskuddsgaranti"]').click();
  await expect(page).toHaveURL(/\/#innskuddsgaranti$/);
  await expect(page.locator('#innskuddsgaranti')).toHaveAttribute('open','');
@@ -117,4 +122,30 @@ test('homepage contains no internal navigation to legacy savings or guide pages'
  await expect(page.locator('#sparing-kalkulator')).toBeAttached();
  await expect(page.locator('#offisielle-renter')).toBeAttached();
  await expect(page.locator('#guider')).toBeAttached();
+});
+
+test('switching views preserves inputs without showing unrelated tools',async({page})=>{
+ await page.goto('/#sparing',{waitUntil:'domcontentloaded'});
+ await page.locator('#save-amount').fill('310904');
+ await expect(page.locator('#save-amount')).toHaveValue('310 904');
+ await page.locator('.viewbar-shortcuts a[href="#sjekk"]').click();
+ await expect(page.locator('#sjekk')).toBeVisible();
+ await expect(page.locator('#sparing')).toBeHidden();
+ await page.locator('#balance').fill('3109049');
+ await expect(page.locator('#balance')).toHaveValue('3 109 049');
+ await page.locator('.viewbar-shortcuts a[href="#sparing"]').click();
+ await expect(page.locator('#save-amount')).toHaveValue('310 904');
+ await expect(page.locator('#sjekk')).toBeHidden();
+ await page.goBack();
+ await expect(page.locator('#balance')).toHaveValue('3 109 049');
+ await expect(page.locator('#sparing')).toBeHidden();
+});
+test('deep links open exactly the requested guide window and keep calculators hidden',async({page})=>{
+ await page.goto('/#bsu',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#guider')).toBeVisible();
+ await expect(page.locator('#bsu')).toHaveAttribute('open','');
+ await expect(page.locator('#bsu .guide-full')).toBeVisible();
+ await expect(page.locator('#sparing')).toBeHidden();
+ await expect(page.locator('#sjekk')).toBeHidden();
+ await expect(page.locator('#bankoversikt')).toBeHidden();
 });
