@@ -27,15 +27,15 @@ function parseText(raw){
  const rows=String(raw).split(/\r?\n/).map(x=>x.trim()).filter(Boolean);let total=null,merchant='';
  const next=[];
  for(const [index,line] of rows.entries()){
-  if(index<4&&!merchant&&!/\d/.test(line)&&line.length>2&&!/kvittering|takk/i.test(line))merchant=line.slice(0,90);
+  if(index<6&&!merchant&&/rema\s*1000|kiwi|coop|extra|meny|spar\b|obs\b|joker|bunnpris|europris|clas ohlson|elkjøp|power\b|komplett/i.test(line))merchant=line.slice(0,90);
   const found=line.match(/([−+\-]?\s*(?:\d{1,3}(?:[ .]\d{3})+|\d{1,7})[,.]\d{1,2})\s*(?:kr)?\s*$/i);
   if(!found)continue;
   const amount=price(found[1]);if(!Number.isFinite(amount)||Math.abs(amount)>100000)continue;
   if(/^(?:sum\b|totalt?|beløp|å betale)/i.test(line)){total=amount;continue}
-  if(EXCLUDED.test(line)||/\b(?:grunnlag|mva\s*%|kortinnehaverens|referanse|godkjent|autorisert|kredit|debet)\b/i.test(line))continue;
+  if(EXCLUDED.test(line)||/\b(?:grunnlag|mva\s*%|kortinnehaverens|referanse|godkjent|autorisert|kredit|debet)\b/i.test(line)||/^(?:\d{1,2}[,.]\d{2}\s+){2,}/.test(line))continue;
   const name=line.slice(0,found.index).replace(/[.·:|\s_\-]+$/,'').trim();
   if(name.length<2||/^\d{3,}$/.test(name))continue;
-  const discount=/rabatt|avslag|kupong|tilbud/i.test(name);
+  const discount=/rabatt|avslag|kupong|prisavslag/i.test(name);
   const qtyPattern=name.match(/(?:^|\s)(\d{1,3})\s*[x×]\s*(?=\S)/i)||name.match(/(?:^|\s)[x×]\s*(\d{1,3})(?=\s|$)/i);
   const qty=qtyPattern?Math.max(1,Math.min(999,Number(qtyPattern[1]))):1;
   const cleanName=name.replace(/(?:^|\s)\d{1,3}\s*[x×]\s*/i,' ').replace(/(?:^|\s)[x×]\s*\d{1,3}(?=\s|$)/i,' ').trim()||name;
@@ -162,14 +162,14 @@ function renderHistory(){
  for(const rec of records){
   const card=el('div',undefined,'receipt-history-entry'),info=el('div');
   const cost=rec.items.reduce((s,i)=>s+Number(i.amount||0),0);
-  info.append(el('strong',rec.merchant||'Ukjent butikk'),el('span',rec.date+' · '+rec.items.length+' varer · '+money(cost)));
+  info.append(el('strong',rec.merchant||'Ukjent butikk'),el('span',rec.date+' · '+rec.items.reduce((n,i)=>n+(Number(i.quantity)||1),0)+' produkter · '+money(cost)));
   const del=el('button','Slett');del.type='button';del.onclick=()=>{if(store(history().filter(r=>r.id!==rec.id)))renderHistory()};
   card.append(info,del);root.append(card);
  }
 }
 function save(){
  if(!$('receipt-save-optin').checked){$('receipt-save-status').textContent='Velg frivillig lokal lagring først.';return}
- if(!items.length||items.some(i=>!Number.isFinite(i.amount)||i.name.trim().length<2)){
+ if(!items.length||items.some(i=>!Number.isFinite(i.amount)||i.name.trim().length<2||!Number.isInteger(Number(i.quantity||1))||Number(i.quantity||1)<1)){
   $('receipt-save-status').textContent='Kontroller navn og beløp på alle varelinjer.';return
  }
  const record={id:crypto.randomUUID(),date:$('receipt-date').value||date(),merchant:$('receipt-merchant').value.trim().slice(0,90),
