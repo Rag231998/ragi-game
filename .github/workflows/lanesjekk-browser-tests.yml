@@ -1,0 +1,38 @@
+name: Lånesjekk UI tests
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lanesjekk-norge/**'
+      - '.github/workflows/lanesjekk-browser-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    defaults:
+      run:
+        working-directory: lanesjekk-norge/tests
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Install tests
+        run: npm install --no-audit --no-fund
+      - name: Install browser engines
+        run: npx playwright install --with-deps chromium webkit
+      - name: Exercise bank search and mortgage flow
+        run: npm run test -- --config=playwright.config.cjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: lanesjekk-playwright-report
+          path: |
+            lanesjekk-norge/tests/playwright-report
+            lanesjekk-norge/tests/test-results
+          retention-days: 7
