@@ -109,3 +109,12 @@
 @media(max-width:410px){.receipt-donut-layout{grid-template-columns:1fr}.receipt-legend{width:100%}.receipt-hero h1{font-size:28px}.receipt-fields{grid-template-columns:1fr}.receipt-whatif-fields{grid-template-columns:1fr}.receipt-upload{min-height:130px}}
 @media(prefers-reduced-motion:reduce){.receipt-studio *{transition:none!important}}
 @media print{.receipt-studio{display:none!important}}
+
+/* Quantities and flexible receipt review on desktop/tablet */
+.receipt-table{min-width:650px}
+.receipt-table td:nth-child(2){min-width:76px;width:85px}
+.receipt-table td:nth-child(2) input{min-width:65px}
+.receipt-table td:nth-child(3){min-width:135px}
+.receipt-table td:nth-child(4){min-width:105px}
+#receipt-paste-image{width:100%;margin:0 0 9px}
+@media(max-width:780px){.receipt-grid{grid-template-columns:minmax(0,1fr)}.receipt-hero{grid-template-columns:1fr;padding:26px 22px}.receipt-hero-art{display:none}.receipt-pane{padding:16px}.receipt-table-scroll{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}}
