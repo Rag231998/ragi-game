@@ -121,10 +121,31 @@ function fromAd(){
   'Fant ingen tydelige nøkkeltall. Fyll inn feltene manuelt. Ingenting er hentet fra FINN automatisk.';
  update();
 }
+function updateValuation(){
+ const area=Number($('rental-area')?.value);
+ const comps=['rental-comp-1','rental-comp-2','rental-comp-3'].map(id=>Number($(id)?.value)).filter((v,i)=>$('rental-comp-'+(i+1))?.value&&valid(v,1000,1000000));
+ const value=$('rental-value'),range=$('rental-value-range'),diff=$('rental-value-diff'),future=$('rental-future-value');
+ const annual=Number($('rental-growth')?.value)||0;$('rental-growth-label').textContent=percent.format(annual)+' %';
+ if(!valid(area,10,2000)||comps.length<2){value.textContent='–';range.textContent='Registrer gyldig BRA-i og minst to sammenlignbare kvadratmeterpriser.';diff.textContent='';future.replaceChildren();$('rental-value-marker').style.left='50%';return}
+ const avg=comps.reduce((a,b)=>a+b,0)/comps.length,estimate=avg*area;
+ const low=Math.min(...comps)*area,high=Math.max(...comps)*area;
+ value.textContent=money(estimate);range.textContent='Sammenligningsintervall: '+money(low)+' – '+money(high)+'. Grunnlag: '+comps.length+' innlagte boligpriser.';
+ const offer=Number($('rental-price')?.value);
+ diff.textContent=valid(offer,1,1e8)?'Forskjell fra oppgitt prisantydning: '+money(estimate-offer)+' ('+percent.format((estimate/offer-1)*100)+' %).':'Legg inn prisantydning ovenfor for å se forskjellen.';
+ const position=high>low?Math.max(0,Math.min(100,(estimate-low)/(high-low)*100)):50;
+ $('rental-value-marker').style.left=position+'%';
+ future.replaceChildren();
+ for(const years of [1,3,5,10]){
+  const box=document.createElement('div'),lbl=document.createElement('small'),number=document.createElement('strong');
+  lbl.textContent=years+' år';number.textContent=money(estimate*Math.pow(1+annual/100,years));box.append(lbl,number);future.append(box);
+ }
+}
 function boot(){
  if(!$('rental-price'))return;
  document.querySelector('#utleie').addEventListener('input',update);
  document.querySelector('#utleie').addEventListener('change',update);
+ document.querySelector('#utleie').addEventListener('input',updateValuation);
+ document.querySelector('#utleie').addEventListener('change',updateValuation);
  $('rental-open').addEventListener('click',()=>{
   const url=allowed($('rental-finn-url').value);
   if(!url){$('rental-url-note').textContent='Bruk en gyldig HTTPS-lenke fra finn.no. Ingen andre domener åpnes her.';return}
@@ -136,15 +157,17 @@ function boot(){
   const values={price:3500000,sharedDebt:0,buyCosts:90000,rent:16500,equity:900000,rate:5.25,years:25,common:2200,running:900,maintenance:1200,vacancy:1};
   const mapping={price:'rental-price',sharedDebt:'rental-shared-debt',buyCosts:'rental-buy-costs',rent:'rental-rent',equity:'rental-equity',rate:'rental-interest',years:'rental-years',common:'rental-common',running:'rental-running',maintenance:'rental-maintenance',vacancy:'rental-vacancy'};
   for(const [key,id] of Object.entries(mapping))$(id).value=String(values[key]);
+  $('rental-area').value='62';$('rental-comp-1').value='73000';$('rental-comp-2').value='78000';$('rental-comp-3').value='75000';
   $('rental-tax').value='taxable';$('rental-url-note').textContent='Fiktivt illustrasjonseksempel: tallene er ikke hentet fra en boligannonse eller et virkelig leiemarked.';
   update();
  });
  $('rental-reset').addEventListener('click',()=>{
   for(const id of ['rental-price','rental-rent','rental-equity','rental-shared-debt','rental-buy-costs','rental-common','rental-running','rental-maintenance'])$(id).value='';
   $('rental-years').value='25';$('rental-interest').value='5.25';$('rental-vacancy').value='1';$('rental-finn-url').value='';$('rental-ad-text').value='';
+  for(const id of ['rental-area','rental-comp-1','rental-comp-2','rental-comp-3'])$(id).value='';$('rental-growth').value='2';
   $('rental-tax').value='taxable';$('rental-url-note').textContent='Legg inn en FINN-lenke eller fyll inn nøkkeltallene manuelt.';update();
  });
- update();window.lanesjekkRental={realEstate,parseAd,allowed};
+ update();updateValuation();window.lanesjekkRental={realEstate,parseAd,allowed};
 }
 document.addEventListener('DOMContentLoaded',boot);
 })();
