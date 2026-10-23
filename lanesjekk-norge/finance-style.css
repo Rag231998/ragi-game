@@ -389,3 +389,9 @@
 /* Respect filtered rows and optional account column even in card layout */
 .portal-home .budget-table tbody tr[hidden]{display:none!important}
 @media(max-width:950px){.portal-home .budget-table:not(.budget-bank-visible) tbody td:nth-child(4){display:none!important}}
+
+/* Budget reliability and recoverable editing */
+.portal-home #budget-undo[hidden]{display:none!important}
+.portal-home .budget-undo{background:#ede8ff;border-color:#cdbbef;color:#5d4098;font-weight:800}
+.portal-home .budget-error-summary:not(:empty){margin:12px 0;border:1px solid #f4b8ae;border-left:5px solid #c94138;padding:12px 16px;background:#fff4f1;color:#982e27;border-radius:10px;font-weight:750}
+.portal-home .budget-table tbody tr[hidden]{display:none!important}
