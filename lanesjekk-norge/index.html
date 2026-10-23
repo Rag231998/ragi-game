@@ -408,10 +408,10 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
    <img id="receipt-preview" alt="Forhåndsvisning av valgt kvittering" hidden>
    <button type="button" id="receipt-paste-image" class="receipt-btn minor">⎘ Lim inn bilde fra utklippstavlen</button><p class="receipt-helper">Tips: Bruk et skarpt bilde med hele kvitteringen, rett ovenfra, uten gjenskinn. Kontroller særlig pant, rabatter og linjesummer.</p><button type="button" id="receipt-ocr" class="receipt-btn main" disabled>✦ Les kvitteringen fra bildet</button>
    <p id="receipt-ocr-status" class="receipt-status" role="status" aria-live="polite">Velg en kvittering for å starte.</p>
-   <details class="receipt-textentry"><summary>▤ Lim inn eller rett OCR-teksten</summary>
+   <details class="receipt-textentry"><summary>▤ Kontroller OCR-tolkningen (valgfritt)</summary>
     <label for="receipt-raw">Tekst fra kvitteringen – én linje per vare</label>
     <textarea id="receipt-raw" rows="7" spellcheck="false" placeholder="MELK LETT 1L   24,90&#10;BRØD GROVT   32,90&#10;KAFFE 250G   69,90&#10;SUM   127,70"></textarea>
-    <button type="button" id="receipt-parse" class="receipt-btn minor">Oppdater varelisten fra korrigert tekst</button>
+    <button type="button" id="receipt-parse" class="receipt-btn minor">Oppdater varer etter korrigering</button>
    </details>
    <div class="receipt-sample-box"><button id="receipt-demo" type="button" class="receipt-btn minor">Prøv med eksempelkvittering</button><span>Ingen bilde nødvendig</span></div>
    <div class="receipt-fields">
@@ -463,14 +463,12 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 
 <section id="utleie" class="tool-view rental-studio" data-portal-view="property" hidden aria-label="Kalkulator for utleie og investeringseiendom">
  <div class="rental-hero"><div><span class="section-overline">EIENDOMSSTUDIO · NORSKE FORUTSETNINGER</span><h1>Kan denne boligen bli <em>en god utleieinvestering?</em></h1>
- <p>Lim inn annonselenken, kontroller nøkkeltallene og se avkastning, risiko, skattemessig anslag og månedlig kontantstrøm. Ingen tall fra FINN blir gjettet.</p></div><span class="rental-hero-icon" aria-hidden="true">⌂</span></div>
+ <p>Lim inn annonselenken, kontroller nøkkeltallene og se avkastning, risiko, skattemessig anslag og månedlig kontantstrøm. Tallene bygger på dine opplysninger og tydelig merkede scenarioer.</p></div><span class="rental-hero-icon" aria-hidden="true">⌂</span></div>
  <div class="rental-workspace">
  <section class="rental-card rental-inputs">
  <div class="rental-card-title"><span class="rental-step">1</span><div><h2>Eiendommen</h2><p>Start med pris og leiepotensial.</p></div></div>
- <label for="rental-finn-url">Boligannonse på FINN (valgfritt)</label>
- <div class="rental-url"><input id="rental-finn-url" type="url" placeholder="https://www.finn.no/realestate/..." inputmode="url" autocomplete="url"><button type="button" id="rental-open">Åpne ↗</button></div>
- <p id="rental-url-note" class="rental-note" role="status">Vi henter ikke FINN-annonser automatisk uten avtale. Lenken brukes som din referanse.</p>
- <details class="rental-paste"><summary>▤ Lim inn annonseteksten og foreslå tall</summary><p>Marker og kopier annonsedetaljene fra FINN. Analysen vil foreslå pris, areal og felleskostnader når teksten er tydelig, men du må kontrollere opplysningene.</p>
+ <div class="rental-listing-note"><strong>Boliganalyse uten annonseavhengighet</strong><p>Lim inn relevante boligopplysninger fra en annonse eller salgsoppgave, eller fyll inn tallene selv. Datakilder kan kobles til senere.</p></div>
+ <details class="rental-paste"><summary>▤ Hent tall fra annonsetekst eller salgsoppgave</summary><p>Marker og kopier boligens nøkkeltall fra en annonse eller salgsoppgave. Analysen vil foreslå pris, areal og felleskostnader når teksten er tydelig, men du må kontrollere opplysningene.</p>
  <textarea id="rental-ad-text" rows="5" placeholder="Prisantydning 3 990 000 kr&#10;Felleskostnader 3 500 kr/mnd&#10;BRA-i 62 m²"></textarea><button type="button" id="rental-parse-ad" class="rental-button secondary">Foreslå tall fra teksten</button></details>
  <div class="rental-fields">
  <label>Prisantydning / kjøpesum (kr)<input id="rental-price" type="number" min="0" max="100000000" step="10000" inputmode="numeric" placeholder="Fyll inn"></label>
@@ -508,7 +506,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
  <div class="rental-sources"><strong>Viktig om skatt og sikkerhet</strong>
  <p>Normalt 22 % skatt på skattepliktig overskudd, men utleie av egen bolig kan være fritatt. Vedlikehold er ikke det samme som påkostning. Skatt på renteutgifter/fradrag og kjøpskostnader krever individuell vurdering. Verktøyet gir ingen finansieringsgaranti.</p>
  <a href="https://www.skatteetaten.no/person/skatt/hjelp-til-riktig-skatt/bolig-og-eiendeler/bolig-eiendom-tomt/utleie/" target="_blank" rel="noopener noreferrer">Skatteetaten: utleie og fradrag ↗</a>
- <a href="https://www.finn.no/api/" target="_blank" rel="noopener noreferrer">FINN: tilgang til annonsedata / API ↗</a>
+
  </div>
  </section></div>
 </section>
