@@ -3,7 +3,7 @@
  * or reloading a form. Deep links and browser Back/Forward are supported. */
 (()=>{
  'use strict';
- const LABELS=Object.freeze({home:'Forside',loans:'Boliglån',savings:'Sparing',banks:'Bankoversikt',guides:'Guider og artikler',budget:'Budsjett',financing:'Billån og forbrukslån',academy:'Lånesjekk Akademi',investing:'Fond og aksjer'});
+ const LABELS=Object.freeze({home:'Forside',loans:'Boliglån',savings:'Sparing',banks:'Bankoversikt',guides:'Guider og artikler',budget:'Budsjett',receipts:'Kvitteringer',financing:'Billån og forbrukslån',academy:'Lånesjekk Akademi',investing:'Fond og aksjer'});
  const SELECTORS='[data-portal-view]';
  function closeMenu(){
   document.querySelectorAll('.mobile-menu[open]').forEach(menu=>{menu.open=false});
