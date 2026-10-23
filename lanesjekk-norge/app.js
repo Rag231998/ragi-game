@@ -55,10 +55,10 @@ function addOffer(bank){
  const offer={id,bankId:bank.id,element:div};offers.push(offer);
  const title=div.querySelector('.offer-head h3');title.textContent=bank.name;
  const nameField=div.querySelector('[data-field="name"]');nameField.value=bank.name;nameField.readOnly=true;
- nameField.title='Banken er valgt fra registrerte foretak og kan ikke erstattes med et ukontrollert banknavn.';
- const licence=document.createElement('a');licence.textContent='✓ Se tillatelse i Finanstilsynet ↗';licence.href=bank.register;licence.target='_blank';licence.rel='noopener noreferrer';
+ nameField.title='Banknavnet er valgt fra vår kildebelagte oversikt og kan ikke endres til et ubekreftet navn.';
+ const licence=document.createElement('a');licence.textContent=bank.registryVerified?'✓ Se registeroppføring i Finanstilsynet ↗':'Søk etter banken hos Finanstilsynet ↗';licence.href=bank.register;licence.target='_blank';licence.rel='noopener noreferrer';
  licence.className='offer-licence';div.append(licence);
- const note=document.createElement('p');note.className='offer-data-note';note.textContent='Fyll inn en faktisk tilbudt nominell rente fra '+bank.name+'. Vi har ikke registrert noen bankrente på dine vegne.';div.append(note);
+ const note=document.createElement('p');note.className='offer-data-note';note.textContent='Fyll inn en faktisk tilbudt nominell rente fra '+bank.name+'. '+(bank.registryVerified?'Registeroppføring fra Finanstilsynet.':'Banknavn fra Norges Banks bankliste – kontroller tillatelse og boliglånstilbud hos banken.')+' Vi bruker ingen automatisk bankrente.';div.append(note);
  div.querySelector('.remove').addEventListener('click',()=>{
   div.remove();offers=offers.filter(o=>o.id!==id);compute()
  });
