@@ -34,13 +34,15 @@ Opprett et eget Vercel-prosjekt, legg index.html, app.js og api/calculate.js i p
 
 ## Oppgradert bankoversikt og premium-UX – 23. oktober 2026
 
-- `banker.js`: manuelt kuratert registerliste med **8 banker** der bank/filial og banktillatelse er dokumentert med en direkte lenke til Finanstilsynets virksomhetsregister. Dette er et utvalg, **ikke** hele markedet eller en løpende automatisk lisenskontroll.
+- `banker.js`: manuelt kuratert registerliste med **11 banker og bankkonsepter** der bank/filial og banktillatelse er dokumentert med en direkte lenke til Finanstilsynets virksomhetsregister. Dette er et utvalg, **ikke** hele markedet eller en løpende automatisk lisenskontroll.
 - `bank-search.js`: øyeblikkelig banksøk (navn, juridisk navn og organisasjonsnummer), håndtering av norske aksenter, tastatur, søk uten treff og direkte valg av bankkort.
 - Bankkortene forsøker å laste bankens **egne nettstedikoner/favicons**, og bruker stiliserte initialer hvis nettstedet ikke leverer et ikon. Det innebærer en nettverksforespørsel til de viste bankenes domener; IP-adressen kan derfor bli synlig der. Ikke anta at favicon er bankens fullstendige offisielle logo.
 - Valg av bank fyller inn banknavnet som skrivebeskyttet. Brukeren må selv legge inn den **faktiske tilbudsrenten**. En valgt bank viser direkte lenke til registerkilden.
-- `api/calculate.js` krever `bankId` fra en **server-side allowlist** med de samme åtte bank-ID-ene. Påstander eller banknavn fra innsendt API-body aksepteres ikke ukritisk.
+- `api/calculate.js` krever `bankId` fra en **server-side allowlist** med de samme elleve bank-/konsept-ID-ene. Påstander eller banknavn fra innsendt API-body aksepteres ikke ukritisk.
 - Interaktiv renteslider viser hypotetisk reduksjon i **sum månedlige terminbeløp for 12 måneder** og er ikke en garanti for spart rentekostnad.
 - `premium.css` er spesialutviklet responsivt brukergrensesnitt, ikke kopi av en annen nettsides design eller innhold.
 - `tests/` og `.github/workflows/lanesjekk-browser-tests.yml` inneholder automatiske tester for desktop-Chromium, Android-Chromium, nettbrett og iPhone-WebKit. Testene er skrevet, men **ingen vellykket nettleserkjøring er bekreftet i denne samtalen**.
 
 **Viktig:** Ikke vis en bank som «anbefalt», «billigst» eller «best» på bakgrunn av registeroppføring. Publiserte banktilbud krever faktiske data, tydelige betingelser og lisensiert datatilgang. Banker og logoer er ikke sponsorer eller partnere i tjenesten.
+
+**Bankkonsepter:** Bulder er et konsept levert under Sparebanken Norges banktillatelse (Finanstilsynet ID 99313) og Sbanken er et konsept under DNB Bank ASA (ID 98973). Disse merkes eksplisitt som bankkonsepter, ikke egne konsesjonsbanker. Kilder: https://www.bulder.no/om-oss og https://www.dnb.no/hjelp-og-veiledning/sbanken-fusjonen .
