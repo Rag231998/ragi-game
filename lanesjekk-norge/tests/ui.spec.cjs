@@ -40,7 +40,10 @@ test('selects vetted bank, accepts real user rate and calculates immediately',as
 test('scenario slider updates transparently and never represents real bank offers',async({page})=>{
  await expect(page.locator('#scenario-year')).not.toHaveText('–');
  const before=await page.locator('#scenario-year').innerText();
- await page.locator('#scenario-cut').fill('1.25');
+ await page.locator('#scenario-cut').evaluate(el=>{
+  el.value='1.25';
+  el.dispatchEvent(new Event('input',{bubbles:true}));
+ });
  await expect(page.locator('#scenario-cut-label')).toContainText('1,25');
  await expect(page.locator('#scenario-year')).not.toHaveText(before);
  await expect(page.locator('#scenario-detail')).toContainText('Hypotetisk');
