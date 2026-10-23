@@ -164,3 +164,15 @@
 @media(max-width:690px){.portal-home .hero-inner{grid-template-columns:1fr}.portal-home .hero{padding-top:43px}.portal-home .hero h1{font-size:clamp(34px,8vw,45px)}.portal-home .hero .cta-row .btn{min-height:49px;color:#093f38}.portal-home .home-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.portal-home .tool-hero{padding:25px 18px;border-radius:15px}.portal-home .tool-overview{gap:8px}.portal-home .tool-kpi{padding:16px 11px}.portal-home .tool-kpi strong{font-size:19px}.portal-home .tool-pane{padding:18px 13px}.portal-home .tool-pane-head{flex-wrap:wrap;gap:12px}.portal-home .tool-actions{width:100%}.portal-home .budget-toolbar{align-items:flex-start}.portal-home .budget-donut-layout{grid-template-columns:1fr;justify-items:center}.portal-home .budget-legend{width:100%;max-height:none}.portal-home .academy-steps,.portal-home .academy-course-grid{grid-template-columns:1fr 1fr}.portal-home .academy-course{padding:14px;min-height:205px}.portal-home .finance-tabs a,.portal-home .finance-tabs button{padding:12px;font-size:11px}.portal-home .finance-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.portal-home .saving-projection{flex-direction:column;align-items:flex-start}.portal-home .finance-details strong{font-size:16px}.portal-home .budget-timeline,.portal-home .finance-debt-chart{height:165px}}
 @media(max-width:380px){.portal-home .home-tool-grid{grid-template-columns:1fr}.portal-home .tool-overview,.portal-home .finance-kpis{grid-template-columns:1fr 1fr}.portal-home .academy-course-grid{grid-template-columns:1fr}.portal-home .tool-hero h1{font-size:30px}}
 @media(prefers-reduced-motion:reduce){.portal-home .academy-track>div{transition:none}}
+
+/* The source screenshot exposed an overflow around narrow desktop/tablet widths. */
+@media(max-width:950px){
+ .portal-home .hero-inner{grid-template-columns:minmax(0,1fr)!important}
+ .portal-home .hero .hero-card{display:none!important}
+ .portal-home .hero h1{max-width:680px}
+ .portal-home .hero p{max-width:660px}
+}
+@media(max-width:1100px){
+ .portal-home .site-header .portal-nav{display:none!important}
+ .portal-home .site-header .mobile-menu{display:block}
+}
