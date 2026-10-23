@@ -309,7 +309,7 @@
   $('financing-form-panel').addEventListener('input',renderLoan);
   $('financing-form-panel').addEventListener('change',renderLoan);
   window.lanesjekkFinanceChooseMode=chooseMode;
-  chooseMode('car');
+  chooseMode(window.location.hash==='#forbrukslan'?'consumer':'car');
  }
  document.addEventListener('DOMContentLoaded',()=>{if(!$('budsjett')||!$('billan'))return;initBudget();initLoan()});
 })();
