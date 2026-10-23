@@ -7,7 +7,7 @@ const number=new Intl.NumberFormat('nb-NO',{maximumFractionDigits:1});
 const pct=new Intl.NumberFormat('nb-NO',{minimumFractionDigits:2,maximumFractionDigits:2});
 let offerId=0;let offers=[];
 const opts={balance:3000000,property:4500000,rate:5.5,years:25,currentfee:65};
-function val(id){return Number($(id).value)}
+function val(id){const raw=$(id).value.trim();return raw===''?NaN:Number(raw)}
 function validNumber(n,min,max){return Number.isFinite(n)&&n>=min&&n<=max}
 function money(v){return Number.isFinite(v)?nok.format(Math.round(v)):'–'}
 function annuity(principal,annualRate,months){
@@ -35,7 +35,8 @@ function setEmpty(){
  for(const id of ['ltv','monthly','interest','total','split-label'])text(id,'–');
  $('principal-bar').style.width='50%';
  text('ltv-warning','Kontroller at alle felter inneholder gyldige verdier.');
- $('result-table-wrap').hidden=true;$('copy-request').disabled=true;
+ $('result-table-wrap').hidden=true;$('copy-request').disabled=true;$('copy-summary').disabled=true;
+ $('copy-request').dataset.best='';$('copy-summary').dataset.summary='';$('results').replaceChildren();
 }
 function offerValue(o,field){return o.element.querySelector('[data-field="'+field+'"]')?.value??''}
 function addOffer(bank){
@@ -119,6 +120,7 @@ function compute(){
  }
  $('result-table-wrap').hidden=comparisons.length===0;
  $('copy-request').disabled=comparisons.length===0;
+ $('copy-summary').disabled=false;
  $('copy-request').dataset.best=comparisons.length?JSON.stringify({loan,best:comparisons[0],baseline:now}):'';
  $('copy-summary').dataset.summary=JSON.stringify({loan,baseline:now,offers:comparisons});
 }
@@ -171,6 +173,7 @@ function market(){
 function reset(){
  for(const [id,v] of Object.entries(opts))$(id).value=String(v);
  $('currentbank').value='';$('offers').replaceChildren();offers=[];offerId=0;
+ $('scenario-cut').value='0.5';
  $('add-offer').disabled=false;
  text('action-status','Eksempelverdiene er gjenopprettet.');compute();
 }
@@ -194,6 +197,7 @@ function init(){
   const opt=document.createElement('option');opt.value=b.name;opt.textContent=b.name;bankSelect.append(opt);
  }
  $('loan-form').addEventListener('input',compute);
+ $('loan-form').addEventListener('submit',event=>event.preventDefault());
  $('add-offer').addEventListener('click',()=>{
   const input=$('bank-query');input.scrollIntoView({behavior:'smooth',block:'center'});input.focus();
  });
