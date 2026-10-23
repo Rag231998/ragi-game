@@ -5,7 +5,7 @@ test.beforeEach(async({page})=>{
 test('homepage is a multi-category, navigable financial portal',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
  await expect(page.getByRole('heading',{name:/Få mer ut av/})).toBeVisible();
- await expect(page.locator('.home-tool')).toHaveCount(8);
+ await expect(page.locator('.home-tool')).toHaveCount(12);
  await expect(page.locator('.home-editorial a')).toHaveCount(3);
  await expect(page.locator('#sjekk')).toBeHidden();
  await expect(page.locator('#bankoversikt')).toBeHidden();

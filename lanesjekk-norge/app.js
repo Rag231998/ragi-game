@@ -65,10 +65,16 @@ function addOffer(bank){
  div.addEventListener('input',compute);
  $('offers').append(div);
  window.LANENUMBERS.formatAll(div);
- $('add-offer').disabled=offers.length>=8;
+ setAddOfferDisabled(offers.length>=8);
  compute();
  div.querySelector('[data-field="rate"]').focus();
  return true;
+}
+function setAddOfferDisabled(disabled){
+ const control=$('add-offer');
+ control.setAttribute('aria-disabled',String(disabled));
+ control.tabIndex=disabled?-1:0;
+ control.classList.toggle('is-disabled',disabled);
 }
 function extractOffers(loan){
  const list=[];
@@ -87,7 +93,7 @@ function compute(){
  const loan=getLoan();
  scenarioPreview();
  $('offers-empty').hidden=offers.length>0;
- $('add-offer').disabled=offers.length>=8;
+ setAddOfferDisabled(offers.length>=8);
  if(!loan){setEmpty();return}
  const now=scenario(loan.balance,loan.rate,loan.months,loan.currentfee);
  const ltv=loan.balance/loan.property*100;
@@ -176,7 +182,7 @@ function reset(){
  window.LANENUMBERS.formatAll();
  $('currentbank').value='';$('currentbank').dataset.bankId='';$('offers').replaceChildren();offers=[];offerId=0;
  $('scenario-cut').value='0.5';
- $('add-offer').disabled=false;
+ setAddOfferDisabled(false);
  text('action-status','Eksempelverdiene er gjenopprettet.');compute();
 }
 
@@ -197,8 +203,10 @@ function init(){
  const bankSelect=$('currentbank');
  $('loan-form').addEventListener('input',compute);
  $('loan-form').addEventListener('submit',event=>event.preventDefault());
- $('add-offer').addEventListener('click',()=>{
-  if(typeof window.lanesjekkNavigate==='function')window.lanesjekkNavigate('banker');
+ $('add-offer').addEventListener('click',event=>{
+  if($('add-offer').getAttribute('aria-disabled')==='true'){
+   event.preventDefault();event.stopPropagation();return;
+  }
   const input=$('bank-query');
   window.requestAnimationFrame(()=>{input?.focus({preventScroll:true})});
  });

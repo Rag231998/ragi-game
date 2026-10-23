@@ -14,7 +14,7 @@ async function run(){
   // A production URL can temporarily serve the previous release while Vercel
   // assigns its new alias. Require the exact new homepage before continuing.
   let site;
-  const expectedTitle=/<title>Lånesjekk Norge \| Sammenlign boliglån, sparing og banker/i;
+  const expectedTitle=/<title>Lånesjekk Norge \| Budsjett, sparing, billån og banksammenligning/i;
   for(let attempt=0;attempt<12;attempt++){
     site=await request('/');
     if(site.response.status===200&&expectedTitle.test(site.body)&&site.body.includes('id="sparing" data-portal-view="savings"')&&site.body.includes('id="bankoversikt"')&&site.body.includes('id="guider" data-portal-view="guides"'))break;
@@ -35,6 +35,16 @@ async function run(){
   assert.equal(onePage.response.status,200);
   assert.match(onePage.body,/lanesjekkPortal/);
   assert.match(onePage.body,/history\.pushState/);
+  for(const id of ['budsjett','billan','akademi']){
+    assert.ok(site.body.includes('id="'+id+'" data-portal-view='),'Missing new separated view: '+id);
+  }
+  for(const file of ['/finance-tools.js','/finance-ui.js','/finance-style.css','/academy.js']){
+    const asset=await request(file);
+    assert.equal(asset.response.status,200,'Missing finance module '+file);
+    assert.ok(asset.body.length>100);
+  }
+  assert.match(site.body,/href="#forbrukslan"/);
+  console.log('OK budget, vehicle/consumer loans, academy and custom visuals served from production');
   assert.match(site.body,/data-portal-view="savings" hidden/);
   assert.match(site.body,/data-portal-view="banks" hidden/);
   assert.match(site.body,/data-portal-view="guides" hidden/);
