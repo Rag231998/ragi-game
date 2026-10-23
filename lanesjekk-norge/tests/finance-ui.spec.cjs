@@ -20,15 +20,15 @@ test('editable budget computes accurate totals, insights and custom charts',asyn
  await expect(page.locator('#budget-balance')).toContainText(/11\s?800/);
  await expect(page.locator('#budget-category-list .legend-row')).toHaveCount(7);
  await expect(page.locator('#budget-timeline>div')).toHaveCount(12);
- await expect(page.locator('#budget-bank-chart .tool-bar-row')).toHaveCount(2);
+ await expect(page.locator('#budget-bank-chart').locator('xpath=ancestor::*[contains(@class,"tool-pane")][1]')).toBeHidden();
  await page.locator('#budget-add-expense').click();
  await expect(page.locator('.budget-table tbody tr')).toHaveCount(10);
  await page.locator('.budget-table tbody tr').last().locator('[data-field=amount]').fill('1200');
  await expect(page.locator('.budget-table tbody tr').last().locator('[data-field=amount]')).toHaveValue('1 200');
  await expect(page.locator('#budget-expenses')).toContainText(/33\s?400/);
  await expect(page.locator('#budget-balance')).toContainText(/10\s?600/);
- await page.locator('#budget-bank-filter').selectOption('Nordea');
- expect(await page.locator('.budget-table tbody tr:visible').count()).toBe(3);
+ await expect(page.locator('.budget-table th').nth(3)).toBeHidden();
+ expect(await page.locator('.budget-table tbody tr:visible').count()).toBe(10);
  await expect(page.locator('#budget-income')).toContainText(/44\s?000/);
 });
 test('budget preserves opt-in local data, exports semicolon CSV and can remove saved values',async({page})=>{
