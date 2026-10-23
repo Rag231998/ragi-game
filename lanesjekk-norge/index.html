@@ -105,13 +105,13 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 @media(max-width:1020px){.layout{grid-template-columns:minmax(0,1fr)}.loan-form{position:static}.metric-grid{grid-template-columns:repeat(3,1fr)}.hero-inner{gap:24px}}
 @media(max-width:690px){header{padding:12px 14px;min-height:65px}.brandmark{height:36px;width:36px;font-size:19px}.brand strong{font-size:13px}.brand small{font-size:8px}header nav{gap:8px}header nav a{font-size:10px}.header-pill{display:none}.hero{padding:37px 14px 80px}.hero-inner{grid-template-columns:1fr}.hero-card{display:none}h1{font-size:34px}.hero p{font-size:13px}.hero .btn{width:auto}.layout{gap:11px}main{padding:0 10px 45px;margin-top:-52px}.loan-form{padding:20px 16px}.metric-grid{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/-1}.metric strong{font-size:21px}.summary-card,.offer-panel{padding:19px 15px}.offer-fields{grid-template-columns:1fr 1fr}.offer-fields .field:first-child{grid-column:1/-1}.offer-fields .field:last-child{grid-column:1/-1}.two{gap:9px}.offer-title{align-items:start}.offer-title h2{font-size:18px}.market{padding:18px 14px}.market-inner{grid-template-columns:1fr}.market .btn{width:100%}.market iframe{height:1100px}.steps{grid-template-columns:1fr}.step-card{padding:15px}.market p{font-size:11px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-</style><link rel="stylesheet" href="./premium.css?v=1"><link rel="stylesheet" href="./portal.css?v=2"><link rel="stylesheet" href="./finance-style.css?v=1"><link rel="stylesheet" href="./daily-studio.css?v=1"></head><body class="portal-home" id="topp">
+</style><link rel="stylesheet" href="./premium.css?v=1"><link rel="stylesheet" href="./portal.css?v=2"><link rel="stylesheet" href="./finance-style.css?v=1"><link rel="stylesheet" href="./daily-studio.css?v=1"><link rel="stylesheet" href="./receipts.css?v=1"></head><body class="portal-home" id="topp">
 <div class="utility-bar"><div class="site-container utility-inner"><span>Uavhengig økonomioversikt</span><span>Gratis verktøy · Kilder fra banker og offentlige etater</span></div></div>
 <header class="site-header"><div class="site-container nav-row">
 <a class="portal-logo" href="#topp"><span class="logo-emblem">◈</span><span>LÅNESJEKK <b>NORGE</b><small>Mer oversikt. Bedre valg.</small></span></a>
-<nav class="portal-nav" aria-label="Hovednavigasjon"><a href="#topp" aria-current="page">Forside</a><a href="#budsjett">Budsjett</a><a href="#billan">Billån</a><a href="#forbrukslan">Forbrukslån</a><a href="#sjekk">Boliglån</a><a href="#sparing">Sparing</a><a href="#investering">Fond og aksjer</a><a href="#banker">Banker</a><a href="#akademi">Læring</a><a href="#guider">Guider</a></nav>
+<nav class="portal-nav" aria-label="Hovednavigasjon"><a href="#topp" aria-current="page">Forside</a><a href="#budsjett">Budsjett</a><a href="#kvitteringer">Kvitteringer</a><a href="#billan">Billån</a><a href="#forbrukslan">Forbrukslån</a><a href="#sjekk">Boliglån</a><a href="#sparing">Sparing</a><a href="#investering">Fond og aksjer</a><a href="#banker">Banker</a><a href="#akademi">Læring</a><a href="#guider">Guider</a></nav>
 <a class="nav-cta" href="#sparing">Sammenlign sparing <span>↗</span></a>
-<details class="mobile-menu"><summary aria-label="Åpne meny">☰ Meny</summary><div><a href="#topp">Forside</a><a href="#sjekk">Boliglån</a><a href="#sparing">Sparing</a><a href="#budsjett">Budsjett</a><a href="#billan">Billån</a><a href="#forbrukslan">Forbrukslån</a><a href="#investering">Fond og aksjer</a><a href="#akademi">Læringsplattform</a><a href="#guider">Guider og artikler</a><a href="#banker">Bankoversikt</a></div></details>
+<details class="mobile-menu"><summary aria-label="Åpne meny">☰ Meny</summary><div><a href="#topp">Forside</a><a href="#sjekk">Boliglån</a><a href="#sparing">Sparing</a><a href="#budsjett">Budsjett</a><a href="#kvitteringer">Kvitteringer</a><a href="#billan">Billån</a><a href="#forbrukslan">Forbrukslån</a><a href="#investering">Fond og aksjer</a><a href="#akademi">Læringsplattform</a><a href="#guider">Guider og artikler</a><a href="#banker">Bankoversikt</a></div></details>
 </div></header>
 <section class="hero" data-portal-view="home"><div class="hero-inner"><div>
  <div class="eyebrow">SMARTERE PRIVATØKONOMI · HELT GRATIS</div>
@@ -128,6 +128,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 <section class="home-navigation" data-portal-view="home" aria-label="Velg hva du ønsker å sammenligne">
  <div class="home-intro"><span class="section-overline">UTFORSK ALLE MULIGHETENE</span><h2>Hva vil du <em>utforske i dag?</em></h2><p>Velg et tema. Hvert kort åpner et verktøy eller en guide som hjelper deg videre.</p></div>
  <div class="home-tool-grid">
+   <a class="home-tool receipt-home-feature" href="#kvitteringer"><span class="home-tool-art">🧾</span><span class="home-tool-category">NYTT · KVITTERINGSSTUDIO</span><strong>Skann. Forstå. Prioriter.</strong><small>Ta bilde av en kvittering, se hver vare, forbruksgrafer og hva du kunne brukt pengene på.</small><span class="home-tool-arrow">Åpne kvitteringsstudio ↗</span></a>
    <a class="home-tool featured-purple" href="#budsjett"><span class="home-tool-art">▦</span><span class="home-tool-category">BUDSJETT</span><strong>Mitt personlige budsjett</strong><small>Få oversikt over inntekt, forbruk og sparing – med grafer og utskriftsklar PDF.</small><span class="home-tool-arrow">Åpne budsjettet ↗</span></a>
    <a class="home-tool" href="#billan"><span class="home-tool-art">🚗</span><span class="home-tool-category">BILLÅN</span><strong>Billånskalkulator</strong><small>Renter, gebyrer, avdrag, restgjeld og effektiv rente visualisert.</small><span class="home-tool-arrow">Beregn billån ↗</span></a>
    <a class="home-tool" href="#forbrukslan"><span class="home-tool-art">▥</span><span class="home-tool-category">FORBRUKSLÅN</span><strong>Hva koster et forbrukslån?</strong><small>Se total lånekostnad, månedsbeløp og forskjeller ved lavere rente.</small><span class="home-tool-arrow">Beregn forbrukslån ↗</span></a>
@@ -361,6 +362,79 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
  </div></div>
 </div>
 </section>
+
+<section class="tool-view receipt-studio" id="kvitteringer" data-portal-view="receipts" hidden aria-label="Kvitteringsstudio">
+ <div class="receipt-hero">
+  <div><span class="section-overline">🧾 KVITTERINGSSTUDIO · GRATIS</span>
+  <h1>Se hva pengene <em>faktisk gikk til.</em></h1>
+  <p>Ta bilde av en kvittering eller lim inn tekst. Se hver vare og pris, endre kategorier, og utforsk hva du kunne prioritert annerledes. Ingen innlogging er nødvendig.</p>
+  <div class="receipt-tags"><span>✓ Hver vare blir synlig</span><span>✓ Grafer og innsikt</span><span>✓ Bilder behandles lokalt</span></div>
+  </div>
+  <div class="receipt-hero-art" aria-hidden="true"><span>🛒</span><strong>DIN HANDLEKURV</strong><small>Små kjøp. Stor oversikt.</small></div>
+ </div>
+ <div class="receipt-grid">
+  <div class="receipt-pane receipt-capture">
+   <div class="receipt-step"><span>01</span><div><h2>Legg inn en kvittering</h2><p>Ta bilde, velg en fil eller skriv inn kjøpene.</p></div></div>
+   <label for="receipt-file" class="receipt-upload">
+    <span class="receipt-upload-icon">▤</span><strong>Ta bilde eller velg kvittering</strong><small>JPG, PNG, WebP · opptil 12 MB</small>
+    <input id="receipt-file" type="file" accept="image/*" capture="environment" aria-describedby="receipt-image-note">
+   </label>
+   <p id="receipt-image-note" class="receipt-helper">Bildet blir ikke lastet opp til Lånesjekk. Første skanning laster ned OCR-komponenter og norsk/engelsk språkmodell fra en ekstern CDN. Kun OCR-modellen, ikke kvitteringsbildet, lastes ned.</p>
+   <img id="receipt-preview" alt="Forhåndsvisning av valgt kvittering" hidden>
+   <button type="button" id="receipt-ocr" class="receipt-btn main" disabled>✦ Les kvitteringen fra bildet</button>
+   <p id="receipt-ocr-status" class="receipt-status" role="status" aria-live="polite">Velg en kvittering for å starte.</p>
+   <details class="receipt-textentry"><summary>▤ Lim inn eller rett OCR-teksten</summary>
+    <label for="receipt-raw">Tekst fra kvitteringen – én linje per vare</label>
+    <textarea id="receipt-raw" rows="7" spellcheck="false" placeholder="MELK LETT 1L   24,90&#10;BRØD GROVT   32,90&#10;KAFFE 250G   69,90&#10;SUM   127,70"></textarea>
+    <button type="button" id="receipt-parse" class="receipt-btn minor">Analyser teksten</button>
+   </details>
+   <div class="receipt-sample-box"><button id="receipt-demo" type="button" class="receipt-btn minor">Prøv med eksempelkvittering</button><span>Ingen bilde nødvendig</span></div>
+   <div class="receipt-fields">
+    <label>Butikk / leverandør<input id="receipt-merchant" maxlength="90" placeholder="F.eks. dagligvarebutikk"></label>
+    <label>Dato<input id="receipt-date" type="date"></label>
+   </div>
+   <p class="receipt-helper">OCR kan feiltolke priser, rabatter, mengder og MVA. Kontroller derfor linjene mot originalkvitteringen før du bruker analysen.</p>
+  </div>
+  <div class="receipt-pane receipt-results">
+   <div class="receipt-step"><span>02</span><div><h2>Hva kjøpte du?</h2><p>Alle varer kan redigeres før analysen beregnes.</p></div></div>
+   <div class="receipt-summary-row"><div><small>Sum varer</small><strong id="receipt-sum">0 kr</strong></div><div><small>Antall linjer</small><strong id="receipt-count">0</strong></div><div><small>Kontroll</small><strong id="receipt-check">Ikke kontrollert</strong></div></div>
+   <div id="receipt-reconcile" class="receipt-reconcile" role="status">Skann eller legg inn en kvittering for å starte.</div>
+   <div class="receipt-table-scroll"><table class="receipt-table" aria-label="Varer fra kvitteringen">
+    <thead><tr><th>Vare</th><th>Kategori</th><th>Beløp</th><th></th></tr></thead>
+    <tbody id="receipt-items"></tbody></table></div>
+   <div class="receipt-add"><button id="receipt-add-item" type="button" class="receipt-btn minor">＋ Legg til vare manuelt</button><button id="receipt-clear" type="button" class="receipt-btn subtle">Tøm</button></div>
+   <label class="receipt-local-save"><input type="checkbox" id="receipt-save-optin"> Jeg ønsker å lagre bekreftede kjøp lokalt i denne nettleseren (ingen bilder). Ikke huk av på en delt PC.</label>
+   <button type="button" id="receipt-save" class="receipt-btn main" disabled>✓ Lagre kvittering til forbruksoversikten</button>
+   <p id="receipt-save-status" class="receipt-status" role="status" aria-live="polite"></p>
+  </div>
+ </div>
+ <div class="receipt-analytics" id="receipt-analytics" aria-label="Forbruksgrafer og refleksjon">
+  <div class="receipt-overview-heading"><div><span class="section-overline">DIN FORBRUKSANALYSE</span><h2>Pengene dine, i bilder og tall.</h2><p>Grafene følger varene du har registrert. Prøv kategorier og se fordelingen endre seg.</p></div><span class="receipt-live-label">● OPPDATERES AUTOMATISK</span></div>
+  <div class="receipt-metrics">
+   <div><small>Registrert kjøp</small><strong id="receipt-metric-total">0 kr</strong></div>
+   <div><small>Største kategori</small><strong id="receipt-metric-top">–</strong></div>
+   <div><small>Mulig omprioritering</small><strong id="receipt-metric-whatif">0 kr</strong></div>
+   <div><small>Sparekonto etter ett år*</small><strong id="receipt-metric-year">0 kr</strong></div>
+  </div>
+  <div class="receipt-charts">
+   <section class="receipt-chart-card"><h3>Hvor gikk pengene?</h3><p>Fordeling etter kategoriene du har valgt.</p><div class="receipt-donut-layout"><div id="receipt-donut" class="receipt-donut" role="img" aria-label="Fordeling av utgifter etter kategori"><span id="receipt-donut-center">0 kr</span></div><div id="receipt-legend" class="receipt-legend"></div></div></section>
+   <section class="receipt-chart-card"><h3>Fordelt på kategorier</h3><p>Sammenlign dagligvarer, snacks, elektronikk og resten.</p><div id="receipt-bars" class="receipt-bars"></div></section>
+  </div>
+  <section class="receipt-whatif"><div><span class="section-overline">TANKEEKSPERIMENT</span><h2>Hva hvis du prioriterte litt annerledes?</h2><p>Velg en kategori og hvor mye mindre du <em>kunne valgt</em> å bruke på lignende kjøp fremover. Ingen kjøp dømmes som «dårlige».</p></div>
+   <div class="receipt-whatif-fields"><label>Kategori<select id="receipt-whatif-category"></select></label><label>Mulig reduksjon ved fremtidige kjøp <output id="receipt-whatif-percent">20 %</output><input id="receipt-whatif-range" type="range" min="0" max="100" step="5" value="20"></label>
+   <label>Antall lignende handleturer per måned<input id="receipt-frequency" type="number" min="1" max="31" step="1" value="4"></label><label>Sparemål<input id="receipt-goal" maxlength="70" value="Reise eller buffer" placeholder="F.eks. ferie"></label></div>
+   <div class="receipt-whatif-result"><div><small>Hvis du reduserer denne kategorien</small><strong id="receipt-whatif-trip">0 kr per handletur</strong></div><div><small>Mulig omprioritering på 12 måneder</small><strong id="receipt-whatif-annual">0 kr</strong></div></div>
+   <p id="receipt-insight" class="receipt-insight" aria-live="polite">Legg inn en kvittering for å utforske alternative prioriteringer.</p>
+   <p class="receipt-disclaimer">* Dette er et scenario med antatt gjentatt handletur. Det er ikke dokumenterte besparelser, prissammenligning eller investeringsavkastning.</p>
+  </section>
+  <section class="receipt-history">
+   <div><span class="section-overline">MIN LOKALE HANDLEHISTORIKK</span><h2>Kjøp over tid</h2><p>Kun kvitteringer du aktivt velger å lagre på denne enheten. Du kan slette alt når som helst.</p></div>
+   <div class="receipt-history-actions"><button type="button" id="receipt-export" class="receipt-btn minor">↓ Eksporter som CSV</button><button type="button" id="receipt-delete-all" class="receipt-btn danger">Slett lagrede kjøp</button></div>
+   <div id="receipt-history-list" class="receipt-history-list"></div>
+  </section>
+ </div>
+</section>
+
 <section class="tool-view" id="budsjett" data-portal-view="budget" hidden aria-label="Personlig budsjett">
  <div class="tool-hero budget-hero"><div><span class="tool-eyebrow">ØKONOMISK OVERSIKT · GRATIS</span><h1>Ditt budsjett.<br><em>Din økonomiske kontroll.</em></h1><p>Legg inn nettoinntekt og utgifter i en redigerbar tabell. Få full oversikt over inntekter, utgifter og spareevne – uten komplisert bankføring.</p><div class="tool-hero-tags"><span>◉ Ingen banktilkobling</span><span>◉ Beregning mens du skriver</span><span>◉ Eksporter CSV eller skriv ut som PDF</span></div></div><div class="tool-hero-decoration" aria-hidden="true"><strong>DIN ØKONOMI</strong><div class="decor-bars"><i></i><i></i><i></i><i></i><i></i></div><small>Full oversikt på ett sted ↗</small></div></div>
  <div class="tool-overview" aria-live="polite">
@@ -489,6 +563,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 <nav class="mobile-bottom-tabs" aria-label="Hurtignavigasjon på mobil">
  <a href="#topp"><span aria-hidden="true">⌂</span><strong>Hjem</strong></a>
  <a href="#budsjett"><span aria-hidden="true">▦</span><strong>Budsjett</strong></a>
+ <a href="#kvitteringer"><span aria-hidden="true">🧾</span><strong>Kvittering</strong></a>
  <a href="#billan"><span aria-hidden="true">▤</span><strong>Lån</strong></a>
  <a href="#sparing"><span aria-hidden="true">◉</span><strong>Sparing</strong></a>
  <a href="#akademi"><span aria-hidden="true">✦</span><strong>Læring</strong></a>
@@ -506,5 +581,5 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 <script src="./finance-ui.js" defer></script>
 <script src="./investing.js" defer></script>
 <script src="./academy.js" defer></script>
-<script src="./daily-studio.js?v=1" defer></script>
+<script src="./daily-studio.js?v=1" defer></script><script src="./receipts.js?v=1" defer></script>
 </body></html>
