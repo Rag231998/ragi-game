@@ -318,7 +318,17 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
   </div>
   <div class="tool-pane"><div class="tool-pane-head"><div><span class="section-overline">BANKER OG KONTOER</span><h2>Utgifter fordelt på bank</h2><p>Basert på banken du selv har angitt på hver post – ingen kontotilgang.</p></div></div><div id="budget-bank-chart" class="tool-bar-list"></div></div>
   <div class="tool-pane"><div class="tool-pane-head"><div><span class="section-overline">12 MÅNEDER</span><h2>Mulig spareutvikling</h2><p>Forutsetter samme månedlige overskudd hele året, uten renteinntekter.</p></div></div><div id="budget-timeline" class="budget-timeline" role="img" aria-label="Prognose for akkumulert sparebeløp i tolv måneder"></div><div class="budget-summary-strip"><span>Mulig sparebeløp / år</span><strong id="budget-annual">0 kr</strong></div></div>
-  <div class="tool-pane"><div class="tool-pane-head"><div><span class="section-overline">PERSONLIG INNSIKT</span><h2>Hva kan du forbedre?</h2><p>Regneeksempler ut fra tallene du har skrevet inn.</p></div></div><div id="budget-insights" class="insight-list"></div><p class="tool-hint">Sammenlign også med <a href="https://www.oslomet.no/no/om/sifo/referansebudsjettet" target="_blank" rel="noopener noreferrer">SIFOs referansebudsjett 2026 ↗</a>. Det er ikke inkludert bolig og strøm i SIFOs standardbudsjett.</p></div>
+  <div class="tool-pane"><div class="tool-pane-head"><div><span class="section-overline">PERSONLIG INNSIKT</span><h2>Hva kan du forbedre?</h2><p>Regneeksempler ut fra tallene du har skrevet inn.</p></div></div><div id="budget-insights" class="insight-list"></div>
+  <div class="budget-scenario">
+   <div class="scenario-title"><span class="section-overline">PRØV ET SCENARIO</span><h3>Hva om du bruker litt mindre?</h3><p>Velg én utgiftskategori og prøv en prosentvis reduksjon. Ingen verdier i budsjettet endres.</p></div>
+   <label for="budget-scenario-category">Velg kategori</label>
+   <select id="budget-scenario-category" aria-label="Utgiftskategori for spareforslag"></select>
+   <div class="scenario-slider-label"><label for="budget-scenario-percent">Reduser forbruket</label><strong id="budget-scenario-percent-value">10 %</strong></div>
+   <input id="budget-scenario-percent" type="range" min="0" max="50" step="5" value="10">
+   <div class="scenario-output"><div><small>Spart per måned</small><strong id="budget-scenario-month">–</strong></div><div><small>Spart per år</small><strong id="budget-scenario-year">–</strong></div></div>
+   <p class="tool-hint">Et matematisk regneeksempel, ikke en garanti for at kostnaden kan reduseres.</p>
+  </div>
+  <p class="tool-hint">Sammenlign også med <a href="https://www.oslomet.no/no/om/sifo/referansebudsjettet" target="_blank" rel="noopener noreferrer">SIFOs referansebudsjett 2026 ↗</a>. Det er ikke inkludert bolig og strøm i SIFOs standardbudsjett.</p></div>
  </div>
 </section>
 
