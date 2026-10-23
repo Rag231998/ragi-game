@@ -151,3 +151,49 @@
 
 /* Quantity × unit price: keep the line total visible and noneditable */
 .receipt-table{min-width:710px}.receipt-table td:nth-child(2){min-width:75px;width:80px}.receipt-table td:nth-child(3){min-width:105px;width:115px}.receipt-table td:nth-child(4){min-width:145px}.receipt-table td:nth-child(5){min-width:130px}.receipt-table input[readonly]{font-weight:850;color:#087f68;background:#edf8f3;border-color:#cde9dd;cursor:default}
+
+/* Responsive-only fix: fit the available browser viewport, not a specific device.
+   No modification to receipt data, calculator or controls. */
+#kvitteringer.receipt-studio{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+#kvitteringer .receipt-hero,#kvitteringer .receipt-tour,#kvitteringer .receipt-grid,
+#kvitteringer .receipt-pane,#kvitteringer .receipt-analytics,#kvitteringer .receipt-charts,
+#kvitteringer .receipt-chart-card,#kvitteringer .receipt-whatif,#kvitteringer .receipt-history{max-width:100%;min-width:0}
+#kvitteringer .receipt-grid{grid-template-columns:minmax(0,0.93fr) minmax(0,1.07fr)}
+#kvitteringer .receipt-charts{grid-template-columns:repeat(2,minmax(0,1fr))}
+#kvitteringer .receipt-whatif{grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr)}
+#kvitteringer .receipt-table-scroll{display:block;max-width:100%;width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+#kvitteringer .receipt-table{width:100%;min-width:710px;table-layout:auto}
+#kvitteringer .receipt-tour-top>div,#kvitteringer .receipt-overview-heading>div{min-width:0}
+#kvitteringer .receipt-tour-device{max-width:100%}
+#kvitteringer .receipt-tour-top,#kvitteringer .receipt-tour-controls{min-width:0}
+@media(max-width:1250px){
+ #kvitteringer .receipt-grid{grid-template-columns:minmax(0,1fr)}
+ #kvitteringer .receipt-capture{display:block}
+ #kvitteringer .receipt-results{min-width:0}
+ #kvitteringer .receipt-chart-card{min-width:0}
+}
+@media(max-width:900px){
+ #kvitteringer .receipt-hero{grid-template-columns:minmax(0,1fr);padding:clamp(20px,4vw,32px)}
+ #kvitteringer .receipt-hero-art{display:none}
+ #kvitteringer .receipt-charts{grid-template-columns:minmax(0,1fr)}
+ #kvitteringer .receipt-whatif{grid-template-columns:minmax(0,1fr);gap:12px}
+ #kvitteringer .receipt-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:620px){
+ #kvitteringer .receipt-tour-top{flex-wrap:wrap}
+ #kvitteringer .receipt-tour-top>button{width:100%}
+ #kvitteringer .receipt-hero{padding:20px}
+ #kvitteringer .receipt-pane,#kvitteringer .receipt-chart-card,#kvitteringer .receipt-whatif,#kvitteringer .receipt-history{padding:clamp(12px,3vw,18px)}
+ #kvitteringer .receipt-fields,#kvitteringer .receipt-whatif-fields{grid-template-columns:minmax(0,1fr)}
+ #kvitteringer .receipt-donut-layout{grid-template-columns:minmax(0,1fr);justify-items:center}
+ #kvitteringer .receipt-legend{width:100%}
+ #kvitteringer .receipt-summary-row{grid-template-columns:repeat(3,minmax(0,1fr))}
+ #kvitteringer .receipt-summary-row strong{font-size:clamp(12px,3.3vw,18px);overflow-wrap:anywhere}
+ #kvitteringer .receipt-tour-controls{flex-wrap:wrap}
+ #kvitteringer .receipt-tour-progress{flex-basis:100%;order:3}
+ #kvitteringer .receipt-workflow-heading{flex-wrap:wrap}
+}
+@media(max-width:390px){
+ #kvitteringer .receipt-metrics{grid-template-columns:minmax(0,1fr)}
+ #kvitteringer .receipt-summary-row{grid-template-columns:minmax(0,1fr)}
+}
