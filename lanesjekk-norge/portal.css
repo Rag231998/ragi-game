@@ -79,3 +79,57 @@
 @media(max-width:1020px){.home-tool-grid{grid-template-columns:repeat(4,1fr);gap:9px}.home-tool{padding:14px;min-height:215px}.home-tool strong{font-size:13px}.home-editorial{gap:9px}.home-editorial a{padding:18px}}
 @media(max-width:810px){.home-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.home-tool{min-height:185px;padding:17px}.home-tool strong{font-size:15px}.home-editorial{grid-template-columns:1fr}.home-editorial a{min-height:165px}.portal-home .loan-form{top:85px}}
 @media(max-width:680px){.portal-home .site-header{min-height:0}.portal-home .nav-row{min-height:66px}.portal-home .hero{padding:53px 17px 84px}.portal-home .hero-inner{gap:18px}.portal-home main{padding:0 12px 56px;margin-top:-30px}.portal-home .home-navigation{padding:18px 12px;margin-bottom:25px}.home-intro{margin:7px 0 21px}.home-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.home-tool{min-height:206px;padding:13px 11px}.home-tool-art{width:38px;height:38px;font-size:21px}.home-tool-category{font-size:8px}.home-tool strong{font-size:13px}.home-tool small{font-size:10px}.home-knowledge{margin:32px 0}.home-editorial a{min-height:163px}.home-mortgage-heading{margin-top:27px}.portal-home .loan-form{position:static}}
+
+
+/* Single-page finance portal — savings, loans and knowledge all have anchors. */
+html{scroll-padding-top:92px}
+.portal-home .portal-one-page-zone{scroll-margin-top:93px;min-width:0}
+.portal-home .zone-heading{display:flex;align-items:end;justify-content:space-between;gap:16px;padding:33px 7px 9px}
+.portal-home .zone-heading h2{font-size:clamp(28px,3.2vw,41px);line-height:1.16;letter-spacing:-.05em;margin:8px 0}
+.portal-home .zone-heading h2 em{font-style:normal;color:#0f8b77}
+.portal-home .zone-heading p{margin:0;max-width:675px;color:#677f88;font-size:13px;line-height:1.8}
+.portal-home .zone-mini-link{font-size:11px;font-weight:850;color:#0c806d;flex:0 0 auto;padding-bottom:7px}
+.portal-home .savings-zone{border-radius:23px;background:linear-gradient(155deg,#f1f9f6,#f8fbfc);border:1px solid #e0eeec;padding:8px 24px 20px;margin-top:34px}
+.portal-home .savings-zone .portal-section{padding-top:28px;padding-bottom:40px}
+.portal-home .savings-zone .site-container,.portal-home .guides-zone .site-container{width:100%;max-width:none}
+.portal-home .savings-zone .light-strip{background:#fff;border-radius:17px;border:1px solid #edf0f1;padding:0 20px 33px;margin:20px 0}
+.portal-home .savings-zone .light-strip .site-container{width:100%}
+.portal-home .savings-zone .calc-panel{position:relative;top:auto}
+.portal-home .savings-zone .official-embed{max-width:100%;overflow:hidden}
+.portal-home .guides-zone{border-radius:22px;background:#fff;border:1px solid #e5eaea;padding:15px 25px 30px;margin-top:46px}
+.portal-home .guides-zone .portal-section{padding-top:20px;padding-bottom:35px}
+.portal-home .guides-zone .guide-categories{margin:12px 0 0;grid-template-columns:repeat(4,minmax(0,1fr))}
+.portal-home .guides-zone .guide-list{padding:0 0 18px;background:transparent;border:0}
+.portal-home .guides-zone .guide-list .section-intro{padding-top:22px!important}
+.portal-home .guides-zone .long-guide{padding:0;margin:10px 0;border-radius:12px;scroll-margin-top:110px;overflow:hidden}
+.portal-home .guides-zone .long-guide summary.guide-toggle{padding:17px 19px;display:flex;align-items:center;justify-content:space-between;gap:14px;list-style:none;cursor:pointer;background:#fff;font-size:13px;color:#153747}
+.portal-home .guides-zone .long-guide summary.guide-toggle::-webkit-details-marker{display:none}
+.portal-home .guides-zone .long-guide summary.guide-toggle span{white-space:nowrap;font-size:10px;color:#0d8471;font-weight:800}
+.portal-home .guides-zone .long-guide[open] summary.guide-toggle{background:#eef8f5;border-bottom:1px solid #dcece6}
+.portal-home .guides-zone .long-guide[open] summary.guide-toggle span{font-size:0}
+.portal-home .guides-zone .long-guide[open] summary.guide-toggle span::before{content:"Lukk artikkelen ↑";font-size:10px}
+.portal-home .guides-zone .guide-full{padding:17px 23px 26px}
+.portal-home .guides-zone .guide-full h2{font-size:22px}
+.portal-home .guides-zone .guide-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.portal-home .nav-row,.portal-home .portal-nav{min-width:0}
+.portal-home .savings-zone .official-embed iframe{width:100%;max-width:100%}
+@media(max-width:910px){
+ .portal-home .savings-zone .savings-workspace{grid-template-columns:300px minmax(0,1fr)}
+ .portal-home .guides-zone .guide-categories{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:680px){
+ .portal-home .zone-heading{display:block;padding:21px 2px 3px}
+ .portal-home .zone-heading h2{font-size:29px}
+ .portal-home .zone-mini-link{display:inline-flex;margin-top:13px}
+ .portal-home .savings-zone{padding:5px 12px 15px;margin-top:20px}
+ .portal-home .savings-zone .savings-workspace{grid-template-columns:1fr}
+ .portal-home .savings-zone .portal-section{padding:24px 0}
+ .portal-home .savings-zone .light-strip{padding:0 12px 20px;margin:12px 0}
+ .portal-home .savings-zone .portal-section .section-intro h2{font-size:27px}
+ .portal-home .guides-zone{padding:10px 12px 18px;margin-top:28px}
+ .portal-home .guides-zone .guide-grid{grid-template-columns:1fr}
+ .portal-home .guides-zone .long-guide summary.guide-toggle{padding:13px 12px;align-items:start}
+ .portal-home .guides-zone .long-guide summary.guide-toggle strong{line-height:1.3}
+ .portal-home .guides-zone .long-guide summary.guide-toggle span{white-space:normal;text-align:right;flex:0 0 81px}
+ .portal-home .guides-zone .guide-full{padding:13px}
+}
