@@ -13,7 +13,8 @@ test('receipt studio starts with clear empty state and supports manual quantity'
 });
 test('OCR correction text recognises totals, category and quantity',async({page})=>{
  await page.goto('/#kvitteringer',{waitUntil:'domcontentloaded'});
- await page.locator('#receipt-raw').fill('REMA 1000\\n3 x KOKESJOKOLADE 25,80\\nPANT 3,00\\nBANK 28,80\\nSUM 28,80');
+ await page.locator('.receipt-textentry summary').click();
+ await page.locator('#receipt-raw').fill('REMA 1000\n3 x KOKESJOKOLADE 25,80\nPANT 3,00\nBANK 28,80\nSUM 28,80');
  await page.locator('#receipt-parse').click();
  await expect(page.locator('#receipt-items tr')).toHaveCount(2);
  await expect(page.locator('#receipt-count')).toHaveText('4');
