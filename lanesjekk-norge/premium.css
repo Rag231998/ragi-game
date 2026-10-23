@@ -357,3 +357,8 @@
 .portal-home .cinematic-hero .cinema-motion-toggle{z-index:30;bottom:24px;right:24px;min-height:40px;min-width:96px;touch-action:manipulation}
 .portal-home .home-navigation{position:relative;z-index:1}
 .portal-home .cinematic-hero .cinema-content{padding-bottom:88px}
+
+/* User-initiated soft ambient audio, never autoplay with sound */
+.cinema-sound-toggle{position:absolute;right:clamp(18px,3vw,54px);bottom:67px;z-index:31;background:#0c2d41d9;border:1px solid #ffffff70;border-radius:100px;color:#fff;padding:9px 15px;min-height:40px;font:600 12px system-ui;cursor:pointer;backdrop-filter:blur(8px)}
+.cinema-sound-toggle:hover,.cinema-sound-toggle:focus-visible{background:#0e615e}
+@media(max-width:620px){.cinema-sound-toggle{right:18px;bottom:69px}}
