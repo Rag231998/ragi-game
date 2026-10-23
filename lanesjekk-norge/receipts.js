@@ -35,7 +35,10 @@ function parseText(raw){
   const name=line.slice(0,found.index).replace(/[.·:|\s_\-]+$/,'').trim();
   if(name.length<2||/^\d{3,}$/.test(name))continue;
   const discount=/rabatt|avslag|kupong|tilbud/i.test(name);
-  next.push({name:name.slice(0,90),category:discount?'Annet':category(name),amount:discount&&amount>0?-amount:amount});
+  const qtyPattern=name.match(/(?:^|\s)(\d{1,3})\s*[x×]\s*(?=\S)/i)||name.match(/(?:^|\s)[x×]\s*(\d{1,3})(?=\s|$)/i);
+  const qty=qtyPattern?Math.max(1,Math.min(999,Number(qtyPattern[1]))):1;
+  const cleanName=name.replace(/(?:^|\s)\d{1,3}\s*[x×]\s*/i,' ').replace(/(?:^|\s)[x×]\s*\d{1,3}(?=\s|$)/i,' ').trim()||name;
+  next.push({name:cleanName.slice(0,90),category:discount?'Annet':category(cleanName),quantity:qty,amount:discount&&amount>0?-amount:amount});
  }
  return {items:next.slice(0,160),total,merchant};
 }
@@ -57,7 +60,7 @@ function updateWhatIf(){
  'Skann eller legg inn en kvittering for å utforske et mulig alternativ til noen av kjøpene.';
 }
 function refresh(){
- const s=stats(),sum=s.total;$('receipt-sum').textContent=money(sum);$('receipt-count').textContent=String(items.length);
+ const s=stats(),sum=s.total;$('receipt-sum').textContent=money(sum);$('receipt-count').textContent=String(items.reduce((n,i)=>n+(Number(i.quantity)||1),0));
  const delta=scanTotal===null?null:Math.round((sum-scanTotal)*100)/100;
  $('receipt-check').textContent=delta===null?'Se over varene':Math.abs(delta)<=.05?'✓ Stemmer':'Må sjekkes';
  const check=$('receipt-reconcile');check.classList.toggle('issue',delta!==null&&Math.abs(delta)>.05);
@@ -92,6 +95,8 @@ function render(){
  items.forEach((item,index)=>{
   const tr=el('tr'),namecell=el('td'),name=el('input');name.type='text';name.value=item.name;name.maxLength=90;name.setAttribute('aria-label','Varenavn '+(index+1));
   name.oninput=()=>{item.name=name.value;refresh()};namecell.append(name);
+  const qtycell=el('td'),qty=el('input');qty.type='number';qty.min='1';qty.max='999';qty.step='1';qty.inputMode='numeric';qty.value=String(item.quantity||1);qty.setAttribute('aria-label','Antall '+item.name);
+  qty.onchange=()=>{item.quantity=Math.max(1,Math.min(999,Math.round(Number(qty.value)||1)));qty.value=item.quantity;refresh()};qtycell.append(qty);
   const catcell=el('td'),select=el('select');
   for(const [c] of C){const opt=el('option',c);opt.value=c;select.append(opt)}
   select.value=item.category;select.setAttribute('aria-label','Kategori for '+item.name);select.onchange=()=>{item.category=select.value;refresh()};catcell.append(select);
@@ -99,7 +104,7 @@ function render(){
   amount.oninput=()=>{item.amount=price(amount.value);refresh()};moneycell.append(amount);
   const action=el('td'),remove=el('button','×','receipt-delete');remove.type='button';remove.setAttribute('aria-label','Fjern '+item.name);
   remove.onclick=()=>{items.splice(index,1);render()};action.append(remove);
-  tr.append(namecell,catcell,moneycell,action);root.append(tr);
+  tr.append(namecell,qtycell,catcell,moneycell,action);root.append(tr);
  });refresh();
 }
 function applyText(){
@@ -167,14 +172,14 @@ function save(){
   $('receipt-save-status').textContent='Kontroller navn og beløp på alle varelinjer.';return
  }
  const record={id:crypto.randomUUID(),date:$('receipt-date').value||date(),merchant:$('receipt-merchant').value.trim().slice(0,90),
-  items:items.map(i=>({name:i.name.slice(0,90),category:i.category,amount:i.amount}))};
+  items:items.map(i=>({name:i.name.slice(0,90),category:i.category,quantity:i.quantity||1,amount:i.amount}))};
  if(store([record,...history()])){
   $('receipt-save-status').textContent='Kvitteringen er lagret på denne enheten, uten bilde.';$('receipt-save-optin').checked=false;renderHistory();
  }
 }
 function exportCSV(){
- const rows=[['Dato','Butikk','Vare','Kategori','Pris NOK']];
- for(const rec of history())for(const i of rec.items)rows.push([rec.date,rec.merchant,i.name,i.category,Number(i.amount).toFixed(2).replace('.',',')]);
+ const rows=[['Dato','Butikk','Vare','Antall','Kategori','Linjesum NOK']];
+ for(const rec of history())for(const i of rec.items)rows.push([rec.date,rec.merchant,i.name,i.quantity||1,i.category,Number(i.amount).toFixed(2).replace('.',',')]);
  if(rows.length===1){$('receipt-save-status').textContent='Ingen lagrede kjøp å eksportere.';return}
  const text='\uFEFF'+rows.map(row=>row.map(val=>'"'+String(val??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
  const url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));
@@ -194,8 +199,28 @@ function boot(){
  });
  $('receipt-ocr').addEventListener('click',scan);
  $('receipt-parse').addEventListener('click',applyText);
+ const pasteButton=$('receipt-paste-image');
+ if(pasteButton)pasteButton.addEventListener('click',async()=>{
+  try{
+   const entries=await navigator.clipboard.read();
+   const entry=entries.flatMap(e=>e.types.filter(t=>t.startsWith('image/')).map(t=>({e,t})))[0];
+   if(!entry)throw Error('Utklippstavlen inneholder ikke et bilde');
+   const blob=await entry.e.getType(entry.t);if(blob.size>12*1024*1024)throw Error('Bildet er større enn 12 MB');
+   image=blob;if(imageUrl)URL.revokeObjectURL(imageUrl);imageUrl=URL.createObjectURL(blob);
+   $('receipt-preview').src=imageUrl;$('receipt-preview').hidden=false;$('receipt-ocr').disabled=false;
+   $('receipt-ocr-status').textContent='Bilde limt inn. Kontroller at hele kvitteringen er synlig, og velg Les kvitteringen.';
+  }catch(e){$('receipt-ocr-status').textContent='Kunne ikke lime inn bilde: '+e.message+'. Bruk bildeopplasting på mobil.'}
+ });
+ document.addEventListener('paste',e=>{
+  if(!document.getElementById('kvitteringer')||document.getElementById('kvitteringer').hidden)return;
+  if(e.target?.matches?.('input, textarea, [contenteditable]'))return;
+  const file=Array.from(e.clipboardData?.files||[]).find(f=>f.type.startsWith('image/')&&f.size<=12*1024*1024);
+  if(!file)return;e.preventDefault();image=file;if(imageUrl)URL.revokeObjectURL(imageUrl);
+  imageUrl=URL.createObjectURL(file);$('receipt-preview').src=imageUrl;$('receipt-preview').hidden=false;$('receipt-ocr').disabled=false;
+  $('receipt-ocr-status').textContent='Bilde limt inn. Trykk Les kvitteringen.';
+ });
  $('receipt-demo').addEventListener('click',()=>{reset();$('receipt-raw').value=sample;$('receipt-raw').closest('details').open=true;applyText();$('receipt-merchant').value='Fiktiv eksempelbutikk'});
- $('receipt-add-item').addEventListener('click',()=>{if(items.length>=160)return;items.push({name:'Ny vare',category:'Annet',amount:0});render()});
+ $('receipt-add-item').addEventListener('click',()=>{if(items.length>=160)return;items.push({name:'Ny vare',category:'Annet',quantity:1,amount:0});render()});
  $('receipt-clear').addEventListener('click',reset);
  $('receipt-save').addEventListener('click',save);
  $('receipt-export').addEventListener('click',exportCSV);
