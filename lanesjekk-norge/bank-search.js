@@ -124,7 +124,7 @@
   function close(){popup.hidden=true;popup.replaceChildren();input.setAttribute('aria-expanded','false');idx=-1}
   function choose(bank){
    input.value=bank.name;input.dataset.bankId=bank.id;close();
-   input.dispatchEvent(new Event('input',{bubbles:true}));
+   $('loan-form').dispatchEvent(new Event('input',{bubbles:true}));
   }
   function show(){
    const q=input.value.trim();
