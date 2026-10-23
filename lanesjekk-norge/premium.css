@@ -79,3 +79,42 @@
  .loan-form,.content,.summary-card,.offer-panel{min-width:0}
  .bank-trust{white-space:normal}
 }
+
+
+/* Expanded 2026 bank search: visible cards are bounded, search spans entire
+   verified/source-labeled directory, no 100-option select menus. */
+.bank-current-field{position:relative;z-index:15}
+.bank-autocomplete{
+ position:absolute;left:0;right:0;top:calc(100% - 12px);
+ z-index:40;background:#fff;border:1px solid #b8d5d1;border-radius:12px;
+ padding:5px;box-shadow:0 18px 46px #0c334c38;
+ max-height:320px;overflow-y:auto;overscroll-behavior:contain
+}
+.bank-autocomplete[hidden]{display:none}
+.bank-autocomplete-option{
+ width:100%;min-height:46px;border:0;background:#fff;padding:9px 11px;
+ border-radius:8px;display:flex;justify-content:space-between;align-items:center;
+ gap:8px;text-align:left;color:#183744;font-size:12px;font-weight:750
+}
+.bank-autocomplete-option small{font-size:10px;color:#6c8691;font-weight:550}
+.bank-autocomplete-option:hover,.bank-autocomplete-option.is-active,.bank-autocomplete-option:focus-visible{background:#e8f8f3}
+.bank-autocomplete-empty{font-size:12px;color:#64808c;padding:14px}
+.bank-load-row{display:flex;justify-content:center;padding:13px 0 2px}
+#bank-more{min-width:190px;min-height:44px}
+.bank-official-logo{width:100%;height:100%;padding:5px;object-fit:contain;background:white;border-radius:10px}
+.bank-official-logo[hidden]{display:none}
+.bank-symbol{background:var(--bank-tint,#174b68)}
+.bank-proof{line-height:1.45}
+.bank-card{min-width:0}
+.bank-card .bank-cta{gap:6px}
+.bank-card .bank-select{background:#0f7669;min-height:44px}
+#currentbank{background:transparent;width:100%;min-height:45px;border:none;box-shadow:none}
+#currentbank:focus{box-shadow:none}
+#balance-tip{margin:0 0 6px;display:block}
+[data-money-input],[data-decimal-input]{font-variant-numeric:tabular-nums;letter-spacing:.006em}
+.offer .offer-fields input[data-money-input]{min-width:0}
+@media(max-width:700px){
+ .bank-autocomplete{max-height:min(330px,45vh)}
+ .bank-autocomplete-option{min-height:48px}
+ #bank-more{width:100%}
+}
