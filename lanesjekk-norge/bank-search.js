@@ -19,8 +19,11 @@
  }
  function filtered(q){
   const t=normalize(q);
-  return banks.filter(b=>!t||[b.name,b.legal,b.org,b.region].some(x=>normalize(x).includes(t)))
-   .sort((a,b)=>rank(a,t)-rank(b,t)||sorted(a,b));
+  const hits=banks.filter(b=>!t||[b.name,b.legal,b.org,b.region].some(x=>normalize(x).includes(t)));
+  const exact=t?hits.filter(b=>normalize(b.name)===t):[];
+  // A full brand-name match must not be buried among names containing
+  // the same substring (e.g. "Sbanken" inside "Rørosbanken").
+  return (exact.length?exact:hits).sort((a,b)=>rank(a,t)-rank(b,t)||sorted(a,b));
  }
  function bankLogo(bank){
   const symbol=document.createElement('span');
