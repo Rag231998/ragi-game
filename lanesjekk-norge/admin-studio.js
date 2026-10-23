@@ -19,7 +19,7 @@ function normalize(data){
  const order=[...new Set([...(Array.isArray(budget.order)?budget.order.filter(x=>DEFAULT_IDS.includes(x)):[]),...DEFAULT_IDS])];
  const cardOrder=[...new Set([...(Array.isArray(cards.order)?cards.order.filter(x=>CARD_IDS.includes(x)):[]),...CARDS_DEFAULT])];
  return {
- brand:{name:clamp(brand.name||'LÅNESJEKK NORGE',70),tagline:clamp(brand.tagline||'Mer oversikt. Bedre valg.',130),accent:/^#[0-9A-Fa-f]{6}$/.test(brand.accent)?brand.accent:'#0c8878',logoUrl:clamp(brand.logoUrl,500)},
+ brand:{name:clamp(brand.name||'LÅNESJEKK NORGE',70),tagline:clamp(brand.tagline||'Mer oversikt. Bedre valg.',130),accent:/^#[0-9A-Fa-f]{6}$/.test(brand.accent)?brand.accent:'#0c8878',logoUrl:clamp(brand.logoUrl,500),heroVisual:brand.heroVisual!==false},
  budget:{order,visible:Object.fromEntries(DEFAULT_IDS.map(id=>[id,id==='workbook'?true:budget.visible?.[id]!==false])),
  title:clamp(budget.title||'Ditt budsjett.',90),subtitle:clamp(budget.subtitle||'Din økonomiske kontroll.',120),
  quickTitle:clamp(budget.quickTitle||'Tre steg til økonomisk oversikt',100)},
@@ -133,6 +133,7 @@ function render(){
  $('site-name').value=draft.brand.name;
  $('site-tagline').value=draft.brand.tagline;
  $('site-color').value=draft.brand.accent;
+ $('site-hero-visual').checked=draft.brand.heroVisual!==false;
  $('budget-title').value=draft.budget.title;
  $('budget-subtitle').value=draft.budget.subtitle;
  $('budget-quick-title').value=draft.budget.quickTitle;
@@ -145,6 +146,7 @@ function gather(){
  draft.brand.name=clamp($('site-name').value,70)||'LÅNESJEKK NORGE';
  draft.brand.tagline=clamp($('site-tagline').value,130);
  draft.brand.accent=$('site-color').value;
+ draft.brand.heroVisual=$('site-hero-visual').checked;
  draft.budget.title=clamp($('budget-title').value,90);
  draft.budget.subtitle=clamp($('budget-subtitle').value,120);
  draft.budget.quickTitle=clamp($('budget-quick-title').value,100);
