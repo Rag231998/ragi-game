@@ -214,14 +214,61 @@
   $('budget-selected-count').textContent=selected.length+' valgt';
   $('budget-selected-hint').textContent='Inntekter legges til, utgifter trekkes fra. Beløpene er omregnet til måned.';
  }
+ const TAX_API='https://pryrgwfjniggjlrizenh.supabase.co/functions/v1/tax-table-2026';
+ const taxCache=new Map();let taxLookupTimer=null;
+ function requestTax(key,table,gross){
+  clearTimeout(taxLookupTimer);
+  taxLookupTimer=setTimeout(async()=>{
+   if(taxCache.has(key))return;
+   try{
+    const control=new AbortController(),timer=setTimeout(()=>control.abort(),25000);
+    let response;
+    try{response=await fetch(TAX_API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({table,gross}),signal:control.signal});}
+    finally{clearTimeout(timer)}
+    const data=await response.json();
+    if(!response.ok)throw Error(data.error||'Tabelloppslaget feilet');
+    taxCache.set(key,{deduction:data.withholding,matchedGross:data.matchedGross,exact:data.exact});
+   }catch(e){taxCache.set(key,{error:e.message})}
+   // Protect against a stale async response overriding newer user values.
+   if($('budget-tax-method')?.value==='table'&&$('budget-salary-table')?.value===String(table)&&Math.round(parse($('budget-salary-gross').value))===gross)renderSalary();
+  },350);
+ }
  function renderSalary(){
-  const gross=parse($('budget-salary-gross').value),tax=parseDecimal($('budget-salary-tax').value),other=parse($('budget-salary-other').value);
-  const valid=Number.isFinite(gross)&&gross>=0&&Number.isFinite(tax)&&tax>=0&&tax<=100&&Number.isFinite(other)&&other>=0;
-  const net=valid?Math.max(0,gross*(1-tax/100)-other):NaN;
+  const gross=parse($('budget-salary-gross').value),other=parse($('budget-salary-other').value);
+  const method=$('budget-tax-method')?.value||'percent',byTable=method==='table';
+  const tableField=$('budget-table-field'),percentField=$('budget-percent-field');
+  if(tableField)tableField.hidden=!byTable;
+  if(percentField)percentField.hidden=byTable;
+  const percentTax=parseDecimal($('budget-salary-tax').value);
+  const validBase=Number.isFinite(gross)&&gross>=0&&gross<=999999&&Number.isFinite(other)&&other>=0;
+  let withheld=NaN,status='';
+  if(byTable){
+   const table=Number($('budget-salary-table').value),grossRounded=Math.round(gross);
+   const allowed=Number.isInteger(table)&&((table>=8000&&table<=8400&&table%10===0)||(table>=9010&&table<=9400&&table%10===0));
+   if(!validBase||!allowed)status='Oppgi gyldig månedslønn og tabellnummer (8000–8400 eller 9010–9400, steg 10).';
+   else {
+    const key=table+':'+grossRounded,entry=taxCache.get(key);
+    if(!entry){status='Henter offisielt 2026-trekk fra Skatteetaten …';requestTax(key,table,grossRounded)}
+    else if(entry.error)status='Tabelltrekk er ikke tilgjengelig: '+entry.error+'. Kontroller tabellen hos Skatteetaten.';
+    else{
+     withheld=entry.deduction;
+     status=(entry.exact?'Eksakt trekk i Skatteetatens 2026-månedstabell.':
+       'Nærmeste høyere tabelltrinn ('+money(entry.matchedGross)+'). Anslag – kontroller lønnsslippen.')+
+       ' Husk at feriepenger, halvt trekk og flere arbeidsgivere har egne regler.';
+    }
+   }
+  }else {
+   if(validBase&&Number.isFinite(percentTax)&&percentTax>=0&&percentTax<=100){
+    withheld=gross*percentTax/100;
+    status='Forenklet anslag basert på oppgitt trekkprosent. Ikke en full skatteberegning.';
+   }else status='Fyll inn gyldig bruttolønn, trekkprosent (0–100 %) og andre trekk.';
+  }
+  const net=validBase&&Number.isFinite(withheld)?Math.max(0,gross-withheld-other):NaN;
   $('budget-salary-net').textContent=money(net);
-  $('budget-salary-deduction').textContent=money(valid?gross-net:NaN);
-  $('budget-salary-use').disabled=!valid;
-  $('budget-salary-message').textContent=valid?'Forenklet anslag basert på oppgitt trekkprosent. Ikke en skattekort- eller skatteberegning.':'Fyll inn gyldig bruttolønn, skattetrekk 0–100 % og andre trekk.';
+  $('budget-salary-deduction').textContent=money(Number.isFinite(net)?gross-net:NaN);
+  $('budget-salary-use').disabled=!Number.isFinite(net);
+  $('budget-salary-message').textContent=status;
   return net;
  }
  function renderBudget(){
@@ -383,7 +430,8 @@
    document.querySelector('.budget-table')?.classList.toggle('budget-bank-visible',event.target.checked);
   });
   $('budget-bank-filter').addEventListener('change',renderBudget);
-  for(const id of ['budget-salary-gross','budget-salary-tax','budget-salary-other'])$(id)?.addEventListener('input',renderSalary);
+  for(const id of ['budget-salary-gross','budget-salary-tax','budget-salary-other','budget-salary-table'])$(id)?.addEventListener('input',renderSalary);
+  $('budget-tax-method')?.addEventListener('change',renderSalary);
   $('budget-salary-use')?.addEventListener('click',()=>{
    const net=renderSalary();if(!Number.isFinite(net))return;
    const existing=[...$('budget-rows').querySelectorAll('tr')].find(tr=>tr.querySelector('.line-kind.income')&&tr.querySelector('[data-field="category"]').value==='Lønn');
