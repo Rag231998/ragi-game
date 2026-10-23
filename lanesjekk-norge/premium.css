@@ -351,3 +351,9 @@
 .cms-hide-hero-visual .cinema-human-video{display:none!important}
 @media(prefers-reduced-motion:reduce){.cinema-human-video{display:none!important}}
 @media(max-width:680px){.cinema-human-video{object-position:55% center;opacity:0}.cinema-human-video.is-ready{opacity:.46}}
+
+/* Fix hero playback button being covered by following navigation block */
+.portal-home .cinematic-hero{z-index:10;overflow:hidden}
+.portal-home .cinematic-hero .cinema-motion-toggle{z-index:30;bottom:24px;right:24px;min-height:40px;min-width:96px;touch-action:manipulation}
+.portal-home .home-navigation{position:relative;z-index:1}
+.portal-home .cinematic-hero .cinema-content{padding-bottom:88px}
