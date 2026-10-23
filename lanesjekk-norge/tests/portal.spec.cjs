@@ -53,8 +53,8 @@ test('projection chart and slider recalculate and handle invalid input',async({p
 });
 test('savings disclosure distinguishes snapshot from original official remote tool',async({page})=>{
  await page.goto('/#sparing',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.status-box')).toContainText('23.10.2026');
- await expect(page.locator('.status-box')).toContainText('ikke sanntid');
+ await expect(page.locator('#sparing-kalkulator .status-box')).toContainText('23.10.2026');
+ await expect(page.locator('#sparing-kalkulator .status-box')).toContainText('ikke sanntid');
  await expect(page.locator('#official-container')).toBeHidden();
  await page.route('https://www.forbrukerradet.no/finansportalen/bank/iframe/innskudd',route=>
   route.fulfill({status:200,contentType:'text/html',body:'<h1>Forbrukerrådet – innskudd</h1>'}));
