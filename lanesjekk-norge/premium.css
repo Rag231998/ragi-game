@@ -273,3 +273,22 @@
 
 /* All cards use document/CMS order: admin drag-and-drop remains authoritative */
 .portal-home .premium-dashboard .receipt-home-feature,.portal-home .premium-dashboard .home-tool-property,.portal-home .premium-dashboard .featured-purple,.portal-home .premium-dashboard .featured,.portal-home .premium-dashboard .home-tool[href="#sjekk"]{grid-column:auto;grid-row:auto}
+
+/* Actual looped timeline animation, no tracking, remote media or autoplay audio */
+.premium-hero-motion{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;border-radius:25px}
+.motion-sun{position:absolute;width:130px;height:130px;border-radius:50%;right:15%;top:13%;background:radial-gradient(circle,#d4fff4a9,transparent 72%);animation:motion-glow 8s ease-in-out infinite}
+.motion-orbit{position:absolute;inset:9% 17%;border:1px solid #dfffff59;border-radius:50%;animation:motion-rotate 20s linear infinite}
+.orbit-two{inset:20% 27%;animation-direction:reverse;animation-duration:13s;border-style:dashed}
+.motion-spark{position:absolute;color:#d2fff4;font-size:29px;text-shadow:0 0 20px #a4fff2;animation:motion-sparks 9s ease-in-out infinite}
+.spark-one{top:13%;left:32%}.spark-two{top:41%;right:8%;animation-delay:-3s}.spark-three{bottom:17%;left:14%;animation-delay:-6s}
+.motion-graph{position:absolute;left:33%;width:34%;bottom:13%;height:auto;overflow:visible;filter:drop-shadow(0 0 6px #75ffdc)}
+.motion-graph path{fill:none;stroke:#83ffe1;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:310;stroke-dashoffset:310;animation:motion-draw 8s ease-in-out infinite}
+.motion-caption{position:absolute;bottom:3%;right:6%;background:#0d3545bd;border:1px solid #b2f5dd77;border-radius:30px;color:#ecfff9;padding:8px 14px;font-size:11px;letter-spacing:.06em;animation:motion-caption 8s ease-in-out infinite}
+@keyframes motion-glow{0%,100%{transform:scale(.75);opacity:.2}40%,65%{transform:scale(1.3);opacity:1}}
+@keyframes motion-rotate{to{transform:rotate(360deg)}}
+@keyframes motion-sparks{0%,100%{opacity:0;transform:translateY(24px) scale(.5)}35%,65%{opacity:1;transform:translateY(-18px) scale(1)}}
+@keyframes motion-draw{0%,10%{stroke-dashoffset:310;opacity:.1}40%,75%{stroke-dashoffset:0;opacity:1}95%,100%{stroke-dashoffset:310;opacity:0}}
+@keyframes motion-caption{0%,17%,85%,100%{opacity:0;transform:translateY(9px)}33%,70%{opacity:1;transform:translateY(0)}}
+.cms-pause-hero-motion .premium-hero-motion{display:none}
+.cms-pause-hero-motion .premium-float{animation:none}
+@media(prefers-reduced-motion:reduce){.premium-hero-motion{display:none!important}}
