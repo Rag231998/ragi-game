@@ -11,9 +11,17 @@ async function request(path,options={}){
   return {response,body,url:String(url)};
 }
 async function run(){
-  const site=await request('/');
+  // A production URL can temporarily serve the previous release while Vercel
+  // assigns its new alias. Require the exact new homepage before continuing.
+  let site;
+  const expectedTitle=/<title>Lånesjekk Norge \| Sammenlign boliglån, sparing og banker/i;
+  for(let attempt=0;attempt<12;attempt++){
+    site=await request('/');
+    if(site.response.status===200&&expectedTitle.test(site.body))break;
+    if(attempt<11)await new Promise(resolve=>setTimeout(resolve,5000));
+  }
   assert.equal(site.response.status,200,'Website must be publicly reachable: '+site.url+' status '+site.response.status);
-  assert.match(site.body,/<title>Lånesjekk Norge \| Sammenlign boliglån, sparing og banker/i);
+  assert.ok(expectedTitle.test(site.body),'Expected new portal title; got '+(site.body.match(/<title>[^<]*<\/title>/i)||['no title'])[0]);
   assert.match(site.body,/id="bank-query"/);
   console.log('OK website accessible at '+site.url);
   const banks=await request('/banker.js');
