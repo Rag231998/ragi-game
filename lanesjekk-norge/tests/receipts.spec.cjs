@@ -35,4 +35,31 @@ test('menu dropdowns are exclusive and close with Escape',async({page},testInfo)
  await expect(groups.nth(1)).not.toHaveAttribute('open','');
 });
 
-test('stable homepage and budget navigation',async({page})=>{await page.goto('/',{waitUntil:'domcontentloaded'});await expect(page.locator('.hero h1')).toBeVisible();await expect(page.locator('.home-tool-grid a.home-tool')).toHaveCount(14);await page.locator('.hero a[href="#sparing"]').click();await expect(page.locator('#sparing')).toBeVisible();});
+test('cinematic slider shows five independently animated scenes and navigates',async({page})=>{
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const hero=page.locator('#loan-showcase');
+ await expect(hero).toBeVisible();
+ await expect(page.locator('.sc-slide')).toHaveCount(5);
+ await expect(page.locator('.sc-slide.is-active')).toHaveCount(1);
+ await expect(page.locator('.sc-slide[data-sc-index="0"]')).toHaveClass(/is-active/);
+ await page.locator('.sc-next').click();
+ await expect(page.locator('.sc-slide[data-sc-index="1"]')).toHaveClass(/is-active/);
+ await page.locator('.sc-pause').click();
+ await expect(hero).toHaveClass(/sc-paused/);
+ await expect(page.locator('.sc-pause')).toHaveAttribute('aria-pressed','true');
+ await page.locator('.sc-chapter[data-sc-goto="2"]').click();
+ await expect(page.locator('.sc-slide[data-sc-index="2"]')).toHaveClass(/is-active/);
+ await page.locator('.sc-pause').click();
+ await expect(page.locator('.sc-pause')).toHaveAttribute('aria-pressed','false');
+ await page.locator('.sc-slide.is-active .sc-action').click();
+ await expect(page.locator('#kvitteringer')).toBeVisible();
+});
+test('mobile campaign hero has no page-width overflow',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#loan-showcase')).toBeVisible();
+ await page.locator('.sc-next').click();
+ await expect(page.locator('.sc-slide[data-sc-index="1"]')).toHaveClass(/is-active/);
+ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+2);
+ expect(overflow).toBe(false);
+});
