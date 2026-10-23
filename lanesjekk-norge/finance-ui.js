@@ -296,6 +296,9 @@
   });
   $('budget-add-income').addEventListener('click',()=>{addRow({kind:'income',category:'Lønn',description:'',bank:'',amount:0,period:'month'});exampleActive=false;renderBudget()});
   $('budget-add-expense').addEventListener('click',()=>{addRow({kind:'expense',category:'Annet',description:'',bank:'',amount:0,period:'month'});exampleActive=false;renderBudget()});
+  $('budget-show-bank')?.addEventListener('change',event=>{
+   document.querySelector('.budget-table')?.classList.toggle('budget-bank-visible',event.target.checked);
+  });
   $('budget-bank-filter').addEventListener('change',renderBudget);
   for(const id of ['budget-salary-gross','budget-salary-tax','budget-salary-other'])$(id)?.addEventListener('input',renderSalary);
   $('budget-salary-use')?.addEventListener('click',()=>{
