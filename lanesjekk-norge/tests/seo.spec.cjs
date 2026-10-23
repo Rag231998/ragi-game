@@ -18,7 +18,7 @@ test('site has a single valid absolute HTTPS canonical URL',()=>{
   assert.ok(!canonical.includes('github.io'),'GitHub preview is not the canonical website');
 });
 test('sitemap and robots.txt refer to the current canonical production host',()=>{
-  assert.equal((sitemap.match(/<loc>/g)||[]).length,1);
+  assert.equal((sitemap.match(/<loc>/g)||[]).length,3);
   assert.ok(sitemap.includes('<loc>'+canonical+'</loc>'));
   const sitemapUrl=new URL('sitemap.xml',canonical).href;
   assert.ok(robots.includes('Sitemap: '+sitemapUrl));
@@ -44,4 +44,21 @@ test('structured data accurately describes the free, user-supplied calculator',(
   assert.equal(data.isAccessibleForFree,true);
   assert.equal(data.offers.price,'0');
   assert.match(data.description,/manuelt innlagte banktilbud/);
+});
+
+test('the portal savings and guides pages have canonical addresses and helpful descriptions',()=>{
+ for(const file of ['sparing.html','guider.html']){
+  const page=read(file);
+  const url='https://lanesjekk-norge.vercel.app/'+file;
+  assert.ok(page.includes('<link rel="canonical" href="'+url+'">'),file+' must have absolute canonical URL');
+  assert.ok(sitemap.includes('<loc>'+url+'</loc>'),file+' must be discoverable');
+  assert.match(page,/<meta name="description" content="[^"]+"/);
+  assert.match(page,/<html lang="nb">/);
+ }
+});
+test('homepage has real navigation to savings, knowledge and existing mortgage calculator',()=>{
+ assert.ok(html.includes('href="./sparing.html"'));
+ assert.ok(html.includes('href="./guider.html"'));
+ assert.ok(html.includes('id="sjekk"'));
+ assert.ok(html.includes('id="banker"'));
 });
