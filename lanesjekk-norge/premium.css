@@ -160,3 +160,19 @@
  .bank-card .bank-name{font-size:14px}
  .bank-card .bank-select{font-size:12px}
 }
+
+/* Subtle premium motion; respects reduced motion and never blocks input */
+.portal-home .hero .eyebrow,.portal-home .hero h1,.portal-home .hero p,.portal-home .hero .cta-row{animation:ln-arrive .7s cubic-bezier(.16,1,.3,1) both}
+.portal-home .hero h1{animation-delay:.09s}
+.portal-home .hero p{animation-delay:.18s}
+.portal-home .hero .cta-row{animation-delay:.26s}
+.portal-home .hero .hero-card{animation:ln-float 7s ease-in-out infinite;will-change:transform}
+.portal-home .home-tool{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.portal-home .home-tool:hover{transform:translateY(-5px);box-shadow:0 18px 38px #142f4225}
+.receipt-empty-state{text-align:center;border:1px dashed #b4d8cd;background:linear-gradient(125deg,#f1fbf8,#f7fbfd);padding:27px 22px;border-radius:16px;margin:10px 0 16px}
+.receipt-empty-state span{font-size:38px;display:block;margin-bottom:10px}
+.receipt-empty-state strong{display:block;color:#145c57;font-size:15px}
+.receipt-empty-state p{max-width:420px;margin:8px auto 0;font-size:12px;color:#54757a;line-height:1.7}
+@keyframes ln-arrive{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ln-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@media(prefers-reduced-motion:reduce){.portal-home .hero .eyebrow,.portal-home .hero h1,.portal-home .hero p,.portal-home .hero .cta-row,.portal-home .hero .hero-card{animation:none!important}.portal-home .home-tool{transition:none}}
