@@ -270,3 +270,6 @@
 @media(prefers-reduced-motion:reduce){.premium-float{animation:none!important}.portal-home .premium-dashboard .home-tool{transition:none}}
 .cms-hide-hero-visual .premium-hero-media{display:none!important}
 .cms-hide-hero-visual .premium-hero .hero-inner{grid-template-columns:1fr}
+
+/* All cards use document/CMS order: admin drag-and-drop remains authoritative */
+.portal-home .premium-dashboard .receipt-home-feature,.portal-home .premium-dashboard .home-tool-property,.portal-home .premium-dashboard .featured-purple,.portal-home .premium-dashboard .featured,.portal-home .premium-dashboard .home-tool[href="#sjekk"]{grid-column:auto;grid-row:auto}
