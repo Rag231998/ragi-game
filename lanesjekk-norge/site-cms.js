@@ -9,7 +9,7 @@ const SECTIONS=Object.freeze(['quick','hero','stats','workbook','insights']);
 const CARD_IDS=Object.freeze(['sjekk','budsjett','kvitteringer','sparing','utleie','billan','forbrukslan','akademi','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti']);
 const nodes=()=>({quick:document.querySelector('#budsjett > .budget-start-panel'),hero:document.querySelector('#budsjett > .budget-hero'),
 stats:document.querySelector('#budsjett > .tool-overview'),workbook:document.querySelector('#budsjett > .budget-workbook'),insights:document.querySelector('#budsjett > .budget-insights-grid')});
-const defaults={brand:{name:'LÅNESJEKK NORGE',tagline:'Mer oversikt. Bedre valg.',accent:'#0c8878',logoUrl:'',heroVisual:true},
+const defaults={brand:{name:'LÅNESJEKK NORGE',tagline:'Mer oversikt. Bedre valg.',accent:'#0c8878',logoUrl:'',heroVisual:true,heroMotion:true},
 budget:{order:['quick','hero','stats','workbook','insights'],visible:{quick:true,hero:true,stats:true,workbook:true,insights:true},title:'Ditt budsjett.',subtitle:'Din økonomiske kontroll.',quickTitle:'Tre steg til økonomisk oversikt'},
 investing:{title:'Fond og aksjer – forstå risiko og muligheter'}};
 let published=null,preview=false;
@@ -23,7 +23,7 @@ function configClean(input){
  brand:{
  name:plain(b.name,70)||defaults.brand.name,tagline:plain(b.tagline,130)||defaults.brand.tagline,
  accent:/^#[0-9a-fA-F]{6}$/.test(b.accent)?b.accent:defaults.brand.accent,
- heroVisual:b.heroVisual!==false,
+ heroVisual:b.heroVisual!==false,heroMotion:b.heroMotion!==false,
  logoUrl:typeof b.logoUrl==='string'&&/^https:\/\/pryrgwfjniggjlrizenh\.supabase\.co\/storage\/v1\/object\/public\/site-assets\/[a-z0-9_.-]+$/i.test(b.logoUrl)?b.logoUrl:''
  },
  budget:{order,visible:Object.fromEntries(SECTIONS.map(id=>[id,id==='workbook'?true:v[id]!==false])),
@@ -45,6 +45,7 @@ function apply(input){
  const cfg=configClean(input);
  document.documentElement.style.setProperty('--cms-accent',cfg.brand.accent);
  document.documentElement.classList.toggle('cms-hide-hero-visual',cfg.brand.heroVisual===false);
+ document.documentElement.classList.toggle('cms-pause-hero-motion',cfg.brand.heroMotion===false);
  const logo=document.querySelector('.portal-logo');
  if(logo){
   const emblem=logo.querySelector('.logo-emblem');
