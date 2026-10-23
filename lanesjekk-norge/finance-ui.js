@@ -26,6 +26,22 @@
   {kind:'expense',category:'Abonnement',description:'Mobil, strømmetjenester',bank:'Nordea',amount:1300,period:'month'},
   {kind:'expense',category:'Fritid',description:'Restaurant og fritid',bank:'DNB',amount:2600,period:'month'}
  ];
+ const categoryRules=[
+  [/lønn|salary|honorar|utbetaling fra arbeid/i,'Lønn'],
+  [/kiwi|rema|coop|meny|joker|bunnpris|dagligvare|matbutikk/i,'Mat og drikke'],
+  [/netflix|spotify|disney|hbo|viaplay|abonnement|streaming|mobilabonnement/i,'Abonnement'],
+  [/elvia|strømregning|nettleie|strømleverandør/i,'Strøm'],
+  [/ruter|vy |buss|tog|bensin|diesel|parkering|bompassering/i,'Transport'],
+  [/forsikring|gjensidige|if skade|fremtind/i,'Forsikring'],
+  [/husleie|felleskostnad|boliglån|kommunale avgifter/i,'Bolig'],
+  [/tannlege|apotek|legekontor/i,'Helse'],
+  [/barnehage|sfo|skolefritidsordning/i,'Barn og familie'],
+  [/kinobillett|restaurant|kafe|konsert/i,'Fritid']
+ ];
+ function suggestCategory(text,kind){
+  if(kind==='income')return /lønn|salary|honorar/i.test(text)?'Lønn':'Annen inntekt';
+  return categoryRules.find(([pattern])=>pattern.test(text))?.[1]||null;
+ }
  let exampleActive=true;
  let count=0;
  const storageKey='lanesjekk-norge-budget-v1';
@@ -87,10 +103,21 @@
  }
  function updateFilter(lines){
   const select=$('budget-bank-filter'),selected=select.value;
-  const banks=[...new Set(lines.map(x=>x.bank.trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'nb'));
+  const query=($('budget-bank-query')?.value||'').trim().toLocaleLowerCase('nb-NO');
+  const assigned=[...new Set(lines.map(x=>x.bank.trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'nb'));
+  const known=[...new Set((window.LANEBANKER||[]).map(b=>b.name))].sort((a,b)=>a.localeCompare(b,'nb'));
+  const names=[...new Set([...assigned,...known])].filter(name=>!query||name.toLocaleLowerCase('nb-NO').includes(query));
   select.replaceChildren(option('all','Alle banker og kontoer'));
-  for(const bank of banks)select.append(option(bank,bank));
-  select.value=banks.includes(selected)?selected:'all';
+  const current=document.createElement('optgroup');current.label='Banker/kontoer i budsjettet';
+  assigned.filter(name=>names.includes(name)).forEach(name=>current.append(option(name,name)));
+  if(current.children.length)select.append(current);
+  const others=document.createElement('optgroup');others.label='Andre banker – velg for å filtrere';
+  names.filter(name=>!assigned.includes(name)).forEach(name=>others.append(option(name,name)));
+  if(others.children.length)select.append(others);
+  if(selected!=='all'&&!names.includes(selected))select.append(option(selected,selected));
+  select.value=selected;
+  const count=$('budget-bank-results');
+  if(count)count.textContent=names.length+' valg · '+assigned.length+' brukt i budsjettet';
  }
  function drawDonut(rows,total){
   const target=$('budget-donut'),legend=$('budget-category-list');legend.replaceChildren();
@@ -225,7 +252,16 @@
    }
   }catch{}
   if(!loaded)setLines(example);
-  $('budget-rows').addEventListener('input',()=>{exampleActive=false;renderBudget()});
+  $('budget-rows').addEventListener('input',event=>{
+   const field=event.target?.dataset?.field;
+   if(field==='description'&&$('budget-auto-category')?.checked){
+    const tr=event.target.closest('tr');
+    const kind=tr.querySelector('.line-kind').classList.contains('income')?'income':'expense';
+    const suggested=suggestCategory(event.target.value,kind);
+    if(suggested)tr.querySelector('[data-field="category"]').value=suggested;
+   }
+   exampleActive=false;renderBudget();
+  });
   $('budget-rows').addEventListener('change',()=>{exampleActive=false;renderBudget()});
   $('budget-rows').addEventListener('click',e=>{
    if(!e.target.closest('.budget-remove'))return;
@@ -234,6 +270,7 @@
   $('budget-add-income').addEventListener('click',()=>{addRow({kind:'income',category:'Lønn',description:'',bank:'',amount:0,period:'month'});exampleActive=false;renderBudget()});
   $('budget-add-expense').addEventListener('click',()=>{addRow({kind:'expense',category:'Annet',description:'',bank:'',amount:0,period:'month'});exampleActive=false;renderBudget()});
   $('budget-bank-filter').addEventListener('change',renderBudget);
+  $('budget-bank-query')?.addEventListener('input',renderBudget);
   $('budget-demo').addEventListener('click',()=>{exampleActive=true;setLines(example);$('budget-storage-status').textContent='Eksempelbudsjett vises. Beløpene er oppdiktede illustrasjoner.'});
   $('budget-reset').addEventListener('click',()=>{exampleActive=false;setLines([]);$('budget-storage-status').textContent='Budsjettet er tømt i skjemaet. Bruk «Slett lokal lagring» dersom du har lagret tidligere.'});
   $('budget-scenario-category').addEventListener('change',renderBudget);
