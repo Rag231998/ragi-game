@@ -300,7 +300,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
  <div class="tool-pane budget-workbook">
   <div class="tool-pane-head"><div><span class="section-overline">REDIGERBART BUDSJETT</span><h2>Fyll inn tallene dine</h2><p>Som et enkelt regneark. Velg kategori, periode og eventuelt hvilken bank eller konto posten hører til.</p></div><div class="tool-actions"><button class="tool-button primary" id="budget-add-income" type="button">+ Inntekt</button><button class="tool-button primary" id="budget-add-expense" type="button">+ Utgift</button></div></div>
   <div class="budget-toolbar">
-   <label for="budget-bank-filter">Vis poster fra bank/konto</label><select id="budget-bank-filter"><option value="all">Alle banker og kontoer</option></select>
+   <label for="budget-bank-filter">Vis poster fra bank/konto</label><input id="budget-bank-query" type="search" placeholder="Søk blant norske banker" aria-label="Søk etter bank eller konto" autocomplete="off"><select id="budget-bank-filter"><option value="all">Alle banker og kontoer</option></select><small id="budget-bank-results" role="status"></small><label class="budget-auto-switch"><input id="budget-auto-category" type="checkbox" checked> Foreslå kategori fra beskrivelsen</label>
    <button id="budget-demo" type="button" class="tool-button">Vis eksempelbudsjett</button>
    <button id="budget-reset" type="button" class="tool-button">Tøm skjema</button>
    <button id="budget-export" type="button" class="tool-button">↓ Last ned CSV</button>
