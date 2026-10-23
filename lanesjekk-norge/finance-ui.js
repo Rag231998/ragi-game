@@ -87,9 +87,7 @@
   cell(row,createSelect(periods,p.period||'month','period'));
   const result=document.createElement('strong');result.className='budget-month-value';result.textContent='–';cell(row,result);
   const actions=document.createElement('div');actions.className='budget-row-actions';
-  for(const [dir,symbol,label] of [['up','↑','Flytt opp'],['down','↓','Flytt ned']]){
-   const button=document.createElement('button');button.type='button';button.className='budget-move';button.dataset.move=dir;button.textContent=symbol;button.title=label;button.setAttribute('aria-label',label);actions.append(button);
-  }
+  const grip=document.createElement('button');grip.type='button';grip.className='budget-drag-handle';grip.textContent='⠿';grip.title='Dra for å flytte posten';grip.setAttribute('aria-label','Dra for å endre rekkefølge');grip.draggable=true;actions.append(grip);
   const remove=document.createElement('button');remove.type='button';remove.className='budget-remove';remove.title='Fjern post';remove.setAttribute('aria-label','Fjern budsjettpost');remove.textContent='×';actions.append(remove);cell(row,actions);
   $('budget-rows').append(row);
   window.LANENUMBERS?.formatAll(row);
@@ -320,6 +318,46 @@
    exampleActive=false;renderBudget();scheduleSave();
   });
   $('budget-rows').addEventListener('change',()=>{exampleActive=false;renderBudget();scheduleSave()});
+  const tbody=$('budget-rows');
+  let dragged=null;
+  let pointerStart=null;
+  tbody.addEventListener('dragstart',event=>{
+   const handle=event.target.closest?.('.budget-drag-handle');
+   if(!handle)return;
+   dragged=handle.closest('tr');
+   dragged.classList.add('budget-dragging');
+   event.dataTransfer.effectAllowed='move';
+   event.dataTransfer.setData('text/plain',dragged.dataset.lineId);
+  });
+  tbody.addEventListener('dragover',event=>{
+   if(!dragged)return;
+   event.preventDefault();
+   const target=event.target.closest?.('tr');
+   if(!target||target===dragged)return;
+   const mid=target.getBoundingClientRect().top+target.getBoundingClientRect().height/2;
+   if(event.clientY<mid)target.before(dragged);else target.after(dragged);
+  });
+  tbody.addEventListener('drop',event=>{if(!dragged)return;event.preventDefault();dragged.classList.remove('budget-dragging');dragged=null;exampleActive=false;renderBudget();scheduleSave()});
+  tbody.addEventListener('dragend',()=>{if(dragged){dragged.classList.remove('budget-dragging');dragged=null;renderBudget();scheduleSave()}});
+  // Touch pointer release reorders rows without blocking scrolling outside the grip.
+  tbody.addEventListener('pointerdown',event=>{
+   const grip=event.target.closest?.('.budget-drag-handle');
+   if(!grip||event.pointerType==='mouse')return;
+   pointerStart={row:grip.closest('tr'),pointerId:event.pointerId,grip};
+   grip.setPointerCapture?.(event.pointerId);
+  });
+  tbody.addEventListener('pointerup',event=>{
+   if(!pointerStart||event.pointerId!==pointerStart.pointerId)return;
+   const {row,grip}=pointerStart;pointerStart=null;
+   grip.releasePointerCapture?.(event.pointerId);
+   const target=document.elementFromPoint(event.clientX,event.clientY)?.closest('tr');
+   if(target&&target!==row&&tbody.contains(target)){
+    const mid=target.getBoundingClientRect().top+target.getBoundingClientRect().height/2;
+    if(event.clientY<mid)target.before(row);else target.after(row);
+    exampleActive=false;renderBudget();scheduleSave();
+   }
+  });
+  tbody.addEventListener('pointercancel',()=>{pointerStart=null});
   $('budget-rows').addEventListener('click',e=>{
    const move=e.target.closest('[data-move]');
    if(move){
