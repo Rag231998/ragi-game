@@ -13,6 +13,8 @@
  <p id="auth-status" role="status" aria-live="polite"></p>
  <div class="admin-help"><strong>Problemer med innlogging?</strong><p>Dette bruker Supabase-kontoen som allerede er godkjent som administrator. Bekreft e-postadressen i Supabase dersom kontoen ikke er verifisert. Vi sender ikke nye engangskoder automatisk og påvirkes dermed ikke av e-postens utsendelsesgrense.</p></div>
 </section>
+
+<section id="admin-password-recovery" class="admin-login" hidden><div class="admin-eyebrow">TILBAKESTILL PASSORD</div><h1>Velg nytt passord</h1><p>Du åpnet en gjenopprettingslenke. Skriv inn et nytt passord for administratorkontoen.</p><form id="admin-recovery-form"><label>Nytt passord<input id="admin-new-password" type="password" minlength="12" required autocomplete="new-password"></label><label>Gjenta nytt passord<input id="admin-repeat-password" type="password" minlength="12" required autocomplete="new-password"></label><button class="admin-primary" type="submit" id="admin-recovery-save">Lagre nytt passord</button></form><p id="admin-recovery-status" role="status" aria-live="polite"></p></section>
 <section id="admin-workspace" hidden>
  <div class="admin-top"><div><div class="admin-eyebrow">NETTSTEDSTUDIO</div><h1>Endre nettsiden uten kode.</h1><p>Flytt seksjoner, velg farger, rediger teksten og se resultatet før du publiserer.</p></div>
  <div class="admin-top-actions"><span id="admin-revision">–</span><button id="admin-restore" type="button" class="admin-secondary">Nullstill til publisert</button><button id="admin-preview" type="button" class="admin-secondary">Se midlertidig</button><button id="admin-publish" type="button" class="admin-primary">✓ Publiser permanent</button></div></div>
