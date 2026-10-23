@@ -247,7 +247,11 @@ function boot(){
   const url=URL.createObjectURL(file);$('site-logo-preview').src=url;$('site-logo-preview').hidden=false;
   $('site-logo-preview').onload=()=>URL.revokeObjectURL(url);
  });
- db.auth.onAuthStateChange(()=>{setTimeout(check,0)});
+ const recovery=$('admin-password-recovery');let recoveryMode=false;
+ const showRecovery=()=>{recoveryMode=true;recovery.hidden=false;$('admin-auth').hidden=true;$('admin-workspace').hidden=true;};
+ db.auth.onAuthStateChange((event)=>{if(event==='PASSWORD_RECOVERY'){showRecovery();return}if(!recoveryMode)setTimeout(check,0)});
+ if(new URLSearchParams(location.hash.slice(1)).get('type')==='recovery')showRecovery();
+ $('admin-recovery-form').addEventListener('submit',async e=>{e.preventDefault();const pass=$('admin-new-password').value,again=$('admin-repeat-password').value,out=$('admin-recovery-status');if(pass!==again){out.textContent='Passordene er ikke like.';return}if(pass.length<12){out.textContent='Bruk minst 12 tegn.';return}const btn=$('admin-recovery-save');btn.disabled=true;const {error}=await db.auth.updateUser({password:pass});btn.disabled=false;if(error){out.textContent='Kunne ikke lagre passord: '+error.message;return}out.textContent='Passordet er oppdatert. Du kan nå logge inn.';await db.auth.signOut();recoveryMode=false;recovery.hidden=true;$('admin-auth').hidden=false;history.replaceState(null,'',location.pathname);$('admin-password').value='';});
  check();
 }
 document.addEventListener('DOMContentLoaded',boot);
