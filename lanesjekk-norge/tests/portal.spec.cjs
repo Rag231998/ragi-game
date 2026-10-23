@@ -13,7 +13,7 @@ test('homepage is a multi-category, navigable financial portal',async({page})=>{
 });
 test('savings page compares real sourced product examples by selected deposit',async({page})=>{
  await page.goto('/sparing.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('#save-results .saving-result')).toHaveCount(7);
+ await expect(page.locator('#save-results .saving-result')).toHaveCount(10);
  await expect(page.locator('#winner-name')).toContainText('KLP Banken');
  await page.locator('#save-amount').fill('500000');
  await expect(page.locator('#save-amount')).toHaveValue('500 000');
@@ -36,7 +36,7 @@ test('bank search, empty state and reset on savings page work',async({page})=>{
  await page.locator('#save-reset').click();
  await expect(page.locator('#save-search')).toHaveValue('');
  await expect(page.locator('#save-amount')).toHaveValue('100 000');
- await expect(page.locator('#save-results .saving-result')).toHaveCount(7);
+ await expect(page.locator('#save-results .saving-result')).toHaveCount(10);
 });
 test('projection chart and slider recalculate and handle invalid input',async({page})=>{
  await page.goto('/sparing.html',{waitUntil:'domcontentloaded'});
