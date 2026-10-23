@@ -47,3 +47,22 @@
 .rental-sources a{display:block;font-size:11px;color:#0c846b;font-weight:790;margin:7px 0}
 @media(max-width:980px){.rental-workspace{grid-template-columns:1fr}.rental-hero{grid-template-columns:1fr 100px}.rental-hero-icon{width:90px;height:90px;font-size:55px}}
 @media(max-width:620px){.rental-hero{grid-template-columns:1fr;padding:25px 18px;border-radius:17px}.rental-hero-icon{display:none}.rental-hero h1{font-size:29px}.rental-card{padding:18px;border-radius:14px}.rental-fields{gap:9px}.rental-fields label{font-size:10px}.rental-fields input{min-height:44px}.rental-kpis{grid-template-columns:1fr 1fr}.rental-kpis>div{padding:10px}.rental-kpis strong{font-size:17px}.rental-bar-legend{grid-template-columns:1fr}}
+
+.rental-valuation{border:1px solid #c9e5df;background:linear-gradient(145deg,#f5fcf9,#f7faff);border-radius:19px;padding:22px;margin:22px 0}
+.rental-valuation h3{font-size:20px;letter-spacing:-.035em;color:#173e4b;margin:0 0 8px}
+.rental-valuation>p{font-size:12px;color:#597781;line-height:1.7}
+.rental-valuation .rental-fields{margin:17px 0}
+.rental-valuation-output{background:white;border:1px solid #d7e7e6;padding:19px;border-radius:15px}
+.rental-valuation-output>small{display:block;color:#547983;font-weight:700}
+.rental-valuation-output>strong{display:block;color:#087b69;font-size:clamp(24px,3vw,38px);letter-spacing:-.04em}
+.rental-valuation-output p{font-size:12px;color:#55727b}
+.rental-value-bar{height:10px;border-radius:99px;background:linear-gradient(90deg,#a4ddcf,#42a79a);position:relative;margin:18px 0}
+.rental-value-marker,.rental-value-bar span{position:absolute;top:-4px;width:4px;height:18px;background:#122f40;border-radius:4px;transition:left .2s}
+.rental-valuation>label{display:grid;gap:8px;margin:18px 0;color:#204957;font-weight:750;font-size:12px}
+.rental-valuation input[type=range]{width:100%;accent-color:#087b69}
+.rental-future-value{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:16px 0}
+.rental-future-value>div{border:1px solid #d7e7e6;border-radius:12px;background:white;padding:13px 9px;min-width:0}
+.rental-future-value small{display:block;color:#62818b}
+.rental-future-value strong{display:block;color:#115a5c;font-size:clamp(12px,1.5vw,17px);overflow-wrap:anywhere}
+@media(max-width:650px){.rental-valuation{padding:16px}.rental-future-value{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.rental-value-bar span{transition:none}}
