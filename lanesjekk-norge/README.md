@@ -61,3 +61,18 @@ npm run test
 ```
 
 Nettleserens `<form>` sendes ikke til serveren. Tast inn tom rente gir ugyldig beregning i stedet for en feilaktig rente på null. Husk at en vellykket CI-test ikke bekrefter at banktillatelser, banklogos eller bankrenter fortsatt er oppdaterte; bankkildene krever separat vedlikehold.
+
+## Søkemotorer, eget domene og offentlig lansering
+
+**Midlertidig hovedadresse:** `https://lanesjekk-norge.vercel.app/`. Appens `<link rel="canonical">`, Open Graph-URL, JSON-LD, `robots.txt` og `sitemap.xml` peker konsekvent dit frem til eget domene er valgt og verifisert. Dette er den eksisterende selvstendige Vercel-publiseringen; GitHub Pages er bare et alternativt speil/prosjektforhåndsvisning.
+
+**Før flytting til eget domene:**
+1. Sjekk at ønsket .no-domenenavn er tilgjengelig, og at det ikke krenker andres varemerker eller foretaksnavn. Registrer gjennom godkjent domeneforhandler.
+2. Knytt domenet til **Vercel-prosjektet `lanesjekk-norge`**, ikke GitHub Pages-prosjektet for hele repositoryet. Under Vercel Settings → Domains får du korrekt A-/CNAME-/TXT-verifisering. Aktiver HTTPS og velg én kanonisk variant, med omdirigering fra den andre (www/apex).
+3. **Samme pull request må oppdatere alle forekomster av midlertidig Vercel-URL** i `index.html` (canonical, Open Graph, JSON-LD), `robots.txt` og `sitemap.xml`. Ikke la sitemap annonsere en gammel adresse. Sørg for 301-viderekoblinger fra eventuelle offentlige gamle adresser når det er teknisk mulig.
+4. Verifiser det nye domenet i [Google Search Console](https://search.google.com/search-console/about). Send inn `https://<ditt-domene>/sitemap.xml`, bruk verktøyet URL-inspeksjon, og kontroller at `robots.txt` og siden returnerer HTTP 200. Gjenta for Bing Webmaster Tools om ønskelig.
+5. Kontrollér at offisiell bankkonsesjon er korrekt og oppdatert, at renter ikke presenteres som live uten avtale, at personvernopplysninger og kildehenvisninger er riktige, og at PC-/mobil- og produksjons-API-testene er grønne. Indeksering er ikke garanti for søkerangering.
+
+**Automatiske SEO-regresjonstester:** `cd lanesjekk-norge/tests && node --test seo.spec.cjs`. Disse testene sjekker samsvar mellom metadata, sitemap og robots. Testsuiten hindrer ikke at innholdet kan være feil eller utdatert; kildene og faktiske brukertilstander må også kontrolleres.
+
+**Viktig:** Ikke endre GitHub Pages' repo-globale custom domain eller DNS for andre prosjekter i monorepoet. Bruk Vercels prosjektspesifikke domeneadministrasjon.
