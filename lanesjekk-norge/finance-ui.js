@@ -160,6 +160,11 @@
    const amount=parse(raw);
    const period=tr.querySelector('[data-field="period"]').value;
    const value=engine.monthly(amount,period);
+   const amountInput=tr.querySelector('[data-field="amount"]');
+   const periodInput=tr.querySelector('[data-field="period"]');
+   amountInput.setAttribute('aria-invalid',String(!Number.isFinite(value)));
+   periodInput.setAttribute('aria-invalid',String(!Number.isFinite(value)));
+   amountInput.title=Number.isFinite(value)?'':'Skriv inn et gyldig, ikke-negativt beløp';
    tr.querySelector('.budget-month-value').textContent=money(value);
   }
   updateFilter(lines);
