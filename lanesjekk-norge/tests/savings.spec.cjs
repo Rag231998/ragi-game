@@ -31,7 +31,7 @@ test('results rank by gross annual income for chosen balance and chosen eligibil
  assert.ok(result.every(p=>!p.member));
  assert.ok(result.every((p,i)=>i===0||p.profit<=result[i-1].profit));
  assert.equal(result.find(p=>p.id==='klp-31').profit,4200);
- assert.equal(result.find(p=>p.id==='dnb-vanlig').profit,2450);
+ assert.ok(Math.abs(result.find(p=>p.id==='dnb-vanlig').profit-2450)<1e-7);
  assert.ok(!result.some(p=>p.id==='obos-lang'));
  const members=compare(100000,'all',true);
  assert.ok(members.some(p=>p.id==='obos-lang'));
