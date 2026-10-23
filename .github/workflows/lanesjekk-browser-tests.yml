@@ -29,7 +29,7 @@ jobs:
       - name: Install tests
         run: npm install --no-audit --no-fund
       - name: Validate API calculations, bank allowlist and SEO metadata
-        run: node --test api.spec.cjs seo.spec.cjs format.spec.cjs savings.spec.cjs
+        run: node --test api.spec.cjs seo.spec.cjs format.spec.cjs savings.spec.cjs finance.spec.cjs
       - name: Install browser engines
         run: npx playwright install --with-deps chromium webkit
       - name: Exercise bank search and mortgage flow
