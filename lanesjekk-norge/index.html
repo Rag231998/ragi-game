@@ -103,7 +103,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
  </div>
  <div class="two">
  <div class="field"><label for="currentfee">Termingebyr</label><div class="input-wrap"><input id="currentfee" type="number" min="0" max="2000" step="1" value="65" required inputmode="numeric"><span>kr/mnd</span></div></div>
- <div class="field"><label for="currentbank">Bank (valgfritt)</label><div class="input-wrap"><input id="currentbank" type="text" maxlength="60" placeholder="Min bank"></div></div>
+ <div class="field"><label for="currentbank">Din bank (valgfritt)</label><div class="input-wrap"><select id="currentbank" aria-label="Velg din bank fra kontrollert registerliste"><option value="">Ikke valgt</option></select></div></div>
  </div>
  <div class="info-band"><span>Belåningsgrad</span><strong id="ltv">–</strong></div>
  <p id="ltv-warning" class="status-text" role="status"></p>
@@ -125,7 +125,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 
   <section class="box scenario-card" aria-label="Illustrer sparepotensial ved lavere rente">
    <div class="scenario-top"><div><span class="eyebrow">Se effekten på økonomien</span><h2>Hva om renten din gikk ned?</h2><p class="subtitle">Dra i skyveknappen og se en <strong>hypotetisk</strong> besparelse. Dette er ikke et banktilbud.</p></div><span class="scenario-icon" aria-hidden="true">↗</span></div>
-   <div class="scenario-value"><strong id="scenario-year">–</strong><span>mulig spart første 12 måneder*</span></div>
+   <div class="scenario-value"><strong id="scenario-year">–</strong><span>lavere sum terminbetalinger over 12 måneder*</span></div>
    <div class="scenario-slide"><label for="scenario-cut">Reduksjon fra dagens rente</label><strong id="scenario-cut-label">0,50 prosentpoeng</strong></div>
    <input id="scenario-cut" type="range" min="0" max="2" step="0.05" value="0.5" aria-label="Hypotetisk reduksjon i rente">
    <div class="slider-labels"><span>0,00 pp</span><span>2,00 pp</span></div>
@@ -143,7 +143,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
   </section>
   <section class="box offer-panel" id="sammenlign" aria-label="Sammenlign banktilbud">
    <div class="section-heading" style="margin-bottom:8px"><span class="step">2</span><div><h2>Sammenlign med banktilbud</h2><p class="subtitle">Legg inn faktiske vilkår du finner hos bankene. Vi regner alt på samme lånebeløp og løpetid.</p></div></div>
-   <div class="offer-title"><span class="label" style="background:#ecf3fb;color:#336a90">Ingen oppdiktede bankrenter</span><button type="button" class="light-button" id="add-offer">⌕ Finn bank</button></div>
+   <div class="offer-title"><span class="label" style="background:#ecf3fb;color:#336a90">Registerkontrollerte banker · manuelt oppgitte renter</span><button type="button" class="light-button" id="add-offer">⌕ Finn bank</button></div>
    <div id="offers"></div><div id="offers-empty" class="empty-state">Ingen banktilbud lagt inn. Velg en bank i søket ovenfor og tast inn den faktiske nominelle renten fra bankens tilbud.</div>
    <div class="table-scroll" id="result-table-wrap" hidden><table aria-label="Sammenligning av banktilbud">
       <thead><tr><th>Bank / tilbud</th><th>Rente</th><th>Per måned</th><th>Totalkostnad</th><th>Forskjell</th></tr></thead>
@@ -166,7 +166,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
   <div class="box step-card"><div class="count">02 · Sjekk belåningsgrad</div><h3>Verdien av boligen betyr noe</h3><p>Lavere belåningsgrad kan gi bedre betingelser. Vær oppmerksom på krav til medlemskap, alder og andre bankprodukter.</p></div>
   <div class="box step-card"><div class="count">03 · Gi banken sjansen</div><h3>Forhandle eller flytt</h3><p>Bruk konkurrerende tilbud som forhandlingsgrunnlag. Be om skriftlig tilbud før du vurderer å flytte lånet.</p></div>
  </div>
- <details><summary>Hvordan regner vi ut månedlig betaling?</summary><p>Vi benytter annuitetsformelen med nominell årlig rente delt på 12 og antall gjenstående måneder. Termingebyr kommer i tillegg. Vi behandler ikke personopplysninger eller søker om lån på vegne av deg.</p></details>
+ <details><summary>Hvordan velges bankene, og hvor hentes logoene fra?</summary><p>Banklisten er manuelt satt sammen med lenke til Finanstilsynets virksomhetsregister for hvert foretak. Vi viser ikke meglerforetak, uverifiserte aktører eller oppdiktede bankrenter. Bankenes nettstedikoner hentes fra bankenes offisielle domener ved visning; disse eksterne forespørslene kan eksponere IP-adressen for den aktuelle banken. Merkevarene tilhører bankene.</p></details><details><summary>Hvordan regner vi ut månedlig betaling?</summary><p>Vi benytter annuitetsformelen med nominell årlig rente delt på 12 og antall gjenstående måneder. Termingebyr kommer i tillegg. Vi behandler ikke personopplysninger eller søker om lån på vegne av deg.</p></details>
  <details><summary>Er dette banker jeg automatisk kvalifiserer hos?</summary><p>Nei. Du legger selv inn tilbud og velger hva du vil sammenligne. Bankens endelige rente avhenger blant annet av sikkerhet, betjeningsevne og produktkrav. Finansportalens offisielle oversikt er separat.</p></details>
  <details><summary>Er tjenesten gratis, og blir opplysningene lagret?</summary><p>Ja, denne versjonen er gratis. Tall du skriver i kalkulatoren behandles lokalt i nettleseren og sendes ikke til vår server. Klikker du på Finansportalens verktøy, lastes det fra Forbrukerrådet og deres personvernvilkår gjelder.</p></details>
  </section>
