@@ -38,8 +38,10 @@ function setEmpty(){
  $('result-table-wrap').hidden=true;$('copy-request').disabled=true;
 }
 function offerValue(o,field){return o.element.querySelector('[data-field="'+field+'"]')?.value??''}
-function addOffer(){
- if(offers.length>=8){text('action-status','Du kan sammenligne opptil åtte tilbud av gangen.');return}
+function addOffer(bank){
+ if(!bank||!(window.LANEBANKER||[]).some(b=>b.id===bank.id))return false;
+ if(offers.some(o=>o.bankId===bank.id)){text('action-status',bank.name+' er allerede lagt til. Du kan redigere renten i tilbudet under.');return false}
+ if(offers.length>=8){text('action-status','Du kan sammenligne opptil åtte tilbud av gangen.');return false}
  const id=++offerId;
  const div=document.createElement('article');div.className='offer';
  div.innerHTML='<div class="offer-head"><h3>Banktilbud '+id+'</h3><button class="remove" type="button" aria-label="Fjern banktilbud">Fjern ×</button></div>'+
@@ -49,7 +51,13 @@ function addOffer(){
  '<div class="field"><label for="offer-fee-'+id+'">Gebyr per måned</label><div class="input-wrap"><input data-field="fee" id="offer-fee-'+id+'" type="number" inputmode="numeric" min="0" max="2000" step="1" value="0"><span>kr</span></div></div>'+
  '<div class="field"><label for="offer-setup-'+id+'">Engangskostnad</label><div class="input-wrap"><input data-field="setup" id="offer-setup-'+id+'" type="number" inputmode="numeric" min="0" max="500000" step="1" value="0"><span>kr</span></div></div>'+
  '</div><div class="conditions"><label for="offer-notes-'+id+'" style="font-size:10px;color:#607887;font-weight:800">Vilkår, medlemskap eller merknad (valgfritt)</label><input data-field="notes" id="offer-notes-'+id+'" type="text" maxlength="160" placeholder="F.eks. krav om lønnskonto eller medlemskap"></div>';
- const offer={id,element:div};offers.push(offer);
+ const offer={id,bankId:bank.id,element:div};offers.push(offer);
+ const title=div.querySelector('.offer-head h3');title.textContent=bank.name;
+ const nameField=div.querySelector('[data-field="name"]');nameField.value=bank.name;nameField.readOnly=true;
+ nameField.title='Banken er valgt fra registrerte foretak og kan ikke erstattes med et ukontrollert banknavn.';
+ const licence=document.createElement('a');licence.textContent='✓ Se tillatelse i Finanstilsynet ↗';licence.href=bank.register;licence.target='_blank';licence.rel='noopener noreferrer';
+ licence.className='offer-licence';div.append(licence);
+ const note=document.createElement('p');note.className='offer-data-note';note.textContent='Fyll inn en faktisk tilbudt nominell rente fra '+bank.name+'. Vi har ikke registrert noen bankrente på dine vegne.';div.append(note);
  div.querySelector('.remove').addEventListener('click',()=>{
   div.remove();offers=offers.filter(o=>o.id!==id);compute()
  });
@@ -57,7 +65,8 @@ function addOffer(){
  $('offers').append(div);
  $('add-offer').disabled=offers.length>=8;
  compute();
- div.querySelector('[data-field="name"]').focus();
+ div.querySelector('[data-field="rate"]').focus();
+ return true;
 }
 function extractOffers(loan){
  const list=[];
@@ -74,6 +83,7 @@ function extractOffers(loan){
 }
 function compute(){
  const loan=getLoan();
+ scenarioPreview();
  $('offers-empty').hidden=offers.length>0;
  $('add-offer').disabled=offers.length>=8;
  if(!loan){setEmpty();return}
@@ -164,13 +174,34 @@ function reset(){
  $('add-offer').disabled=false;
  text('action-status','Eksempelverdiene er gjenopprettet.');compute();
 }
+
+function scenarioPreview(){
+ const loan=getLoan();
+ if(!loan){text('scenario-year','–');text('scenario-detail','Kontroller lånebeløp, rente og nedbetalingstid først.');return}
+ const cut=Math.max(0,Math.min(2,Number($('scenario-cut').value)||0));
+ const today=scenario(loan.balance,loan.rate,loan.months,loan.currentfee);
+ const loweredRate=Math.max(0,loan.rate-cut);
+ const alternate=scenario(loan.balance,loweredRate,loan.months,loan.currentfee);
+ const savedYear=Math.max(0,(today.monthly-alternate.monthly)*12);
+ text('scenario-cut-label',pct.format(loan.rate-loweredRate)+' prosentpoeng');
+ text('scenario-year',money(savedYear));
+ text('scenario-detail','Tilsvarer omtrent '+money((today.monthly-alternate.monthly))+' lavere månedlig terminbeløp. Hypotetisk scenario ved '+pct.format(loweredRate)+' % rente, ingen bankgaranti. Ikke det samme som netto rentebesparelse.');
+}
+
 function init(){
  $('loan-form').addEventListener('input',compute);
- $('add-offer').addEventListener('click',addOffer);
+ $('add-offer').addEventListener('click',()=>{
+  const input=$('bank-query');input.scrollIntoView({behavior:'smooth',block:'center'});input.focus();
+ });
  $('copy-request').addEventListener('click',negotiation);
  $('copy-summary').addEventListener('click',summary);
  $('load-market').addEventListener('click',market);
  $('reset').addEventListener('click',reset);
+ $('scenario-cut').addEventListener('input',scenarioPreview);
+ window.lanesjekkAddBank=bankId=>{
+  const bank=(window.LANEBANKER||[]).find(b=>b.id===bankId);
+  return bank?addOffer(bank):false;
+ };
  compute();
 }
 document.addEventListener('DOMContentLoaded',init);
