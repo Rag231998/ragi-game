@@ -99,9 +99,13 @@ function adNumber(raw,label){
  return valid(n,0,100000000)?n:null;
 }
 function parseAd(raw){
+ const areaLine=String(raw).split(/\r?\n/).find(x=>/\b(?:BRA-i|bruksareal|primærrom|P-rom)\b/i.test(x));
+ const areaMatch=areaLine?.match(/(?:BRA-i|bruksareal|primærrom|P-rom)\s*:?\s*(\d{1,4}(?:[,.]\d)?)\s*(?:m²|m2|kvm)?/i);
+ const area=areaMatch?Number(areaMatch[1].replace(',','.')):null;
  return {
   price:adNumber(raw,/(?:prisantydning|kjøpesum|pris\s*inkl)/i),
-  sharedDebt:adNumber(raw,/fellesgjeld/i),common:adNumber(raw,/felleskostnader/i),buyCosts:adNumber(raw,/omkostninger/i)
+  sharedDebt:adNumber(raw,/fellesgjeld/i),common:adNumber(raw,/felleskostnader/i),buyCosts:adNumber(raw,/omkostninger/i),
+  area:valid(area,10,2000)?area:null
  };
 }
 const allowed=(value)=>{
@@ -112,7 +116,7 @@ const allowed=(value)=>{
 };
 function fromAd(){
  const t=$('rental-ad-text').value,parsed=parseAd(t);
- const map={price:'rental-price',sharedDebt:'rental-shared-debt',common:'rental-common',buyCosts:'rental-buy-costs'};
+ const map={price:'rental-price',sharedDebt:'rental-shared-debt',common:'rental-common',buyCosts:'rental-buy-costs',area:'rental-area'};
  let changed=0;
  for(const [key,id] of Object.entries(map)){
   if(parsed[key]!==null){$(id).value=String(parsed[key]);changed++}
