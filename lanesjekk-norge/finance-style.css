@@ -176,3 +176,5 @@
  .portal-home .site-header .portal-nav{display:none!important}
  .portal-home .site-header .mobile-menu{display:block}
 }
+
+.portal-home #add-offer{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
