@@ -232,3 +232,28 @@ test('invalid amounts display an error and prevent saving bad values',async({pag
  await expect(page.locator('#budget-error-count')).toContainText('feil beløp');
  await expect(page.locator('#budget-rows tr').first().locator('[data-field=amount]')).toHaveAttribute('aria-invalid','true');
 });
+
+test('budget row can be reordered using drag handle and still keeps correct totals',async({page})=>{
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ const first=page.locator('#budget-rows tr').first();
+ const second=page.locator('#budget-rows tr').nth(1);
+ const before=await second.locator('[data-field=description]').inputValue();
+ await first.locator('.budget-drag-handle').dragTo(second.locator('.budget-drag-handle'),{targetPosition:{x:10,y:36}});
+ await expect(page.locator('#budget-rows tr').first().locator('[data-field=description]')).toHaveValue(before);
+ await expect(page.locator('#budget-income')).toContainText(/44\\s?000/);
+});
+test('investment workspace opens as distinct view, runs mathematical simulator',async({page})=>{
+ await page.goto('/#investering',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#investering')).toBeVisible();
+ await expect(page.locator('#budsjett')).toBeHidden();
+ await expect(page.locator('#invest-chart polyline')).toHaveCount(2);
+ await page.locator('#invest-start').fill('10000');
+ await page.locator('#invest-monthly').fill('1000');
+ await page.locator('#invest-years').fill('2');
+ await page.locator('#invest-return').fill('0');
+ await page.locator('#invest-fee').fill('0');
+ await expect(page.locator('#invest-final')).toContainText(/34\\s?000/);
+ await expect(page.locator('#invest-paid')).toContainText(/34\\s?000/);
+ await page.locator('#invest-reset').click();
+ await expect(page.locator('#invest-years-value')).toHaveText('15 år');
+});
