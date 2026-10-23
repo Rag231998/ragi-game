@@ -54,9 +54,49 @@ test('scenario slider updates transparently and never represents real bank offer
  await expect(page.locator('#scenario-detail')).toContainText('Hypotetisk');
 });
 test('layout fits viewport with usable fields and controls',async({page,isMobile})=>{
- const dim=await page.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,width:innerWidth}));
- expect(dim.scrollWidth).toBeLessThanOrEqual(dim.width+3);
+ const dim=await page.evaluate(()=>({
+  scrollWidth:document.documentElement.scrollWidth,width:innerWidth,
+  overflowing:[...document.querySelectorAll('body *')].filter(el=>{
+    const rect=el.getBoundingClientRect();
+    return getComputedStyle(el).position!=='fixed' && rect.width>0 &&
+      rect.right>innerWidth+3 && getComputedStyle(el).visibility!=='hidden';
+  }).slice(0,12).map(el=>({tag:el.tagName,className:String(el.className).slice(0,80),id:el.id,right:Math.round(el.getBoundingClientRect().right)}))
+ }));
+ expect(dim.scrollWidth,JSON.stringify(dim.overflowing)).toBeLessThanOrEqual(dim.width+3);
  await expect(page.locator('#bank-query')).toBeVisible();
  await expect(page.locator('#scenario-cut')).toBeVisible();
  await expect(page.locator('#balance')).toBeVisible();
+});
+
+test('blank interest rate cannot silently become a zero-interest loan',async({page})=>{
+ const rate=page.locator('#rate');
+ const before=await page.locator('#monthly').innerText();
+ await rate.fill('');
+ await expect(page.locator('#monthly')).toHaveText('–');
+ await expect(page.locator('#copy-summary')).toBeDisabled();
+ await rate.fill('5.5');
+ await expect(page.locator('#monthly')).toHaveText(before);
+ await expect(page.locator('#copy-summary')).toBeEnabled();
+});
+
+test('loan form Enter key does not reload or discard the comparison',async({page})=>{
+ await page.locator('[data-bank="dnb"] .bank-select').click();
+ await page.locator('#offer-rate-1').fill('5.0');
+ await page.evaluate(()=>{window.__loanPageNotReloaded=true});
+ await page.locator('#balance').press('Enter');
+ expect(await page.evaluate(()=>window.__loanPageNotReloaded===true)).toBe(true);
+ await expect(page.locator('#offers .offer')).toHaveCount(1);
+});
+
+test('bank additions reject duplicates, enforce eight maximum and allow removal',async({page})=>{
+ const additions=await page.evaluate(()=>{
+   const ids=window.LANEBANKER.slice(0,8).map(bank=>bank.id);
+   return [...ids.map(id=>window.lanesjekkAddBank(id)),window.lanesjekkAddBank(ids[0]),window.lanesjekkAddBank('unregistered')];
+ });
+ expect(additions).toEqual([true,true,true,true,true,true,true,true,false,false]);
+ await expect(page.locator('#offers .offer')).toHaveCount(8);
+ await expect(page.locator('#add-offer')).toBeDisabled();
+ await page.locator('#offers .offer').first().getByRole('button',{name:'Fjern banktilbud'}).click();
+ await expect(page.locator('#offers .offer')).toHaveCount(7);
+ await expect(page.locator('#add-offer')).toBeEnabled();
 });
