@@ -548,13 +548,16 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
   <p id="budget-storage-status" class="tool-hint" role="status">Du kan fylle ut uten å logge inn. Tall overføres ikke til vår server; «Lagre lokalt» lagrer kun i denne nettleseren.</p>
   <details class="budget-deep-tools"><summary>Mer avansert: bruttolønn, skattetrekk og summering av valgte poster <span>Åpne verktøy</span></summary><section class="budget-salary-studio" aria-label="Brutto til netto lønn">
  <div><span class="section-overline">LØNN OG SKATTETREKK</span><h3>Fra bruttolønn til utbetaling</h3><p>Fyll inn bruttolønn per måned og trekkprosent fra lønnsslipp eller skattekort. Anslaget er ikke faktisk skatteberegning.</p></div>
- <div class="budget-salary-fields">
+ <div class="budget-tax-method"><label>Hvordan trekkes skatt?
+<select id="budget-tax-method"><option value="percent">Prosenttrekk</option><option value="table">Tabelltrekk (offisiell tabell 2026)</option></select></label>
+<label id="budget-table-field" hidden>Tabellnummer på skattekortet<input id="budget-salary-table" type="number" min="8000" max="9400" step="10" value="8000" inputmode="numeric"></label></div>
+<div class="budget-salary-fields">
  <label>Brutto per måned (kr)<input id="budget-salary-gross" type="text" value="55 000" data-money-input inputmode="decimal"></label>
- <label>Skattetrekk (%)<input id="budget-salary-tax" type="text" value="27,00" data-decimal-input inputmode="decimal"></label>
+ <label id="budget-percent-field">Skattetrekk (%)<input id="budget-salary-tax" type="text" value="27,00" data-decimal-input inputmode="decimal"></label>
  <label>Andre lønnstrekk (kr)<input id="budget-salary-other" type="text" value="0" data-money-input inputmode="decimal"></label>
  </div>
  <div class="budget-salary-results"><span>Samlet trekk <strong id="budget-salary-deduction">–</strong></span><span class="budget-salary-net">Anslått nettoutbetaling <strong id="budget-salary-net">–</strong></span><button id="budget-salary-use" type="button" class="tool-button primary">Bruk nettolønn i budsjettet ↗</button></div>
- <p id="budget-salary-message" class="tool-hint" role="status"></p>
+ <p id="budget-salary-message" class="tool-hint" role="status"></p><p class="tool-hint">Tabelltrekk bruker månedstabellene for 2026 fra <a href="https://www.skatteetaten.no/satser/trekktabeller-i-tekstformat/" target="_blank" rel="noopener noreferrer">Skatteetaten ↗</a>. Bare tabellnummer og bruttobeløp sendes til oppslagstjenesten når du velger tabelltrekk. Bruk tabelltrekk kun hos hovedarbeidsgiver og kontroller lønnsslippen.</p>
  </section>
  <section class="budget-selection-studio" aria-label="Summér valgte budsjettposter"><div><strong>↕ Flytt og summér poster</strong><p>Bruk pilene på radene for ønsket rekkefølge. Kryss av postene du vil summere. Regnestykket oppdateres automatisk.</p></div><div class="budget-selection-result"><small id="budget-selected-count">0 valgt</small><strong id="budget-selected-total">0 kr</strong><small id="budget-selected-hint">Netto per måned</small></div></section></details>
  <div id="budget-error-count" role="status" aria-live="polite" class="budget-error-summary"></div><div class="budget-table-controls"><span> <button id="budget-undo" type="button" class="tool-button budget-undo" hidden>↶ Angre siste sletting</button> ✦ Rediger budsjettet direkte – endringene beregnes med én gang</span><label class="budget-auto-switch"><input type="checkbox" id="budget-show-bank"> Vis kontofelt (valgfritt)</label></div>
