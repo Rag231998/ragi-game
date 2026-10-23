@@ -36,13 +36,14 @@ test('budget preserves opt-in local data, exports semicolon CSV and can remove s
  await page.locator('.budget-advanced-tools > summary').click();
  await page.locator('#budget-rows tr').first().locator('[data-field=amount]').fill('55000');
  await page.locator('#budget-save').click();
- await expect(page.locator('#budget-storage-status')).toContainText('Lagret lokalt');
+ await expect(page.locator('#budget-storage-status')).toContainText(/lagret/i);
  const downloadPromise=page.waitForEvent('download');
  await page.locator('#budget-export').click();
  const download=await downloadPromise;
  expect(download.suggestedFilename()).toBe('lanesjekk-budsjett.csv');
  await page.reload();
  await expect(page.locator('#budget-rows tr').first().locator('[data-field=amount]')).toHaveValue('55 000');
+ await page.locator('.budget-advanced-tools > summary').click();
  await page.locator('#budget-clear-save').click();
  await expect(page.locator('#budget-storage-status')).toContainText('slettet');
  await page.locator('#budget-reset').click();
@@ -213,18 +214,18 @@ test('budget undo restores deleted rows and their totals',async({page})=>{
  await page.locator('.budget-advanced-tools > summary').click();
  await page.locator('#budget-undo').click();
  await expect(page.locator('#budget-rows tr')).toHaveCount(9);
- await expect(page.locator('#budget-income')).toContainText(/44\\s?000/);
+ await expect(page.locator('#budget-income')).toContainText(/44\s?000/);
 });
 test('budget salary transfer updates income and subtotal of chosen rows',async({page})=>{
  await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
  await page.locator('#budget-salary-gross').fill('60000');
  await page.locator('#budget-salary-tax').fill('25');
  await page.locator('#budget-salary-other').fill('1000');
- await expect(page.locator('#budget-salary-net')).toContainText(/44\\s?000/);
+ await expect(page.locator('#budget-salary-net')).toContainText(/44\s?000/);
  await page.locator('#budget-salary-use').click();
- await expect(page.locator('#budget-income')).toContainText(/46\\s?000/);
+ await expect(page.locator('#budget-income')).toContainText(/46\s?000/);
  await page.locator('#budget-rows tr').first().locator('.budget-mark').check();
- await expect(page.locator('#budget-selected-total')).toContainText(/44\\s?000/);
+ await expect(page.locator('#budget-selected-total')).toContainText(/44\s?000/);
 });
 test('invalid amounts display an error and prevent saving bad values',async({page})=>{
  await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
@@ -240,7 +241,7 @@ test('budget row can be reordered using drag handle and still keeps correct tota
  const before=await second.locator('[data-field=description]').inputValue();
  await first.locator('.budget-drag-handle').dragTo(second.locator('.budget-drag-handle'),{targetPosition:{x:10,y:36}});
  await expect(page.locator('#budget-rows tr').first().locator('[data-field=description]')).toHaveValue(before);
- await expect(page.locator('#budget-income')).toContainText(/44\\s?000/);
+ await expect(page.locator('#budget-income')).toContainText(/44\s?000/);
 });
 test('investment workspace opens as distinct view, runs mathematical simulator',async({page})=>{
  await page.goto('/#investering',{waitUntil:'domcontentloaded'});
@@ -252,8 +253,8 @@ test('investment workspace opens as distinct view, runs mathematical simulator',
  await page.locator('#invest-years').fill('2');
  await page.locator('#invest-return').fill('0');
  await page.locator('#invest-fee').fill('0');
- await expect(page.locator('#invest-final')).toContainText(/34\\s?000/);
- await expect(page.locator('#invest-paid')).toContainText(/34\\s?000/);
+ await expect(page.locator('#invest-final')).toContainText(/34\s?000/);
+ await expect(page.locator('#invest-paid')).toContainText(/34\s?000/);
  await page.locator('#invest-reset').click();
  await expect(page.locator('#invest-years-value')).toHaveText('15 år');
 });

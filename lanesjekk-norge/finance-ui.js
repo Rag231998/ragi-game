@@ -329,15 +329,24 @@
    event.dataTransfer.effectAllowed='move';
    event.dataTransfer.setData('text/plain',dragged.dataset.lineId);
   });
+  // Keep rows stationary while dragging. Moving the source during dragover
+  // destabilises the pointer target and can prevent drop in mobile browsers.
   tbody.addEventListener('dragover',event=>{
    if(!dragged)return;
    event.preventDefault();
-   const target=event.target.closest?.('tr');
-   if(!target||target===dragged)return;
-   const mid=target.getBoundingClientRect().top+target.getBoundingClientRect().height/2;
-   if(event.clientY<mid)target.before(dragged);else target.after(dragged);
+   if(event.dataTransfer)event.dataTransfer.dropEffect='move';
   });
-  tbody.addEventListener('drop',event=>{if(!dragged)return;event.preventDefault();dragged.classList.remove('budget-dragging');dragged=null;exampleActive=false;renderBudget();scheduleSave()});
+  tbody.addEventListener('drop',event=>{
+   if(!dragged)return;
+   event.preventDefault();
+   const target=event.target.closest?.('tr');
+   if(target&&target!==dragged&&tbody.contains(target)){
+    const midpoint=target.getBoundingClientRect().top+target.getBoundingClientRect().height/2;
+    if(event.clientY<midpoint)target.before(dragged);else target.after(dragged);
+    exampleActive=false;renderBudget();scheduleSave();
+   }
+   dragged.classList.remove('budget-dragging');dragged=null;
+  });
   tbody.addEventListener('dragend',()=>{if(dragged){dragged.classList.remove('budget-dragging');dragged=null;renderBudget();scheduleSave()}});
   // Touch pointer release reorders rows without blocking scrolling outside the grip.
   tbody.addEventListener('pointerdown',event=>{
