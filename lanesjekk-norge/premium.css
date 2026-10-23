@@ -189,3 +189,7 @@
 @keyframes lanesjekk-orbit{0%{transform:translate(0,0) rotate(0deg) scale(.94);opacity:.6}100%{transform:translate(-9%,13%) rotate(36deg) scale(1.13);opacity:1}}
 @media(max-width:800px){.portal-home .hero::after{width:76vw;right:-30%;top:-5%;opacity:.42}}
 @media(prefers-reduced-motion:reduce){.portal-home .hero::after{animation:none!important}}
+
+/* Website visual configuration: set by published CMS, or transient admin preview */
+.cms-hide-hero-visual .portal-home .hero::after{display:none!important}
+.cms-hide-hero-visual .portal-home .hero .hero-card{animation:none!important}
