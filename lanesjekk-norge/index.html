@@ -109,7 +109,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 <div class="utility-bar"><div class="site-container utility-inner"><span>Uavhengig økonomioversikt</span><span>Gratis verktøy · Kilder fra banker og offentlige etater</span></div></div>
 <header class="site-header"><div class="site-container nav-row">
 <a class="portal-logo" href="#topp"><span class="logo-emblem">◈</span><span>LÅNESJEKK <b>NORGE</b><small>Mer oversikt. Bedre valg.</small></span></a>
-<nav class="portal-nav" aria-label="Hovednavigasjon"><a href="#topp" aria-current="page">Forside</a><a href="#budsjett">Budsjett</a><a href="#billan">Billån</a><a href="#forbrukslan">Forbrukslån</a><a href="#sjekk">Boliglån</a><a href="#sparing">Sparing</a><a href="#banker">Banker</a><a href="#akademi">Læring</a><a href="#guider">Guider</a></nav>
+<nav class="portal-nav" aria-label="Hovednavigasjon"><a href="#topp" aria-current="page">Forside</a><a href="#budsjett">Budsjett</a><a href="#billan">Billån</a><a href="#forbrukslan">Forbrukslån</a><a href="#sjekk">Boliglån</a><a href="#sparing">Sparing</a><a href="#investering">Fond og aksjer</a><a href="#banker">Banker</a><a href="#akademi">Læring</a><a href="#guider">Guider</a></nav>
 <a class="nav-cta" href="#sparing">Sammenlign sparing <span>↗</span></a>
 <details class="mobile-menu"><summary aria-label="Åpne meny">☰ Meny</summary><div><a href="#topp">Forside</a><a href="#sjekk">Boliglån</a><a href="#sparing">Sparing</a><a href="#budsjett">Budsjett</a><a href="#billan">Billån</a><a href="#forbrukslan">Forbrukslån</a><a href="#akademi">Læringsplattform</a><a href="#guider">Guider og artikler</a><a href="#banker">Bankoversikt</a></div></details>
 </div></header>
@@ -124,7 +124,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 <div class="portal-viewbar" id="portal-viewbar" hidden>
   <div class="viewbar-crumb"><a href="#topp" aria-label="Tilbake til forsiden">⌂ Forside</a><span aria-hidden="true">›</span><strong id="viewbar-title">Velg tjeneste</strong></div>
   <nav class="viewbar-shortcuts" aria-label="Bytt tjeneste">
-   <a href="#budsjett">Budsjett</a><a href="#billan">Billån</a><a href="#forbrukslan">Forbrukslån</a><a href="#sjekk">Boliglån</a><a href="#sparing">Sparing</a><a href="#banker">Banker</a><a href="#akademi">Læring</a><a href="#guider">Guider</a>
+   <a href="#budsjett">Budsjett</a><a href="#billan">Billån</a><a href="#forbrukslan">Forbrukslån</a><a href="#sjekk">Boliglån</a><a href="#sparing">Sparing</a><a href="#investering">Fond og aksjer</a><a href="#banker">Banker</a><a href="#akademi">Læring</a><a href="#guider">Guider</a>
   </nav>
 </div>
 <section class="home-navigation" data-portal-view="home" aria-label="Velg hva du ønsker å sammenligne">
@@ -289,6 +289,25 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
  <details><summary>Er tjenesten gratis, og blir opplysningene lagret?</summary><p>Ja, denne versjonen er gratis. Tall du skriver i kalkulatoren behandles lokalt i nettleseren og sendes ikke til vår server. Klikker du på Finansportalens verktøy, lastes det fra Forbrukerrådet og deres personvernvilkår gjelder.</p></details>
  </section>
 
+<section class="tool-view investment-studio" id="investering" data-portal-view="investing" hidden aria-label="Fond og aksjer">
+ <div class="investment-hero"><div><span class="section-overline">INVESTERINGSSTUDIO · LÆR VED Å UTFORSKE</span><h1>Fond og aksjer.<br><em>Se hva valgene betyr.</em></h1><p>Prøv beløp, tid, avkastning og kostnader selv. Se utviklingen i en interaktiv graf og lær forskjellen mellom fond og enkeltaksjer. Alle tall er hypotetiske – ingen kurser eller bankkontoer hentes.</p><div class="investment-hero-pills"><span>◇ Egne simuleringer</span><span>◇ Norske kilder</span><span>◇ Ingen innlogging</span></div></div><div class="investment-hero-icon" aria-hidden="true">↗<small>DIN LÆRINGSARENA</small></div></div>
+ <div class="investment-layout">
+  <div class="investment-controls"><h2>Bygg ditt scenario</h2><p>Prøv forskjellige antakelser og se hvordan kurven endrer seg.</p>
+   <label>Startbeløp <input id="invest-start" type="number" min="0" max="100000000" step="1000" value="50000"></label>
+   <label>Månedlig sparing <input id="invest-monthly" type="number" min="0" max="1000000" step="100" value="2500"></label>
+   <label>Sparehorisont <output id="invest-years-value">15 år</output><input id="invest-years" type="range" min="1" max="40" value="15"></label>
+   <label>Antatt årlig avkastning før kostnader <output id="invest-return-value">6 %</output><input id="invest-return" type="range" min="-15" max="20" step=".5" value="6"></label>
+   <label>Årlige kostnader <output id="invest-fee-value">0,30 %</output><input id="invest-fee" type="range" min="0" max="3" step=".05" value=".30"></label>
+   <button id="invest-reset" type="button" class="tool-button">↶ Tilbakestill scenario</button>
+  </div>
+  <div class="investment-visual"><div class="investment-kpis"><div><small>Estimert sluttverdi</small><strong id="invest-final">–</strong></div><div><small>Sum innskudd</small><strong id="invest-paid">–</strong></div><div><small>Hypotetisk gevinst/tap</small><strong id="invest-gain">–</strong></div></div><div class="investment-chart-head"><h2>Hvordan kan sparingen utvikle seg?</h2><span>Sluttverdier per år</span></div><svg id="invest-chart" viewBox="0 0 700 270" role="img" aria-label="Simulert spareutvikling med og uten kostnader" preserveAspectRatio="none"></svg><div class="investment-legend"><span>● Etter kostnader</span><span>● Uten kostnader</span></div><p id="invest-explainer" role="status"></p><p class="investment-disclaimer">Dette er en matematisk illustrasjon, ikke en prognose. Faktisk avkastning varierer, verdien kan falle, og skatt/inflasjon er ikke trukket fra.</p></div>
+ </div>
+ <div class="investment-lessons">
+  <article><span>01 · GRUNNLEGGENDE</span><h3>Fond eller enkeltaksjer?</h3><p>Et fond kan spre investeringene over flere selskaper. En enkeltaksje gir konsentrert eksponering mot ett selskap. Ingen av delene garanterer avkastning.</p><a href="https://www.forbrukerradet.no/finansportalen/" target="_blank" rel="noopener noreferrer">Lær mer hos Finansportalen ↗</a></article>
+  <article><span>02 · KOSTNADER</span><h3>Små gebyrer blir store beløp</h3><p>Fond kan ha løpende kostnader og plattformgebyrer. Samme fond kan koste ulikt hos forskjellige tilbydere. Utforsk forskjellen med kostnadsslideren.</p><a href="https://www.forbrukerradet.no/siste-nytt/na-kan-du-sjekke-om-du-betaler-for-mye-for-fondet-ditt/" target="_blank" rel="noopener noreferrer">Forbrukerrådet om fondspriser ↗</a></article>
+  <article><span>03 · SKATT</span><h3>Hva er en aksjesparekonto?</h3><p>ASK gir mulighet til å bytte kvalifiserte EØS-aksjer og aksjefond innenfor kontoen uten løpende gevinstbeskatning. Det gjelder særskilte regler for uttak.</p><a href="https://www.skatteetaten.no/person/skatt/hjelp-til-rett-skatt/aksjar-og-verdipapir/om/aksjesparekonto-ask/" target="_blank" rel="noopener noreferrer">Se vilkårene hos Skatteetaten ↗</a></article>
+ </div>
+</section>
 <section class="tool-view" id="budsjett" data-portal-view="budget" hidden aria-label="Personlig budsjett">
  <div class="tool-hero budget-hero"><div><span class="tool-eyebrow">ØKONOMISK OVERSIKT · GRATIS</span><h1>Ditt budsjett.<br><em>Din økonomiske kontroll.</em></h1><p>Legg inn nettoinntekt og utgifter i en redigerbar tabell. Se hvor pengene går, fordeling per bank og hva du realistisk kan sette av til sparing.</p><div class="tool-hero-tags"><span>◉ Ingen banktilkobling</span><span>◉ Beregning mens du skriver</span><span>◉ Eksporter til Excel (CSV)</span></div></div><div class="tool-hero-decoration" aria-hidden="true"><strong>DIN ØKONOMI</strong><div class="decor-bars"><i></i><i></i><i></i><i></i><i></i></div><small>Full oversikt på ett sted ↗</small></div></div>
  <div class="tool-overview" aria-live="polite">
@@ -417,5 +436,6 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 <script src="./single-page.js" defer></script>
 <script src="./finance-tools.js" defer></script>
 <script src="./finance-ui.js" defer></script>
+<script src="./investing.js" defer></script>
 <script src="./academy.js" defer></script>
 </body></html>
