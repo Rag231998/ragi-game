@@ -6,6 +6,7 @@
 const base='https://pryrgwfjniggjlrizenh.supabase.co';
 const key='sb_publishable_nMwAplLiIZ-p9zIu8F3yPQ_-_XwiMM9';
 const SECTIONS=Object.freeze(['quick','hero','stats','workbook','insights']);
+const CARD_IDS=Object.freeze(['kvitteringer','utleie','budsjett','billan','forbrukslan','akademi','sparing','sjekk','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti']);
 const nodes=()=>({quick:document.querySelector('#budsjett > .budget-start-panel'),hero:document.querySelector('#budsjett > .budget-hero'),
 stats:document.querySelector('#budsjett > .tool-overview'),workbook:document.querySelector('#budsjett > .budget-workbook'),insights:document.querySelector('#budsjett > .budget-insights-grid')});
 const defaults={brand:{name:'LÅNESJEKK NORGE',tagline:'Mer oversikt. Bedre valg.',accent:'#0c8878',logoUrl:''},
@@ -16,6 +17,7 @@ function plain(s,max){return typeof s==='string'?s.trim().slice(0,max):''}
 function configClean(input){
  const a=input&&typeof input==='object'?input:{},b=a.brand||{},c=a.budget||{},v=c.visible||{};
  const order=[...new Set(Array.isArray(c.order)?c.order.filter(x=>SECTIONS.includes(x)):defaults.budget.order)];
+ const inputCardOrder=Array.isArray(a.cards?.order)?a.cards.order.filter(id=>CARD_IDS.includes(id)):CARD_IDS;
  for(const id of SECTIONS)if(!order.includes(id))order.push(id);
  return {
  brand:{
@@ -27,7 +29,15 @@ function configClean(input){
  title:plain(c.title,90)||defaults.budget.title,
  subtitle:plain(c.subtitle,120)||defaults.budget.subtitle,
  quickTitle:plain(c.quickTitle,100)||defaults.budget.quickTitle},
- investing:{title:plain(a.investing?.title,110)||defaults.investing.title}
+ investing:{title:plain(a.investing?.title,110)||defaults.investing.title},
+ cards:{order:[...new Set([...inputCardOrder,...CARD_IDS])],
+ appearance:Object.fromEntries(CARD_IDS.map(id=>{
+ const x=a.cards?.appearance?.[id]||{};
+ return [id,{title:plain(x.title,85),description:plain(x.description,200),
+ icon:plain(x.icon,12),tone:['mint','blue','violet','peach'].includes(x.tone)?x.tone:'mint',
+ visible:x.visible!==false,
+ imageUrl:typeof x.imageUrl==='string'&&/^https:\/\/pryrgwfjniggjlrizenh\.supabase\.co\/storage\/v1\/object\/public\/site-assets\/[a-z0-9_.-]+$/i.test(x.imageUrl)?x.imageUrl:''}];
+ })) }
  };
 }
 function apply(input){
@@ -55,6 +65,27 @@ function apply(input){
   if(h){h.replaceChildren(document.createTextNode(cfg.budget.title));const br=document.createElement('br');
     const em=document.createElement('em');em.textContent=cfg.budget.subtitle;h.append(br,em);}
   const quick=els.quick?.querySelector('h2');if(quick)quick.textContent=cfg.budget.quickTitle;
+ }
+ const grid=document.querySelector('.home-tool-grid');
+ if(grid){
+  const found=Object.fromEntries([...grid.querySelectorAll('a.home-tool[href^="#"]')].map(a=>[a.getAttribute('href').slice(1),a]));
+  for(const id of cfg.cards.order){
+   const card=found[id];if(!card)continue;
+   const appearance=cfg.cards.appearance[id];
+   card.hidden=appearance.visible===false;
+   card.dataset.cmsTone=appearance.tone;
+   const strong=card.querySelector('strong'),small=card.querySelector('small'),art=card.querySelector('.home-tool-art');
+   if(strong&&appearance.title)strong.textContent=appearance.title;
+   if(small&&appearance.description)small.textContent=appearance.description;
+   if(art){
+    if(appearance.imageUrl){
+     art.replaceChildren();const img=document.createElement('img');img.src=appearance.imageUrl;img.alt='';
+     img.loading='lazy';img.style.cssText='width:52px;height:52px;max-width:100%;object-fit:contain';art.append(img);
+    }else if(appearance.icon){art.textContent=appearance.icon}
+   }
+   grid.append(card);
+  }
+  for(const id of CARD_IDS)if(!cfg.cards.order.includes(id)&&found[id])grid.append(found[id]);
  }
  const heading=document.querySelector('#investering .tool-hero h1');
  if(heading)heading.textContent=cfg.investing.title;
