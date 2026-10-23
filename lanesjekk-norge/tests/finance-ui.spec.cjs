@@ -98,3 +98,33 @@ test('every new view is independent and avoids horizontal page scrolling',async(
   if(p!=='/')await expect(page.locator('.hero')).toBeHidden();
  }
 });
+
+test('at 725px hero headline is not cut off and main call to action has contrast',async({page})=>{
+ await page.setViewportSize({width:725,height:800});
+ await page.goto('/',{waitUntil:'domcontentloaded'});
+ const measure=await page.evaluate(()=>{
+   const title=document.querySelector('.hero h1');
+   const button=document.querySelector('.hero .cta-row .btn:not(.dark-outline)');
+   return {right:title.getBoundingClientRect().right,
+           left:title.getBoundingClientRect().left,
+           viewport:document.documentElement.clientWidth,
+           scrollWidth:document.documentElement.scrollWidth,
+           buttonColor:getComputedStyle(button).color};
+ });
+ expect(measure.right).toBeLessThanOrEqual(measure.viewport+3);
+ expect(measure.left).toBeGreaterThanOrEqual(-1);
+ expect(measure.scrollWidth).toBeLessThanOrEqual(measure.viewport+3);
+ expect(measure.buttonColor).toBe('rgb(7, 63, 60)');
+});
+test('four quiz questions can be completed and restarted',async({page})=>{
+ await page.goto('/#akademi',{waitUntil:'domcontentloaded'});
+ for(let i=0;i<4;i++){
+   await page.locator('#academy-options button').nth(1).click();
+   await expect(page.locator('#academy-feedback')).toBeVisible();
+   await page.locator('#academy-next').click();
+ }
+ await expect(page.locator('#academy-count')).toHaveText('Fullført');
+ await expect(page.locator('#academy-question')).toContainText('4 av 4');
+ await page.locator('#academy-next').click();
+ await expect(page.locator('#academy-count')).toHaveText('1 av 4');
+});
