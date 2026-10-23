@@ -23,7 +23,7 @@ function card(bank,i){
  const text=document.createElement('div');text.className='bank-desc';
  const title=document.createElement('strong');title.textContent=bank.name;title.className='bank-name';
  const legal=document.createElement('span');legal.className='bank-legal';legal.textContent=bank.legal+' · '+bank.region;
- const status=document.createElement('div');status.className='bank-proof';status.textContent='✓ Bank oppført i Finanstilsynets register';
+ const status=document.createElement('div');status.className='bank-proof';status.textContent=bank.region.startsWith('Bankkonsept')?'✓ Merkevare under registrert bank':'✓ Foretak i Finanstilsynets register';
  text.append(title,legal,status);
  const btnArea=document.createElement('div');btnArea.className='bank-cta';
  const select=document.createElement('button');select.type='button';select.className='bank-select';
@@ -53,19 +53,19 @@ function filtered(q){
 function render(){
  const root=$('bank-results');if(!root)return;
  const q=normalize(query),rows=filtered(q);visible=rows;focusIndex=-1;root.replaceChildren();
- $('bank-count').textContent=rows.length+' av '+banks.length+' registeroppførte banker';
+ $('bank-count').textContent=rows.length+' av '+banks.length+' banker / bankkonsepter';
  $('bank-clear').hidden=!query.trim();
  if(rows.length===0){
   const e=document.createElement('div');e.className='bank-empty';
   const h=document.createElement('strong');h.textContent='Ingen treff i den kontrollerte banklisten';
-  const p=document.createElement('p');p.textContent='Prøv bankens juridiske navn, et kortere søk eller organisasjonsnummer. Vi viser ikke foretak uten dokumentert bankregistrering.';
+  const p=document.createElement('p');p.textContent='Prøv bankens juridiske navn, et kortere søk eller organisasjonsnummer. Vi viser bare bankforetak og konsepter der ansvarlig bank er dokumentert.';
   const clear=document.createElement('button');clear.type='button';clear.className='light-button';clear.textContent='Vis alle banker';
   clear.onclick=()=>{$('bank-query').value='';query='';render();$('bank-query').focus()};
   e.append(h,p,clear);root.append(e);
  }else{
   for(const [i,b] of rows.entries())root.append(card(b,i));
  }
- $('bank-help').textContent=q?'Søket viser dokumenterte banker, ikke automatisk tilgjengelige lån. Tilbudsrente oppgis av deg.':'Velg en bank for å sammenligne et faktisk tilbud. Alfabetisk oversikt – ingen betalt plassering.';
+ $('bank-help').textContent=q?'Søket viser banker eller bankkonsepter under registrerte foretak. Tilbudsrenten må oppgis av deg.':'Velg en bank for å sammenligne et faktisk tilbud. Alfabetisk oversikt – ingen betalt plassering.';
 }
 function handleKey(e){
  if(e.key==='Escape'){$('bank-query').value='';query='';render();return}
