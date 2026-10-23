@@ -52,7 +52,7 @@
    // Ensure the newly visible target has been laid out before scrolling.
    window.requestAnimationFrame(()=>{
     const destination=id==='topp'||!target?document.getElementById('topp'):target;
-    destination?.scrollIntoView({block:'start',behavior:'instant'});
+    destination?.scrollIntoView({block:'start',behavior:'auto'});
    });
   }
   return view;
