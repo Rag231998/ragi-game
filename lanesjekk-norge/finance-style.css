@@ -308,3 +308,33 @@
 .budget-auto-switch input{accent-color:#138d79;width:17px;height:17px}
 #budget-rows [aria-invalid="true"]{border:2px solid #bd3737!important;background:#fff3f1}
 @media(max-width:700px){#budget-bank-query,#budget-bank-filter{max-width:none;width:100%}#budget-bank-results{white-space:normal}.budget-auto-switch{width:100%}}
+
+/* Salary dashboard and tactile budget controls: October 2026 */
+.portal-home .budget-salary-studio{margin:20px 0 14px;padding:22px;border:1px solid #bfdfd9;border-radius:20px;background:linear-gradient(120deg,#e6fff4 0%,#f3f9ff 55%,#fff3ea 100%);box-shadow:0 12px 30px #16577310}
+.portal-home .budget-salary-studio h3{font-size:clamp(19px,2.2vw,25px);color:#183d4c;margin:7px 0}
+.portal-home .budget-salary-studio p{color:#526c79;margin:5px 0 12px;line-height:1.5}
+.portal-home .budget-salary-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}
+.portal-home .budget-salary-fields label{display:grid;gap:7px;font-size:12px;font-weight:800;color:#315568}
+.portal-home .budget-salary-fields input{width:100%;min-width:0;border:1px solid #a9cdd4;border-radius:12px;min-height:47px;padding:10px 14px;background:white;color:#143f51;font:inherit;font-size:16px}
+.portal-home .budget-salary-fields input:focus-visible{outline:3px solid #60bea8}
+.portal-home .budget-salary-results{display:flex;align-items:center;flex-wrap:wrap;gap:12px}
+.portal-home .budget-salary-results>span{display:grid;gap:4px;min-width:135px;background:#ffffffbd;padding:12px 16px;border-radius:12px;color:#496574;font-size:12px}
+.portal-home .budget-salary-results strong{display:block;font-size:23px;color:#233c54}
+.portal-home .budget-salary-results .budget-salary-net{background:#076f65;color:#e9fff6}
+.portal-home .budget-salary-results .budget-salary-net strong{color:#fff}
+.portal-home .budget-selection-studio{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;padding:14px 18px;margin:15px 0;border-radius:17px;background:linear-gradient(110deg,#e9e5ff,#e6f5ff);border:1px solid #d8d6f5}
+.portal-home .budget-selection-studio>div:first-child{flex:1 1 290px}
+.portal-home .budget-selection-studio strong{color:#394477}
+.portal-home .budget-selection-studio p{font-size:12px;color:#58667e;margin:4px 0}
+.portal-home .budget-selection-result{display:grid;gap:3px;padding:10px 18px;background:#fff;border-radius:12px;min-width:175px}
+.portal-home .budget-selection-result>strong{font-size:25px;color:#125e72}
+.portal-home .budget-selection-result small{color:#687a8c}
+.portal-home .budget-table tbody tr.budget-income-row{background:#f2fcf7}
+.portal-home .budget-table tbody tr.budget-expense-row{background:#fffaf6}
+.portal-home .budget-table tbody tr:hover{background:#ecf7ff}
+.portal-home .budget-row-actions{display:flex;align-items:center;gap:3px;justify-content:center}
+.portal-home .budget-move{border:1px solid #d8ddf1;border-radius:9px;padding:5px 8px;min-height:32px;background:#edefff;color:#4655a2;font-weight:900;cursor:pointer}
+.portal-home .budget-move:hover,.portal-home .budget-move:focus-visible{background:#4d59a8;color:#fff}
+.portal-home .budget-mark{width:17px;height:17px;accent-color:#6b52bc;margin-right:6px;vertical-align:middle;cursor:pointer}
+.portal-home .budget-table td:last-child{min-width:118px}
+@media(max-width:700px){.portal-home .budget-salary-fields{grid-template-columns:1fr}.portal-home .budget-salary-studio{padding:15px}.portal-home .budget-selection-result{width:100%}.portal-home .budget-row-actions{gap:2px}}
