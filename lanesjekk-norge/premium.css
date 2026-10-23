@@ -292,3 +292,46 @@
 .cms-pause-hero-motion .premium-hero-motion{display:none}
 .cms-pause-hero-motion .premium-float{animation:none}
 @media(prefers-reduced-motion:reduce){.premium-hero-motion{display:none!important}}
+
+/* Cinematic homepage v3 — overrides inherited hero aesthetics, no external video requests */
+.portal-home .cinematic-hero{position:relative;isolation:isolate;min-height:580px;padding:0!important;margin:0;overflow:hidden;background:#0b2939!important;color:#fff}
+.portal-home .cinematic-hero::after{display:none!important}
+.cinema-stage{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:-1}
+.cinema-landscape{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;object-position:50% 52%;max-width:none;animation:cinema-camera 27s ease-in-out infinite alternate;will-change:transform}
+.cinema-shade{position:absolute;inset:0;background:linear-gradient(90deg,#071a30fa 0%,#071a30ed 19%,#071a30be 39%,#071a3080 55%,#071a3020 90%),linear-gradient(0deg,#081d30d9,transparent 45%)}
+.cinema-mist{position:absolute;width:60%;height:60%;right:-8%;bottom:-35%;background:radial-gradient(ellipse,#7bdfbc40,transparent 68%);animation:cinema-mist 18s ease-in-out infinite alternate}
+.cinema-horizon{position:absolute;left:0;right:0;bottom:0;height:4px;background:linear-gradient(90deg,transparent,#7bedd1,transparent);opacity:.65}
+.cinema-content{position:relative;z-index:1;max-width:1540px;margin:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(245px,.44fr);min-height:580px;align-items:center;gap:clamp(18px,4vw,80px);padding:58px clamp(22px,4vw,66px) 70px}
+.cinema-copy{max-width:690px;min-width:0}
+.portal-home .cinematic-hero h1{font-size:clamp(48px,5.1vw,86px);line-height:1.03;letter-spacing:-.066em;margin:25px 0 20px;max-width:680px;text-wrap:balance}
+.portal-home .cinematic-hero h1 em{display:block;color:#8eefd0}
+.portal-home .cinematic-hero .eyebrow{color:#81e9c9;font-size:clamp(10px,1vw,14px);letter-spacing:.16em}
+.portal-home .cinematic-hero p{max-width:580px;font-size:clamp(15px,1.23vw,19px);line-height:1.7;color:#e3f0f3;margin:0 0 24px}
+.cinema-perks{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:34px;font-size:12px;font-weight:650;color:#e8faf2}
+.cinema-perks span{display:flex;align-items:center;gap:7px}
+.portal-home .cinematic-hero .cta-row{display:flex;flex-wrap:wrap;gap:11px}
+.portal-home .cinematic-hero .cta-row .btn{border-radius:100px;padding:16px 25px;box-shadow:none}
+.cinema-hud{justify-self:end;width:min(100%,330px);display:grid;gap:12px;animation:cinema-entrance 1s both .4s}
+.cinema-kicker{display:flex;gap:10px;align-items:center;color:#e3fbf3;font-size:10px;letter-spacing:.09em;background:#0d354e9c;border:1px solid #bafbe64f;border-radius:14px;padding:14px;backdrop-filter:blur(14px)}
+.cinema-kicker small{font-size:9px;color:#c8d9df;letter-spacing:0;margin-left:auto}
+.cinema-live-dot{width:9px;height:9px;border-radius:50%;background:#74f5d2;box-shadow:0 0 0 5px #74f5d220;flex-shrink:0}
+.cinema-panel{border-radius:19px;border:1px solid #c9fff174;background:#08283cab;padding:18px 20px;box-shadow:0 18px 40px #04152060;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.cinema-panel small{font-size:11px;color:#d6eced}
+.cinema-panel strong{display:block;font-size:clamp(22px,2vw,30px);color:#fff;letter-spacing:-.04em;margin-top:6px}
+.cinema-panel svg{display:block;width:100%;height:65px;margin-top:10px;overflow:visible}
+.cinema-panel svg path{stroke:#88f9c8;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:260;stroke-dashoffset:260;animation:cinema-line 10s ease-in-out infinite}
+.cinema-panel-secondary{background:#ffffff19}
+.cinema-panel-secondary span{display:block;font-size:11px;color:#d8ece8;margin-top:10px}
+.cinema-motion-toggle{position:absolute;bottom:15px;right:clamp(18px,3vw,54px);z-index:3;display:flex;gap:10px;align-items:center;color:#e4faf0;border:1px solid #ffffff5e;background:#0c2d41a8;border-radius:100px;padding:8px 13px;cursor:pointer;font-size:12px;backdrop-filter:blur(9px)}
+.cinema-motion-toggle:hover,.cinema-motion-toggle:focus-visible{background:#0b645e;outline-offset:2px}
+.cinema-bottom-line{position:absolute;bottom:0;height:3px;left:0;right:0;background:linear-gradient(90deg,transparent,#49ddba 60%,transparent)}
+@keyframes cinema-camera{0%{transform:scale(1.02) translate3d(1%,0,0)}100%{transform:scale(1.15) translate3d(-1.8%,-1.5%,0)}}
+@keyframes cinema-mist{from{opacity:.25;transform:translateX(0)}to{opacity:.8;transform:translateX(-16%)}}
+@keyframes cinema-line{0%,8%{stroke-dashoffset:260}43%,82%{stroke-dashoffset:0}100%{stroke-dashoffset:-260}}
+@keyframes cinema-entrance{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.cinema-paused .cinema-landscape,.cinema-paused .cinema-mist,.cinema-paused .cinema-panel svg path{animation-play-state:paused}
+.cms-pause-hero-motion .cinema-landscape,.cms-pause-hero-motion .cinema-mist,.cms-pause-hero-motion .cinema-panel svg path{animation:none!important}
+.cms-hide-hero-visual .cinema-hud{display:none!important}
+@media(max-width:970px){.cinema-content{grid-template-columns:1fr;align-items:end;gap:30px;padding:75px 28px 58px}.cinema-hud{width:100%;justify-self:start;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}.cinema-kicker{grid-column:1/-1}.portal-home .cinematic-hero{min-height:675px}.cinema-shade{background:linear-gradient(90deg,#071a30ef,#071a30a8 66%,#071a3060),linear-gradient(0deg,#071a30dd,transparent 70%)}}
+@media(max-width:620px){.portal-home .cinematic-hero{min-height:auto}.cinema-content{min-height:650px;padding:62px 18px 75px;gap:26px}.portal-home .cinematic-hero h1{font-size:clamp(46px,12vw,66px)}.cinema-hud{grid-template-columns:1fr}.cinema-panel-secondary{display:none}.cinema-kicker small{display:none}.cinema-panel{padding:14px}.cinema-panel svg{height:39px}.cinema-perks{gap:10px 15px;font-size:11px}.cinema-landscape{object-position:63% center}}
+@media(prefers-reduced-motion:reduce){.cinema-landscape,.cinema-mist,.cinema-panel svg path,.cinema-hud{animation:none!important}.cinema-motion-toggle{display:none}}
