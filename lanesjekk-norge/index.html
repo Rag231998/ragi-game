@@ -399,10 +399,23 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
   <div><span class="section-overline">🧾 KVITTERINGSSTUDIO · GRATIS</span>
   <h1>Se hva pengene <em>faktisk gikk til.</em></h1>
   <p>Ta bilde av en kvittering eller lim inn tekst. Se hver vare og pris, endre kategorier, og utforsk hva du kunne prioritert annerledes. Ingen innlogging er nødvendig.</p>
-  <div class="receipt-tags"><span>✓ Hver vare blir synlig</span><span>✓ Grafer og innsikt</span><span>✓ Bilder behandles lokalt</span></div>
+  <div class="receipt-tags"><span>✓ Hver vare blir synlig</span><span>✓ Grafer og innsikt</span><span>✓ Lokal bildebehandling</span></div>
   </div>
   <div class="receipt-hero-art" aria-hidden="true"><span>🛒</span><strong>DIN HANDLEKURV</strong><small>Små kjøp. Stor oversikt.</small></div>
  </div>
+<div class="receipt-tour" aria-label="Animasjon: Slik fungerer Kvitteringsstudio">
+ <div class="receipt-tour-top"><div><span class="receipt-tour-kicker">PRODUKTDEMO · 12 SEKUNDER</span><h2>Fra kvittering til innsikt.</h2><p>Fire steg. Én oversikt. Se hvordan studioet fungerer.</p></div><button id="receipt-tour-play" type="button" class="receipt-btn minor" aria-label="Spill av produktdemo på nytt">↻ Se på nytt</button></div>
+ <div class="receipt-tour-screen" id="receipt-tour-screen" role="img" aria-label="Animert gjennomgang av opplasting, lesing av varelinjer, grafer og sparemuligheter">
+  <div class="receipt-tour-device"><div class="receipt-tour-header"><span>◉</span> KVITTERINGSSTUDIO <span class="receipt-tour-led"></span></div>
+   <div class="receipt-tour-stage receipt-tour-stage-1"><div class="receipt-tour-ticket">🧾<i></i><i></i><i></i><b>SUM 222,00</b></div><strong>01 · Last opp kvitteringen</strong><small>Ta et bilde eller velg en fil</small></div>
+   <div class="receipt-tour-stage receipt-tour-stage-2"><div class="receipt-tour-scanline"></div><div class="receipt-tour-list"><span>Melk <b>24,90</b></span><span>Brød <b>32,90</b></span><span>Kaffe <b>69,90</b></span></div><strong>02 · Finn varene</strong><small>Rett navn og priser før lagring</small></div>
+   <div class="receipt-tour-stage receipt-tour-stage-3"><div class="receipt-tour-minichart"><span></span><span></span><span></span><span></span></div><strong>03 · Se fordelingen</strong><small>Forbruk fordelt på kategorier</small></div>
+   <div class="receipt-tour-stage receipt-tour-stage-4"><div class="receipt-tour-savings"><span>↗</span><b>Din sparing</b><strong>+ 1 200 kr</strong></div><strong>04 · Utforsk muligheter</strong><small>Regneeksempler, ikke garantert sparing</small></div>
+  </div>
+ </div>
+ <div class="receipt-tour-controls"><span id="receipt-tour-step">01 / 04 · Last opp</span><div class="receipt-tour-progress"><span id="receipt-tour-progress"></span></div><button type="button" id="receipt-tour-pause" class="receipt-btn subtle">Pause</button></div>
+</div>
+<div class="receipt-workflow-heading"><div><span class="section-overline">KOM I GANG</span><h2>Din kvittering. Din kontroll.</h2></div><span class="receipt-workflow-privacy">🔒 Lokal bildebehandling · Ingen automatisk skylagring</span></div>
  <div class="receipt-grid">
   <div class="receipt-pane receipt-capture">
    <div class="receipt-step"><span>01</span><div><h2>Legg inn en kvittering</h2><p>Ta bilde, velg en fil eller skriv inn kjøpene.</p></div></div>
@@ -427,7 +440,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
    <p class="receipt-helper">OCR kan feiltolke priser, rabatter, mengder og MVA. Kontroller derfor linjene mot originalkvitteringen før du bruker analysen.</p>
   </div>
   <div class="receipt-pane receipt-results">
-   <div class="receipt-step"><span>02</span><div><h2>Hva kjøpte du?</h2><p>Alle varer kan redigeres før analysen beregnes.</p></div></div>
+   <div class="receipt-step"><span>02</span><div><h2>Varelinjer og kontroll</h2><p>Rett varer, antall og priser. Grafene oppdateres automatisk.</p></div></div>
    <div class="receipt-summary-row"><div><small>Sum varer</small><strong id="receipt-sum">0 kr</strong></div><div><small>Antall produkter</small><strong id="receipt-count">0</strong></div><div><small>Kontroll</small><strong id="receipt-check">Ikke kontrollert</strong></div></div>
    <div id="receipt-reconcile" class="receipt-reconcile" role="status">Skann eller legg inn en kvittering for å starte.</div>
    <div class="receipt-table-scroll"><table class="receipt-table" aria-label="Varer fra kvitteringen">
@@ -440,7 +453,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
   </div>
  </div>
  <div class="receipt-analytics" id="receipt-analytics" aria-label="Forbruksgrafer og refleksjon">
-  <div class="receipt-overview-heading"><div><span class="section-overline">DIN FORBRUKSANALYSE</span><h2>Pengene dine, i bilder og tall.</h2><p>Grafene følger varene du har registrert. Prøv kategorier og se fordelingen endre seg.</p></div><span class="receipt-live-label">● OPPDATERES AUTOMATISK</span></div>
+  <div class="receipt-overview-heading"><div><span class="section-overline">DIN FORBRUKSANALYSE</span><h2>Forbruket, gjort forståelig.</h2><p>Grafene følger varene du har registrert. Prøv kategorier og se fordelingen endre seg.</p></div><span class="receipt-live-label">● OPPDATERES AUTOMATISK</span></div>
   <div class="receipt-metrics">
    <div><small>Registrert kjøp</small><strong id="receipt-metric-total">0 kr</strong></div>
    <div><small>Største kategori</small><strong id="receipt-metric-top">–</strong></div>
