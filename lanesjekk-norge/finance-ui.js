@@ -324,8 +324,12 @@
   drawDebt(result.remaining,result.principal,result.balloon);
  }
  function initLoan(){
-  $('loan-tab-car').addEventListener('click',()=>chooseMode('car'));
-  $('loan-tab-consumer').addEventListener('click',()=>chooseMode('consumer'));
+  $('loan-tab-car').addEventListener('click',()=>{
+   if(typeof window.lanesjekkNavigate==='function')window.lanesjekkNavigate('billan');else chooseMode('car');
+  });
+  $('loan-tab-consumer').addEventListener('click',()=>{
+   if(typeof window.lanesjekkNavigate==='function')window.lanesjekkNavigate('forbrukslan');else chooseMode('consumer');
+  });
   $('financing-form-panel').addEventListener('input',renderLoan);
   $('financing-form-panel').addEventListener('change',renderLoan);
   window.lanesjekkFinanceChooseMode=chooseMode;
