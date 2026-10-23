@@ -9,10 +9,12 @@ function monthly(value,period){
  return value*scale[period];
 }
 function budget(lines){
- let income=0,expense=0,bankTotals={},categories={};
+ let income=0,expense=0,bankTotals={},categories={},invalidLines=0;
  for(const line of lines){
-  const amount=monthly(Number(line.amount),line.period||'month');
-  if(!Number.isFinite(amount)||amount<0)continue;
+  if(!line||!['income','expense'].includes(line.kind)) {invalidLines++;continue;}
+  const raw=line.amount;
+  const amount=monthly(typeof raw==='number'?raw:NaN,line.period||'month');
+  if(!Number.isFinite(amount)||amount<0){invalidLines++;continue;}
   if(line.kind==='income')income+=amount;
   else if(line.kind==='expense'){
    expense+=amount;
@@ -23,7 +25,7 @@ function budget(lines){
   }
  }
  const balance=income-expense;
- return {income:ROUND(income),expense:ROUND(expense),balance:ROUND(balance),
+ return {income:ROUND(income),expense:ROUND(expense),balance:ROUND(balance),invalidLines,
   annualBalance:ROUND(balance*12),annualExpenses:ROUND(expense*12),
   savingRatio:income>0?balance/income:null,
   categories:Object.entries(categories).map(([name,amount])=>({name,amount:ROUND(amount)})).sort((a,b)=>b.amount-a.amount),
@@ -99,8 +101,9 @@ function loan(input){
   monthlyAllIn:ROUND(a.payment+monthlyFee+operations)};
 }
 function budgetInsights(result,lines){
- if(result.income<=0)return ['Fyll inn nettoinntekt for å se overskudd og spareandel.'];
  const messages=[];
+ if(result.invalidLines>0)messages.push(result.invalidLines+' budsjettpost(er) har ugyldig beløp eller periode og er ikke tatt med i beregningen. Rett disse postene før du stoler på resultatet.');
+ if(result.income<=0)return [...messages,'Fyll inn nettoinntekt for å se overskudd og spareandel.'];
  if(result.balance<0)messages.push('Du budsjetterer med underskudd på '+Math.round(-result.balance).toLocaleString('nb-NO')+' kr per måned. Kontroller faste kostnader og vurder hvilke utgifter som kan reduseres.');
  else if(result.balance>0)messages.push('Mulig sparerom ut fra tallene du har lagt inn: '+Math.round(result.balance).toLocaleString('nb-NO')+' kr per måned før uforutsette utgifter.');
  const top=result.categories[0];
