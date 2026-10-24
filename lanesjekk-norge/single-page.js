@@ -3,7 +3,7 @@
  * or reloading a form. Deep links and browser Back/Forward are supported. */
 (()=>{
  'use strict';
- const LABELS=Object.freeze({home:'Forside',loans:'Boliglån',savings:'Sparing',banks:'Bankoversikt',guides:'Guider og artikler',budget:'Budsjett',receipts:'Kvitteringer',property:'Utleieanalyse',financing:'Billån og forbrukslån',academy:'Lånesjekk Akademi',investing:'Fond og aksjer'});
+ const LABELS=Object.freeze({home:'Forside',loans:'Boliglån',savings:'Sparing',banks:'Bankoversikt',guides:'Guider og artikler',budget:'Budsjett',receipts:'Kvitteringer',property:'Eiendomsstudio',financing:'Billån og forbrukslån',academy:'Lånesjekk Akademi',investing:'Fond og aksjer'});
  const SELECTORS='[data-portal-view]';
  function closeMenu(){
   document.querySelectorAll('.mobile-menu[open],.nav-group[open]').forEach(menu=>{menu.open=false});
@@ -59,6 +59,15 @@
   syncMenus(view,id);
   openArticle(target);
   if(view==='financing'&&typeof window.lanesjekkFinanceChooseMode==='function')window.lanesjekkFinanceChooseMode(id==='forbrukslan'?'consumer':'car');
+  if(view==='property'){
+   const rental=id==='utleieanalyse';
+   const property=document.getElementById('utleie');
+   property?.classList.toggle('pv-mode-rental',rental);
+   const valuation=document.getElementById('pv-mode-valuation'),rentTab=document.getElementById('pv-mode-rental');
+   valuation?.classList.toggle('is-selected',!rental);rentTab?.classList.toggle('is-selected',rental);
+   valuation?.setAttribute('aria-pressed',String(!rental));rentTab?.setAttribute('aria-pressed',String(rental));
+   const name=document.getElementById('viewbar-title');if(name)name.textContent=rental?'Utleieanalyse':'Boligverdi';
+  }
   closeMenu();
   if(scroll){
    // Ensure the newly visible target has been laid out before scrolling.
