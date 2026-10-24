@@ -245,7 +245,7 @@ function boot(){
   if(!email)return;
   const btn=$('admin-forgot-send');btn.disabled=true;forgotStatus.textContent='Forsøker å sende lenke …';
   try{
-   const redirectTo=new URL('./studio-admin.html',location.href).origin+new URL('./studio-admin.html',location.href).pathname;
+   const redirectTo=new URL('/studio-admin.html',location.origin).href;
    const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo});
    if(error){const detail=(error.message||'').toLowerCase();forgotStatus.textContent=detail.includes('rate limit')||error.status===429?'Supabase har midlertidig stoppet flere e-poster. Prøv igjen senere. Vi kan ikke omgå denne grensen.':'Kunne ikke sende lenke: '+error.message;return}
    forgotStatus.textContent='Hvis adressen er registrert og e-postutsending er tilgjengelig, får du en lenke for å velge nytt passord. Sjekk innboksen og søppelpost.';
@@ -270,9 +270,37 @@ function boot(){
  });
  const recovery=$('admin-password-recovery');let recoveryMode=false;
  const showRecovery=()=>{recoveryMode=true;recovery.hidden=false;$('admin-auth').hidden=true;$('admin-workspace').hidden=true;};
- db.auth.onAuthStateChange((event)=>{if(event==='PASSWORD_RECOVERY'){showRecovery();return}if(!recoveryMode)setTimeout(check,0)});
- if(new URLSearchParams(location.hash.slice(1)).get('type')==='recovery')showRecovery();
- $('admin-recovery-form').addEventListener('submit',async e=>{e.preventDefault();const pass=$('admin-new-password').value,again=$('admin-repeat-password').value,out=$('admin-recovery-status');if(pass!==again){out.textContent='Passordene er ikke like.';return}if(pass.length<12){out.textContent='Bruk minst 12 tegn.';return}const btn=$('admin-recovery-save');btn.disabled=true;const {error}=await db.auth.updateUser({password:pass});btn.disabled=false;if(error){out.textContent='Kunne ikke lagre passord: '+error.message;return}out.textContent='Passordet er oppdatert. Du kan nå logge inn.';await db.auth.signOut();recoveryMode=false;recovery.hidden=true;$('admin-auth').hidden=false;history.replaceState(null,'',location.pathname);$('admin-password').value='';});
+ const recoveryHash=new URLSearchParams(location.hash.slice(1));
+ const recoveryQuery=new URLSearchParams(location.search);
+ const linkError=recoveryHash.get('error_code')||recoveryQuery.get('error_code')||recoveryHash.get('error')||recoveryQuery.get('error');
+ if(linkError){
+  $('auth-status').textContent='Passordlenken er ugyldig eller utløpt. Trykk «Glemt passord?» og bestill en ny lenke.';
+  $('admin-forgot-open').hidden=true;forgotForm.hidden=false;
+  history.replaceState(null,'',location.pathname);
+ }
+ db.auth.onAuthStateChange(event=>{
+  if(event==='PASSWORD_RECOVERY'){showRecovery();return}
+  if(!recoveryMode)setTimeout(check,0)
+ });
+ if(!linkError&&(recoveryHash.get('type')==='recovery'||recoveryQuery.get('type')==='recovery'||recoveryQuery.has('code')))showRecovery();
+ $('admin-recovery-form').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const pass=$('admin-new-password').value,again=$('admin-repeat-password').value,out=$('admin-recovery-status');
+  if(pass!==again){out.textContent='Passordene er ikke like.';return}
+  if(pass.length<12){out.textContent='Bruk minst 12 tegn.';return}
+  const btn=$('admin-recovery-save');btn.disabled=true;
+  try{
+   const {data,error:sessionError}=await db.auth.getSession();
+   if(sessionError||!data?.session){out.textContent='Passordlenken er ikke gyldig lenger. Åpne innloggingen og be om en ny lenke.';return}
+   const {error}=await db.auth.updateUser({password:pass});
+   if(error){out.textContent='Kunne ikke lagre passord: '+error.message;return}
+   out.textContent='Passordet er oppdatert. Du kan nå logge inn med det nye passordet.';
+   await db.auth.signOut();
+   recoveryMode=false;recovery.hidden=true;$('admin-auth').hidden=false;
+   history.replaceState(null,'',location.pathname);$('admin-password').value='';
+  }catch(e){out.textContent='Kunne ikke tilbakestille passordet. Be om en ny lenke.'}
+  finally{btn.disabled=false}
+ });
  if(!recoveryMode)check();
 }
 document.addEventListener('DOMContentLoaded',boot);
