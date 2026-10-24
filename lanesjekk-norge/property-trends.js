@@ -2,6 +2,7 @@
 const $=id=>document.getElementById(id);
 const fmt=new Intl.NumberFormat('nb-NO',{maximumFractionDigits:1});
 const nok=n=>new Intl.NumberFormat('nb-NO',{style:'currency',currency:'NOK',maximumFractionDigits:0}).format(Math.round(n));
+const money=id=>{const raw=$(id)?.value??'';if(!String(raw).trim())return 0;return window.LANENUMBERS?.parseMoney(raw)??Number(String(raw).replace(/[\\s\\u00a0\\u202f]/g,'').replace(',','.'));};
 let indexRows=[],meta=null,periodCount=20,marketController=null;
 const chartNS='http://www.w3.org/2000/svg';
 function node(name,attributes,root){const el=document.createElementNS(chartNS,name);for(const [key,val]of Object.entries(attributes||{}))el.setAttribute(key,String(val));if(root)root.append(el);return el}
@@ -49,7 +50,7 @@ function renderIndex(){
  plot('pv-trend-svg',rows,'index','indeks','index');renderPurchase();
 }
 function renderPurchase(){
- const source=Number($('pv-known-price').value),period=$('pv-known-period').value;
+ const source=money('pv-known-price'),period=$('pv-known-period').value;
  const old=indexRows.find(x=>x.period===period),newest=indexRows.at(-1);
  if(!Number.isFinite(source)||source<100000||source>250000000||!old||!newest){$('pv-index-adjusted').textContent='—';$('pv-index-difference').textContent='Legg inn dokumentert kjøpspris og velg perioden den gjelder.';return}
  const estimate=source*newest.index/old.index;
@@ -74,7 +75,7 @@ function fetchIndex(municipality,type){
 }
 function rentForecast(){
  if(!$('pv-rent-chart'))return;
- const num=id=>Number($(id)?.value),sale=num('rental-price'),rent=num('rental-rent'),equity=num('rental-equity'),
+ const num=id=>$(id)?.matches('[data-money-input]')?money(id):Number($(id)?.value),sale=num('rental-price'),rent=num('rental-rent'),equity=num('rental-equity'),
  costs=num('rental-buy-costs')||0,rate=num('rental-interest'),years=num('rental-years'),common=num('rental-common')||0,
  running=num('rental-running')||0,maintenance=num('rental-maintenance')||0,vacancy=num('rental-vacancy')||0;
  if(!(sale>0&&rent>0&&equity>=0&&rate>=0&&rate<=30&&years>0&&vacancy>=0&&vacancy<=12)){
