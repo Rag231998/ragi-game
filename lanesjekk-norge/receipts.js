@@ -198,16 +198,16 @@ function exportCSV(){
 }
 const sample=['EKSEMPELBUTIKK','MELK LETT 1L 24,90','BRØD GROVT 32,90','KAFFE 250G 69,90','SJOKOLADE 39,90','BANANER 24,50','TANNKREM 29,90','SUM 222,00'].join('\n');
 function setupTour(){
- const screen=$('receipt-tour-screen'),progress=$('receipt-tour-progress'),step=$('receipt-tour-step'),pause=$('receipt-tour-pause'),play=$('receipt-tour-play');
+ const screen=$('receipt-tour-screen'),progress=$('receipt-tour-progress'),step=$('receipt-tour-step'),play=$('receipt-tour-play');
  if(!screen)return;
  const names=['Last opp','Finn varene','Se fordelingen','Utforsk sparing'],duration=12000;let start=performance.now(),elapsed=0,playing=!matchMedia('(prefers-reduced-motion: reduce)').matches,frame=0,visible=true;
  function tick(now){
-  if(playing&&visible){elapsed=(now-start)%duration;const idx=Math.min(3,Math.floor(elapsed/3000));screen.dataset.stage=String(idx+1);step.textContent=String(idx+1).padStart(2,'0')+' / 04 · '+names[idx];progress.style.width=(elapsed/duration*100)+'%'}
+  if(playing&&visible&&!document.documentElement.classList.contains('motion-stopped')){elapsed=(now-start)%duration;const idx=Math.min(3,Math.floor(elapsed/3000));screen.dataset.stage=String(idx+1);step.textContent=String(idx+1).padStart(2,'0')+' / 04 · '+names[idx];progress.style.width=(elapsed/duration*100)+'%'}
   frame=requestAnimationFrame(tick);
  }
  const observer=new IntersectionObserver(entries=>{visible=entries[0]?.isIntersecting??false;if(visible&&playing)start=performance.now()-elapsed},{threshold:.02});observer.observe(screen);
- function reset(){elapsed=0;start=performance.now();playing=true;pause.textContent='Pause';screen.dataset.stage='1'}
- play.addEventListener('click',reset);pause.addEventListener('click',()=>{playing=!playing;start=performance.now()-elapsed;pause.textContent=playing?'Pause':'Fortsett'});
+ function reset(){elapsed=0;start=performance.now();playing=true;screen.dataset.stage='1'}
+ play.addEventListener('click',reset);
  screen.dataset.stage='1';frame=requestAnimationFrame(tick);window.addEventListener('pagehide',()=>{cancelAnimationFrame(frame);observer.disconnect()},{once:true});
 }
 function boot(){
