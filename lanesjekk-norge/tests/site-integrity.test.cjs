@@ -130,3 +130,18 @@ test('Password reset redirects from the public homepage to the admin form, retai
  assert.ok(file('index.html').includes('auth-recovery-redirect.js'));
  assert.ok(file('admin-studio.js').includes("redirectTo=new URL('/studio-admin.html'"));
 });
+
+
+test('Admin password recovery minimum is eight characters in UI and JavaScript',()=>{
+ const admin=file('studio-admin.html'),client=file('admin-studio.js');
+ assert.match(admin,/id="admin-new-password"[^>]*minlength="8"/);
+ assert.match(admin,/id="admin-repeat-password"[^>]*minlength="8"/);
+ assert.doesNotMatch(admin,/minlength="12"/);
+ assert.match(client,/if\(pass\.length<8\)/);
+ assert.doesNotMatch(client,/if\(pass\.length<12\)/);
+ assert.match(client,/db\.auth\.getSession\(\)/);
+ assert.match(client,/db\.auth\.updateUser\(\{password:pass\}\)/);
+ assert.match(admin,/id="admin-password-strength"/);
+ assert.match(admin,/id="admin-password-match"/);
+ assert.equal((admin.match(/data-password-toggle=/g)||[]).length,2);
+});
