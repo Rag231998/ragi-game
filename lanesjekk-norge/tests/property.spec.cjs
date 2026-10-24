@@ -14,7 +14,7 @@ test('SSB-based home value changes when apartment size or condition changes',asy
  await expect(page.locator('#pv-sales')).toContainText('119');
  await page.locator('#pv-area').fill('90');
  await expect(page.locator('#pv-value')).toContainText('7');
- await page.locator('#pv-adjust').fill('10');
+ await page.locator('#pv-adjust').evaluate(el=>{el.value='10';el.dispatchEvent(new Event('input',{bubbles:true}))});
  await expect(page.locator('#pv-adjust-output')).toHaveText('+10 %');
 });
 test('user-entered broker values are distinct, removable and median calculated',async({page})=>{
