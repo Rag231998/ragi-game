@@ -1,0 +1,27 @@
+/* Lånesjekk Norge: accessible CMS-managed dark palette (no image filters). */
+html.cms-dark{color-scheme:dark;--ink:#e9f3f6;--muted:#adc4ce;--paper:#101e2d;--bg:#101e2d;--line:#304959;--white:#192e3d;--shadow:0 14px 42px #02131f7a}
+html.cms-dark body,html.cms-dark .portal-home{background:#101e2d!important;color:#e9f3f6!important}
+html.cms-dark .portal-home .site-header{background:#172e3e!important;border-color:#355161!important}
+html.cms-dark .portal-home .utility-bar{background:#153343!important;color:#d4e6e9!important;border-color:#36535e!important}
+html.cms-dark .portal-home .portal-logo,html.cms-dark .portal-home .portal-logo small,html.cms-dark .portal-home .portal-nav a,html.cms-dark .portal-home .portal-group-nav>a,html.cms-dark .portal-home .nav-group>summary{color:#e6f2f4!important}
+html.cms-dark .portal-home .nav-group .nav-drop{background:#1a3445!important;border-color:#426474!important}
+html.cms-dark .portal-home .nav-group .nav-drop a{color:#e9f5f5!important}
+html.cms-dark .portal-home .nav-group .nav-drop a:hover{background:#245355!important}
+html.cms-dark .portal-home .home-tool-grid>.home-tool,html.cms-dark .portal-home .home-tool-grid>.home-tool[data-cms-tone],html.cms-dark .portal-home .home-tool-grid>.home-tool.featured-purple,html.cms-dark .portal-home .home-tool-grid>.home-tool.featured-teal,html.cms-dark .portal-home .home-tool-grid>.home-tool.receipt-home-feature,html.cms-dark .portal-home .home-tool-grid>.home-tool.home-tool-property{background:linear-gradient(138deg,#193244,#20424c)!important;border:1px solid #436271!important;color:#e9f5f6!important;box-shadow:0 10px 25px #0005!important}
+html.cms-dark .portal-home .home-tool-grid>.home-tool strong{color:#f5ffff!important}
+html.cms-dark .portal-home .home-tool-grid>.home-tool small{color:#cbdee6!important}
+html.cms-dark .portal-home .home-tool-grid>.home-tool .home-tool-category,html.cms-dark .portal-home .home-tool-grid>.home-tool .home-tool-arrow{color:#88e6ca!important}
+html.cms-dark .portal-home .home-tool-grid>.home-tool .home-tool-art{background:#2e5f65!important;color:#d8fff4!important;border-color:#58837e!important}
+html.cms-dark .portal-home .tool-pane,html.cms-dark .portal-home .calc-panel,html.cms-dark .portal-home .results-panel,html.cms-dark .portal-home .projection-controls,html.cms-dark .portal-home .projection-chart-card,html.cms-dark .portal-home .finance-tabs,html.cms-dark .portal-home .finance-note,html.cms-dark .portal-home .budget-workbook,html.cms-dark .portal-home .budget-start-panel,html.cms-dark .portal-home .budget-insights-grid>*,html.cms-dark .portal-home .tool-empty,html.cms-dark .portal-home .tool-kpi,html.cms-dark .portal-home .box,html.cms-dark .portal-home .bank-card,html.cms-dark .portal-home .scenario-card,html.cms-dark .portal-home .receipt-empty-state,html.cms-dark .portal-home .official-box{background:#1b3243!important;border-color:#355365!important;color:#ebf5f7!important}
+html.cms-dark .portal-home .tool-pane :is(h1,h2,h3,h4,strong,label),html.cms-dark .portal-home .budget-workbook :is(h1,h2,h3,h4,strong,label),html.cms-dark .portal-home .calc-panel :is(h1,h2,h3,h4,strong,label),html.cms-dark .portal-home .results-panel :is(h1,h2,h3,h4,strong,label){color:#f3fbfd!important}
+html.cms-dark .portal-home :is(input,textarea,select){background-color:#142d3e!important;color:#f0fafb!important;border-color:#56717b!important}
+html.cms-dark .portal-home :is(input,textarea)::placeholder{color:#b2c8d0!important}
+html.cms-dark .portal-home :is(input,textarea,select):focus{outline-color:#72e4bd}
+html.cms-dark .portal-home .budget-table th,html.cms-dark .portal-home .budget-table td{background:#1b3343!important;color:#dcecf0!important;border-color:#395666!important}
+html.cms-dark .portal-home .tool-button.subtle,html.cms-dark .portal-home .subtle-button{background:#244d59!important;color:#efffff!important;border-color:#416a73!important}
+html.cms-dark .portal-home .subtitle,html.cms-dark .portal-home .field small,html.cms-dark .portal-home .finance-note p{color:#c0d4dc!important}
+html.cms-dark .portal-home .site-search-dialog{background:#173042!important;color:#f2fdff!important}
+html.cms-dark .portal-home .site-search-results button{color:#e9f8fb!important}
+html.cms-dark .portal-home .mobile-bottom-tabs{background:#182d40!important;color:#efffff!important;border-color:#395669!important}
+html.cms-dark .portal-home .mobile-bottom-tabs a{color:#d9eeef!important}
+@media(prefers-reduced-motion:reduce){html.cms-dark *{scroll-behavior:auto}}
