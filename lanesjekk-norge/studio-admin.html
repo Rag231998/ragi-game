@@ -1,7 +1,7 @@
 <!doctype html><html lang="nb"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#101f31">
 <title>Lånesjekk · Privat administrasjon</title>
-<link rel="stylesheet" href="./admin-studio.css?v=2"></head><body>
+<link rel="stylesheet" href="./admin-studio.css?v=3"></head><body>
 <header class="admin-header"><a href="./index.html" aria-label="Til forsiden">◈ <strong>LÅNESJEKK</strong><span> / STUDIO</span></a><div class="admin-header-right"><span class="admin-badge">Kun godkjente administratorer</span><button id="admin-signout" hidden type="button">Logg ut</button></div></header>
 <main>
 <section id="admin-auth" class="admin-login">
@@ -16,7 +16,26 @@
  <div class="admin-help"><strong>Problemer med innlogging?</strong><p>Trykk «Glemt passord?» og følg lenken du får på e-post. Dersom Supabase har nådd grensen for e-postutsending, må du prøve igjen senere. Du behøver ikke bruke SQL eller opprette en ny konto.</p></div>
 </section>
 
-<section id="admin-password-recovery" class="admin-login" hidden><div class="admin-eyebrow">TILBAKESTILL PASSORD</div><h1>Velg nytt passord</h1><p>Du åpnet en gjenopprettingslenke. Skriv inn et nytt passord for administratorkontoen.</p><form id="admin-recovery-form"><label>Nytt passord<input id="admin-new-password" type="password" minlength="12" required autocomplete="new-password"></label><label>Gjenta nytt passord<input id="admin-repeat-password" type="password" minlength="12" required autocomplete="new-password"></label><button class="admin-primary" type="submit" id="admin-recovery-save">Lagre nytt passord</button></form><p id="admin-recovery-status" role="status" aria-live="polite"></p></section>
+<section id="admin-password-recovery" class="admin-login" hidden>
+ <div class="admin-eyebrow">SIKKER KONTO</div>
+ <h1>Velg nytt passord</h1>
+ <p>Velg et passord med minst 8 tegn. Vi anbefaler 12 eller flere tegn, gjerne en unik passfrase som du lagrer i en passordbehandler.</p>
+ <form id="admin-recovery-form">
+  <div class="admin-password-field">
+   <label for="admin-new-password">Nytt passord</label>
+   <div class="admin-password-control"><input id="admin-new-password" type="password" minlength="8" required autocomplete="new-password" aria-describedby="admin-password-strength"><button type="button" class="admin-secondary admin-password-toggle" data-password-toggle="admin-new-password" aria-label="Vis nytt passord" aria-pressed="false">Vis</button></div>
+   <div class="admin-password-strength-meter" role="presentation"><span id="admin-password-strength-bar"></span></div>
+   <small id="admin-password-strength" class="admin-password-hint" role="status" aria-live="polite">Minst 8 tegn – anbefalt 12 eller flere.</small>
+  </div>
+  <div class="admin-password-field">
+   <label for="admin-repeat-password">Gjenta nytt passord</label>
+   <div class="admin-password-control"><input id="admin-repeat-password" type="password" minlength="8" required autocomplete="new-password" aria-describedby="admin-password-match"><button type="button" class="admin-secondary admin-password-toggle" data-password-toggle="admin-repeat-password" aria-label="Vis bekreftelse av passord" aria-pressed="false">Vis</button></div>
+   <small id="admin-password-match" class="admin-password-hint" aria-live="polite">Skriv inn det samme passordet på nytt.</small>
+  </div>
+  <button class="admin-primary" type="submit" id="admin-recovery-save">Lagre nytt passord</button>
+ </form>
+ <p id="admin-recovery-status" role="status" aria-live="polite"></p>
+</section>
 <section id="admin-workspace" hidden>
  <div class="admin-top"><div><div class="admin-eyebrow">NETTSTEDSTUDIO</div><h1>Endre nettsiden uten kode.</h1><p>Flytt seksjoner, velg farger, rediger teksten og se resultatet før du publiserer.</p></div>
  <div class="admin-top-actions"><span id="admin-revision">–</span><button id="admin-restore" type="button" class="admin-secondary">Nullstill til publisert</button><button id="admin-preview" type="button" class="admin-secondary">Se midlertidig</button><button id="admin-publish" type="button" class="admin-primary">✓ Publiser permanent</button></div></div>
@@ -77,5 +96,5 @@
  </div>
  <p id="admin-message" class="admin-message" role="status" aria-live="polite"></p>
 </section></main><footer>Privat administrasjon for Lånesjekk Norge. Bare medlemmer av databasens administratorrolle kan lagre endringer. <a href="./index.html">Til offentlig nettside ↗</a></footer>
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./admin-animation-studio.js?v=2"></script><script defer src="./admin-studio.js?v=5"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./admin-animation-studio.js?v=2"></script><script defer src="./admin-studio.js?v=6"></script>
 </body></html>
