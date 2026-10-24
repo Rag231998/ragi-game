@@ -18,6 +18,7 @@ test('admin Animation Studio can stage a video and update module config without 
   window.__mediaDraft=draft;
   const db={storage:{from:()=>({upload:async()=>({error:null}),list:async()=>({data:[],error:null}),getPublicUrl:(path)=>({data:{publicUrl:'https://pryrgwfjniggjlrizenh.supabase.co/storage/v1/object/public/animation-assets/'+path}})})}};
   document.getElementById('admin-workspace').hidden=false;
+  document.getElementById('animation-studio-panel').open=true;
  window.lanesjekkAnimationStudio.init({db,getDraft:()=>({media:draft}),bucket:'animation-assets',notify:()=>{}});
   window.lanesjekkAnimationStudio.render();
   return document.querySelectorAll('.media-module-choice').length;
