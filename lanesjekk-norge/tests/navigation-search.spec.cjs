@@ -78,3 +78,22 @@ test('top-level menus open with mouse and close by Escape',async({page})=>{
  await page.keyboard.press('Escape');
  await expect(group).not.toHaveAttribute('open','');
 });
+
+
+test('search traps keyboard focus and restores it when closed',async({page})=>{
+ await page.goto('/#topp',{waitUntil:'domcontentloaded'});
+ const trigger=page.locator('#site-search-open');
+ await trigger.focus();
+ await page.keyboard.press('Enter');
+ await expect(page.locator('#site-search')).toBeVisible();
+ await expect(page.locator('#site-search-input')).toBeFocused();
+ await page.keyboard.press('Escape');
+ await expect(page.locator('#site-search')).toBeHidden();
+ await expect(trigger).toBeFocused();
+ await page.keyboard.press('Control+k');
+ await expect(page.locator('#site-search')).toBeVisible();
+ await page.locator('#site-search-close').focus();
+ await page.keyboard.press('Tab');
+ await expect(page.locator('#site-search-input')).toBeFocused();
+ await page.keyboard.press('Escape');
+});
