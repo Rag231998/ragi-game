@@ -238,3 +238,30 @@
  #kvitteringer .receipt-results .receipt-table td:nth-child(5){grid-column:span 5}
  #kvitteringer .receipt-results .receipt-table input,#kvitteringer .receipt-results .receipt-table select{box-sizing:border-box}
 }
+
+/* Dedicated no-overflow receipt item layout. Avoid CSS table completely. */
+#kvitteringer .receipt-results .receipt-table-scroll{width:100%;max-width:100%;overflow:visible;min-width:0}
+#kvitteringer .receipt-item-list,#kvitteringer #receipt-items{display:grid;gap:10px;width:100%;min-width:0;max-width:100%}
+#kvitteringer .receipt-item-card{box-sizing:border-box;display:grid;grid-template-columns:minmax(0,2.1fr) minmax(0,.75fr) minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr) 34px;align-items:end;gap:8px;padding:12px;background:#f8fbfb;border:1px solid #d8e7e8;border-radius:12px;min-width:0;max-width:100%}
+#kvitteringer .receipt-item-field{display:flex;flex-direction:column;gap:6px;min-width:0;max-width:100%}
+#kvitteringer .receipt-item-label{font-size:10px;font-weight:800;color:#5f7d87;line-height:1.3}
+#kvitteringer .receipt-item-field input,#kvitteringer .receipt-item-field select{box-sizing:border-box;display:block;min-width:0;width:100%;max-width:100%;height:40px;border:1px solid #cedfe2;border-radius:8px;background:white;color:#234653;padding:7px 6px;font-size:13px;font-family:inherit}
+#kvitteringer .receipt-item-field input[type=number]{appearance:textfield;-moz-appearance:textfield}
+#kvitteringer .receipt-item-field input[type=number]::-webkit-inner-spin-button{appearance:none}
+#kvitteringer .receipt-line-value{box-sizing:border-box;display:flex;align-items:center;width:100%;min-width:0;min-height:40px;padding:6px 8px;border-radius:8px;background:#e8f7ef;color:#0c7964;font-size:13px;font-weight:850;overflow-wrap:anywhere}
+#kvitteringer .receipt-item-remove{display:flex;flex-direction:column;gap:6px;min-width:0}
+#kvitteringer .receipt-item-remove .receipt-delete{min-width:0;width:34px;height:40px;padding:0;font-size:18px}
+@container receiptReview (max-width: 1050px){
+ #kvitteringer .receipt-item-card{grid-template-columns:repeat(6,minmax(0,1fr));gap:10px 8px}
+ #kvitteringer .receipt-item-name{grid-column:1/-1}
+ #kvitteringer .receipt-item-qty{grid-column:span 2}
+ #kvitteringer .receipt-item-unit{grid-column:span 2}
+ #kvitteringer .receipt-item-category{grid-column:span 2}
+ #kvitteringer .receipt-item-total{grid-column:span 5}
+ #kvitteringer .receipt-item-remove{grid-column:span 1;align-items:stretch}
+ #kvitteringer .receipt-item-remove .receipt-delete{width:100%}
+}
+@container receiptReview (max-width: 385px){
+ #kvitteringer .receipt-item-qty,#kvitteringer .receipt-item-unit{grid-column:span 3}
+ #kvitteringer .receipt-item-category{grid-column:1/-1}
+}
