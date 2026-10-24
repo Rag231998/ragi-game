@@ -12,12 +12,12 @@ async function estimate(){
  const municipality=selectedAddress?.municipalityCode||'',kind=$('pv-type').value,area=Number($('pv-area').value);
  $('pv-municipality').value=municipality;
  if(!selectedAddress||!/^\d{4}$/.test(municipality)||!Number.isFinite(area)||area<15||area>1500){notice('Velg en adresse fra forslagene, og oppgi boligens BRA-i (15–1500 m²) for å beregne et statistisk anslag.');$('pv-area').focus();return}
- const btn=$('pv-estimate');btn.disabled=true;prices=[];lastEstimate=null;notice('Henter de nyeste publiserte prisene fra SSB …');$('pv-badge').textContent='Henter tall';
+ const btn=$('pv-estimate');btn.disabled=true;btn.setAttribute('aria-busy','true');prices=[];lastEstimate=null;notice('Henter de nyeste publiserte prisene fra SSB …');$('pv-badge').textContent='Henter tall';
  try{
   const url='/api/property-market?municipality='+encodeURIComponent(municipality)+'&type='+encodeURIComponent(kind);
-  const response=await fetch(url,{headers:{Accept:'application/json'}});
+  const response=await fetch(url,{headers:{Accept:'application/json'},cache:'no-store'});
   const data=await response.json();
-  if(!response.ok)throw Error(data.error||'Kunne ikke hente prisstatistikk.');
+  if(!response.ok)throw Error(data.error||'Kunne ikke hente prisstatistikk (HTTP '+response.status+').');
   prices=(data.rows||[]).filter(r=>Number.isFinite(r.sqm)&&r.sqm>0).map(r=>({period:r.period,value:r.sqm,sales:r.sales}));
   if(!prices.length)throw Error('Ingen gyldige prisobservasjoner.');
   display();
@@ -29,11 +29,16 @@ async function estimate(){
   $('pv-badge').textContent='✓ SSB-verdi';
   document.dispatchEvent(new CustomEvent('property:market',{detail:{municipality,type:kind}}));
  }catch(e){
-  notice('Ingen verifisert pris kunne hentes: '+e.message);
+  notice('Ingen verifisert pris kunne hentes: '+e.message+' Sjekk boligtype og prøv igjen. Vi viser ikke oppdiktede markedsverdier.');
   $('pv-badge').textContent='Ingen SSB-data';
   ['pv-value','pv-low','pv-high','pv-sqm','pv-quarter','pv-growth'].forEach(id=>$(id).textContent='—');
   $('pv-chart-legend').textContent='Ingen dokumentert prisserie.';
- }finally{btn.disabled=false;renderComparison()}
+  $('pv-chart').replaceChildren();
+  $('pv-sales').textContent='Ingen dokumentert omsetning';
+  $('pv-confidence').textContent='Ikke vurdert';
+  $('pv-market-location').textContent='Ingen bekreftet statistikk';
+  $('pv-period').textContent='SSB-data mangler for dette utvalget';
+ }finally{btn.disabled=false;btn.removeAttribute('aria-busy');renderComparison()}
 }
 function clearAddressResults(){
  const results=$('pv-address-results');results.replaceChildren();results.hidden=true;$('pv-address').setAttribute('aria-expanded','false');activeChoice=-1;
