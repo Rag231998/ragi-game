@@ -63,6 +63,7 @@ test('premium video modules remain inside mobile viewport',async({page})=>{
  await page.goto('/#utleie',{waitUntil:'domcontentloaded'});
  await expect.poll(()=>page.evaluate(()=>!!window.lanesjekkCms?.apply)).toBe(true);
  await page.evaluate(cfg=>window.lanesjekkCms.apply(cfg),fixture());
+ await expect(page.locator('.studio-video-showcase[data-media-slot=valuation]')).toHaveCount(1);
  const sizes=await page.evaluate(()=>({
   document:document.documentElement.scrollWidth,viewport:document.documentElement.clientWidth,
   module:document.querySelector('.studio-video-showcase[data-media-slot=valuation]').getBoundingClientRect().width
