@@ -49,3 +49,25 @@ test('all main navigation targets appear on property and financing groups',async
  await expect(page.locator('.mobile-menu a[href="#boligverdi"]')).toHaveCount(1);
  await expect(page.locator('.mobile-menu a[href="#utleieanalyse"]')).toHaveCount(1);
 });
+
+test('dashboard CTA pills have readable foreground on dark blue background',async({page})=>{
+ await page.goto('/#topp',{waitUntil:'domcontentloaded'});
+ const results=await page.locator('.premium-dashboard .home-tool .home-tool-arrow').evaluateAll(els=>{
+  const lum=rgb=>{const v=rgb.match(/[\d.]+/g).slice(0,3).map(n=>Number(n)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return v[0]*.2126+v[1]*.7152+v[2]*.0722};
+  return els.map(el=>{
+   const style=getComputedStyle(el),light=Math.max(lum(style.color),lum(style.backgroundColor)),dark=Math.min(lum(style.color),lum(style.backgroundColor));
+   return {label:el.textContent.trim(),ratio:(light+.05)/(dark+.05),fg:style.color,bg:style.backgroundColor}
+  });
+ });
+ expect(results.length).toBeGreaterThan(5);
+ for(const cta of results)expect(cta.ratio,JSON.stringify(cta)).toBeGreaterThanOrEqual(4.5);
+});
+test('top-level menus open with mouse and close by Escape',async({page})=>{
+ await page.goto('/#topp',{waitUntil:'domcontentloaded'});
+ const group=page.locator('.portal-nav .nav-group').filter({has:page.locator('summary', {hasText:'Eiendom'})});
+ await group.locator('summary').click();
+ await expect(group).toHaveAttribute('open','');
+ await expect(group.locator('a[href="#boligverdi"]')).toBeVisible();
+ await page.keyboard.press('Escape');
+ await expect(group).not.toHaveAttribute('open','');
+});
