@@ -239,3 +239,8 @@
 html.motion-stopped #utleie .pv-guide-art{animation:none!important}
 html.motion-stopped #utleie .pv-guide-step{transition:none!important}
 html.motion-stopped #utleie .pv-trend-line{transition:none!important}
+
+/* Hide CMS-disabled demo modules and respect visitor motion preference. */
+#utleie .pv-guide[hidden],#kvitteringer .receipt-tour[hidden]{display:none!important}
+html.motion-stopped *,html.motion-stopped *::before,html.motion-stopped *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+html.cms-stop-demo-motion #utleie .pv-guide *,html.cms-stop-demo-motion #kvitteringer .receipt-tour *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
