@@ -5,7 +5,7 @@ test.beforeEach(async({page})=>{
 });
 test('SSB-based home value changes when apartment size or condition changes',async({page})=>{
  await page.goto('/#utleie',{waitUntil:'domcontentloaded'});
- await expect(page.locator('#property-value-studio')).toBeVisible();
+ await expect(page.locator('#boligverdi')).toBeVisible();
  await page.locator('#pv-municipality').fill('0301');
  await page.locator('#pv-area').fill('75');
  await page.locator('#pv-estimate').click();
@@ -33,7 +33,7 @@ test('user-entered broker values are distinct, removable and median calculated',
 });
 test('property studio stays within the mobile viewport',async({page})=>{
  await page.goto('/#utleie',{waitUntil:'domcontentloaded'});
- await expect(page.locator('#property-value-studio')).toBeVisible();
+ await expect(page.locator('#boligverdi')).toBeVisible();
  const sizing=await page.evaluate(()=>({documentWidth:document.documentElement.scrollWidth,viewport:document.documentElement.clientWidth}));
  expect(sizing.documentWidth).toBeLessThanOrEqual(sizing.viewport+2);
 });
