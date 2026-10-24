@@ -69,6 +69,13 @@
   <details class="admin-panel" id="admin-panel-brand" open><summary>01 · Navn, logo og farger</summary><div class="admin-body">
   <label>Nettstedets navn<input id="site-name" maxlength="70" placeholder="LÅNESJEKK NORGE"></label>
   <label>Undertittel / slagord<input id="site-tagline" maxlength="130"></label>
+  <label>Visningsmodus for hele nettsiden
+    <select id="site-theme" aria-describedby="site-theme-help">
+      <option value="light">Lys – anbefalt standard</option>
+      <option value="dark">Mørk – mørkt design for besøkende</option>
+      <option value="auto">Automatisk – følger besøkendes enhet</option>
+    </select>
+  </label><p id="site-theme-help" class="admin-media-hint">Du kan forhåndsvise alle tre modusene før du publiserer. Endring av tema påvirker farger og kontrast på den offentlige nettsiden.</p>
   <div class="admin-duo"><label>Hovedfarge<input id="site-color" type="color" value="#0c8878"></label><label>Logo (PNG, JPEG eller WebP, maks 2 MB)<input id="site-logo" type="file" accept="image/png,image/jpeg,image/webp"></label></div>
   <img id="site-logo-preview" alt="Forhåndsvisning av nettsidens logo" hidden style="height:58px;max-width:200px;object-fit:contain;background:#edf5f3;padding:6px;border-radius:10px">
   <label class="admin-hint" style="display:flex;align-items:center;gap:10px;margin:12px 0"><input id="site-hero-visual" type="checkbox" checked> Vis animert økonomiillustrasjon på forsiden</label>
