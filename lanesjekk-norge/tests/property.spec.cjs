@@ -19,7 +19,7 @@ test('SSB-based home value changes when apartment size or condition changes',asy
 });
 test('user-entered broker values are distinct, removable and median calculated',async({page})=>{
  await page.goto('/#utleie',{waitUntil:'domcontentloaded'});
- await page.locator('#pv-municipality').fill('0301');await page.locator('#pv-estimate').click();
+ await page.locator('#pv-municipality').fill('0301');await page.locator('#pv-area').fill('75');await page.locator('#pv-estimate').click();
  await page.locator('#pv-provider').selectOption('Krogsveen');
  await page.locator('#pv-broker-value').fill('6000000');await page.locator('#pv-broker-add').click();
  await page.locator('#pv-provider').selectOption('DNB Eiendom');
