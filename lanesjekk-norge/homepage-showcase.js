@@ -4,7 +4,7 @@ function init(){
  const root=document.getElementById('loan-showcase');if(!root)return;
  let scenes=[...root.querySelectorAll('.sc-slide')];const chapters=[...root.querySelectorAll('.sc-chapter')];
  const previous=root.querySelector('.sc-previous'),next=root.querySelector('.sc-next'),announcer=root.querySelector('.sc-announcer');
- if(scenes.length!==5||chapters.length!==5||!previous||!next)return;
+ if(scenes.length!==6||chapters.length!==6||!previous||!next)return;
  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
  let current=0,visible=true,timeout=null;
  const blocked=()=>reduced.matches||document.documentElement.classList.contains('cms-pause-hero-motion')||document.documentElement.classList.contains('cms-hide-hero-visual')||document.documentElement.classList.contains('motion-stopped');
@@ -16,7 +16,7 @@ function init(){
   current=(index+scenes.length)%scenes.length;
   scenes.forEach((s,i)=>{const active=i===current;s.classList.toggle('is-active',active);s.setAttribute('aria-hidden',String(!active));s.inert=!active;const a=s.querySelector('.sc-action');if(a)a.tabIndex=active?0:-1});
   chapters.forEach((b,i)=>{const active=Number(b.dataset.scGoto)===Number(scenes[current].dataset.scIndex);b.classList.toggle('is-active',active);b.setAttribute('aria-current',active?'true':'false')});
-  if(announce)announcer.textContent='Viser scene '+(current+1)+' av 5: '+scenes[current].querySelector('.sc-eyebrow').textContent.trim();
+  if(announce)announcer.textContent='Viser scene '+(current+1)+' av 6: '+scenes[current].querySelector('.sc-eyebrow').textContent.trim();
  }
  function schedule(){clear();sync();if(scenes.length&&!stopCondition())timeout=setTimeout(()=>{display(current+1,false);schedule()},8300)}
  previous.addEventListener('click',()=>{display(current-1);schedule()});
