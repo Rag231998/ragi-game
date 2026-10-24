@@ -71,16 +71,18 @@ test('animated guides use admin visibility settings without replay buttons',asyn
  await expect(page.locator('.pv-guide-replay')).toHaveCount(0);
  await expect(page.locator('#receipt-tour-play')).toHaveCount(0);
  await expect(page.locator('#receipt-tour-pause')).toHaveCount(0);
- const options=await page.evaluate(()=>{
+ const result=await page.evaluate(()=>{
   const cms=window.lanesjekkCms;
   const options=cms.configClean({animations:{autoplay:false,valuation:false,rental:false,receipts:false}}).animations;
   cms.apply({animations:options});
-  return options;
+  return {options,paused:document.documentElement.classList.contains('cms-stop-demo-motion'),
+   valuationHidden:document.getElementById('pv-valuation-guide').hidden,
+   rentalHidden:document.getElementById('pv-rental-guide').hidden};
  });
- expect(options).toEqual({autoplay:false,valuation:false,rental:false,receipts:false});
- await expect(page.locator('#pv-valuation-guide')).toBeHidden();
- await expect(page.locator('#pv-rental-guide')).toBeHidden();
- await expect(page.locator('html')).toHaveClass(/cms-stop-demo-motion/);
+ expect(result.options).toEqual({autoplay:false,valuation:false,rental:false,receipts:false});
+ expect(result.paused).toBe(true);
+ expect(result.valuationHidden).toBe(true);
+ expect(result.rentalHidden).toBe(true);
  await page.goto('/studio-admin.html',{waitUntil:'domcontentloaded'});
  for(const id of ['motion-autoplay','motion-valuation','motion-rental','motion-receipts'])await expect(page.locator('#'+id)).toHaveCount(1);
 });
