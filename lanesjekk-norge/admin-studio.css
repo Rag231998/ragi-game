@@ -161,3 +161,59 @@ footer{padding:18px;text-align:center;color:#78919c;font-size:10px;border-top:1p
 #reset-create #password-match[data-matches="true"]{color:#0c8169;font-weight:800}
 @media(max-width:550px){.password-page-wrap{margin:14px auto}.password-page .password-page-card{border-radius:17px;margin:16px 0}.password-page-heading{padding:0 3px}}
 @media(prefers-reduced-motion:reduce){#reset-create .admin-password-strength-meter span{transition:none}}
+
+
+/* Studio account recovery — brand polish, calm contrast, and a clear 3-step journey. */
+body.password-page{background:radial-gradient(ellipse 630px 310px at 8% -10%,#c7f7e8 0%,transparent 75%),radial-gradient(ellipse 640px 500px at 98% 35%,#d9e7ff 0%,transparent 82%),#f2f7f9;color:#153e51}
+.password-page .admin-header{position:relative;background:linear-gradient(112deg,#102c47 0%,#153e56 63%,#0b6d66 100%);box-shadow:0 8px 24px #173a501a}
+.password-page .admin-header:after{content:"";position:absolute;left:0;bottom:0;width:100%;height:2px;background:linear-gradient(90deg,#4bdaae,#a7f2e1 42%,transparent 75%)}
+.password-page .admin-header a{font-size:18px;font-weight:750}
+.password-page .admin-header a strong{color:#fff}.password-page .admin-header a span{color:#8aebcf}
+.password-page .admin-header .admin-badge{background:#ccfff013;border-color:#72dfbf67;color:#c0f6e8;font-size:11px}
+.password-page main{max-width:none;padding:clamp(20px,4vw,42px) 15px 64px}
+.password-page-wrap{max-width:640px;margin:0 auto}
+.password-page .password-page-heading{position:relative;isolation:isolate;overflow:hidden;border-radius:22px;padding:31px clamp(22px,4vw,37px) 28px;background:linear-gradient(118deg,#132f4d,#116c72);box-shadow:0 18px 45px #143a4b26;color:white;border:1px solid #5ab8ae66}
+.password-page .password-page-heading:before{content:"";z-index:-1;position:absolute;right:-85px;top:-95px;width:260px;height:260px;border:1px solid #b7fff53b;border-radius:50%;box-shadow:0 0 0 48px #a8fbea0a,0 0 0 97px #a8fbea10}
+.password-page .password-page-heading:after{content:"";z-index:-1;position:absolute;right:62px;bottom:-120px;width:190px;height:190px;background:radial-gradient(circle,#92fce526,transparent 68%);pointer-events:none}
+.password-page .password-page-kicker{display:flex;align-items:center;gap:9px;font-weight:850;font-size:11px;letter-spacing:.11em;color:#a2f6da}
+.password-page .password-page-status-dot{width:9px;height:9px;display:inline-block;border-radius:50%;background:#7bffbe;box-shadow:0 0 0 4px #7bffbe1b;flex:0 0 auto}
+.password-page .password-page-heading h1{color:#fff;font-size:clamp(30px,4vw,42px);font-weight:850;letter-spacing:-.055em;line-height:1.1;max-width:530px;margin:15px 0 12px}
+.password-page .password-page-heading h1 span{color:#8feacb}
+.password-page .password-page-heading>p{color:#dbf1f0;max-width:495px;margin:0;font-size:13px;line-height:1.72}
+.password-page .password-page-steps{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;margin:26px 0 0;padding-top:21px;border-top:1px solid #ffffff26}
+.password-page .password-page-steps>span:not(.password-page-step-line){display:flex;align-items:center;gap:7px;color:#e7fcf6;font-weight:750;font-size:11px}
+.password-page .password-page-steps b{display:grid;place-items:center;flex:0 0 23px;width:23px;height:23px;border-radius:50%;background:#d7fff1;color:#0b6058;font-variant-numeric:tabular-nums}
+.password-page .password-page-step-line{flex:1;min-width:8px;height:1px;background:#e2fff65e}
+.password-page .password-page-card{position:relative;background:#fff;border:1px solid #d2e4e8;border-radius:19px;box-shadow:0 16px 42px #123a4a13;margin-top:20px}
+.password-page .password-page-card:before{content:"";height:4px;background:linear-gradient(90deg,#0c9e83,#58cdb8,#b3e9dc);position:absolute;left:26px;right:26px;top:0;border-radius:0 0 6px 6px}
+.password-page .password-page-symbol{height:57px;width:57px;border-radius:17px;background:linear-gradient(145deg,#e1f8ed,#d9f0f8);box-shadow:inset 0 0 0 1px #cae9e3;color:#08756d;font-size:31px}
+.password-page .password-page-symbol-done{background:linear-gradient(145deg,#d8f9e2,#b9efd5)}
+.password-page .password-page-symbol-lock{background:linear-gradient(145deg,#e0f4ff,#e5eaff)}
+.password-page .password-page-card h2{font-weight:850;color:#18384c}
+.password-page .password-page-card label{font-size:12px;color:#305566}
+.password-page .password-page-card input{background:#faffff;border:1.5px solid #b8d3d7;border-radius:11px;padding:13px 14px;min-height:50px;font-size:15px;transition:border-color .15s ease,box-shadow .15s ease}
+.password-page .password-page-card input:hover{border-color:#73b8ab}
+.password-page .password-page-card input:focus-visible{outline:3px solid #8ce3ca;outline-offset:2px;border-color:#0b8976;box-shadow:0 0 0 1px #0b8976}
+.password-page .password-page-card .admin-primary{background:linear-gradient(110deg,#067968,#0c9a81);border-color:#096d5e;color:white;border-radius:12px;box-shadow:0 7px 16px #05705a2b;transition:transform .15s ease,filter .15s ease}
+.password-page .password-page-card .admin-primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.password-page .password-page-card .admin-primary:focus-visible{outline:3px solid #83dec1;outline-offset:3px}
+.password-page .password-page-card .admin-primary:disabled{filter:grayscale(.2);opacity:.6;transform:none}
+.password-page .password-page-help{display:flex;gap:10px;align-items:start;background:#f0f8f9;border:1px solid #e0edf0;color:#4e7080}
+.password-page .password-page-help>span{font-size:18px;line-height:1;color:#138573}
+.password-page .password-page-status:not(:empty){border-left:3px solid #17ae87;padding:9px 12px;background:#f0fbf8;border-radius:5px;margin-top:14px}
+.password-page .password-page-status[data-error="true"]{background:#fff3ed;border-left-color:#cd663c}
+.password-page .password-page-back{color:#1d6d67}.password-page .password-page-back:hover{text-decoration:underline}
+.password-page .password-page-footer-note{font-size:11px;color:#617c86;line-height:1.6;text-align:center;margin:0 auto 5px;max-width:450px}
+@media(max-width:560px){
+ .password-page main{padding:15px 10px 38px}
+ .password-page .password-page-heading{border-radius:17px;padding:24px 18px}
+ .password-page .password-page-heading h1{font-size:30px}
+ .password-page .password-page-card{padding:22px 18px}
+ .password-page .password-page-steps{gap:8px}
+ .password-page .password-page-steps>span:not(.password-page-step-line){font-size:10px}
+ .password-page .password-page-steps b{width:21px;height:21px;flex-basis:21px;font-size:10px}
+ .password-page .password-page-step-line{min-width:0}
+ .password-page .admin-header .admin-badge{display:none}
+}
+@media(max-width:360px){.password-page .password-page-steps{gap:4px}.password-page .password-page-steps>span:not(.password-page-step-line){font-size:9px}}
+@media(prefers-reduced-motion:reduce){.password-page .password-page-card input,.password-page .password-page-card .admin-primary{transition:none}}
