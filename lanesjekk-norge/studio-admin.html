@@ -127,7 +127,8 @@
 <label class="admin-inline"><input type="checkbox" id="media-loop" checked> Spill videoen på nytt automatisk</label>
 </div>
 <div class="media-upload-pair"><label>Video (MP4/WebM, opptil 40 MB)<input id="media-video" type="file" accept="video/mp4,video/webm,.mp4,.webm"></label><label>Forsidebilde (PNG/JPG/WebP, opptil 4 MB)<input id="media-poster" type="file" accept="image/png,image/jpeg,image/webp"></label></div>
-<div class="media-upload-actions"><button id="media-upload" type="button" class="admin-primary">↑ Last opp og legg i utkast</button><button id="media-reset" type="button" class="admin-secondary">Bruk standardanimasjon</button></div>
+<div class="media-upload-actions"><button id="media-upload" type="button" class="admin-primary">↑ Last opp og legg i utkast</button><button id="media-preview-page" type="button" class="admin-secondary">↗ Vis videomodul i full forhåndsvisning</button><button id="media-reset" type="button" class="admin-secondary">↶ Bruk standardanimasjon</button></div>
+<progress id="media-progress" value="0" max="100" hidden aria-label="Fremdrift i medieopplasting"></progress>
 <p id="media-status" class="media-status" role="status" aria-live="polite">Velg en modul og last opp videoen.</p>
 <div class="media-preview-box"><div class="media-preview-header"><strong>FORHÅNDSVISNING</strong><span>Kun for deg før publisering</span></div><video id="media-preview" controls muted playsinline preload="metadata" hidden></video><img id="media-preview-poster" alt="Valgt forsidebilde" hidden><p id="media-preview-empty">Ingen video valgt. Den eksisterende animerte illustrasjonen fortsetter å vises.</p><p id="media-file-status" class="admin-hint">Ingen video valgt.</p></div>
 <details class="media-library-details"><summary>Mediebibliotek – bruk tidligere opplastede videoer</summary><p class="admin-hint">Velg «Bruk» ved en fil for å bruke den på valgt modul. Opplastede filer ligger i et eget, offentlig tilgjengelig mediearkiv. Kun administratorer kan laste opp.</p><button id="media-refresh" type="button" class="admin-secondary">↻ Oppdater mediebibliotek</button><div id="media-library" class="media-library">Biblioteket lastes etter innlogging.</div></details>
@@ -163,5 +164,5 @@
   <p id="admin-preflight-status" class="admin-hint" aria-live="polite"></p>
 </dialog>
 <footer>Privat administrasjon for Lånesjekk Norge. Bare medlemmer av databasens administratorrolle kan lagre endringer. <a href="./index.html">Til offentlig nettside ↗</a></footer>
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./admin-session.js?v=2"></script><script defer src="./admin-animation-studio.js?v=5"></script><script defer src="./admin-studio.js?v=10"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./admin-session.js?v=2"></script><script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script><script defer src="./admin-animation-studio.js?v=6"></script><script defer src="./admin-studio.js?v=10"></script>
 </body></html>
