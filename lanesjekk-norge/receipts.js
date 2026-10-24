@@ -95,23 +95,26 @@ function refresh(){
  updateWhatIf();
 }
 function render(){
- const root=$('receipt-items');root.replaceChildren();const empty=$('receipt-empty');if(empty)empty.hidden=items.length>0;
+ const root=$('receipt-items');root.replaceChildren();
+ const empty=$('receipt-empty');if(empty)empty.hidden=items.length>0;
  items.forEach((item,index)=>{
   normalize(item);
-  const tr=el('tr'),namecell=el('td'),name=el('input');name.type='text';name.value=item.name;name.maxLength=90;name.setAttribute('aria-label','Varenavn '+(index+1));
-  name.oninput=()=>{item.name=name.value;refresh()};namecell.append(name);
-  const qtycell=el('td'),qty=el('input');qty.type='number';qty.min='1';qty.max='999';qty.step='1';qty.inputMode='numeric';qty.value=String(item.quantity||1);qty.setAttribute('aria-label','Antall '+item.name);
-  qty.oninput=()=>{const next=Number(qty.value);if(!Number.isInteger(next)||next<1||next>999)return;item.quantity=next;item.amount=round2(item.unitPrice*next);line.value=item.amount.toFixed(2);refresh()};qtycell.append(qty);
-  const catcell=el('td'),select=el('select');
-  for(const [c] of C){const opt=el('option',c);opt.value=c;select.append(opt)}
-  select.value=item.category;select.setAttribute('aria-label','Kategori for '+item.name);select.onchange=()=>{item.category=select.value;refresh()};catcell.append(select);
-  const unitcell=el('td'),unit=el('input');unit.type='number';unit.step='.01';unit.min='-100000';unit.max='100000';unit.inputMode='decimal';unit.value=String(item.unitPrice);unit.setAttribute('aria-label','Stykkpris for '+item.name);
-  const moneycell=el('td'),line=el('input');line.type='number';line.step='.01';line.min='-100000';line.max='100000';line.inputMode='decimal';line.value=String(item.amount);line.readOnly=true;line.setAttribute('aria-label','Linjesum for '+item.name);
-  unit.oninput=()=>{const v=price(unit.value);if(!Number.isFinite(v))return;item.unitPrice=v;item.amount=round2(v*item.quantity);line.value=item.amount.toFixed(2);refresh()};unitcell.append(unit);moneycell.append(line);
-  const action=el('td'),remove=el('button','×','receipt-delete');remove.type='button';remove.setAttribute('aria-label','Fjern '+item.name);
-  remove.onclick=()=>{items.splice(index,1);render()};action.append(remove);
-  [namecell,qtycell,unitcell,catcell,moneycell,action].forEach((cell,i)=>cell.dataset.label=['Vare','Antall','Stykkpris','Kategori','Linjesum','Fjern'][i]);
-  tr.append(namecell,qtycell,unitcell,catcell,moneycell,action);root.append(tr);
+  const card=el('div',undefined,'receipt-item-card');
+  const field=(label,control,extra='')=>{const wrap=el('label',undefined,'receipt-item-field '+extra);wrap.append(el('span',label,'receipt-item-label'),control);return wrap};
+  const name=el('input');name.type='text';name.value=item.name;name.maxLength=90;name.setAttribute('aria-label','Varenavn '+(index+1));
+  name.oninput=()=>{item.name=name.value;refresh()};
+  const qty=el('input');qty.type='number';qty.min='1';qty.max='999';qty.step='1';qty.inputMode='numeric';qty.value=String(item.quantity||1);qty.setAttribute('aria-label','Antall '+item.name);
+  const unit=el('input');unit.type='number';unit.step='.01';unit.min='-100000';unit.max='100000';unit.inputMode='decimal';unit.value=String(item.unitPrice);unit.setAttribute('aria-label','Stykkpris for '+item.name);
+  const select=el('select');for(const [c] of C){const opt=el('option',c);opt.value=c;select.append(opt)}select.value=item.category;select.setAttribute('aria-label','Kategori for '+item.name);
+  const line=el('output',money(item.amount),'receipt-line-value');line.setAttribute('aria-label','Linjesum for '+item.name);
+  const updateLine=()=>{item.amount=round2(item.unitPrice*item.quantity);line.textContent=money(item.amount);refresh()};
+  qty.oninput=()=>{const v=Number(qty.value);if(Number.isInteger(v)&&v>=1&&v<=999){item.quantity=v;updateLine()}};
+  unit.oninput=()=>{const v=price(unit.value);if(Number.isFinite(v)){item.unitPrice=v;updateLine()}};
+  select.onchange=()=>{item.category=select.value;refresh()};
+  const remove=el('button','×','receipt-delete');remove.type='button';remove.setAttribute('aria-label','Fjern '+item.name);remove.title='Fjern vare';remove.onclick=()=>{items.splice(index,1);render()};
+  const removeWrap=el('div',undefined,'receipt-item-remove');removeWrap.append(el('span','Fjern','receipt-item-label'),remove);
+  card.append(field('Vare',name,'receipt-item-name'),field('Antall',qty,'receipt-item-qty'),field('Stykkpris',unit,'receipt-item-unit'),field('Kategori',select,'receipt-item-category'),field('Linjesum',line,'receipt-item-total'),removeWrap);
+  root.append(card);
  });refresh();
 }
 function applyText(){
