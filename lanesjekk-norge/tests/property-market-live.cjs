@@ -12,6 +12,6 @@ const handler=require('../api/property-market.js');
  if(!a.ok){console.error('Kartverket status',a.status);process.exit(1)}
  const data=await a.json();
  console.log('Kartverket address lookup',data.adresser?.slice(0,2).map(x=>({name:x.adressetekst,municipality:x.kommunenummer})));
- if(!Array.isArray(data.adresser)||!data.adresser.length||!data.adresser.some(x=>/^\\d{4}$/.test(x.kommunenummer||'')))process.exit(1);
+ if(!Array.isArray(data.adresser)||!data.adresser.length||!data.adresser.some(x=>/^\d{4}$/.test(x.kommunenummer||'')))process.exit(1);
 
 })().catch(e=>{console.error(e);process.exit(1)});
