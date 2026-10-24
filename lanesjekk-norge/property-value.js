@@ -10,8 +10,7 @@ function display(){if(!prices.length)return;const area=Number($('pv-area').value
 function decode(raw,region,type){const d=raw.dimension||{},ids=raw.id||Object.keys(d),size=raw.size||ids.map(k=>Object.keys(d[k].category.index).length);const idxs=ids.map((id,i)=>Object.entries(d[id].category.index||{}).sort((a,b)=>a[1]-b[1]).map(([code])=>code));const dimRegion=ids.find(x=>/region/i.test(x)),dimType=ids.find(x=>/bolig|type/i.test(x)),dimContent=ids.find(x=>/contents/i.test(x)),dimTime=ids.find(x=>/tid|time/i.test(x));if(!dimTime)throw Error('SSB mangler tidsdimensjon');const lines=[];const values=Array.isArray(raw.value)?raw.value:[];for(let n=0;n<values.length;n++){let k=n,code={};for(let i=ids.length-1;i>=0;i--){code[ids[i]]=idxs[i][k%size[i]];k=Math.floor(k/size[i])}if(code[dimRegion]!==region||code[dimType]!==type||!Number.isFinite(values[n])||values[n]<=0)continue;const text=(d[dimContent]?.category?.label||{})[code[dimContent]]||'';if(!/kvadratmeter|square metre/i.test(text))continue;lines.push({period:code[dimTime],value:values[n]})}return lines.sort((a,b)=>a.period.localeCompare(b.period)).slice(-12)}
 async function estimate(){
  const myRequest=++reqEstimate;
- const municipality=selectedAddress?.municipalityCode||'',kind=$('pv-type').value,area=Number($('pv-area').value);
- $('pv-municipality').value=municipality;
+ const municipality=$('pv-municipality').value.trim(),kind=$('pv-type').value,area=Number($('pv-area').value);
  if(!selectedAddress||!/^\d{4}$/.test(municipality)||!Number.isFinite(area)||area<15||area>1500){notice('Velg en adresse fra forslagene, og oppgi boligens BRA-i (15–1500 m²) for å beregne et statistisk anslag.');$('pv-area').focus();return}
  const btn=$('pv-estimate');btn.disabled=true;btn.setAttribute('aria-busy','true');prices=[];lastEstimate=null;notice('Henter de nyeste publiserte prisene fra SSB …');$('pv-badge').textContent='Henter tall';
  try{
@@ -48,9 +47,10 @@ function clearAddressResults(){
 }
 function chooseAddress(a){
  selectedAddress=a;$('pv-address').value=a.text+', '+(a.postal?a.postal+' ':'')+(a.place||a.municipality);
- $('pv-municipality').value=a.municipalityCode;
- $('pv-municipality').readOnly=true;
- $('pv-municipality').setAttribute('aria-label','Kommunenummer fra valgt adresse, kan ikke redigeres');
+ $('pv-postal').value=a.postal||'';
+ $('pv-municipality').value=a.municipalityCode||'';
+ $('pv-municipality').readOnly=false;
+ $('pv-municipality').setAttribute('aria-label','Kommunenummer fra valgt adresse, kan korrigeres');
  $('pv-location').textContent='✓ '+a.text+' · '+a.postal+' '+a.place+' · '+a.municipality+' kommune. Adresse kontrollert hos Kartverket.';
  $('pv-address-verified').hidden=false;
  $('pv-selected-address').textContent=a.text+', '+a.postal+' '+a.place;
@@ -177,8 +177,8 @@ function exportOverview(){
 }
 function boot(){if(!$('pv-estimate'))return;
  $('pv-broker-date').value=new Date().toISOString().slice(0,10);
- $('pv-municipality').readOnly=true;
- $('pv-municipality').placeholder='Velg adresse først';
+ $('pv-municipality').readOnly=false;
+ $('pv-municipality').placeholder='F.eks. 3209';
  $('pv-broker-add').addEventListener('click',addBrokerEstimate);
  $('pv-broker-export').addEventListener('click',exportOverview);
  $('pv-broker-clear').addEventListener('click',()=>{estimates=[];renderComparison();$('pv-broker-message').textContent='Alle brukerregistrerte vurderinger er fjernet.'});
@@ -198,12 +198,14 @@ function boot(){if(!$('pv-estimate'))return;
    $('pv-market-location').textContent='Kommune';
    notice('Velg en ny adresse og fyll inn BRA-i. Gamle prisanslag er nullstilt.');
   }
-  selectedAddress=null;$('pv-address-verified').hidden=true;$('pv-municipality').value='';
+  selectedAddress=null;$('pv-address-verified').hidden=true;$('pv-municipality').value='';$('pv-postal').value='';
   triggerSearch($('pv-address').value);
  });
  $('pv-address').addEventListener('keydown',navigateOptions);
  document.addEventListener('pointerdown',event=>{if(!event.target.closest('.pv-search-wrap'))clearAddressResults()});
  $('pv-estimate').addEventListener('click',estimate);
+ $('pv-municipality').addEventListener('input',()=>{++reqEstimate;prices=[];lastEstimate=null;$('pv-value').textContent='—';$('pv-low').textContent='—';$('pv-high').textContent='—';$('pv-badge').textContent='Ny beregning kreves';notice('Kommunenummeret er endret manuelt. Kontroller kommunenummeret mot Kartverket før du beregner på nytt.');});
+ $('pv-postal').addEventListener('input',()=>{const val=$('pv-postal').value.trim();if(val&&!/^\\d{4}$/.test(val)){$('pv-postal').setCustomValidity('Oppgi et norsk postnummer med fire sifre.')}else $('pv-postal').setCustomValidity('');});
  $('pv-type').addEventListener('change',()=>{if(prices.length)estimate()});
  $('pv-area').addEventListener('input',display);
  $('pv-to-rental').addEventListener('click',()=>{
