@@ -26,6 +26,7 @@ async function estimate(){
   $('pv-market-location').textContent=data.regionLabel||municipality;
   notice('SSB tabell 14310 · '+(data.regionLabel||municipality)+' · '+(data.propertyTypeLabel||'Bolig')+'. Merk: Kommunegjennomsnitt, ikke adressespesifikk takst.');
   $('pv-badge').textContent='✓ SSB-verdi';
+  document.dispatchEvent(new CustomEvent('property:market',{detail:{municipality,type:kind}}));
  }catch(e){
   notice('Ingen verifisert pris kunne hentes: '+e.message);
   $('pv-badge').textContent='Ingen SSB-data';
