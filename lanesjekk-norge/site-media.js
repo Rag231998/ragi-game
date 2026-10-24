@@ -61,6 +61,12 @@ function build(name,slot){
 }
 function apply(media,animations){
  auto=animations?.autoplay!==false;
+ // Restore native demos first. A previous CMS version may have replaced them with video.
+ for(const [name,definition] of Object.entries(MODULES)){
+  if(!definition.fallback)continue;
+  const native=document.querySelector(definition.fallback);
+  if(native)native.hidden=animations?.[name]===false;
+ }
  for(const [key,old] of elements){observer?.unobserve(old.video);old.video.pause();old.element.remove();elements.delete(key)}
  for(const [key,slot] of Object.entries(media?.slots||{})){
   if(!Object.hasOwn(MODULES,key)||slot?.enabled===false||!valid(slot?.videoUrl,'video'))continue;
