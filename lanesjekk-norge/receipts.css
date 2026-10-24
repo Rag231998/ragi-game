@@ -210,7 +210,8 @@
 #kvitteringer .receipt-results .receipt-table th:nth-child(6){width:6%}
 #kvitteringer .receipt-results .receipt-table input,#kvitteringer .receipt-results .receipt-table select{min-width:0!important;width:100%;max-width:100%;padding:8px 5px;font-size:clamp(11px,.95vw,13px)}
 #kvitteringer .receipt-results .receipt-table .receipt-delete{padding:7px 4px;min-width:25px}
-@media(max-width:1050px){
+#kvitteringer .receipt-results{container-type:inline-size;container-name:receiptReview}
+@container receiptReview (max-width: 950px){
  #kvitteringer .receipt-results .receipt-table,#kvitteringer .receipt-results .receipt-table tbody{display:block;width:100%;min-width:0}
  #kvitteringer .receipt-results .receipt-table thead{display:none}
  #kvitteringer .receipt-results .receipt-table tr{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px 8px;width:100%;margin:0 0 12px;padding:12px;border:1px solid #dce8e9;border-radius:12px;background:#f9fcfc}
@@ -227,4 +228,13 @@
 @media(max-width:390px){
  #kvitteringer .receipt-results .receipt-table td:nth-child(2),#kvitteringer .receipt-results .receipt-table td:nth-child(3){grid-column:span 3}
  #kvitteringer .receipt-results .receipt-table td:nth-child(4){grid-column:span 6}
+}
+
+/* Desktop receipt pane can be narrow even when browser viewport is wide. */
+#kvitteringer .receipt-results{min-width:0}
+#kvitteringer .receipt-results .receipt-table-scroll{min-width:0;overflow:hidden}
+@container receiptReview (max-width: 950px){
+ #kvitteringer .receipt-results .receipt-table tr{box-sizing:border-box;max-width:100%}
+ #kvitteringer .receipt-results .receipt-table td:nth-child(5){grid-column:span 5}
+ #kvitteringer .receipt-results .receipt-table input,#kvitteringer .receipt-results .receipt-table select{box-sizing:border-box}
 }
