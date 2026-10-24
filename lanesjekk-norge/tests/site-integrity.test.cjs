@@ -37,3 +37,27 @@ test('Property BRA is integer-only and currency monetary numbers are not faked',
  assert.match(file('property-value.js'),/Number.isInteger\(area\)/);
  assert.match(file('valutakompass.js'),/if\(!latest\)/);
 });
+
+
+test('Currency conversion endpoint validates a verified reference quote',async()=>{
+ const endpoint=require('../api/currency.js');
+ const previous=global.fetch;let requestUrl='';
+ global.fetch=async url=>{requestUrl=String(url);return {ok:true,json:async()=>[{base:'USD',quote:'NOK',date:'2026-10-23',rate:10.43}]}};
+ const out={code:200,setHeader(){return this},status(n){this.code=n;return this},json(value){this.body=value;return this}};
+ try{
+  await endpoint({method:'GET',query:{from:'USD',to:'NOK'}},out);
+  assert.equal(out.code,200);assert.equal(out.body.rate,10.43);
+  assert.equal(out.body.date,'2026-10-23');assert.match(requestUrl,/quotes=NOK/);
+ }finally{global.fetch=previous}
+});
+test('Historical currency endpoint validates and orders quoted dates',async()=>{
+ const endpoint=require('../api/currency-history.js');
+ const previous=global.fetch;
+ global.fetch=async url=>({ok:true,json:async()=>[{base:'USD',quote:'NOK',date:'2026-10-23',rate:10.4},{base:'USD',quote:'NOK',date:'2026-10-22',rate:10.3},{base:'EUR',quote:'NOK',date:'2026-10-23',rate:11.1}]});
+ const out={code:200,setHeader(){return this},status(n){this.code=n;return this},json(value){this.body=value;return this}};
+ try{
+  await endpoint({method:'GET',query:{from:'USD',to:'NOK',days:'30'}},out);
+  assert.equal(out.code,200);assert.equal(out.body.points.length,2);
+  assert.equal(out.body.points[0].rate,10.3);assert.equal(out.body.points[1].rate,10.4);
+ }finally{global.fetch=previous}
+});
