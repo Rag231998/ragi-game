@@ -17,7 +17,7 @@ const items=[
 ];
 const fold=s=>s.toLocaleLowerCase('nb').normalize('NFKD').replace(/[\u0300-\u036f]/g,'');
 const $=id=>document.getElementById(id);
-let active=-1,last=[],open=false;
+let active=-1,last=[],open=false,previousFocus=null;
 function score(row,q){
  const terms=fold(q).split(/\s+/).filter(Boolean);
  if(!terms.length)return 1;
@@ -46,8 +46,8 @@ function select(n){
  $('site-search-option-'+active)?.scrollIntoView({block:'nearest'});
 }
 function go(item){close();if(typeof window.lanesjekkNavigate==='function')window.lanesjekkNavigate(item[2]);else location.hash=item[2]}
-function show(){const box=$('site-search');if(!box)return;box.hidden=false;open=true;draw();$('site-search-input').focus();document.body.classList.add('search-open')}
-function close(){const box=$('site-search');if(!box)return;box.hidden=true;open=false;document.body.classList.remove('search-open')}
+function show(){const box=$('site-search');if(!box)return;previousFocus=document.activeElement;document.querySelectorAll('.site-header details.nav-group[open]').forEach(el=>el.open=false);box.hidden=false;open=true;draw();$('site-search-input')?.focus();document.body.classList.add('search-open')}
+function close(){const box=$('site-search');if(!box||!open)return;box.hidden=true;open=false;document.body.classList.remove('search-open');if(previousFocus?.isConnected)previousFocus.focus();previousFocus=null}
 function init(){
  const btn=$('site-search-open');if(!btn)return;
  btn.addEventListener('click',show);$('site-search-close').addEventListener('click',close);
@@ -61,6 +61,7 @@ function init(){
   if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='k'){event.preventDefault();open?close():show()}
   else if(event.key==='/'&&!event.ctrlKey&&!event.metaKey&&!event.altKey&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)){event.preventDefault();show()}
   else if(event.key==='Escape'&&open){event.preventDefault();close()}
+  else if(event.key==='Tab'&&open){const box=$('site-search');const focusable=[...box.querySelectorAll('button:not(:disabled),input:not(:disabled),a[href]')].filter(el=>el.getClientRects().length);if(!focusable.length)return;const first=focusable[0],lastItem=focusable[focusable.length-1];if(event.shiftKey&&(document.activeElement===first||!box.contains(document.activeElement))){event.preventDefault();lastItem.focus()}else if(!event.shiftKey&&(document.activeElement===lastItem||!box.contains(document.activeElement))){event.preventDefault();first.focus()}}
  });
 }
 document.addEventListener('DOMContentLoaded',init);
