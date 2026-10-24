@@ -246,3 +246,11 @@ body[data-active-view="property"] .homepage-showcase{display:none!important}
  .site-header #site-search-open>span{display:inline!important}
  .site-header #site-search-open{min-width:79px!important}
 }
+
+
+/* Native Animation Studio demos; no external video hosting required. */
+.native-motion-demo{display:block;position:relative;max-width:1192px;margin:18px auto 32px;border-radius:24px;overflow:hidden;border:1px solid #cae5e1;box-shadow:0 14px 35px #112b3b18;background:#10283a;aspect-ratio:960/500}
+.native-motion-demo[hidden]{display:none!important}
+.native-motion-demo img{display:block;width:100%;height:100%;object-fit:cover}
+@media(max-width:650px){.native-motion-demo{margin:14px auto 22px;border-radius:15px}}
+@media(prefers-reduced-motion:reduce){.native-motion-demo img{visibility:hidden}.native-motion-demo{min-height:140px;background:#183e4e}.native-motion-demo:after{content:'Animasjon deaktivert i systeminnstillingene';position:absolute;inset:0;display:grid;place-items:center;color:white;font-size:13px}}
