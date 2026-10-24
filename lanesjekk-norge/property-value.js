@@ -51,6 +51,8 @@ function chooseAddress(a){
  selectedAddress=a;$('pv-address').value=a.text+', '+(a.postal?a.postal+' ':'')+(a.place||a.municipality);
  $('pv-postal').value=a.postal||'';
  $('pv-municipality').value=a.municipalityCode||'';
+ $('pv-address-summary').textContent=[a.postal,a.place||a.municipality].filter(Boolean).join(' ')+' · '+a.municipality;
+ $('pv-address-codes').textContent='Postnummer '+(a.postal||'—')+' · Kommunenummer '+(a.municipalityCode||'—');
  $('pv-municipality').readOnly=false;
  $('pv-municipality').setAttribute('aria-label','Kommunenummer fra valgt adresse, kan korrigeres');
  $('pv-location').textContent='✓ '+a.text+' · '+a.postal+' '+a.place+' · '+a.municipality+' kommune. Adresse kontrollert hos Kartverket.';
@@ -200,13 +202,13 @@ function boot(){if(!$('pv-estimate'))return;
    $('pv-market-location').textContent='Kommune';
    notice('Velg en ny adresse og fyll inn BRA-i. Gamle prisanslag er nullstilt.');
   }
-  selectedAddress=null;$('pv-address-verified').hidden=true;$('pv-municipality').value='';$('pv-postal').value='';
+  selectedAddress=null;$('pv-address-verified').hidden=true;$('pv-municipality').value='';$('pv-postal').value='';$('pv-address-summary').textContent='Velg en adresse ovenfor';$('pv-address-codes').textContent='Postnummer og kommune vises her';
   triggerSearch($('pv-address').value);
  });
  $('pv-address').addEventListener('keydown',navigateOptions);
  document.addEventListener('pointerdown',event=>{if(!event.target.closest('.pv-search-wrap'))clearAddressResults()});
  $('pv-estimate').addEventListener('click',estimate);
- $('pv-municipality').addEventListener('input',()=>{++reqEstimate;prices=[];lastEstimate=null;$('pv-value').textContent='—';$('pv-low').textContent='—';$('pv-high').textContent='—';$('pv-badge').textContent='Ny beregning kreves';notice('Kommunenummeret er endret manuelt. Kontroller kommunenummeret mot Kartverket før du beregner på nytt.');});
+ $('pv-municipality').addEventListener('input',()=>{if(selectedAddress)$('pv-address-codes').textContent='Postnummer '+($('pv-postal').value||'—')+' · Kommunenummer '+($('pv-municipality').value||'—')+' (manuelt korrigert)';++reqEstimate;prices=[];lastEstimate=null;$('pv-value').textContent='—';$('pv-low').textContent='—';$('pv-high').textContent='—';$('pv-badge').textContent='Ny beregning kreves';notice('Kommunenummeret er endret manuelt. Kontroller kommunenummeret mot Kartverket før du beregner på nytt.');});
  $('pv-postal').addEventListener('input',()=>{const val=$('pv-postal').value.trim();if(val&&!/^\\d{4}$/.test(val)){$('pv-postal').setCustomValidity('Oppgi et norsk postnummer med fire sifre.')}else $('pv-postal').setCustomValidity('');});
  $('pv-type').addEventListener('change',()=>{if(prices.length)estimate()});
  $('pv-area').addEventListener('input',display);
