@@ -6,6 +6,7 @@ const BASE='https://pryrgwfjniggjlrizenh.supabase.co',KEY='sb_publishable_nMwApl
 const $=id=>document.getElementById(id);
 const DEFAULT_IDS=['quick','hero','stats','workbook','insights'];
 const SECTION_NAMES={quick:'Månedsplan + handlingsknapper',hero:'Budsjettets overskrift',stats:'Resultat og nøkkeltall',workbook:'Redigerbart regneark',insights:'Grafer og økonomiske analyser'};
+const MEDIA_IDS=['home','loans','budget','receipts','valuation','rental','savings','investing','carloan','academy'];
 const SLIDE_IDS=['loan','budget','receipts','invest','property'];
 const CARD_IDS=['sjekk','budsjett','kvitteringer','sparing','utleie','billan','forbrukslan','akademi','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti'];
 const CARD_NAMES={kvitteringer:'Kvitteringsstudio',utleie:'Utleieanalyse',budsjett:'Personlig budsjett',billan:'Billån',forbrukslan:'Forbrukslån',akademi:'Læringsplattform',sparing:'Sparing',sjekk:'Boliglån',banker:'Bankoversikt','offisielle-renter':'Offisielle renter',bsu:'BSU',ask:'ASK',ips:'IPS',innskuddsgaranti:'Innskuddsgaranti'};
@@ -20,6 +21,7 @@ function normalize(data){
  const order=[...new Set([...(Array.isArray(budget.order)?budget.order.filter(x=>DEFAULT_IDS.includes(x)):[]),...DEFAULT_IDS])];
  const cardOrder=[...new Set([...(Array.isArray(cards.order)?cards.order.filter(x=>CARD_IDS.includes(x)):[]),...CARDS_DEFAULT])];
  return {
+ media:{slots:Object.fromEntries(MEDIA_IDS.map(id=>{const x=src.media?.slots?.[id]||{};return [id,{enabled:x.enabled!==false,videoUrl:String(x.videoUrl||'').slice(0,500),posterUrl:String(x.posterUrl||'').slice(0,500),title:clamp(x.title,90),description:clamp(x.description,210),fit:x.fit==='contain'?'contain':'cover',loop:x.loop!==false}]}))},
  animations:{autoplay:src.animations?.autoplay!==false,valuation:src.animations?.valuation!==false,rental:src.animations?.rental!==false,receipts:src.animations?.receipts!==false},
  slides:{visible:src.slides?.visible!==false,order:[...new Set([...(Array.isArray(src.slides?.order)?src.slides.order.filter(id=>SLIDE_IDS.includes(id)):[]),...SLIDE_IDS])],items:Object.fromEntries(SLIDE_IDS.map(id=>[id,{title:clamp(src.slides?.items?.[id]?.title,95),description:clamp(src.slides?.items?.[id]?.description,220),enabled:src.slides?.items?.[id]?.enabled!==false}]))},
  brand:{name:clamp(brand.name||'LÅNESJEKK NORGE',70),tagline:clamp(brand.tagline||'Mer oversikt. Bedre valg.',130),accent:/^#[0-9A-Fa-f]{6}$/.test(brand.accent)?brand.accent:'#0c8878',logoUrl:clamp(brand.logoUrl,500),heroVisual:brand.heroVisual!==false,heroMotion:brand.heroMotion!==false},
@@ -64,7 +66,7 @@ async function loadPublished(){
  if(r.error||!r.data){msg('Kunne ikke hente nettstedinnstillinger: '+(r.error?.message||'Ingen data'),true);return}
  published=normalize(r.data.config);draft=clone(published);revision=r.data.revision||1;ready=true;
  $('admin-revision').textContent='Publisert versjon '+revision;
- render();await loadRevisions();
+ render();await loadRevisions();await window.lanesjekkAnimationStudio?.refreshLibrary();
  $('admin-frame').src='./index.html#topp';
  msg('Nettstedsoppsettet er hentet. Du kan endre og forhåndsvise før du publiserer.');
 }
@@ -161,7 +163,7 @@ function render(){
  $('invest-title').value=draft.investing.title;
  $('site-logo-preview').hidden=!draft.brand.logoUrl;
  if(draft.brand.logoUrl)$('site-logo-preview').src=draft.brand.logoUrl;
- renderSort('budget');renderSort('cards');renderSlides();
+ renderSort('budget');renderSort('cards');renderSlides();window.lanesjekkAnimationStudio?.render();
 }
 function gather(){
  for(const key of ['autoplay','valuation','rental','receipts'])draft.animations[key]=$('motion-'+key).checked;
@@ -233,6 +235,7 @@ async function loadRevisions(){
 function boot(){
  if(!window.supabase){msg('Supabase-biblioteket kunne ikke lastes. Kontroller innholdsblokkering.',true,'auth-status');return}
  db=window.supabase.createClient(BASE,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+ window.lanesjekkAnimationStudio?.init({db,getDraft:()=>draft,notify:(text,isError=false)=>msg(text,isError),bucket:'animation-assets',storageBase:BASE});
  $('admin-login-form').addEventListener('submit',login);
  const forgotForm=$('admin-forgot-form'),forgotStatus=$('admin-forgot-status');
  $('admin-forgot-open').addEventListener('click',()=>{forgotForm.hidden=false;$('admin-forgot-email').value=$('admin-email').value.trim();$('admin-forgot-open').hidden=true;$('admin-forgot-email').focus()});
