@@ -2,7 +2,18 @@
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#101f31">
 <title>Lånesjekk · Privat administrasjon</title>
 <link rel="stylesheet" href="./admin-studio.css?v=10"></head><body>
-<header class="admin-header"><a href="./studio-admin.html" aria-label="Lånesjekk Studio – administrasjon">◈ <strong>LÅNESJEKK</strong><span> / STUDIO</span></a><div class="admin-header-right"><span class="admin-badge">Kun godkjente administratorer</span><button id="admin-signout" hidden type="button">Logg ut</button></div></header>
+<header class="admin-header"><a href="./studio-admin.html" aria-label="Lånesjekk Studio – administrasjon">◈ <strong>LÅNESJEKK</strong><span> / STUDIO</span></a><div class="admin-header-right"><span class="admin-badge">Kun godkjente administratorer</span>
+<div class="admin-account-wrapper" id="admin-account-wrapper" hidden>
+ <button id="admin-account-menu-toggle" type="button" aria-expanded="false" aria-controls="admin-account-menu">◉ Konto og sikkerhet <span aria-hidden="true">⌄</span></button>
+ <div id="admin-account-menu" class="admin-account-menu" hidden>
+   <strong>Administrator</strong>
+   <span id="admin-account-email" class="admin-account-email">Innlogget</span>
+   <a href="./admin-password.html" target="_blank" rel="noopener noreferrer">⌑ Endre passord og reservekoder</a>
+   <a href="./index.html" target="_blank" rel="noopener noreferrer">↗ Åpne offentlig nettside</a>
+   <button id="admin-account-signout" type="button">Logg ut av Studio</button>
+ </div>
+</div>
+<button id="admin-signout" hidden type="button">Logg ut</button></div></header>
 <main>
 <section id="admin-auth" class="admin-login">
  <div class="admin-eyebrow">SIKKER INNLOGGING</div><h1>Administrer Lånesjekk Norge.</h1>
@@ -40,7 +51,7 @@
  <div class="admin-command-center">
   <div class="admin-workspace-head">
     <div><div class="admin-eyebrow">LÅNESJEKK NORGE · CONTROL CENTER</div><h1>Administrer nettsiden.</h1><p>Endre objekter, kontroller alt i et eget vindu og publiser med full versjonshistorikk.</p></div>
-    <div class="admin-top-actions"><a class="admin-secondary admin-account-link" href="./admin-password.html" target="_blank" rel="noopener noreferrer">⌑ Min konto</a><a class="admin-secondary" href="./index.html" target="_blank" rel="noopener noreferrer">↗ Se publisert side</a></div>
+    <div class="admin-top-actions"><span class="admin-nav-hint"><strong>3 steg</strong> ① Rediger <span aria-hidden="true">›</span> ② Forhåndsvis <span aria-hidden="true">›</span> ③ Publiser</span></div>
   </div>
   <div class="admin-command-stats" aria-label="Publiseringsstatus">
     <div class="admin-stat"><span>AKTIV VERSJON</span><strong id="admin-revision">–</strong><small id="admin-last-published">Henter publiseringstid …</small></div>
@@ -55,14 +66,24 @@
       <button id="admin-publish" type="button" class="admin-primary">✓ Kontroller og publiser</button>
     </div>
   </div>
-  <nav class="admin-section-nav" aria-label="Hopp til en administrasjonsdel">
+  <div class="admin-navigation-shell">
+ <div class="admin-object-search-wrap">
+  <label for="admin-object-search">Finn objekt eller funksjon</label>
+  <div class="admin-search-control"><span aria-hidden="true">⌕</span><input id="admin-object-search" type="search" autocomplete="off" placeholder="Søk budsjett, animasjon, bank, meny, farge …" aria-controls="admin-object-results" aria-expanded="false"></div>
+  <div id="admin-object-results" class="admin-object-results" hidden aria-live="polite"></div>
+ </div>
+ <nav class="admin-section-nav" aria-label="Velg område å administrere">
     <button type="button" data-admin-jump="admin-panel-brand">Design</button>
     <button type="button" data-admin-jump="admin-panel-budget">Budsjett</button>
-    <button type="button" data-admin-jump="admin-panel-cards">Objekter</button>
+    <button type="button" data-admin-jump="admin-panel-cards">Objekter og kort</button>
     <button type="button" data-admin-jump="admin-panel-slides">Forside</button>
     <button type="button" data-admin-jump="animation-studio-panel">Animation Studio</button>
-    <button type="button" data-admin-jump="admin-panel-history">Publiseringslogg</button>
+    <button type="button" data-admin-jump="admin-panel-invest">Investering</button>
+    <button type="button" data-admin-jump="admin-panel-motion">Bevegelse</button>
+    <button type="button" data-admin-jump="admin-panel-history">Versjoner og historikk</button>
   </nav>
+  <p class="admin-navigation-tip" id="admin-navigation-tip">Velg en kategori for å åpne innstillingene. Andre kategorier lukkes automatisk slik at du beholder oversikten.</p>
+</div>
 </div>
  <div class="admin-editor-layout">
  <div class="admin-edit-panel">
@@ -82,7 +103,7 @@
   <label class="admin-hint" style="display:flex;align-items:center;gap:10px;margin:12px 0"><input id="site-hero-motion" type="checkbox" checked> Spill animert forsidefilm (kan slås av uten å skjule illustrasjonen)</label>
   <button id="site-logo-reset" type="button" class="admin-secondary">Tilbakestill til standardlogo</button>
   <p class="admin-hint">Et opplastet bilde lagres i nettstedets bildearkiv. Tekster og farger blir synlige først etter «Publiser permanent».</p></div></details>
-  <details class="admin-panel" id="admin-panel-budget" open><summary>02 · Budsjett – plassering og synlighet</summary><div class="admin-body">
+  <details class="admin-panel" id="admin-panel-budget"><summary>02 · Budsjett – plassering og synlighet</summary><div class="admin-body">
   <p class="admin-hint">Dra en seksjon til ønsket plass, eller bruk pilene på mobil. Rekkefølgen publiseres bare når du velger «Publiser permanent».</p>
   <div id="budget-sort" class="admin-sort" role="list"></div>
   <label>Hovedoverskrift<input id="budget-title" maxlength="90"></label>
