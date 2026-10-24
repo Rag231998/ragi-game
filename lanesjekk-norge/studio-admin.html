@@ -1,8 +1,8 @@
 <!doctype html><html lang="nb"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#101f31">
 <title>Lånesjekk · Privat administrasjon</title>
-<link rel="stylesheet" href="./admin-studio.css?v=3"></head><body>
-<header class="admin-header"><a href="./index.html" aria-label="Til forsiden">◈ <strong>LÅNESJEKK</strong><span> / STUDIO</span></a><div class="admin-header-right"><span class="admin-badge">Kun godkjente administratorer</span><button id="admin-signout" hidden type="button">Logg ut</button></div></header>
+<link rel="stylesheet" href="./admin-studio.css?v=4"></head><body>
+<header class="admin-header"><a href="./studio-admin.html" aria-label="Lånesjekk Studio – administrasjon">◈ <strong>LÅNESJEKK</strong><span> / STUDIO</span></a><div class="admin-header-right"><span class="admin-badge">Kun godkjente administratorer</span><button id="admin-signout" hidden type="button">Logg ut</button></div></header>
 <main>
 <section id="admin-auth" class="admin-login">
  <div class="admin-eyebrow">SIKKER INNLOGGING</div><h1>Administrer Lånesjekk Norge.</h1>
@@ -10,10 +10,9 @@
  <form id="admin-login-form"><label>E-post<input id="admin-email" type="email" required autocomplete="username" placeholder="din@epost.no"></label>
  <label>Passord<input id="admin-password" type="password" required autocomplete="current-password" placeholder="Passord"></label>
  <button type="submit" class="admin-primary" id="admin-login">Logg inn som administrator</button></form>
- <button id="admin-forgot-open" type="button" class="admin-secondary" style="margin-top:12px">Glemt passord?</button>
- <form id="admin-forgot-form" hidden style="margin-top:16px"><h2>Tilbakestill passord</h2><p>Oppgi e-postadressen du bruker i adminportalen. Vi sender deg en lenke for å velge nytt passord.</p><label>E-postadresse<input type="email" id="admin-forgot-email" autocomplete="email" required></label><button type="submit" class="admin-primary" id="admin-forgot-send">Send lenke for nytt passord</button><button type="button" class="admin-secondary" id="admin-forgot-cancel">Avbryt</button><p id="admin-forgot-status" role="status" aria-live="polite"></p></form>
+ <a id="admin-forgot-open" class="admin-secondary admin-forgot-link" href="./admin-password.html" target="_blank" rel="noopener noreferrer" aria-label="Glemt passord? Åpne passordgjenoppretting i en ny fane">Glemt passord? <span aria-hidden="true">↗</span></a>
  <p id="auth-status" role="status" aria-live="polite"></p>
- <div class="admin-help"><strong>Problemer med innlogging?</strong><p>Trykk «Glemt passord?» og følg lenken du får på e-post. Dersom Supabase har nådd grensen for e-postutsending, må du prøve igjen senere. Du behøver ikke bruke SQL eller opprette en ny konto.</p></div>
+ <div class="admin-help"><strong>Problemer med innlogging?</strong><p>Trykk «Glemt passord?» for å åpne en egen passordside i en ny fane, og følg lenken du får på e-post. Dersom Supabase har nådd grensen for e-postutsending, må du prøve igjen senere. Du behøver ikke bruke SQL eller opprette en ny konto.</p></div>
 </section>
 
 <section id="admin-password-recovery" class="admin-login" hidden>
@@ -96,5 +95,5 @@
  </div>
  <p id="admin-message" class="admin-message" role="status" aria-live="polite"></p>
 </section></main><footer>Privat administrasjon for Lånesjekk Norge. Bare medlemmer av databasens administratorrolle kan lagre endringer. <a href="./index.html">Til offentlig nettside ↗</a></footer>
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./admin-animation-studio.js?v=2"></script><script defer src="./admin-studio.js?v=6"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./admin-animation-studio.js?v=2"></script><script defer src="./admin-studio.js?v=7"></script>
 </body></html>
