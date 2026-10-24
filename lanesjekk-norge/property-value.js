@@ -1,4 +1,4 @@
-(()=>{'use strict';const $=id=>document.getElementById(id),M=n=>new Intl.NumberFormat('nb-NO',{style:'currency',currency:'NOK',minimumFractionDigits:2,maximumFractionDigits:0}).format(n);
+(()=>{'use strict';const $=id=>document.getElementById(id),M=n=>new Intl.NumberFormat('nb-NO',{style:'currency',currency:'NOK',minimumFractionDigits:0,maximumFractionDigits:0}).format(n);
 const decimal=n=>Number(String(n??'').trim().replace(/\s/g,'').replace(',','.'));
 const fmtArea=n=>new Intl.NumberFormat('nb-NO',{maximumFractionDigits:0}).format(n);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
