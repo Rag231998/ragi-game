@@ -4,7 +4,7 @@
 const $=id=>document.getElementById(id);
 const SLOT_NAMES={home:'Forsiden / kampanje',loans:'Boliglån',budget:'Budsjett',
  receipts:'Kvitteringsstudio',valuation:'Boligverdi',rental:'Utleieanalyse',
- savings:'Sparing',investing:'Fond og aksjer',carloan:'Billån',academy:'Læringsplattform'};
+ savings:'Sparing',investing:'Fond og aksjer',carloan:'Billån',academy:'Læringsplattform',currency:'Valutakompass'};
 const VIDEO=['video/mp4','video/webm'],POSTER=['image/jpeg','image/png','image/webp'];
 const MAX_VIDEO=40*1024*1024,MAX_POSTER=4*1024*1024;
 let db,source,notify,bucket,active='home',objects=[],previewUrl='';
