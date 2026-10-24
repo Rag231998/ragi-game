@@ -1,4 +1,6 @@
 # Lånesjekk Norge – teknisk statusoversikt
+
+> **Nyere dokumentasjon:** [Arkitektur og prosjektoversikt](docs/PROSJEKTOVERSIKT.md) · [Drift, sikkerhet og SMTP-status](docs/DRIFT-OG-SIKKERHET.md). Resten av dette dokumentet er et datert statusbilde fra 24. oktober 2026.
 Oppdatert 24. oktober 2026. Dette dokumentet beskriver faktisk kode, lagringsstatus og bekreftede tester. Det er ikke en garanti om at alle brukerflyter er feilfrie.
 
 ## Publisering og prosjekt
