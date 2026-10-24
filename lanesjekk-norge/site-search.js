@@ -10,6 +10,7 @@ const items=[
  ['Kvitteringsstudio','Budsjett og forbruk','kvitteringer','receipts','kvitteringer skanne bilde varer handleliste'],
  ['Sparekonto og renteberegning','Sparing','sparing','savings','sparing høyrentekonto rentekalkulator'],
  ['Fond og aksjer','Investering','investering','investing','fond aksjer indeksfond avkastning'],
+ ['Valutakompass','Sparing og investering','valutakompass','currency','valuta kalkulator omregning kurs euro dollar svenske kroner reise kortgebyr'],
  ['Boligverdi','Eiendom','boligverdi','property','estimat estimert verdi adresse prisindeks kartverket ssb'],
  ['Utleieanalyse','Eiendom','utleieanalyse','property','utleie kontantstrøm eiendom leieinntekt avkastning'],
  ['Økonomiakademiet','Læring','akademi','academy','læring kurs økonomi'],
@@ -34,7 +35,7 @@ function draw(){
  last.forEach((item,i)=>{
   const b=document.createElement('button');b.type='button';b.className='site-search-result';b.id='site-search-option-'+i;
   b.setAttribute('role','option');b.setAttribute('aria-selected',String(i===active));
-  const icon=document.createElement('span');icon.className='site-search-result-icon';icon.textContent={home:'⌂',loans:'▤',financing:'▥',banks:'▦',budget:'▦',receipts:'▧',savings:'◈',investing:'↗',property:'⌂',academy:'✦',guides:'☷'}[item[3]]||'◈';
+  const icon=document.createElement('span');icon.className='site-search-result-icon';icon.textContent={home:'⌂',loans:'▤',financing:'▥',banks:'▦',budget:'▦',receipts:'▧',savings:'◈',investing:'↗',property:'⌂',academy:'✦',guides:'☷',currency:'⇄'}[item[3]]||'◈';
   const name=document.createElement('strong');name.textContent=item[0];
   const cat=document.createElement('small');cat.textContent=item[1];
   const arrow=document.createElement('span');arrow.className='site-search-result-arrow';arrow.textContent='↗';
