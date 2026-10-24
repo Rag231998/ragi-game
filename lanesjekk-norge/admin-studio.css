@@ -199,3 +199,38 @@ footer{padding:18px;text-align:center;color:#78919c;font-size:10px;border-top:1p
 
 .admin-account-link{display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;min-height:39px;white-space:nowrap;font-size:11px}
 .admin-account-link:hover{background:#daf0e8;color:#086e5c}
+
+
+/* Auth UX v7: one small, focused panel; eliminate redundant visual containers. */
+.password-page main{padding:16px 14px 24px}
+.password-page-wrap{max-width:430px;margin:0 auto}
+.password-page-eyebrow{font-size:10px;font-weight:850;letter-spacing:.13em;color:#517580;padding:0 4px;margin:0 0 9px}
+.password-page-eyebrow span{color:#1a967e;padding:0 4px}
+.password-page .password-page-card{padding:22px 22px 19px;margin:0 0 10px;border-radius:13px;box-shadow:0 7px 22px #133d4c0c}
+.password-page .password-page-card:before{display:none}
+.password-page .password-page-titleline{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.password-page .password-page-titleline .password-page-symbol{width:36px;height:36px;flex:0 0 36px;margin:0;border-radius:10px;font-size:19px}
+.password-page .password-page-titleline h1{font-size:22px;font-weight:850;line-height:1.2;letter-spacing:-.035em;color:#173c4d;margin:0}
+.password-page .password-page-card>p{font-size:12px;line-height:1.55;margin:7px 0 0;color:#536e7a}
+.password-page .password-page-card form{gap:11px;margin:16px 0 0}
+.password-page .password-page-card label{font-size:12px;line-height:1.4}
+.password-page .password-page-card input{min-height:42px;padding:9px 12px;font-size:14px}
+.password-page .password-page-card form>button[type="submit"]{min-height:42px;font-size:12px}
+.password-page .password-page-status:empty{display:none}
+.password-page .password-page-limit{padding:13px 13px 12px;margin:13px 0 0;border-radius:9px;background:#fff6f0;border:1px solid #edc1ac;color:#6b3424}
+.password-page .password-page-limit strong{font-size:12px;color:#833620}
+.password-page .password-page-limit p{font-size:11px;line-height:1.55;margin:5px 0 10px}
+.password-page .password-page-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.password-page .password-page-actions a,.password-page .password-page-actions button{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;min-height:35px;border-radius:8px;font-weight:750;font-size:11px;text-decoration:none}
+.password-page .password-page-info{margin-top:13px;border-top:1px solid #edf2f3;padding-top:11px;color:#50717b}
+.password-page .password-page-info summary{display:list-item;list-style:revert;cursor:pointer;font-size:11px;font-weight:750;margin-left:13px}
+.password-page .password-page-info p{font-size:11px;line-height:1.6;margin:9px 0 0}
+.password-page .password-page-back{min-height:29px;padding:4px 2px}
+.password-page .password-page-footer-note{font-size:10px;margin-top:7px}
+#reset-request .password-page-status:not(:empty){margin-top:12px}
+@media(max-width:460px){
+ .password-page main{padding:12px 11px 20px}
+ .password-page-wrap{max-width:100%}
+ .password-page .password-page-card{padding:18px 16px}
+ .password-page .password-page-titleline h1{font-size:21px}
+}
