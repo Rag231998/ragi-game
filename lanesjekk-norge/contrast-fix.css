@@ -92,3 +92,27 @@ body.portal-home .premium-dashboard a.home-tool .home-tool-arrow{max-width:100%;
 .portal-home .site-header .portal-nav>details.nav-group>.nav-drop>a:focus-visible{
  color:#086454!important;background:#e8f7f1!important;
 }
+
+/* Screenshot repair 2026-10-24: demo scene must be readable, unclipped and layered. */
+#utleie .pv-guide{min-height:290px;align-items:stretch;isolation:isolate}
+#utleie .pv-guide-screen{min-width:0;min-height:280px;padding:24px;overflow:hidden;background:radial-gradient(ellipse at 35% 12%,#266b78,#0b3044 80%)!important}
+#utleie .pv-guide-window{display:flex!important;flex-direction:column!important;position:relative!important;width:min(100%,430px)!important;height:228px!important;min-height:228px!important;max-height:228px!important;overflow:hidden!important;transform:none!important;filter:none!important;opacity:1!important;background:#f9fdfd!important;border:1px solid #b8e0da!important;box-shadow:0 15px 40px #00192677!important;color:#173e50!important}
+#utleie .pv-guide-browser{display:flex!important;position:relative!important;flex:0 0 42px!important;height:42px!important;min-height:42px!important;align-items:center!important;padding:9px 15px!important;color:#167f70!important;background:#eef7f5!important;opacity:1!important;transform:none!important;z-index:3}
+#utleie .pv-guide-browser b{color:#244c58!important;opacity:1!important}
+#utleie .pv-guide-scenes{display:block!important;flex:1 1 auto!important;position:relative!important;width:100%!important;height:186px!important;min-height:186px!important;max-height:186px!important;overflow:hidden!important;background:#fbfefd!important;isolation:isolate}
+#utleie .pv-guide-scenes .pv-guide-step{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;box-sizing:border-box!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:9px!important;padding:12px 18px!important;overflow:hidden!important;color:#123d4a!important;background:#fbfefd!important;transform:translateX(16px)!important;filter:none!important;visibility:hidden!important;opacity:0!important;z-index:0!important;transition:opacity .35s ease,transform .35s ease!important}
+#utleie .pv-guide-scenes .pv-guide-step.is-active{visibility:visible!important;opacity:1!important;transform:translateX(0)!important;z-index:2!important}
+#utleie .pv-guide-scenes .pv-guide-step .pv-guide-icon{display:block!important;position:static!important;font-size:32px!important;color:#087a67!important;line-height:1.1!important;margin:0!important}
+#utleie .pv-guide-scenes .pv-guide-step strong{display:block!important;position:static!important;color:#183f4f!important;font-size:17px!important;font-weight:850!important;line-height:1.2!important;margin:0!important;text-align:center!important;opacity:1!important}
+#utleie .pv-guide-scenes .pv-guide-step small{display:block!important;position:static!important;font-size:12px!important;font-weight:600!important;color:#3a6271!important;line-height:1.35!important;margin:0!important;opacity:1!important;text-align:center!important}
+#utleie .pv-guide-scenes .pv-guide-step .pv-guide-art{display:block!important;position:static!important;color:#0a8273!important;font-size:21px!important;letter-spacing:.12em!important;line-height:1.1!important;margin:0!important;opacity:1!important}
+#utleie .pv-guide-info{background:#fff!important;color:#1a4556!important;min-width:0}
+#utleie .pv-guide-info h3{color:#153b4c!important;overflow-wrap:anywhere}
+#utleie .pv-guide-info .pv-eyebrow{color:#086c60!important}
+#utleie .pv-guide-current{color:#35576a!important}
+@media(max-width:950px){#utleie .pv-guide-window{height:228px!important}#utleie .pv-guide-screen{min-height:260px}}
+@media(prefers-reduced-motion:reduce){#utleie .pv-guide-scenes .pv-guide-step{transition:none!important}}
+html.motion-stopped #utleie .pv-guide-scenes .pv-guide-step{transition:none!important}
+/* Always ensure primary entry cards and their CTAs have accessible contrasts. */
+body.portal-home .home-tool-grid>.home-tool .home-tool-arrow{background:#123c61!important;color:#fff!important;border-color:#123c61!important;text-shadow:none!important}
+body.portal-home .home-tool-grid>.home-tool:is(:hover,:focus-visible) .home-tool-arrow{background:#086958!important;color:#fff!important}
