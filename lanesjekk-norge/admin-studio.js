@@ -237,21 +237,6 @@ function boot(){
  db=window.supabase.createClient(BASE,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
  window.lanesjekkAnimationStudio?.init({db,getDraft:()=>draft,notify:(text,isError=false)=>msg(text,isError),bucket:'animation-assets',storageBase:BASE});
  $('admin-login-form').addEventListener('submit',login);
- const forgotForm=$('admin-forgot-form'),forgotStatus=$('admin-forgot-status');
- $('admin-forgot-open').addEventListener('click',()=>{forgotForm.hidden=false;$('admin-forgot-email').value=$('admin-email').value.trim();$('admin-forgot-open').hidden=true;$('admin-forgot-email').focus()});
- $('admin-forgot-cancel').addEventListener('click',()=>{forgotForm.hidden=true;$('admin-forgot-open').hidden=false;forgotStatus.textContent=''});
- forgotForm.addEventListener('submit',async e=>{
-  e.preventDefault();const email=$('admin-forgot-email').value.trim();
-  if(!email)return;
-  const btn=$('admin-forgot-send');btn.disabled=true;forgotStatus.textContent='Forsøker å sende lenke …';
-  try{
-   const redirectTo=new URL('/studio-admin.html',location.origin).href;
-   const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo});
-   if(error){const detail=(error.message||'').toLowerCase();forgotStatus.textContent=detail.includes('rate limit')||error.status===429?'Supabase har midlertidig stoppet flere e-poster. Prøv igjen senere. Vi kan ikke omgå denne grensen.':'Kunne ikke sende lenke: '+error.message;return}
-   forgotStatus.textContent='Hvis adressen er registrert og e-postutsending er tilgjengelig, får du en lenke for å velge nytt passord. Sjekk innboksen og søppelpost.';
-  }catch(err){forgotStatus.textContent='Kunne ikke sende forespørselen. Sjekk internettforbindelsen og prøv igjen.'}
-  finally{btn.disabled=false}
- });
  $('admin-signout').addEventListener('click',async()=>{
   await db.auth.signOut();authUser=null;ready=false;published=null;draft=null;await check();
  });
@@ -275,7 +260,6 @@ function boot(){
  const linkError=recoveryHash.get('error_code')||recoveryQuery.get('error_code')||recoveryHash.get('error')||recoveryQuery.get('error');
  if(linkError){
   $('auth-status').textContent='Passordlenken er ugyldig eller utløpt. Trykk «Glemt passord?» og bestill en ny lenke.';
-  $('admin-forgot-open').hidden=true;forgotForm.hidden=false;
   history.replaceState(null,'',location.pathname);
  }
  db.auth.onAuthStateChange(event=>{
