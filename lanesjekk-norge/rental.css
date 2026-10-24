@@ -174,3 +174,68 @@
 @media(max-width:1050px){#utleie .pv-layout{grid-template-columns:minmax(0,1fr)}#utleie .pv-provider-links{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){#utleie .pv-studio-tabs{gap:6px}#utleie .pv-studio-tabs button{min-height:60px;padding:9px 8px;font-size:12px}#utleie .pv-studio-tabs button small{font-size:9px;margin-left:0}#utleie .pv-layout{gap:10px}#utleie .pv-address-choice{flex-direction:column;align-items:flex-start;gap:2px}#utleie .pv-panel{padding:16px}#utleie .pv-form{grid-template-columns:minmax(0,1fr)}#utleie .pv-search input{font-size:13px}#utleie .pv-search button{min-width:57px;padding:7px}#utleie .pv-provider-links{grid-template-columns:minmax(0,1fr)}}
 @media(prefers-reduced-motion:reduce){#utleie .pv-studio-tabs button,#utleie .pv-provider-links a{transition:none!important}}
+
+/* Studio charts and responsive premium product demonstrations */
+#utleie .pv-rental-extras{display:grid;gap:18px;margin:14px 0 19px}
+#utleie:not(.pv-mode-rental)>.pv-rental-extras{display:none!important}
+#utleie .pv-guide,#utleie .pv-trend-lab,#utleie .pv-rent-trend{width:100%;max-width:100%;min-width:0;box-sizing:border-box;border:1px solid #dae9e7;border-radius:21px;overflow:hidden;background:#fff;box-shadow:0 12px 35px #153b4d0e}
+#utleie .pv-guide{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);min-height:225px}
+#utleie .pv-guide-screen{background:radial-gradient(ellipse at 50% 10%,#2c7f88,#092c44 80%);display:grid;place-items:center;padding:22px;min-width:0}
+#utleie .pv-guide-window{width:min(100%,400px);min-height:180px;border:1px solid #ffffff99;border-radius:15px;background:#f5fcfa;box-shadow:0 20px 45px #0b1b3266;overflow:hidden}
+#utleie .pv-guide-browser{display:flex;align-items:center;gap:10px;border-bottom:1px solid #d9e6e6;padding:12px;color:#159e83;font-size:12px;letter-spacing:.06em}
+#utleie .pv-guide-browser b{margin-left:6px;color:#456e78;font-size:10px}
+#utleie .pv-guide-scenes{height:133px;position:relative}
+#utleie .pv-guide-step{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;opacity:0;transform:translateY(12px) scale(.95);transition:opacity .5s,transform .55s;text-align:center;pointer-events:none}
+#utleie .pv-guide-step.is-active{opacity:1;transform:translateY(0) scale(1)}
+#utleie .pv-guide-icon{display:block;font-size:33px;color:#0d9079}
+#utleie .pv-guide-step strong{font-size:15px;color:#174957}
+#utleie .pv-guide-step small{font-size:11px;color:#5a818a}
+#utleie .pv-guide-art{font-weight:900;font-size:20px;color:#23b592;letter-spacing:.25em;animation:pvArtWave 2.6s ease-in-out infinite alternate}
+@keyframes pvArtWave{to{transform:translateY(-3px);letter-spacing:.34em}}
+#utleie .pv-guide-info{display:grid;grid-template-columns:minmax(0,1fr);align-content:center;padding:24px;gap:12px;min-width:0}
+#utleie .pv-guide-info h3{font-size:clamp(18px,2.2vw,27px);line-height:1.25;margin:7px 0;color:#173e4c}
+#utleie .pv-guide-actions{display:flex;justify-content:space-between;align-items:center;gap:12px}
+#utleie .pv-guide-replay{border:1px solid #c6dfdc;background:#edf8f5;border-radius:10px;padding:10px 15px;color:#087663;font-weight:800;cursor:pointer}
+#utleie .pv-guide-current{font-size:12px;color:#50747c;font-weight:850}
+#utleie .pv-guide-progress{width:100%;height:5px;border-radius:20px;background:#d7e9e8;overflow:hidden}
+#utleie .pv-guide-progress span{display:block;height:100%;background:linear-gradient(90deg,#29b89a,#0f7e76);width:0}
+#utleie .pv-trend-lab,#utleie .pv-rent-trend{padding:clamp(17px,2.8vw,29px);margin:22px 0}
+#utleie .pv-trend-head{display:flex;justify-content:space-between;align-items:center;gap:18px}
+#utleie .pv-trend-head h3,#utleie .pv-rent-trend h3{font-size:clamp(23px,2.8vw,32px);line-height:1.2;margin:10px 0;color:#18465a;letter-spacing:-.03em}
+#utleie .pv-trend-head p,#utleie .pv-rent-trend p{font-size:12px;color:#66818c;line-height:1.65;max-width:670px}
+#utleie .pv-trend-region{border-radius:15px;padding:16px 20px;background:#eaf8f1;min-width:200px;display:grid;gap:6px}
+#utleie .pv-trend-region span,#utleie .pv-trend-region small{font-size:11px;color:#4c8375}
+#utleie .pv-trend-region strong{font-size:clamp(22px,2.5vw,35px);color:#087c69;font-variant-numeric:tabular-nums}
+#utleie .pv-trend-region strong[data-direction=down]{color:#bb6554}
+#utleie .pv-trend-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:20px 0 10px}
+#utleie .pv-range-buttons{display:flex;gap:5px;border:1px solid #dbe9e8;border-radius:11px;padding:4px;background:#f6faf9}
+#utleie .pv-range-buttons button{border:0;border-radius:8px;min-width:54px;padding:8px 10px;background:transparent;color:#617d87;font-size:12px;font-weight:750;cursor:pointer}
+#utleie .pv-range-buttons button.is-active{color:white;background:#0e8b76;box-shadow:0 3px 9px #1a887448}
+#utleie .pv-trend-period{display:flex;gap:17px;color:#587e89;font-size:12px;font-weight:750}
+#utleie #pv-trend-svg,#utleie #pv-rent-chart{display:block;width:100%;max-width:100%;height:auto;min-height:160px;overflow:visible;background:linear-gradient(180deg,#fcfefe,#f5faf9);border:1px solid #e2edec;border-radius:15px;padding:9px}
+#utleie .pv-trend-tooltip{min-height:25px;padding:10px 5px;color:#137d6f;font-size:12px;font-weight:800;letter-spacing:.01em}
+#utleie .pv-trend-line{transition:stroke-dashoffset 1.3s ease}
+#utleie .pv-index-tool{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:18px;margin-top:20px;border-top:1px solid #e0ebe9;padding-top:20px}
+#utleie .pv-index-tool h4{font-size:18px;color:#245064;margin:4px 0 9px}
+#utleie .pv-index-tool p{font-size:12px;color:#687e86;line-height:1.7}
+#utleie .pv-index-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+#utleie .pv-index-fields label,#utleie .pv-rent-trend label{display:grid;gap:6px;font-size:11px;color:#54737c;font-weight:800}
+#utleie .pv-index-fields input,#utleie .pv-index-fields select,#utleie .pv-rent-trend select{display:block;width:100%;min-width:0;min-height:42px;border:1px solid #cbdedc;border-radius:9px;padding:9px;color:#193f50;background:#fff;box-sizing:border-box}
+#utleie .pv-index-result{display:grid;align-content:center;gap:8px;background:#ecf8f2;border-radius:15px;padding:20px}
+#utleie .pv-index-result small{font-size:10px;color:#538477}
+#utleie .pv-index-result strong{font-size:clamp(21px,2.8vw,31px);color:#087564;overflow-wrap:anywhere}
+#utleie .pv-index-result p{margin:0}
+#utleie .pv-method{margin-top:18px;padding:13px;background:#f4faf9;border-radius:12px;border:1px solid #e0ece9}
+#utleie .pv-method summary{cursor:pointer;color:#2b5966;font-weight:800;font-size:12px}
+#utleie .pv-method a{color:#087968}
+#utleie .pv-rent-trend>label{max-width:300px;margin:14px 0}
+#utleie .pv-rent-trend #pv-rent-chart{border-color:#e3eef4}
+.motion-preferences{display:flex;align-items:center;flex-wrap:wrap;gap:11px;margin-bottom:15px}
+.motion-preferences button{border:1px solid #9dbebd;border-radius:9px;padding:8px 14px;background:transparent;color:inherit;cursor:pointer}
+.motion-preferences span{font-size:11px;opacity:.7}
+@media(max-width:950px){#utleie .pv-guide{grid-template-columns:minmax(0,1fr)}#utleie .pv-guide-screen{min-height:210px}#utleie .pv-trend-head{flex-wrap:wrap}#utleie .pv-index-tool{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){#utleie .pv-trend-region{min-width:0;width:100%}#utleie .pv-trend-tools{flex-direction:column;align-items:flex-start}#utleie .pv-index-fields{grid-template-columns:minmax(0,1fr)}#utleie .pv-guide-info{padding:17px}#utleie .pv-range-buttons{width:100%;justify-content:space-between}#utleie .pv-range-buttons button{min-width:0}}
+@media(prefers-reduced-motion:reduce){#utleie .pv-guide-art{animation:none!important}#utleie .pv-trend-line{transition:none!important}}
+html.motion-stopped #utleie .pv-guide-art{animation:none!important}
+html.motion-stopped #utleie .pv-guide-step{transition:none!important}
+html.motion-stopped #utleie .pv-trend-line{transition:none!important}
