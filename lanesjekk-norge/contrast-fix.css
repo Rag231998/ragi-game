@@ -116,3 +116,19 @@ html.motion-stopped #utleie .pv-guide-scenes .pv-guide-step{transition:none!impo
 /* Always ensure primary entry cards and their CTAs have accessible contrasts. */
 body.portal-home .home-tool-grid>.home-tool .home-tool-arrow{background:#123c61!important;color:#fff!important;border-color:#123c61!important;text-shadow:none!important}
 body.portal-home .home-tool-grid>.home-tool:is(:hover,:focus-visible) .home-tool-arrow{background:#086958!important;color:#fff!important}
+
+/* Premium, predictable navigation and clear flyouts on all viewport widths */
+.site-header{position:sticky;top:0;z-index:400;background:#ffffff!important;border-bottom:1px solid #dbe8e9;box-shadow:0 6px 24px #092d4211}
+.site-header .portal-group-nav>.nav-group>summary{font-size:13px!important;font-weight:800!important;letter-spacing:0!important;min-height:46px;min-width:0;border-radius:12px!important;white-space:nowrap;padding:11px 13px!important}
+.site-header .portal-group-nav>.nav-group>summary:hover,.site-header .portal-group-nav>.nav-group[open]>summary{background:#e5f6f0!important;color:#075e55!important}
+.site-header .portal-group-nav .nav-drop{padding:8px!important;min-width:235px!important;border-radius:16px!important;border:1px solid #d2e2e2!important;box-shadow:0 19px 58px #0d304a30!important}
+.site-header .portal-group-nav .nav-drop>a{color:#204354!important;padding:12px 14px!important;min-height:43px!important;border-radius:10px!important}
+.site-header .portal-group-nav .nav-drop>a:hover,.site-header .portal-group-nav .nav-drop>a:focus-visible{background:#e5f6ef!important;color:#065e50!important}
+.site-header #site-search-open{min-width:86px;min-height:42px;justify-content:center;border:1px solid #9ab9be!important;background:#fff!important;color:#183e50!important;border-radius:12px!important;box-shadow:none!important}
+.site-header #site-search-open:hover,.site-header #site-search-open:focus-visible{border-color:#118b74!important;background:#e6f6f0!important;color:#075f53!important}
+.site-search-dialog .site-search-result{color:#163f4f!important}
+.site-search-dialog .site-search-result:is(:hover,[aria-selected=true],:focus-visible){background:#e4f7ee!important;border-color:#97d7bd!important;color:#075f56!important}
+html{scroll-padding-top:92px}
+#utleie .pv-guide-window .pv-guide-step:not(.is-active){pointer-events:none!important}
+@media(max-width:1200px){.site-header .portal-group-nav>.nav-group>summary{font-size:12px!important;padding:9px 8px!important}}
+@media(max-width:900px){.site-header .portal-group-nav{display:none!important}.site-header #site-search-open{margin-left:auto}}
