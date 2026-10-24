@@ -1,6 +1,6 @@
 /* Password recovery redirect fallback.
  * If Supabase falls back to Site URL instead of the admin redirect,
- * forward ONLY recovery callbacks to the existing password form.
+ * forward ONLY recovery callbacks to the dedicated password recovery page.
  * Keep token fragments on this origin; no analytics or external links.
  */
 (()=>{
@@ -14,7 +14,7 @@
  const isExpiredRecovery=['otp_expired','otp_disabled'].includes(errorCode);
  const pkce=search.has('code')&&/^[A-Za-z0-9._~-]{10,2048}$/.test(search.get('code')||'');
  if(!isRecovery&&!isExpiredRecovery&&!pkce)return;
- const url=new URL('/studio-admin.html',location.origin);
+ const url=new URL('/admin-password.html',location.origin);
  url.search=location.search;
  url.hash=location.hash;
  location.replace(url.href);
