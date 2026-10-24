@@ -1,5 +1,7 @@
 # Lånesjekk Norge
 
+> **Plattformer og sikkerhet:** Se [plattformoversikt, systemdiagram og risikoregister](docs/PLATTFORMER-ARKITEKTUR-SIKKERHET.md) for GitHub, Render, Supabase, Studio, Resend, offentlige API-er og bekreftede sikkerhetsfunn.
+
 > **Oppdatert inngang til prosjektet (25. oktober 2026):** Les [prosjektoversikten](docs/PROSJEKTOVERSIKT.md) for gjeldende arkitektur, brukerfunksjoner, driftsmiljø og hvilke deler som er testet. Se [drift, sikkerhet og overlevering](docs/DRIFT-OG-SIKKERHET.md) for publisering, administratorrettigheter, passord, SMTP-status og feilsøking. Eldre avsnitt nedenfor er historikk og kan inneholde utdaterte beskrivelser av admin og Vercel.
 
 
