@@ -5,7 +5,7 @@ const html=file('index.html');
 test('Valutakompass has its own view, navigation and assets',()=>{
  assert.match(html,/id="valutakompass"[^>]*data-portal-view="currency"/);
  assert.match(html,/href="#valutakompass"/);
- for(const id of ['vc-from','vc-to','vc-amount','vc-fee','vc-swap','vc-result','vc-chart','vc-status'])assert.match(html,new RegExp('id="'+id+'"'));
+ for(const id of ['vc-from','vc-to','vc-amount','vc-converted','vc-swap','vc-chart','vc-status','vc-popular'])assert.match(html,new RegExp('id="'+id+'"'));
  assert.match(html,/valutakompass\.js/);assert.match(html,/valutakompass\.css/);
  assert.match(file('single-page.js'),/currency:'Valutakompass'/);
  assert.match(file('site-search.js'),/\['Valutakompass'/);
@@ -24,7 +24,7 @@ test('All referenced local JavaScript and stylesheets are present',()=>{
  for(const ref of refs)assert.ok(fs.existsSync(path.join(root,ref)),ref+' missing');
 });
 test('All local JavaScript entrypoints compile',()=>{
- for(const ref of ['valutakompass.js','site-search.js','single-page.js','homepage-showcase.js','site-cms.js','api/currency.js','api/currency-history.js']){
+ for(const ref of ['valutakompass.js','property-market-model.js','property-trends.js','site-media.js','site-search.js','single-page.js','homepage-showcase.js','site-cms.js','api/currency.js','api/currency-history.js']){
   assert.doesNotThrow(()=>new vm.Script(file(ref),{filename:ref}),ref);
  }
 });
@@ -35,7 +35,8 @@ test('Homepage currency slide links to real tool and does not claim live rates',
 test('Property BRA is integer-only and currency monetary numbers are not faked',()=>{
  assert.match(html,/id="pv-area"[^>]*step="1"/);
  assert.match(file('property-value.js'),/Number.isInteger\(area\)/);
- assert.match(file('valutakompass.js'),/if\(!latest\)/);
+ assert.match(file('valutakompass.js'),/if\(!quote\)return;/);
+ assert.doesNotMatch(html,/id="vc-fee"/);
 });
 
 
@@ -59,5 +60,48 @@ test('Historical currency endpoint validates and orders quoted dates',async()=>{
   await endpoint({method:'GET',query:{from:'USD',to:'NOK',days:'30'}},out);
   assert.equal(out.code,200);assert.equal(out.body.points.length,2);
   assert.equal(out.body.points[0].rate,10.3);assert.equal(out.body.points[1].rate,10.4);
+ }finally{global.fetch=previous}
+});
+
+
+test('SSB four-quarter basis uses real observed sales as weights, not an invented ±15% band',()=>{
+ const {basis}=require('../property-market-model.js');
+ const r=basis([
+  {period:'2025K4',value:50000,sales:10},
+  {period:'2026K1',value:60000,sales:30},
+  {period:'2026K2',value:70000,sales:20},
+  {period:'2026K3',value:80000,sales:40}
+ ]);
+ assert.equal(r.pricePerSqm,69000);assert.equal(r.sales,100);
+ assert.equal(r.lowestSqm,50000);assert.equal(r.highestSqm,80000);
+ assert.equal(r.quarters,4);assert.equal(r.weighted,true);
+ const single=basis([{period:'2026K3',value:70000,sales:3}]);
+ assert.equal(single.singleQuarter,true);
+ assert.equal(single.pricePerSqm,70000);
+ assert.equal(basis([]),null);
+});
+test('SSB 14310 municipality lookup selects declared labels and validates real JSON-stat cells',async()=>{
+ const previous=global.fetch;
+ const metadata={id:['Region','Boligtype','ContentsCode','Tid'],
+  dimension:{
+   Region:{category:{index:{'03':0},label:{'03':'Akershus'}}},
+   Boligtype:{category:{index:{'BLOKK':0,'SMÅ':1},label:{'BLOKK':'Blokkleiligheter','SMÅ':'Småhus'}}},
+   ContentsCode:{category:{index:{'KvPris':0,'Salg':1},label:{'KvPris':'Gjennomsnittlig kvadratmeterpris','Salg':'Antall omsetninger'}}},
+   Tid:{category:{index:{'2026K2':0,'2026K3':1},label:{'2026K2':'2026K2','2026K3':'2026K3'}}}
+  }};
+ const data={id:['Region','Boligtype','ContentsCode','Tid'],size:[1,1,2,2],
+  dimension:{...metadata.dimension,Region:{category:{index:{'K-3209':0},label:{'K-3209':'Ullensaker'}}},
+  Boligtype:{category:{index:{'BLOKK':0},label:{'BLOKK':'Blokkleiligheter'}}}},
+  value:[65000,70000,25,30]};
+ const requested=[];
+ global.fetch=async url=>{requested.push(String(url));return {ok:true,json:async()=>String(url).includes('/metadata')?metadata:data}};
+ const out={code:200,headers:{},setHeader(k,v){this.headers[k]=v;return this},status(n){this.code=n;return this},json(value){this.body=value;return this}};
+ try{
+  await require('../api/property-market.js')({method:'GET',query:{municipality:'3209',type:'block'}},out);
+  assert.equal(out.code,200);assert.equal(out.body.rows.length,2);
+  assert.equal(out.body.rows[0].sqm,65000);assert.equal(out.body.rows[1].sales,30);
+  assert.equal(out.body.regionLabel,'Ullensaker');
+  assert.ok(requested.some(u=>decodeURIComponent(u).includes('valueCodes[Region]=K-3209')));
+  assert.ok(requested.some(u=>decodeURIComponent(u).includes('codeList[Region]=vs_Kommun')));
  }finally{global.fetch=previous}
 });
