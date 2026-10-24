@@ -97,3 +97,15 @@ test('search traps keyboard focus and restores it when closed',async({page})=>{
  await expect(page.locator('#site-search-input')).toBeFocused();
  await page.keyboard.press('Escape');
 });
+
+
+test('home-only hero and overview never appear inside any tool view',async({page})=>{
+ for(const route of ['boligverdi','utleieanalyse','sjekk','budsjett','kvitteringer','sparing','investering','akademi','billan']){
+  await page.goto('/#'+route,{waitUntil:'domcontentloaded'});
+  await expect(page.locator('body')).not.toHaveAttribute('data-active-view','home');
+  await expect(page.locator('#loan-showcase')).toBeHidden();
+  await expect(page.locator('[data-portal-view="home"]:visible')).toHaveCount(0);
+ }
+ await page.goto('/#topp',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#loan-showcase')).toBeVisible();
+});
