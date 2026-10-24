@@ -180,7 +180,12 @@ test('Account recovery has compact layout and explains email quota instead of co
  assert.match(js,/auth\.getUser\(\)/);
  assert.match(js,/from\('admins'\)/);
  assert.match(page,/Minst 8 tegn/);
- assert.match(css,/\.password-page-wrap\{max-width:500px/);
- assert.match(css,/\.password-page-heading h1\{color:#fff;font-size:clamp\(24px/);
+ assert.ok(page.includes('Hvorfor kan e-postutsending stoppe?'));
+ assert.doesNotMatch(page,/class="password-page-help"/);
+ assert.doesNotMatch(page,/class="password-page-heading"/);
+ assert.match(js,/status\('password-request-status',''\)/);
+ assert.match(page,/admin-studio\.css\?v=7/);
+ assert.match(css,/\.password-page-wrap\{max-width:430px/);
+ assert.match(css,/\.password-page \.password-page-titleline h1\{font-size:22px/);
  assert.match(file('studio-admin.html'),/href="\.\/admin-password\.html" target="_blank" rel="noopener noreferrer" aria-label="Endre passord/);
 });
