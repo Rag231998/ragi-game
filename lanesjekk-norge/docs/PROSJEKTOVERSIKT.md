@@ -126,7 +126,7 @@ Supabase Auth håndterer e-post/passord og gjenopprettingslenker. En innlogget b
 - Alternativt kan administrator opprette tre engangskoder mens vedkommende er innlogget. Koder lages med kryptografisk tilfeldighet, SHA-256-hash lagres, og kode konsumeres før passordet endres av en privilegert Edge Function. Nye generasjoner ugyldiggjør tidligere koder. De er reserveordning, **ikke** erstatning for e-post som ønsket hovedmetode.
 - Reservekoder må opprettes og oppbevares trygt *før* en eventuell låsesituasjon. De kan ikke gjenopprettes fra databasen i klartekst.
 
-**SMTP-status:** Resend ble undersøkt, men det finnes ikke grunnlag i prosjektkontrollen for å erklære egen SMTP-konfigurasjon eller slutt-testet e-postutsending som aktiv. Den innebygde Supabase-senderen har tidligere gitt 429 / over_email_send_rate_limit. Hvis custom SMTP konfigureres i Supabase, må den faktiske mottatte e-posten og gjenopprettingslenken testes før status settes til «verifisert». Ingen hemmelige API-nøkler skal inn i GitHub eller dette dokumentet.
+**Passord-e-post (oppdatert 25.10.2026):** Administrator har bekreftet at utsending av passordlenke på e-post fungerer. Dette er en brukerbekreftelse, ikke en uavhengig inspeksjon av Supabase-/Resend-SMTP-innstillingene eller dokumentasjon på fullført ende-til-ende passordbytte. Eldre Supabase-logger viste 429 / over_email_send_rate_limit; følg med på eventuelle nye feil. Reservekoder er fortsatt et valgfritt alternativ. Ingen hemmelige API-nøkler skal inn i GitHub eller dette dokumentet.
 
 ## 8. Dagens kvalitetsstatus
 
