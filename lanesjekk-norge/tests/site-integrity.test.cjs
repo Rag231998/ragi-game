@@ -189,3 +189,25 @@ test('Account recovery has compact layout and explains email quota instead of co
  assert.match(css,/\.password-page \.password-page-titleline h1\{font-size:22px/);
  assert.match(file('studio-admin.html'),/href="\.\/admin-password\.html" target="_blank" rel="noopener noreferrer" aria-label="Endre passord/);
 });
+
+test('Free administrator recovery code path is server-side and one-time only',()=>{
+ const page=file('admin-password.html'),client=file('admin-password.js');
+ const server=file('supabase/functions/lanesjekk-admin-recovery/index.ts');
+ assert.ok(page.includes('id="backup-generate"'));
+ assert.ok(page.includes('id="backup-open"'));
+ assert.ok(page.includes('id="backup-recover-form"'));
+ assert.ok(page.includes('id="backup-code-list"'));
+ assert.ok(page.includes('minlength="8"'));
+ assert.match(client,/db\.functions\.invoke\('lanesjekk-admin-recovery'/);
+ assert.match(server,/crypto\.getRandomValues\(new Uint8Array\(32\)\)/);
+ assert.match(server,/crypto\.subtle\.digest\('SHA-256'/);
+ assert.match(server,/adminClient\.auth\.getUser\(token\)/);
+ assert.match(server,/\.from\('admins'\)/);
+ assert.match(server,/\.is\('used_at', null\)/);
+ assert.match(server,/\.update\(\{ used_at: claimedAt \}\)/);
+ assert.match(server,/auth\.admin\.updateUserById/);
+ assert.match(server,/\.neq\('generation_id', generation\)/);
+ assert.doesNotMatch(page+client,/SUPABASE_SERVICE_ROLE_KEY|SUPABASE_SECRET_KEYS|sb_secret_/);
+ assert.doesNotMatch(server,/console\.log\(.*code|console\.log\(.*password/);
+ assert.doesNotThrow(()=>new vm.Script(client,{filename:'admin-password.js'}));
+});
