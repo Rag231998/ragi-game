@@ -41,7 +41,7 @@ function init(){
   return;
  }
  db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
-  auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+  auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.lanesjekkStudioSession?.storage,storageKey:window.lanesjekkStudioSession?.key}
  });
  db.auth.onAuthStateChange(event=>{
   if(event==='PASSWORD_RECOVERY'){
