@@ -1,7 +1,7 @@
 <!doctype html><html lang="nb"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#101f31">
 <title>Lånesjekk · Privat administrasjon</title>
-<link rel="stylesheet" href="./admin-studio.css?v=6"></head><body>
+<link rel="stylesheet" href="./admin-studio.css?v=10"></head><body>
 <header class="admin-header"><a href="./studio-admin.html" aria-label="Lånesjekk Studio – administrasjon">◈ <strong>LÅNESJEKK</strong><span> / STUDIO</span></a><div class="admin-header-right"><span class="admin-badge">Kun godkjente administratorer</span><button id="admin-signout" hidden type="button">Logg ut</button></div></header>
 <main>
 <section id="admin-auth" class="admin-login">
@@ -36,11 +36,36 @@
  <p id="admin-recovery-status" role="status" aria-live="polite"></p>
 </section>
 <section id="admin-workspace" hidden>
- <div class="admin-top"><div><div class="admin-eyebrow">NETTSTEDSTUDIO</div><h1>Endre nettsiden uten kode.</h1><p>Flytt seksjoner, velg farger, rediger teksten og se resultatet før du publiserer.</p></div>
- <div class="admin-top-actions"><a class="admin-secondary admin-account-link" href="./admin-password.html" target="_blank" rel="noopener noreferrer" aria-label="Endre passord i en ny fane">⌑ Endre passord</a><span id="admin-revision">–</span><button id="admin-restore" type="button" class="admin-secondary">Nullstill til publisert</button><button id="admin-preview" type="button" class="admin-secondary">Se midlertidig</button><button id="admin-publish" type="button" class="admin-primary">✓ Publiser permanent</button></div></div>
+ <div class="admin-command-center">
+  <div class="admin-workspace-head">
+    <div><div class="admin-eyebrow">LÅNESJEKK NORGE · CONTROL CENTER</div><h1>Administrer nettsiden.</h1><p>Endre objekter, kontroller alt i et eget vindu og publiser med full versjonshistorikk.</p></div>
+    <div class="admin-top-actions"><a class="admin-secondary admin-account-link" href="./admin-password.html" target="_blank" rel="noopener noreferrer">⌑ Min konto</a><a class="admin-secondary" href="./index.html" target="_blank" rel="noopener noreferrer">↗ Se publisert side</a></div>
+  </div>
+  <div class="admin-command-stats" aria-label="Publiseringsstatus">
+    <div class="admin-stat"><span>AKTIV VERSJON</span><strong id="admin-revision">–</strong><small id="admin-last-published">Henter publiseringstid …</small></div>
+    <div class="admin-stat"><span>UTKAST</span><strong id="admin-draft-status">Ingen endringer</strong><small id="admin-draft-count">0 endringer</small></div>
+    <div class="admin-stat"><span>HISTORIKK</span><strong id="admin-history-count">–</strong><small>Viser opptil 50 publiseringer</small></div>
+  </div>
+  <div class="admin-action-bar" aria-label="Handlinger for nettstedet">
+    <div class="admin-action-copy"><span class="admin-action-dot" aria-hidden="true"></span><span id="admin-action-status">Alle endringer lagres som utkast frem til publisering.</span></div>
+    <div class="admin-action-buttons">
+      <button id="admin-restore" type="button" class="admin-secondary" title="Kast lokale utkastendringer">↶ Forkast utkast</button>
+      <button id="admin-preview" type="button" class="admin-secondary">↗ Forhåndsvis hele nettsiden</button>
+      <button id="admin-publish" type="button" class="admin-primary">✓ Kontroller og publiser</button>
+    </div>
+  </div>
+  <nav class="admin-section-nav" aria-label="Hopp til en administrasjonsdel">
+    <button type="button" data-admin-jump="admin-panel-brand">Design</button>
+    <button type="button" data-admin-jump="admin-panel-budget">Budsjett</button>
+    <button type="button" data-admin-jump="admin-panel-cards">Objekter</button>
+    <button type="button" data-admin-jump="admin-panel-slides">Forside</button>
+    <button type="button" data-admin-jump="animation-studio-panel">Animation Studio</button>
+    <button type="button" data-admin-jump="admin-panel-history">Publiseringslogg</button>
+  </nav>
+</div>
  <div class="admin-editor-layout">
  <div class="admin-edit-panel">
-  <details class="admin-panel" open><summary>01 · Navn, logo og farger</summary><div class="admin-body">
+  <details class="admin-panel" id="admin-panel-brand" open><summary>01 · Navn, logo og farger</summary><div class="admin-body">
   <label>Nettstedets navn<input id="site-name" maxlength="70" placeholder="LÅNESJEKK NORGE"></label>
   <label>Undertittel / slagord<input id="site-tagline" maxlength="130"></label>
   <div class="admin-duo"><label>Hovedfarge<input id="site-color" type="color" value="#0c8878"></label><label>Logo (PNG, JPEG eller WebP, maks 2 MB)<input id="site-logo" type="file" accept="image/png,image/jpeg,image/webp"></label></div>
@@ -49,19 +74,19 @@
   <label class="admin-hint" style="display:flex;align-items:center;gap:10px;margin:12px 0"><input id="site-hero-motion" type="checkbox" checked> Spill animert forsidefilm (kan slås av uten å skjule illustrasjonen)</label>
   <button id="site-logo-reset" type="button" class="admin-secondary">Tilbakestill til standardlogo</button>
   <p class="admin-hint">Et opplastet bilde lagres i nettstedets bildearkiv. Tekster og farger blir synlige først etter «Publiser permanent».</p></div></details>
-  <details class="admin-panel" open><summary>02 · Budsjett – plassering og synlighet</summary><div class="admin-body">
+  <details class="admin-panel" id="admin-panel-budget" open><summary>02 · Budsjett – plassering og synlighet</summary><div class="admin-body">
   <p class="admin-hint">Dra en seksjon til ønsket plass, eller bruk pilene på mobil. Rekkefølgen publiseres bare når du velger «Publiser permanent».</p>
   <div id="budget-sort" class="admin-sort" role="list"></div>
   <label>Hovedoverskrift<input id="budget-title" maxlength="90"></label>
   <label>Tekst under hovedoverskrift<input id="budget-subtitle" maxlength="120"></label>
   <label>Tittel for månedsplanen<input id="budget-quick-title" maxlength="100"></label>
   </div></details>
-  <details class="admin-panel"><summary>03 · Forsidekort – flytt, rediger og skjul</summary><div class="admin-body">
+  <details class="admin-panel" id="admin-panel-cards"><summary>03 · Forsidekort – flytt, rediger og skjul</summary><div class="admin-body">
    <p class="admin-hint">Du kan endre rekkefølge, korttekst, ikon og farge. Last opp egen ikonfil på et kort hvis ønskelig.</p>
    <div id="card-sort" class="admin-sort"></div>
   </div></details>
-  <details class="admin-panel"><summary>04 · Reklamescener på forsiden</summary><div class="admin-body"><p class="admin-hint">Endre rekkefølge med pilene, rediger overskrifter og beskrivelser, eller skjul en scene. Forhåndsvis før publisering.</p><label class="admin-inline"><input id="slide-visible" type="checkbox" checked> Vis reklamescener</label><div id="slide-editor" class="admin-sort"></div></div></details>
-  <details class="admin-panel"><summary>05 · Animasjoner</summary><div class="admin-body"><p class="admin-hint">Vis og administrer automatiske produktdemoer. Besøkende kan slå av bevegelse nederst på nettsiden.</p><label class="admin-inline"><input id="motion-autoplay" type="checkbox" checked> Spill demoene automatisk</label><label class="admin-inline"><input id="motion-valuation" type="checkbox" checked> Vis demo i Boligverdi</label><label class="admin-inline"><input id="motion-rental" type="checkbox" checked> Vis demo i Utleieanalyse</label><label class="admin-inline"><input id="motion-receipts" type="checkbox" checked> Vis demo i Kvitteringsstudio</label><p class="admin-hint">Velg Publiser permanent når du er fornøyd.</p></div></details><details class="admin-panel" id="animation-studio-panel"><summary>06 · Animation Studio – videoarkiv og publisering</summary><div class="admin-body animation-studio">
+  <details class="admin-panel" id="admin-panel-slides"><summary>04 · Reklamescener på forsiden</summary><div class="admin-body"><p class="admin-hint">Endre rekkefølge med pilene, rediger overskrifter og beskrivelser, eller skjul en scene. Forhåndsvis før publisering.</p><label class="admin-inline"><input id="slide-visible" type="checkbox" checked> Vis reklamescener</label><div id="slide-editor" class="admin-sort"></div></div></details>
+  <details class="admin-panel" id="admin-panel-motion"><summary>05 · Animasjoner</summary><div class="admin-body"><p class="admin-hint">Vis og administrer automatiske produktdemoer. Besøkende kan slå av bevegelse nederst på nettsiden.</p><label class="admin-inline"><input id="motion-autoplay" type="checkbox" checked> Spill demoene automatisk</label><label class="admin-inline"><input id="motion-valuation" type="checkbox" checked> Vis demo i Boligverdi</label><label class="admin-inline"><input id="motion-rental" type="checkbox" checked> Vis demo i Utleieanalyse</label><label class="admin-inline"><input id="motion-receipts" type="checkbox" checked> Vis demo i Kvitteringsstudio</label><p class="admin-hint">Velg Publiser permanent når du er fornøyd.</p></div></details><details class="admin-panel" id="animation-studio-panel"><summary>06 · Animation Studio – videoarkiv og publisering</summary><div class="admin-body animation-studio">
 <div class="media-studio-intro"><span class="admin-eyebrow">PREMIUM MEDIA · ADMINISTRATOR</span><h2>Bytt video uten å endre kode.</h2><p>Last opp korte produktvideoer (MP4 eller WebM), velg modul, legg til forsidebilde og forhåndsvis. Ingen video publiseres før du trykker «Publiser permanent» øverst.</p></div>
 <div class="media-module-grid" id="media-module-grid" aria-label="Moduler med egne videoer"></div>
 <label>Hvilken del av nettsiden vil du redigere?<select id="media-target" aria-label="Velg plassering for video"></select></label>
@@ -78,22 +103,36 @@
 <div class="media-preview-box"><div class="media-preview-header"><strong>FORHÅNDSVISNING</strong><span>Kun for deg før publisering</span></div><video id="media-preview" controls muted playsinline preload="metadata" hidden></video><img id="media-preview-poster" alt="Valgt forsidebilde" hidden><p id="media-preview-empty">Ingen video valgt. Den eksisterende animerte illustrasjonen fortsetter å vises.</p><p id="media-file-status" class="admin-hint">Ingen video valgt.</p></div>
 <details class="media-library-details"><summary>Mediebibliotek – bruk tidligere opplastede videoer</summary><p class="admin-hint">Velg «Bruk» ved en fil for å bruke den på valgt modul. Opplastede filer ligger i et eget, offentlig tilgjengelig mediearkiv. Kun administratorer kan laste opp.</p><button id="media-refresh" type="button" class="admin-secondary">↻ Oppdater mediebibliotek</button><div id="media-library" class="media-library">Biblioteket lastes etter innlogging.</div></details>
 <div class="media-publish-note">✓ Videoer spiller uten lyd og tilpasser seg mobilen. Original animasjon brukes som reserve. Redusert bevegelse i operativsystemet respekteres for tilgjengelighet.</div>
-</div></details><details class="admin-panel"><summary>07 · Fond og aksjer</summary><div class="admin-body">
+</div></details><details class="admin-panel" id="admin-panel-invest"><summary>07 · Fond og aksjer</summary><div class="admin-body">
    <label>Overskrift til investeringsstudio<input id="invest-title" maxlength="110"></label>
    <p class="admin-hint">De faglige beregningene kan ikke slettes eller erstattes med fritekst fra denne portalen. Innholdet redigeres fortsatt i kildekoden for å beskytte faktagrunnlaget.</p>
   </div></details>
-  <details class="admin-panel"><summary>08 · Tidligere publiseringer</summary><div class="admin-body">
-   <p class="admin-hint">Databasen lagrer revisjoner hver gang en administrator publiserer. Velg en tidligere versjon og publiser den igjen for å gjenopprette.</p>
-   <div id="admin-history">Laster revisjoner …</div>
+  <details class="admin-panel" id="admin-panel-history"><summary>08 · Publiseringslogg og gjenoppretting</summary><div class="admin-body">
+    <p class="admin-hint">Alle nye publiseringer loggføres automatisk med norsk dato, klokkeslett og versjonsnummer. Velg en versjon for å undersøke endringene eller hente den tilbake som et utkast. Gjenoppretting krever egen forhåndsvisning og publisering.</p>
+    <div class="admin-history-toolbar"><label for="admin-history-search">Finn publisering<input id="admin-history-search" type="search" placeholder="Søk i dato, versjon eller endring"></label><button id="admin-history-refresh" type="button" class="admin-secondary">↻ Oppdater logg</button></div>
+    <p id="admin-history-status" class="admin-hint" role="status">Laster historikk …</p>
+    <div id="admin-history" class="admin-history-feed" aria-live="polite">Laster revisjoner …</div>
+    <button id="admin-history-more" type="button" class="admin-secondary" hidden>Last 50 eldre publiseringer</button>
   </div></details>
  </div>
  <div class="admin-preview-panel">
-   <div class="admin-preview-head"><strong>LIVE FORHÅNDSVISNING</strong><div><button id="preview-desktop" type="button" class="admin-secondary">PC</button><button id="preview-mobile" type="button" class="admin-secondary">Mobil</button><button id="preview-refresh" type="button" class="admin-secondary">Oppdater</button></div></div>
+   <div class="admin-preview-head"><strong>MINIVISNING · UTKAST</strong><div><button id="preview-desktop" type="button" class="admin-secondary">PC</button><button id="preview-mobile" type="button" class="admin-secondary">Mobil</button><button id="preview-refresh" type="button" class="admin-secondary">Oppdater</button></div></div>
    <div id="preview-viewport"><iframe id="admin-frame" title="Forhåndsvisning av publisert og midlertidig layout" src="./index.html#budsjett" loading="lazy"></iframe></div>
-   <p class="admin-hint">Dette er en forhåndsvisning. «Se midlertidig» bruker kun minnet i den åpne nettleseren. Trykk «Oppdater» for å gå tilbake til sist publiserte versjon.</p>
+   <div class="admin-mini-preview-actions"><button id="preview-fullscreen" type="button" class="admin-secondary">↗ Åpne hele nettsiden i et eget vindu</button></div><p class="admin-hint">Minivisningen er kun en rask sjekk. Åpne full forhåndsvisning for å navigere gjennom alle faner før publisering.</p>
   </div>
  </div>
  <p id="admin-message" class="admin-message" role="status" aria-live="polite"></p>
-</section></main><footer>Privat administrasjon for Lånesjekk Norge. Bare medlemmer av databasens administratorrolle kan lagre endringer. <a href="./index.html">Til offentlig nettside ↗</a></footer>
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./admin-animation-studio.js?v=2"></script><script defer src="./admin-studio.js?v=7"></script>
+</section></main>
+<dialog id="admin-preflight" class="admin-preflight" aria-labelledby="admin-preflight-title">
+  <div class="admin-preflight-head"><div><span class="admin-eyebrow">SIKKER PUBLISERING</span><h2 id="admin-preflight-title">Kontroller før du publiserer</h2></div><button id="admin-preflight-close" class="admin-secondary" type="button" aria-label="Lukk">✕</button></div>
+  <p>Se hele nettsiden med utkastet ditt i et eget vindu. Endringer publiseres ikke før du bekrefter nedenfor.</p>
+  <div class="admin-preflight-summary"><strong id="admin-preflight-count">–</strong><span id="admin-preflight-version">–</span></div>
+  <div id="admin-preflight-changes" class="admin-preflight-changes"></div>
+  <button id="admin-preflight-preview" type="button" class="admin-secondary">↗ Åpne / oppdater full forhåndsvisning</button>
+  <label class="admin-preflight-check"><input type="checkbox" id="admin-preview-confirm"><span>Jeg har kontrollert utkastet i forhåndsvisningen og ønsker å publisere denne versjonen.</span></label>
+  <div class="admin-preflight-actions"><button id="admin-preflight-cancel" type="button" class="admin-secondary">Tilbake til redigering</button><button id="admin-confirm-publish" type="button" class="admin-primary" disabled>Publiser på nettsiden</button></div>
+  <p id="admin-preflight-status" class="admin-hint" aria-live="polite"></p>
+</dialog>
+<footer>Privat administrasjon for Lånesjekk Norge. Bare medlemmer av databasens administratorrolle kan lagre endringer. <a href="./index.html">Til offentlig nettside ↗</a></footer>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./admin-animation-studio.js?v=5"></script><script defer src="./admin-studio.js?v=10"></script>
 </body></html>
