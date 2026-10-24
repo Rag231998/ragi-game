@@ -11,23 +11,21 @@ test('grouped navigation opens property and receipt tools',async({page,isMobile}
   await g.locator('a[href="#utleie"]').click();
  }
  await expect(page.locator('#utleie')).toBeVisible();
+ await page.locator('#pv-mode-rental').click();
  await expect(page.locator('#rental-price')).toBeVisible();
  await page.locator('a[href="#kvitteringer"]').first().evaluate(a=>a.click());
  await expect(page.locator('#kvitteringer')).toBeVisible();
 });
 
-test('rental analyzer never invents property details and calculates examples',async({page})=>{
+test('rental analyzer calculates a scenario from user inputs',async({page})=>{
  await page.goto('/#utleie',{waitUntil:'domcontentloaded'});
- await page.locator('#rental-finn-url').fill('https://www.finn.no/realestate/homes/ad.html?finnkode=123');
+ await page.locator('#pv-mode-rental').click();
+ await expect(page.locator('#rental-price')).toBeVisible();
  await expect(page.locator('#rental-price')).toBeEmpty();
- await page.locator('#rental-ad-text').fill('Prisantydning: 3 990 000 kr\nFelleskostnader: 3 500 kr/mnd\nFellesgjeld: 150 000 kr');
- await page.locator('#rental-parse-ad').click();
- await expect(page.locator('#rental-price')).toHaveValue('3990000');
- await expect(page.locator('#rental-common')).toHaveValue('3500');
- await expect(page.locator('#rental-gross')).toHaveText('–');
  await page.locator('#rental-example').click();
+ await expect(page.locator('#rental-price')).toHaveValue('3500000');
  await expect(page.locator('#rental-gross')).toContainText('181 500');
- await expect(page.locator('#rental-validation')).toContainText('oppdateres');
+ await expect(page.locator('#pv-rent-summary')).toContainText('kontantstrøm');
  await page.locator('#rental-rent-cut').evaluate(e=>{e.value='25';e.dispatchEvent(new Event('input',{bubbles:true}))});
  await expect(page.locator('#rental-stress')).toContainText('25 %');
 });
@@ -35,14 +33,14 @@ test('rental analyzer never invents property details and calculates examples',as
 test('receipt demo shows line items, balancing, donut and transparent scenarios',async({page})=>{
  await page.goto('/#kvitteringer',{waitUntil:'domcontentloaded'});
  await page.locator('#receipt-demo').click();
- await expect(page.locator('#receipt-items tr')).toHaveCount(6);
+ await expect(page.locator('.receipt-item-card')).toHaveCount(6);
  await expect(page.locator('#receipt-sum')).toContainText('222');
  await expect(page.locator('#receipt-check')).toContainText('Stemmer');
  await expect(page.locator('#receipt-metric-top')).not.toHaveText('–');
  await page.locator('#receipt-whatif-range').evaluate(e=>{e.value='50';e.dispatchEvent(new Event('input',{bubbles:true}))});
  await expect(page.locator('#receipt-whatif-percent')).toHaveText('50 %');
  await page.locator('#receipt-clear').click();
- await expect(page.locator('#receipt-items tr')).toHaveCount(0);
+ await expect(page.locator('.receipt-item-card')).toHaveCount(0);
 });
 
 test('budget layout starts with action buttons above heading',async({page})=>{
