@@ -1,7 +1,7 @@
 (()=>{'use strict';const $=id=>document.getElementById(id),M=n=>new Intl.NumberFormat('nb-NO',{style:'currency',currency:'NOK',maximumFractionDigits:0}).format(n);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const addressApi='/api/address-search';
-let prices=[],lastEstimate=null,req=0,estimates=[],seq=0,searchTimer=0,searchAbort=null,activeChoice=-1,selectedAddress=null;
+let prices=[],lastEstimate=null,req=0,reqEstimate=0,estimates=[],seq=0,searchTimer=0,searchAbort=null,activeChoice=-1,selectedAddress=null;
 async function get(url){const r=await fetch(url,{headers:{Accept:'application/json'}});if(!r.ok)throw Error('HTTP '+r.status);return r.json()}
 function notice(s){$('pv-status').textContent=s}
 function catIndex(dim,key){const arr=Object.entries(dim.category.index||{});return arr.find(([code])=>code===key)?.[1]}
@@ -9,6 +9,7 @@ function chart(rows){const svg=$('pv-chart');svg.replaceChildren();if(!rows.leng
 function display(){if(!prices.length)return;const area=Number($('pv-area').value);if(!(area>=15&&area<=1500))return;const latest=prices.at(-1),val=latest.value*area;lastEstimate=val;$('pv-value').textContent=M(val);$('pv-low').textContent=M(val*.85);$('pv-high').textContent=M(val*1.15);$('pv-sqm').textContent=M(latest.value);$('pv-quarter').textContent=latest.period;$('pv-period').textContent='SSB '+latest.period+' · '+$('pv-municipality').value+' · '+area+' m²';$('pv-growth').textContent=prices.length>1?((latest.value/prices[0].value-1)*100).toFixed(1).replace('.',',')+' %':'Ikke tilgjengelig';chart(prices);renderComparison()}
 function decode(raw,region,type){const d=raw.dimension||{},ids=raw.id||Object.keys(d),size=raw.size||ids.map(k=>Object.keys(d[k].category.index).length);const idxs=ids.map((id,i)=>Object.entries(d[id].category.index||{}).sort((a,b)=>a[1]-b[1]).map(([code])=>code));const dimRegion=ids.find(x=>/region/i.test(x)),dimType=ids.find(x=>/bolig|type/i.test(x)),dimContent=ids.find(x=>/contents/i.test(x)),dimTime=ids.find(x=>/tid|time/i.test(x));if(!dimTime)throw Error('SSB mangler tidsdimensjon');const lines=[];const values=Array.isArray(raw.value)?raw.value:[];for(let n=0;n<values.length;n++){let k=n,code={};for(let i=ids.length-1;i>=0;i--){code[ids[i]]=idxs[i][k%size[i]];k=Math.floor(k/size[i])}if(code[dimRegion]!==region||code[dimType]!==type||!Number.isFinite(values[n])||values[n]<=0)continue;const text=(d[dimContent]?.category?.label||{})[code[dimContent]]||'';if(!/kvadratmeter|square metre/i.test(text))continue;lines.push({period:code[dimTime],value:values[n]})}return lines.sort((a,b)=>a.period.localeCompare(b.period)).slice(-12)}
 async function estimate(){
+ const myRequest=++reqEstimate;
  const municipality=selectedAddress?.municipalityCode||'',kind=$('pv-type').value,area=Number($('pv-area').value);
  $('pv-municipality').value=municipality;
  if(!selectedAddress||!/^\d{4}$/.test(municipality)||!Number.isFinite(area)||area<15||area>1500){notice('Velg en adresse fra forslagene, og oppgi boligens BRA-i (15–1500 m²) for å beregne et statistisk anslag.');$('pv-area').focus();return}
@@ -17,6 +18,7 @@ async function estimate(){
   const url='/api/property-market?municipality='+encodeURIComponent(municipality)+'&type='+encodeURIComponent(kind);
   const response=await fetch(url,{headers:{Accept:'application/json'},cache:'no-store'});
   const data=await response.json();
+  if(myRequest!==reqEstimate)return;
   if(!response.ok)throw Error(data.error||'Kunne ikke hente prisstatistikk (HTTP '+response.status+').');
   prices=(data.rows||[]).filter(r=>Number.isFinite(r.sqm)&&r.sqm>0).map(r=>({period:r.period,value:r.sqm,sales:r.sales}));
   if(!prices.length)throw Error('Ingen gyldige prisobservasjoner.');
@@ -29,6 +31,7 @@ async function estimate(){
   $('pv-badge').textContent='✓ SSB-verdi';
   document.dispatchEvent(new CustomEvent('property:market',{detail:{municipality,type:kind}}));
  }catch(e){
+  if(myRequest!==reqEstimate)return;
   notice('Ingen verifisert pris kunne hentes: '+e.message+' Sjekk boligtype og prøv igjen. Vi viser ikke oppdiktede markedsverdier.');
   $('pv-badge').textContent='Ingen SSB-data';
   ['pv-value','pv-low','pv-high','pv-sqm','pv-quarter','pv-growth'].forEach(id=>$(id).textContent='—');
@@ -38,7 +41,7 @@ async function estimate(){
   $('pv-confidence').textContent='Ikke vurdert';
   $('pv-market-location').textContent='Ingen bekreftet statistikk';
   $('pv-period').textContent='SSB-data mangler for dette utvalget';
- }finally{btn.disabled=false;btn.removeAttribute('aria-busy');renderComparison()}
+ }finally{if(myRequest===reqEstimate){btn.disabled=false;btn.removeAttribute('aria-busy');renderComparison()}}
 }
 function clearAddressResults(){
  const results=$('pv-address-results');results.replaceChildren();results.hidden=true;$('pv-address').setAttribute('aria-expanded','false');activeChoice=-1;
@@ -184,6 +187,9 @@ function boot(){if(!$('pv-estimate'))return;
  $('pv-search').addEventListener('click',()=>triggerSearch($('pv-address').value,true));
  $('pv-address').addEventListener('input',()=>{
   if(selectedAddress){
+   ++reqEstimate;
+   $('pv-estimate').disabled=false;
+   $('pv-estimate').removeAttribute('aria-busy');
    prices=[];lastEstimate=null;estimates=[];renderComparison();
    ['pv-value','pv-low','pv-high','pv-sqm','pv-quarter','pv-growth'].forEach(id=>$(id).textContent='—');
    $('pv-sales').textContent='Ingen omsetningstall';$('pv-chart-legend').textContent='';
