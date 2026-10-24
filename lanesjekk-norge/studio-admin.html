@@ -9,6 +9,7 @@
  <p>Dette er en separat portal som ikke vises i den offentlige hovedmenyen. Alle endringer krever en administrator i databasen.</p>
  <form id="admin-login-form"><label>E-post<input id="admin-email" type="email" required autocomplete="username" placeholder="din@epost.no"></label>
  <label>Passord<input id="admin-password" type="password" required autocomplete="current-password" placeholder="Passord"></label>
+ <label class="admin-remember-choice" for="admin-remember"><span class="admin-remember-copy"><strong>Husk meg i 24 timer</strong><small>Av: kun denne nettleserøkten. På: du blir automatisk logget ut etter 24 timer. Anbefales kun på din egen enhet.</small></span><input id="admin-remember" type="checkbox" role="switch" aria-describedby="admin-remember-help"></label><span id="admin-remember-help" class="admin-remember-help">Ikke bruk dette på en delt PC.</span>
  <button type="submit" class="admin-primary" id="admin-login">Logg inn som administrator</button></form>
  <a id="admin-forgot-open" class="admin-secondary admin-forgot-link" href="./admin-password.html" target="_blank" rel="noopener noreferrer" aria-label="Glemt passord? Åpne passordgjenoppretting i en ny fane">Glemt passord? <span aria-hidden="true">↗</span></a>
  <p id="auth-status" role="status" aria-live="polite"></p>
