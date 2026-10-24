@@ -39,6 +39,7 @@ function ensureObserver(){
 function build(name,slot){
  const config=MODULES[name],root=document.querySelector(config.root);if(!root||!valid(slot.videoUrl,'video'))return null;
  const section=document.createElement('div');section.className='studio-video-showcase';section.dataset.mediaSlot=name;
+ if(name==='home')section.dataset.portalView='home';
  section.setAttribute('aria-label','Produktvideo: '+(slot.title||config.caption));
  const display=document.createElement('div');display.className='studio-video-frame';
  const video=document.createElement('video');video.className='studio-video-player';video.muted=true;video.defaultMuted=true;
