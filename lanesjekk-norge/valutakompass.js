@@ -15,9 +15,9 @@ function render(){
  if(!latest){setText('vc-result','—');setText('vc-after-fee','—');setText('vc-fee-cost','—');return}
  const gross=amount*latest.rate;
  // For a purchase in target currency, a fee reduces the target amount purchasable for the same budget.
- const feeAmount=gross*fee/100;
+ const afterFee=gross/(1+fee/100),feeAmount=gross-afterFee;
  setText('vc-result',fmt(gross)+' '+to);
- setText('vc-after-fee',fmt(gross-feeAmount)+' '+to);
+ setText('vc-after-fee',fmt(afterFee)+' '+to);
  setText('vc-fee-cost',fmt(feeAmount)+' '+to);
  setText('vc-amount-caption',fmt(amount)+' '+from+' × '+fmt(latest.rate,Math.abs(latest.rate)<1?6:4));
  setText('vc-rate','1 '+from+' = '+fmt(latest.rate,Math.abs(latest.rate)<1?6:4)+' '+to);
