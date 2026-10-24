@@ -489,7 +489,7 @@ function boot(){
  const lookup=()=>{
   const items=adminPanels.map(panel=>({label:labels[panel.id]||panel.id,panel:panel.id}));
   for(const id of CARD_IDS)items.push({label:(CARD_NAMES[id]||id)+' · rediger objekt, ikon og synlighet',panel:'admin-panel-cards',object:id});
-  for(const id of MEDIA_IDS)items.push({label:id+' · videomodul',panel:'animation-studio-panel',media:id});
+  for(const [id,label] of Object.entries({home:'Forside',loans:'Boliglån',budget:'Budsjett',receipts:'Kvitteringsstudio',valuation:'Boligverdi',rental:'Utleieanalyse',savings:'Sparing',investing:'Fond og aksjer',carloan:'Billån',academy:'Læringsplattform',currency:'Valutakompass'}))items.push({label:label+' · video / animasjon',panel:'animation-studio-panel',media:id});
   for(const [id,label] of Object.entries(SECTION_NAMES))items.push({label:label+' · budsjett',panel:'admin-panel-budget',object:id});
   return items;
  };
@@ -502,15 +502,22 @@ function boot(){
   for(const item of matches){
    const result=create('button',item.label,'admin-search-result');result.type='button';
    result.addEventListener('click',()=>{
-    activatePanel(item.panel);
+    activatePanel(item.panel,false);
     if(item.media){
      $('media-target').value=item.media;
      $('media-target').dispatchEvent(new Event('change',{bubbles:true}));
+     showPreviewSection(mediaRoutes[item.media]||'topp');
+     $('media-title').focus({preventScroll:true});
+     $('animation-studio-panel').scrollIntoView({behavior:'smooth',block:'start'});
     }else if(item.object){
      const root=item.panel==='admin-panel-budget'?'budget-sort':'card-sort';
      const target=[...$(root).children].find(el=>el.dataset.id===item.object);
-     if(target)target.scrollIntoView({behavior:'smooth',block:'center'});
-    }
+     if(target){
+      showPreviewSection(item.panel==='admin-panel-budget'?'budsjett':item.object);
+      target.scrollIntoView({behavior:'smooth',block:'center'});
+      target.querySelector('input[type="text"],textarea,input[type="checkbox"]')?.focus({preventScroll:true});
+     }
+    }else $(item.panel).scrollIntoView({behavior:'smooth',block:'start'});
     resultRoot.hidden=true;queryInput.value='';queryInput.setAttribute('aria-expanded','false');
    });
    resultRoot.append(result);
@@ -520,8 +527,15 @@ function boot(){
  queryInput.addEventListener('input',searchObjects);
  queryInput.addEventListener('keydown',event=>{
   if(event.key==='Escape'){queryInput.value='';searchObjects();return}
-  if(event.key==='Enter'&&!resultRoot.hidden){
-   event.preventDefault();resultRoot.querySelector('button')?.click();
+  if(event.key==='ArrowDown'&&!resultRoot.hidden){event.preventDefault();resultRoot.querySelector('button')?.focus();return}
+  if(event.key==='Enter'&&!resultRoot.hidden){event.preventDefault();resultRoot.querySelector('button')?.click()}
+ });
+ resultRoot.addEventListener('keydown',event=>{
+  if(event.key==='Escape'){event.preventDefault();queryInput.focus();resultRoot.hidden=true;return}
+  if(event.key==='ArrowDown'||event.key==='ArrowUp'){
+   event.preventDefault();
+   const items=[...resultRoot.querySelectorAll('button')],index=items.indexOf(document.activeElement);
+   items[Math.max(0,Math.min(items.length-1,index+(event.key==='ArrowDown'?1:-1)))]?.focus();
   }
  });
  document.addEventListener('pointerdown',event=>{
@@ -560,8 +574,12 @@ function boot(){
  $('admin-workspace').addEventListener('input',refreshSoon);
  $('admin-workspace').addEventListener('change',refreshSoon);
  $('admin-workspace').addEventListener('click',refreshSoon);
+ $('admin-workspace').addEventListener('drop',refreshSoon);
  $('admin-frame').addEventListener('load',()=>{
-  if(ready)setTimeout(refreshMiniPreview,120);
+  if(ready){
+   setTimeout(refreshMiniPreview,120);
+   if(previewSelection!=='topp')setTimeout(()=>showPreviewSection(previewSelection),180);
+  }
  });
  window.addEventListener('beforeunload',event=>{
   if(!ready||!published||!draft||!collectChanges().length)return;
@@ -579,7 +597,7 @@ function boot(){
  $('preview-refresh').addEventListener('click',()=>{
   const config=gather();
   const frame=$('admin-frame');
-  frame.src='./index.html#topp';
+  frame.src='./index.html#'+previewSelection;
   frame.addEventListener('load',()=>frame.contentWindow?.postMessage({type:'lanesjekk-cms-preview',config},location.origin),{once:true});
   msg('Minivisningen viser nå det gjeldende utkastet. Ingenting er publisert.');
  });
