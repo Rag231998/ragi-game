@@ -86,3 +86,14 @@ test('animated guides use admin visibility settings without replay buttons',asyn
  await page.goto('/studio-admin.html',{waitUntil:'domcontentloaded'});
  for(const id of ['motion-autoplay','motion-valuation','motion-rental','motion-receipts'])await expect(page.locator('#'+id)).toHaveCount(1);
 });
+
+
+test('valuation uses verified address municipality rather than manually entered postcode',async({page})=>{
+ await page.goto('/#boligverdi',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#pv-municipality')).toHaveJSProperty('readOnly',true);
+ await page.locator('#pv-municipality').evaluate(el=>{el.value='2053'});
+ await page.locator('#pv-area').fill('50');
+ await page.locator('#pv-estimate').click();
+ await expect(page.locator('#pv-municipality')).toHaveValue('');
+ await expect(page.locator('#pv-status')).toContainText('Velg en adresse');
+});
