@@ -8,7 +8,7 @@ const MODULES={
  rental:{root:'#utleie',fallback:'#pv-rental-guide',caption:'Utleieanalyse'},
  savings:{root:'#sparing',caption:'Sparing'},
  investing:{root:'#investering',caption:'Fond og aksjer'},
- carloan:{root:'#billan',caption:'Billån'},
+ carloan:{root:'#billan',caption:'Billån'},currency:{root:'#valutakompass',caption:'Valutakompass'},
  academy:{root:'#akademi',caption:'Læringsplattform'}
 };
 const BASE='https://pryrgwfjniggjlrizenh.supabase.co/storage/v1/object/public/animation-assets/';
