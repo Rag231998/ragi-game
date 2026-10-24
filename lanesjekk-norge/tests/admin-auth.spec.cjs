@@ -71,3 +71,52 @@ test('Existing administrator can change password without triggering a recovery e
  await expect(page.locator('#password-email-limit strong')).toContainText('grense');
  await expect(page.locator('#password-request-status')).toBeEmpty();
 });
+
+test('Free backup codes can be generated while logged in, without sending mail',async({page})=>{
+ await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',route=>route.abort());
+ await page.addInitScript(()=>{
+  window.__actions=[];
+  const codes=['A'.repeat(43),'B'.repeat(43),'C'.repeat(43)];
+  window.supabase={createClient:()=>({
+   auth:{
+    onAuthStateChange:()=>{},
+    getUser:async()=>({data:{user:{id:'mock-admin'}},error:null}),
+    getSession:async()=>({data:{session:{access_token:'test.jwt.token'}},error:null})
+   },
+   from:()=>({select:()=>({eq:()=>({maybeSingle:async()=>({data:{user_id:'mock-admin'},error:null})})})}),
+   functions:{invoke:async(name,args)=>{window.__actions.push(args.body);return {data:{codes},error:null}}}
+  })}
+ });
+ await page.goto('/admin-password.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#account-change')).toBeVisible();
+ await expect(page.locator('#backup-generated')).toBeHidden();
+ await page.locator('#backup-generate').click();
+ await expect(page.locator('#backup-code-list li')).toHaveCount(3);
+ await expect(page.locator('#backup-generated')).toBeVisible();
+ await expect.poll(async()=>page.evaluate(()=>window.__actions.length)).toBe(1);
+ expect(await page.evaluate(()=>window.__actions[0])).toEqual({action:'generate'});
+});
+test('Lost-password backup fallback works without sending SMTP email',async({page})=>{
+ await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',route=>route.abort());
+ await page.addInitScript(()=>{
+  window.__actions=[];
+  window.supabase={createClient:()=>({
+   auth:{
+    onAuthStateChange:()=>{},
+    getUser:async()=>({data:{user:null},error:null}),
+    signOut:async()=>({error:null})
+   },
+   functions:{invoke:async(name,args)=>{window.__actions.push(args.body);return {data:{success:true},error:null}}}
+  })}
+ });
+ await page.goto('/admin-password.html',{waitUntil:'domcontentloaded'});
+ await page.locator('#backup-open').click();
+ await expect(page.locator('#reset-backup')).toBeVisible();
+ await page.locator('#backup-email').fill('admin@example.invalid');
+ await page.locator('#backup-code').fill('A'.repeat(43));
+ await page.locator('#backup-new').fill('VeryStrongPassword123!');
+ await page.locator('#backup-repeat').fill('VeryStrongPassword123!');
+ await page.locator('#backup-recover-submit').click();
+ await expect(page.locator('#reset-success')).toBeVisible();
+ expect(await page.evaluate(()=>window.__actions[0].action)).toBe('recover');
+});
