@@ -391,3 +391,37 @@ footer{padding:18px;text-align:center;color:#78919c;font-size:10px;border-top:1p
 @media(max-width:1230px){#admin-workspace .admin-editor-layout{grid-template-columns:1fr}#admin-workspace .admin-preview-panel{position:relative;top:auto}#admin-workspace #admin-frame{height:76dvh;min-height:520px}}
 @media(max-width:520px){#admin-workspace #preview-viewport{padding:5px}#admin-workspace #admin-frame{min-height:470px}#admin-workspace .admin-preview-tools{gap:4px}}
 @media(prefers-reduced-motion:reduce){#admin-workspace #admin-frame{transition:none}}
+
+
+/* Studio information architecture: primary navigation is always findable. */
+.admin-header{position:relative;z-index:50}
+.admin-header-right{position:relative}
+.admin-account-wrapper{position:relative}
+#admin-account-menu-toggle{display:flex;align-items:center;gap:8px;min-height:39px;border:1px solid #517782;background:#1d4252;color:#e6fcf6;border-radius:9px;padding:9px 14px;font-size:12px;font-weight:780}
+#admin-account-menu-toggle:hover,#admin-account-menu-toggle[aria-expanded=true]{background:#286455;border-color:#78bca8}
+.admin-account-menu{display:grid;gap:5px;position:absolute;top:calc(100% + 9px);right:0;width:min(314px,90vw);z-index:300;border:1px solid #d5e4e7;border-radius:15px;padding:12px;background:#fff;box-shadow:0 18px 48px #0f2e49aa;color:#244756}
+.admin-account-menu>strong{font-size:12px;padding:5px 9px 0;color:#224758}
+.admin-account-email{font-size:10px;color:#637f89;padding:0 9px 10px;border-bottom:1px solid #ebf1f3;overflow-wrap:anywhere}
+.admin-account-menu>a,.admin-account-menu>button{display:flex;align-items:center;min-height:39px;padding:10px;border:0;border-radius:9px;background:transparent;color:#285667;text-decoration:none;text-align:left;font-size:12px;font-weight:740;white-space:normal}
+.admin-account-menu>a:hover,.admin-account-menu>button:hover{background:#e9f7f2;color:#08735d}
+#admin-workspace .admin-nav-hint{display:flex;flex-wrap:wrap;align-items:center;gap:9px;font-size:11px;color:#517783;background:#e9f6f1;border:1px solid #cfe6e0;border-radius:999px;padding:8px 13px}
+#admin-workspace .admin-nav-hint strong{color:#076e58}
+#admin-workspace .admin-navigation-shell{display:grid;grid-template-columns:270px minmax(0,1fr);align-items:start;gap:14px;margin-top:16px}
+#admin-workspace .admin-object-search-wrap{position:relative;min-width:0}
+#admin-workspace .admin-object-search-wrap>label{display:block;font-size:11px;font-weight:820;color:#426772;margin-bottom:6px}
+#admin-workspace .admin-search-control{position:relative}
+#admin-workspace .admin-search-control>span{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:18px;color:#6c878e;pointer-events:none}
+#admin-workspace #admin-object-search{display:block;width:100%;min-height:40px;border:1px solid #cbdedc;border-radius:10px;background:white;color:#244e5d;padding:9px 12px 9px 34px;font-size:12px;outline-offset:2px}
+#admin-workspace #admin-object-search:focus{border-color:#12997c;box-shadow:0 0 0 3px #1bae8927}
+#admin-workspace .admin-object-results{display:grid;gap:4px;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:55;background:white;border:1px solid #c9dfdc;box-shadow:0 19px 35px #143b4c33;border-radius:12px;padding:7px;max-height:320px;overflow:auto}
+#admin-workspace .admin-search-result{display:block;width:100%;padding:10px 11px;text-align:left;border:0;border-radius:8px;background:transparent;color:#234b5c;font-size:11px;line-height:1.5;white-space:normal}
+#admin-workspace .admin-search-result:hover,#admin-workspace .admin-search-result:focus-visible{background:#e4f7ed;color:#08705e}
+#admin-workspace .admin-section-nav{margin:0;display:flex;flex-wrap:wrap;white-space:normal;align-content:flex-start;gap:7px;padding:0}
+#admin-workspace .admin-section-nav button{flex:0 0 auto;font-size:11px;min-height:37px}
+#admin-workspace .admin-section-nav button[aria-current=true]{border-color:#109681;background:#0d8774;color:#fff;box-shadow:0 4px 12px #0c8c6926}
+#admin-workspace .admin-navigation-tip{grid-column:1/-1;margin:0;padding:8px 11px;background:#f0f8f6;border-radius:9px;color:#597880;font-size:11px;line-height:1.6}
+#admin-workspace .admin-panel:focus-within{border-color:#9dd1bf}
+#admin-workspace .admin-panel summary:focus-visible{outline:3px solid #159d81;outline-offset:2px}
+@media(min-width:1400px){#admin-workspace .admin-section-nav button{font-size:12px}}
+@media(max-width:1060px){#admin-workspace .admin-navigation-shell{grid-template-columns:1fr}.admin-object-search-wrap{width:100%}#admin-workspace .admin-section-nav{overflow-x:auto;flex-wrap:nowrap;white-space:nowrap}}
+@media(max-width:590px){#admin-workspace .admin-nav-hint{border-radius:10px}#admin-workspace .admin-section-nav button{min-height:36px;font-size:10px}#admin-account-menu-toggle{padding:8px;font-size:11px}}
