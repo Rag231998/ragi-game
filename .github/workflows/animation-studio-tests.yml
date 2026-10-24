@@ -5,6 +5,12 @@ on:
     paths:
       - 'lanesjekk-norge/tests/animation-studio.spec.cjs'
       - 'lanesjekk-norge/tests/currency.spec.cjs'
+      - 'lanesjekk-norge/tests/admin-auth.spec.cjs'
+      - 'lanesjekk-norge/tests/playwright.config.cjs'
+      - 'lanesjekk-norge/admin-password.html'
+      - 'lanesjekk-norge/admin-password.js'
+      - 'lanesjekk-norge/auth-recovery-redirect.js'
+      - 'lanesjekk-norge/admin-studio.css'
       - 'lanesjekk-norge/valutakompass.js'
       - 'lanesjekk-norge/valutakompass.css'
       - 'lanesjekk-norge/admin-animation-studio.js'
@@ -36,7 +42,7 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Test uploader, CMS media, and browser layouts
-        run: npx playwright test animation-studio.spec.cjs currency.spec.cjs --project=desktop-chromium --project=android-chromium --workers=2 --retries=0
+        run: npx playwright test animation-studio.spec.cjs currency.spec.cjs admin-auth.spec.cjs --project=desktop-chromium --project=android-chromium --workers=2 --retries=0
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
