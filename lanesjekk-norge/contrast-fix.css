@@ -1,0 +1,48 @@
+/* Readability pass: preserve brand colors, raise contrast of text and form controls.
+   WCAG normal-text target >= 4.5:1 where practical, large text >= 3:1. */
+:root{--readable-text:#193d50;--readable-muted:#3d5b6a;--readable-border:#9cbcc5}
+html{scroll-padding-top:100px}
+body{color:var(--readable-text)}
+#utleie .pv-panel,#kvitteringer .receipt-pane,#utleie .pv-broker-lab,#utleie .pv-trend-lab,#utleie .pv-rent-trend{color:#173f4e}
+#utleie .pv-note,#utleie .pv-source,#utleie .pv-intro-hint,#utleie .pv-check-elsewhere p,#utleie .pv-broker-heading p,#utleie .pv-rent-trend p,#utleie .pv-trend-head p,
+#utleie .pv-index-tool p,#utleie .pv-method p,#kvitteringer .receipt-note,#kvitteringer .receipt-hint,#kvitteringer .receipt-tour-top p{color:#395b69;font-size:max(12px,.8rem);line-height:1.65}
+#utleie .pv-panel label,#utleie .pv-index-fields label,#utleie .pv-rent-trend label,#utleie .pv-broker-form label{color:#294f60;font-size:12px;font-weight:750}
+#utleie .pv-panel input:not([type=range]),#utleie .pv-panel select,#utleie .pv-panel textarea,#utleie .pv-index-fields input,#utleie .pv-index-fields select,#utleie .pv-rent-trend select{
+ background:#fff!important;color:#14384c!important;border:1.5px solid #94b6bd!important;min-height:44px}
+#utleie input::placeholder,#kvitteringer input::placeholder{color:#566f7a;opacity:1}
+#utleie .pv-range small,#utleie .pv-metrics small,#utleie .pv-main-value small,#utleie .pv-index-result small,#utleie .pv-trend-region small,#utleie .pv-index-result p{color:#385b67}
+#utleie .pv-trend-tooltip,#utleie .pv-rent-trend .pv-trend-tooltip{color:#135f57;font-size:13px}
+#utleie .pv-trend-region{background:#e5f7ef}
+#utleie .pv-trend-region span,#utleie .pv-trend-region small{color:#2c635b}
+#utleie .pv-trend-region strong{color:#075a50}
+#utleie .pv-trend-tools .pv-range-buttons button{color:#385968;font-size:13px}
+#utleie .pv-trend-tools .pv-range-buttons button.is-active{color:white;background:#076b5d}
+#utleie .pv-trend-tools .pv-trend-period{color:#315362;font-size:12px}
+#utleie .pv-provider-links a{background:#f0f8f6;border-color:#c6dedb}
+#utleie .pv-provider-links a strong{color:#1d4658}
+#utleie .pv-provider-links a span{color:#066958;font-weight:700}
+#utleie .pv-caveat{color:#365765;font-size:12px}
+#utleie .pv-broker-grid .pv-compare-top{color:#2a4f61}
+#utleie .pv-broker-grid .pv-compare-bottom{color:#3e6070;font-size:11px}
+#utleie .pv-broker-grid .pv-comparison-head span{color:#075f55}
+#utleie .pv-broker-grid .pv-summary-row small{color:#385b66}
+#utleie .pv-guide-info .pv-eyebrow{color:#07685e}
+#utleie .pv-guide-info h3{color:#163f4e}
+#utleie .pv-guide-current{color:#2c5363}
+#kvitteringer .receipt-item-label{color:#335867;font-size:11px}
+#kvitteringer .receipt-item-field input,#kvitteringer .receipt-item-field select{color:#133d4d;border-color:#94b6bd}
+#kvitteringer .receipt-tour-kicker{color:#076d61}
+#kvitteringer .receipt-workflow-privacy{color:#07645a}
+#kvitteringer .receipt-results .receipt-summary-row small{color:#365b69}
+.portal-group-nav .nav-drop{background:#fff;color:#193f4f;box-shadow:0 16px 32px #132a4250}
+.portal-group-nav .nav-drop a{color:#244957;background:transparent}
+.portal-group-nav .nav-drop a:hover,.portal-group-nav .nav-drop a:focus-visible{background:#e5f7ef;color:#065f53}
+.portal-group-nav>details>summary{color:#27495a}
+.mobile-menu[open]>div{background:#fff;color:#183e50}
+.mobile-menu[open] a{color:#193f50}
+.mobile-menu[open] strong{color:#0a665a}
+#portal-viewbar{color:#234a5a}
+#portal-viewbar a{color:#295663}
+#portal-viewbar a[aria-current=page]{color:#065d53}
+@media(max-width:700px){#utleie .pv-note,#utleie .pv-source{font-size:12px}#utleie .pv-trend-region{width:100%}}
+@media(prefers-contrast:more){#utleie .pv-panel,#kvitteringer .receipt-pane{border-color:#588b90}#utleie .pv-note,#kvitteringer .receipt-note{color:#203f50}}
