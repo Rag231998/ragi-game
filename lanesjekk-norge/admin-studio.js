@@ -151,6 +151,8 @@ async function check(){
  const ok=await isAuthorized();
  $('admin-workspace').hidden=!ok;$('admin-auth').hidden=ok;
  $('admin-signout').hidden=!ok;
+ $('admin-account-wrapper').hidden=!ok;
+ $('admin-account-email').textContent=ok&&authUser?.email?authUser.email:'Innlogget';
  if(ok&&!ready)await loadPublished();
 }
 async function login(e){
@@ -426,21 +428,111 @@ function boot(){
  $('admin-history-search').addEventListener('input',renderPublishEvents);
  $('admin-history-refresh').addEventListener('click',()=>{void loadRevisions(true)});
  $('admin-history-more').addEventListener('click',()=>{void loadRevisions(false)});
- document.querySelectorAll('[data-admin-jump]').forEach(button=>button.addEventListener('click',()=>{
-  const target=$(button.dataset.adminJump);if(!target)return;
-  if(target.tagName==='DETAILS')target.open=true;
-  target.scrollIntoView({behavior:'smooth',block:'start'});
+ const adminPanels=[...document.querySelectorAll('.admin-edit-panel > details.admin-panel')];
+ const jumpButtons=[...document.querySelectorAll('[data-admin-jump]')];
+ const labels={
+ 'admin-panel-brand':'Design, logo og farger','admin-panel-budget':'Budsjett og beregning','admin-panel-cards':'Objekter og forsidekort',
+ 'admin-panel-slides':'Forsidescener','admin-panel-motion':'Animasjoner','animation-studio-panel':'Animation Studio',
+ 'admin-panel-invest':'Fond og aksjer','admin-panel-history':'Publiseringslogg'
+ };
+ let panelTransition=false;
+ function activatePanel(id,scroll=true){
+  const target=$(id);if(!target||!adminPanels.includes(target))return;
+  panelTransition=true;
+  for(const panel of adminPanels)panel.open=panel===target;
+  for(const btn of jumpButtons)btn.setAttribute('aria-current',String(btn.dataset.adminJump===id));
+  $('admin-navigation-tip').textContent=(labels[id]||'Valgt område')+' · endringer lagres bare som utkast til du publiserer.';
+  panelTransition=false;
+  if(scroll)target.scrollIntoView({behavior:'smooth',block:'start'});
+ }
+ jumpButtons.forEach(button=>button.addEventListener('click',()=>activatePanel(button.dataset.adminJump)));
+ adminPanels.forEach(panel=>panel.addEventListener('toggle',()=>{
+  if(!panel.open||panelTransition)return;
+  activatePanel(panel.id,false);
  }));
+ activatePanel('admin-panel-brand',false);
+ const queryInput=$('admin-object-search'),resultRoot=$('admin-object-results');
+ const lookup=()=>{
+  const items=adminPanels.map(panel=>({label:labels[panel.id]||panel.id,panel:panel.id}));
+  for(const id of CARD_IDS)items.push({label:(CARD_NAMES[id]||id)+' · rediger objekt, ikon og synlighet',panel:'admin-panel-cards',object:id});
+  for(const id of MEDIA_IDS)items.push({label:id+' · videomodul',panel:'animation-studio-panel',media:id});
+  for(const [id,label] of Object.entries(SECTION_NAMES))items.push({label:label+' · budsjett',panel:'admin-panel-budget',object:id});
+  return items;
+ };
+ function searchObjects(){
+  const term=queryInput.value.trim().toLocaleLowerCase('nb-NO');
+  resultRoot.replaceChildren();
+  if(term.length<2){resultRoot.hidden=true;queryInput.setAttribute('aria-expanded','false');return}
+  const matches=lookup().filter(item=>item.label.toLocaleLowerCase('nb-NO').includes(term)).slice(0,16);
+  if(!matches.length)resultRoot.append(create('p','Ingen treff. Prøv en annen kategori eller funksjon.','admin-hint'));
+  for(const item of matches){
+   const result=create('button',item.label,'admin-search-result');result.type='button';
+   result.addEventListener('click',()=>{
+    activatePanel(item.panel);
+    if(item.media){
+     $('media-target').value=item.media;
+     $('media-target').dispatchEvent(new Event('change',{bubbles:true}));
+    }else if(item.object){
+     const root=item.panel==='admin-panel-budget'?'budget-sort':'card-sort';
+     const target=[...$(root).children].find(el=>el.dataset.id===item.object);
+     if(target)target.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+    resultRoot.hidden=true;queryInput.value='';queryInput.setAttribute('aria-expanded','false');
+   });
+   resultRoot.append(result);
+  }
+  resultRoot.hidden=false;queryInput.setAttribute('aria-expanded','true');
+ }
+ queryInput.addEventListener('input',searchObjects);
+ queryInput.addEventListener('keydown',event=>{
+  if(event.key==='Escape'){queryInput.value='';searchObjects();return}
+  if(event.key==='Enter'&&!resultRoot.hidden){
+   event.preventDefault();resultRoot.querySelector('button')?.click();
+  }
+ });
+ document.addEventListener('pointerdown',event=>{
+  if(!event.target.closest('.admin-object-search-wrap')){resultRoot.hidden=true;queryInput.setAttribute('aria-expanded','false')}
+ });
+ const accountToggle=$('admin-account-menu-toggle'),accountMenu=$('admin-account-menu');
+ accountToggle.addEventListener('click',()=>{
+  accountMenu.hidden=!accountMenu.hidden;accountToggle.setAttribute('aria-expanded',String(!accountMenu.hidden));
+ });
+ $('admin-account-signout').addEventListener('click',()=>$('admin-signout').click());
+ document.addEventListener('pointerdown',event=>{
+  if(!event.target.closest('#admin-account-wrapper')){accountMenu.hidden=true;accountToggle.setAttribute('aria-expanded','false')}
+ });
+ document.addEventListener('keydown',event=>{
+  if(event.key==='Escape'){
+   accountMenu.hidden=true;accountToggle.setAttribute('aria-expanded','false');
+   resultRoot.hidden=true;
+  }
+ });
  window.addEventListener('message',event=>{
   if(event.origin!==location.origin||!previewWindow||event.source!==previewWindow)return;
   if(event.data?.type==='lanesjekk-studio-preview-ready'){
    previewWindowReady=true;deliverFullPreview();refreshDashboard();
   }
  });
- const refreshSoon=()=>requestAnimationFrame(refreshDashboard);
+ let previewRefreshTimer=null;
+ function refreshMiniPreview(){
+  if(!ready||!$('admin-frame').contentWindow)return;
+  $('admin-frame').contentWindow.postMessage({type:'lanesjekk-cms-preview',config:gather()},location.origin);
+ }
+ const refreshSoon=()=>{
+  requestAnimationFrame(refreshDashboard);
+  if(previewRefreshTimer)clearTimeout(previewRefreshTimer);
+  previewRefreshTimer=setTimeout(refreshMiniPreview,400);
+ };
  $('admin-workspace').addEventListener('input',refreshSoon);
  $('admin-workspace').addEventListener('change',refreshSoon);
  $('admin-workspace').addEventListener('click',refreshSoon);
+ $('admin-frame').addEventListener('load',()=>{
+  if(ready)setTimeout(refreshMiniPreview,120);
+ });
+ window.addEventListener('beforeunload',event=>{
+  if(!ready||!published||!draft||!collectChanges().length)return;
+  event.preventDefault();event.returnValue='';
+ });
  $('admin-restore').addEventListener('click',()=>{if(published){draft=clone(published);render();lastPreviewFingerprint='';refreshDashboard();$('admin-frame').src='./index.html#topp';msg('Utkastet er nullstilt til sist publiserte versjon.')}} );
  const setPreviewDevice=mode=>{
   $('preview-viewport').classList.toggle('mobile',mode==='mobile');
