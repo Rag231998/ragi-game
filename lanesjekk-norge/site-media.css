@@ -17,3 +17,8 @@ body:not([data-active-view=home]) .studio-video-showcase[data-media-slot=home]{d
 @media(max-width:900px){.studio-video-showcase{grid-template-columns:minmax(0,1fr)}.studio-video-frame{aspect-ratio:16/9}.studio-video-copy{padding:20px}.studio-video-copy>h2{margin:8px 0}.studio-video-showcase[data-media-slot=home]{width:min(100% - 18px,1190px)}}
 @media(max-width:540px){.studio-video-showcase{border-radius:17px;margin:12px auto 16px}.studio-video-copy{padding:18px}.studio-video-copy>p{font-size:12px}.studio-video-copy>h2{font-size:23px}}
 @media(prefers-reduced-motion:reduce){.studio-video-showcase *{animation:none!important;transition:none!important}}
+
+
+/* Property tools share one DOM view. Only show the video for the selected tool. */
+#utleie:not(.pv-mode-rental) .studio-video-showcase[data-media-slot="rental"],
+#utleie.pv-mode-rental .studio-video-showcase[data-media-slot="valuation"]{display:none!important}
