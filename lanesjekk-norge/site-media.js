@@ -60,8 +60,33 @@ function build(name,slot){
  else{const header=root.querySelector(':scope > .tool-hero, :scope > .budget-hero, :scope > .receipt-hero');if(header)header.insertAdjacentElement('afterend',section);else root.prepend(section)}
  return {element:section,video,visible:false};
 }
+const NATIVE_DEMOS=['loans','budget','savings','investing','carloan','academy'];
+function applyNativeDemos(media,animations){
+ for(const id of NATIVE_DEMOS){
+  const definition=MODULES[id],root=document.querySelector(definition.root);
+  if(!root)continue;
+  let section=root.querySelector(':scope > .native-motion-demo');
+  const custom=media?.slots?.[id];
+  const show=!valid(custom?.videoUrl,'video')&&animations?.autoplay!==false;
+  if(!section){
+   section=document.createElement('section');
+   section.className='native-motion-demo';
+   section.setAttribute('aria-label','Animert økonomidemonstrasjon: '+definition.caption);
+   const image=document.createElement('img');
+   image.src='./animations/'+id+'.svg';
+   image.alt='Illustrativ animasjon: '+definition.caption;
+   image.loading='lazy';
+   image.decoding='async';
+   section.append(image);
+   const header=root.querySelector(':scope > .tool-hero, :scope > .budget-hero, :scope > .receipt-hero');
+   if(header)header.insertAdjacentElement('afterend',section);else root.prepend(section);
+  }
+  section.hidden=!show;
+ }
+}
 function apply(media,animations){
  auto=animations?.autoplay!==false;
+ applyNativeDemos(media,animations);
  // Restore native demos first. A previous CMS version may have replaced them with video.
  for(const [name,definition] of Object.entries(MODULES)){
   if(!definition.fallback)continue;
