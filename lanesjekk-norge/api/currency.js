@@ -20,7 +20,7 @@ module.exports=async(req,res)=>{
   const line=Array.isArray(json)?json.find(x=>x.base===from&&x.quote===to):json;
   const rate=Number(line?.rate),date=String(line?.date||'');
   if(!Number.isFinite(rate)||rate<=0||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(date))throw Error('Ugyldig valutadata');
-  const data={from,to,rate,date,source:'Frankfurter – referansekurser fra institusjonelle kilder'};
+  const data={from,to,rate,date,source:'Frankfurter (daglige valutakurser)'};
   cache.set(key,{time:Date.now(),data});
   res.setHeader('Cache-Control','public, s-maxage=1800, stale-while-revalidate=7200');
   return res.status(200).json(data);
