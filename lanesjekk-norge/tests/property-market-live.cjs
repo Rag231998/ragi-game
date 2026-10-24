@@ -8,6 +8,11 @@ const handler=require('../api/property-market.js');
  if(res.statusCode!==200||!res.body||res.body.source!=='SSB'||!Array.isArray(res.body.rows)||!res.body.rows.length||
  !Number.isFinite(res.body.rows.at(-1).sqm)||res.body.rows.at(-1).sqm<=0)process.exit(1);
  console.log('OK: verifiable SSB live data for Oslo:',res.body.rows.at(-1));
+ const h=require('../api/property-index.js');
+ const out={setHeader(){},status(c){this.code=c;return this},json(v){this.data=v;return this}};
+ await h({method:'GET',query:{municipality:'0301',type:'block'}},out);
+ console.log('INDEX CHECK',out.code,JSON.stringify(out.data).slice(0,1000));
+ if(out.code!==200||!out.data?.rows?.length)throw Error('Index API validation failed');
  const a=await fetch('https://api.kartverket.no/adresser/v1/sok?sok=Karl%20Johans%20gate%201%20Oslo&treffPerSide=3',{headers:{Accept:'application/json'}});
  if(!a.ok){console.error('Kartverket status',a.status);process.exit(1)}
  const data=await a.json();
