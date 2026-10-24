@@ -127,9 +127,20 @@ function normalize(data){
  }))}
  };
 }
+async function enforceSessionTimeout(){
+ if(!window.lanesjekkStudioSession?.expired())return false;
+ await db.auth.signOut().catch(()=>{});
+ window.lanesjekkStudioSession.clear();
+ authUser=null;ready=false;published=null;draft=null;
+ if(previewWindow&&!previewWindow.closed)previewWindow.close();
+ $('admin-workspace').hidden=true;$('admin-auth').hidden=false;$('admin-signout').hidden=true;
+ msg('24 timer har gått. Logg inn igjen for å fortsette sikkert.',true,'auth-status');
+ return true;
+}
 async function isAuthorized(){
+ if(await enforceSessionTimeout())return false;
  const {data,error}=await db.auth.getUser();
- if(error||!data?.user)return false;
+ if(error||!data?.user){authUser=null;return false;}
  const user=data.user;
  const result=await db.from('admins').select('user_id').eq('user_id',user.id).maybeSingle();
  if(result.error||!result.data)return false;
@@ -145,10 +156,11 @@ async function check(){
 async function login(e){
  e.preventDefault();
  const submit=$('admin-login');submit.disabled=true;msg('Kontrollerer innlogging …',false,'auth-status');
+ window.lanesjekkStudioSession.configure($('admin-remember').checked);
  const {error}=await db.auth.signInWithPassword({email:$('admin-email').value.trim(),password:$('admin-password').value});
  submit.disabled=false;
- if(error){msg('Innlogging feilet: '+error.message+'. Hvis e-postadressen ikke er bekreftet, må den bekreftes under Supabase Authentication.',true,'auth-status');return}
- if(!(await isAuthorized())){await db.auth.signOut();msg('Kontoen har ikke administratorrettigheter i databasen.',true,'auth-status');return}
+ if(error){window.lanesjekkStudioSession.clear();msg('Innlogging feilet: '+error.message+'. Hvis e-postadressen ikke er bekreftet, må den bekreftes under Supabase Authentication.',true,'auth-status');return}
+ if(!(await isAuthorized())){await db.auth.signOut();window.lanesjekkStudioSession.clear();msg('Kontoen har ikke administratorrettigheter i databasen.',true,'auth-status');return}
  await check();
 }
 async function loadPublished(){
@@ -386,12 +398,16 @@ async function loadRevisions(reset=false){
  renderPublishEvents();
 }
 function boot(){
- if(!window.supabase){msg('Supabase-biblioteket kunne ikke lastes. Kontroller innholdsblokkering.',true,'auth-status');return}
- db=window.supabase.createClient(BASE,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+ if(!window.supabase||!window.lanesjekkStudioSession){msg('Innloggingsbiblioteket kunne ikke lastes. Kontroller innholdsblokkering.',true,'auth-status');return}
+ db=window.supabase.createClient(BASE,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,
+  storage:window.lanesjekkStudioSession.storage,storageKey:window.lanesjekkStudioSession.key}});
+ $('admin-remember').checked=window.lanesjekkStudioSession.rememberEnabled();
+ setInterval(()=>{void enforceSessionTimeout()},60000);
+ window.addEventListener('focus',()=>{void enforceSessionTimeout()});
  window.lanesjekkAnimationStudio?.init({db,getDraft:()=>draft,notify:(text,isError=false)=>msg(text,isError),bucket:'animation-assets',storageBase:BASE});
  $('admin-login-form').addEventListener('submit',login);
  $('admin-signout').addEventListener('click',async()=>{
-  await db.auth.signOut();authUser=null;ready=false;published=null;draft=null;await check();
+  await db.auth.signOut();window.lanesjekkStudioSession.clear();authUser=null;ready=false;published=null;draft=null;if(previewWindow&&!previewWindow.closed)previewWindow.close();await check();
  });
  $('admin-preview').addEventListener('click',()=>{void openFullPreview()});
  $('preview-fullscreen').addEventListener('click',()=>{void openFullPreview()});
@@ -423,7 +439,7 @@ function boot(){
  $('admin-workspace').addEventListener('input',refreshSoon);
  $('admin-workspace').addEventListener('change',refreshSoon);
  $('admin-workspace').addEventListener('click',refreshSoon);
- $('admin-restore').addEventListener('click',()=>{if(published){draft=clone(published);render();$('admin-frame').src='./index.html#topp';msg('Utkastet er nullstilt til sist publiserte versjon.')}} );
+ $('admin-restore').addEventListener('click',()=>{if(published){draft=clone(published);render();lastPreviewFingerprint='';refreshDashboard();$('admin-frame').src='./index.html#topp';msg('Utkastet er nullstilt til sist publiserte versjon.')}} );
  $('preview-mobile').addEventListener('click',()=>$('preview-viewport').classList.add('mobile'));
  $('preview-desktop').addEventListener('click',()=>$('preview-viewport').classList.remove('mobile'));
  $('preview-refresh').addEventListener('click',()=>{$('admin-frame').src='./index.html#topp';msg('Forhåndsvisningen er oppdatert – bare publisert design vises.');});
