@@ -135,3 +135,14 @@ html{scroll-padding-top:92px}
 
 /* Mobile viewport regression: avoid 12px horizontal overflow in property widgets. */
 @media(max-width:600px){#utleie,#utleie .pv-shell,#utleie .pv-rental-extras,#utleie .pv-guide,#utleie .pv-guide-screen,#utleie .pv-guide-window,#utleie .pv-trend-lab,#utleie .pv-rent-trend,#utleie .pv-layout,#utleie .pv-panel{box-sizing:border-box!important;min-width:0!important;max-width:100%!important}#utleie .pv-guide-screen{padding:12px!important}#utleie .pv-guide-window{width:100%!important}#utleie .pv-trend-tools,#utleie .pv-index-tool,#utleie .pv-index-fields{min-width:0!important;max-width:100%!important}#utleie .pv-trend-tools>*{min-width:0!important;max-width:100%!important}}
+
+
+/* Header regression: one continuous, centered navigation bar without clipping. */
+.site-header{width:100%;min-width:0!important;overflow:visible!important;box-sizing:border-box!important}
+.site-header>.site-container.nav-row{width:min(100% - 40px,1400px)!important;max-width:1400px!important;min-width:0!important;margin-inline:auto!important;padding:0!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:clamp(12px,2vw,30px)!important;box-sizing:border-box!important}
+.site-header .portal-nav{display:flex!important;align-items:center!important;justify-content:flex-end!important;flex-wrap:nowrap!important;min-width:0!important;max-width:100%!important;gap:clamp(5px,1vw,15px)!important}
+.site-header .portal-group-nav>.nav-group{position:relative!important;flex:0 0 auto!important}
+.site-header .portal-group-nav>.nav-group>.nav-drop{position:absolute!important;top:100%;z-index:1100!important}
+.site-header #site-search-open{flex:0 0 auto!important;white-space:nowrap!important}
+@media(max-width:1100px){.site-header .portal-nav{gap:4px!important}.site-header .portal-group-nav>.nav-group>summary{font-size:11px!important;padding:8px 6px!important}}
+@media(max-width:900px){.site-header .portal-group-nav{display:none!important}.site-header>.site-container.nav-row{width:calc(100% - 28px)!important}}
