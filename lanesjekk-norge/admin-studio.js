@@ -288,38 +288,100 @@ async function upload(file){
  return db.storage.from('site-assets').getPublicUrl(name).data.publicUrl;
 }
 async function publish(){
- if(busy||!authUser)return;
- const config=gather();statusDisabled(true);msg('Publiserer nettsiden …');
+ if(busy||!authUser||!$('admin-preflight').open||!$('admin-preview-confirm').checked)return;
+ const config=gather();
+ if(!previewWindow||previewWindow.closed||lastPreviewFingerprint!==JSON.stringify(config)||!collectChanges().length){
+  msg('Utkastet er endret etter forhåndsvisningen. Kontroller nettsiden på nytt.',true);
+  refreshDashboard();return;
+ }
+ statusDisabled(true);msg('Publiserer versjon '+(revision+1)+' …');
+ $('admin-preflight-status').textContent='Lagrer den godkjente versjonen …';
  try{
-  const logo=$('site-logo').files?.[0];if(logo)config.brand.logoUrl=await upload(logo);
-  for(const node of document.querySelectorAll('[data-upload-card]')){
-   const file=node.files?.[0];if(file)config.cards.appearance[node.dataset.uploadCard].imageUrl=await upload(file);
-  }
   const {data,error}=await db.from('lanesjekk_site_config')
    .update({config}).eq('id',1).eq('revision',revision)
-   .select('revision').maybeSingle();
+   .select('revision,updated_at').maybeSingle();
   if(error)throw error;
-  if(!data)throw Error('En annen administrator publiserte endringer i mellomtiden. Oppdater redigeringspanelet og prøv igjen.');
-  published=normalize(config);draft=clone(published);revision=data.revision;
-  $('site-logo').value='';$('admin-revision').textContent='Publisert versjon '+revision;
-  render();await loadRevisions();
+  if(!data)throw Error('Noen andre publiserte først. Last inn den siste versjonen og prøv igjen.');
+  published=normalize(config);draft=clone(published);revision=data.revision;lastPublishedAt=data.updated_at||new Date().toISOString();
+  lastPreviewFingerprint='';
+  render();await loadRevisions(true);
   $('admin-frame').src='./index.html#topp';
-  msg('Publisert! Alle besøkende ser endringen når de laster nettsiden på nytt. Revisjon '+revision+'.');
- }catch(e){msg('Kunne ikke publisere: '+(e?.message||String(e)),true)}
- finally{statusDisabled(false)}
+  $('admin-preflight').close();
+  msg('Publisert! Versjon '+revision+' er nå aktiv. Tidspunkt: '+fmtDate(lastPublishedAt)+'. Du finner den i publiseringsloggen.');
+ }catch(e){
+  msg('Publisering ble ikke fullført: '+(e?.message||String(e)),true);
+  $('admin-preflight-status').textContent='Kunne ikke bekrefte publisering. Kontroller feilmeldingen.';
+ }finally{statusDisabled(false);refreshDashboard()}
 }
-async function loadRevisions(){
+function renderPublishEvents(){
  const root=$('admin-history');root.replaceChildren();
- const r=await db.from('lanesjekk_site_revisions').select('id,revision,snapshot,changed_at').order('revision',{ascending:false}).limit(15);
- if(r.error){root.append(create('p','Historikk kunne ikke lastes: '+r.error.message));return}
- if(!r.data?.length){root.append(create('p','Ingen tidligere publiseringer.'));return}
- for(const revision of r.data){
-  const row=create('div',undefined,'admin-history-row');
-  const label=create('span','Revisjon '+revision.revision+' · '+new Intl.DateTimeFormat('nb-NO',{dateStyle:'short',timeStyle:'short'}).format(new Date(revision.changed_at)));
-  const button=create('button','Hent som utkast','admin-secondary');button.type='button';button.onclick=()=>{
-   draft=normalize(revision.snapshot);render();showPreview();msg('Tidligere revisjon er hentet som et utkast. Velg «Publiser permanent» for å gjenopprette den for alle.');
-  };row.append(label,button);root.append(row);
+ const term=$('admin-history-search').value.trim().toLocaleLowerCase('nb-NO');
+ const filtered=publishEvents.filter((event,index)=>{
+  const previous=publishEvents[index+1];
+  const changed=previous?changesBetween(previous.snapshot,event.snapshot).map(describePath):[];
+  return ('versjon '+event.revision+' '+fmtDate(event.published_at)+' '+changed.join(' ')).toLocaleLowerCase('nb-NO').includes(term);
+ });
+ if(!filtered.length){root.append(create('p',term?'Ingen versjoner passer søket.':'Ingen tidligere publiseringer funnet.','admin-hint'));return}
+ for(const event of filtered){
+  const index=publishEvents.indexOf(event),previous=publishEvents[index+1];
+  const paths=previous?changesBetween(previous.snapshot,event.snapshot):null;
+  const row=create('article',undefined,'admin-history-entry');
+  const head=create('div',undefined,'admin-history-entry-head'),info=create('div');
+  const title=create('strong','Versjon '+event.revision),date=create('time',fmtDate(event.published_at));
+  if(event.published_at)date.dateTime=event.published_at;
+  info.append(title,date);head.append(info);
+  const tag=create('span',event.revision===revision?'PUBLISERT':'ARKIV','admin-history-tag');
+  if(event.revision===revision)tag.dataset.current='true';
+  head.append(tag);row.append(head);
+  const summary=paths===null?'Eldre versjoner må lastes for sammenligning.':
+   paths.length?paths.slice(0,3).map(describePath).join(' · ')+(paths.length>3?' · +'+(paths.length-3)+' flere'):'Ingen endringer i CMS-innstillinger';
+  row.append(create('p',summary,'admin-history-summary'));
+  const actions=create('div',undefined,'admin-history-actions'),detailBox=create('div',undefined,'admin-history-detail');
+  detailBox.hidden=true;
+  if(paths)renderChangeDetails(detailBox,paths,50);
+  else detailBox.append(create('p','Last eldre versjoner for å vise en fullstendig sammenligning.'));
+  const detailsButton=create('button','Vis endringer','admin-secondary');detailsButton.type='button';
+  detailsButton.onclick=()=>{detailBox.hidden=!detailBox.hidden;detailsButton.textContent=detailBox.hidden?'Vis endringer':'Skjul endringer'};
+  const previewButton=create('button','Vis denne versjonen','admin-secondary');previewButton.type='button';
+  previewButton.onclick=()=>{
+   if(collectChanges().length&&!window.confirm('Erstatte det nåværende upubliserte utkastet med versjon '+event.revision+'?'))return;
+   draft=normalize(event.snapshot);render();lastPreviewFingerprint='';refreshDashboard();
+   void openFullPreview();
+   msg('Versjon '+event.revision+' er hentet som et midlertidig utkast. Ingen endringer er publisert.');
+  };
+  const restore=create('button','Gjenopprett som utkast','admin-secondary');restore.type='button';
+  restore.disabled=event.revision===revision;
+  restore.onclick=()=>{
+   if(collectChanges().length&&!window.confirm('Erstatte upubliserte endringer med versjon '+event.revision+'?'))return;
+   draft=normalize(event.snapshot);render();lastPreviewFingerprint='';refreshDashboard();
+   document.getElementById('admin-workspace').scrollIntoView({behavior:'smooth'});
+   msg('Gjenoppretting: versjon '+event.revision+' er lagt i utkastet. Bruk «Forhåndsvis hele nettsiden» og «Kontroller og publiser» for å gjøre den aktiv.');
+  };
+  actions.append(detailsButton,previewButton,restore);
+  row.append(actions,detailBox);root.append(row);
  }
+}
+async function loadRevisions(reset=false){
+ if(!db||!authUser)return;
+ if(reset){publishEvents=[];historyOffset=0;historyHasMore=false}
+ const root=$('admin-history');
+ $('admin-history-status').textContent='Henter publiseringshistorikk …';
+ const {data,error}=await db.from('lanesjekk_publish_events')
+  .select('revision,published_at,snapshot,previous_revision')
+  .order('revision',{ascending:false}).range(historyOffset,historyOffset+49);
+ if(error){
+  $('admin-history-status').textContent='Logg kunne ikke leses: '+error.message;
+  if(!publishEvents.length)root.replaceChildren(create('p','Kunne ikke hente historikken. Kontroller database- og admin-tilgangen.'));
+  return;
+ }
+ for(const item of data||[])if(!publishEvents.some(x=>x.revision===item.revision))publishEvents.push(item);
+ publishEvents.sort((a,b)=>b.revision-a.revision);
+ historyOffset+=(data||[]).length;
+ historyHasMore=(data||[]).length===50;
+ $('admin-history-count').textContent=String(publishEvents.length);
+ $('admin-history-status').textContent=publishEvents.length+' versjoner lastet'+(historyHasMore?' · flere er tilgjengelige':'');
+ $('admin-history-more').hidden=!historyHasMore;
+ renderPublishEvents();
 }
 function boot(){
  if(!window.supabase){msg('Supabase-biblioteket kunne ikke lastes. Kontroller innholdsblokkering.',true,'auth-status');return}
