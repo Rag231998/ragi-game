@@ -114,7 +114,7 @@ function normalize(data){
  media:{slots:Object.fromEntries(MEDIA_IDS.map(id=>{const x=src.media?.slots?.[id]||{};return [id,{enabled:x.enabled!==false,videoUrl:String(x.videoUrl||'').slice(0,500),posterUrl:String(x.posterUrl||'').slice(0,500),title:clamp(x.title,90),description:clamp(x.description,210),fit:x.fit==='contain'?'contain':'cover',loop:x.loop!==false}]}))},
  animations:{autoplay:src.animations?.autoplay!==false,valuation:src.animations?.valuation!==false,rental:src.animations?.rental!==false,receipts:src.animations?.receipts!==false},
  slides:{visible:src.slides?.visible!==false,order:[...new Set([...(Array.isArray(src.slides?.order)?src.slides.order.filter(id=>SLIDE_IDS.includes(id)):[]),...SLIDE_IDS])],items:Object.fromEntries(SLIDE_IDS.map(id=>[id,{title:clamp(src.slides?.items?.[id]?.title,95),description:clamp(src.slides?.items?.[id]?.description,220),enabled:src.slides?.items?.[id]?.enabled!==false}]))},
- brand:{name:clamp(brand.name||'LÅNESJEKK NORGE',70),tagline:clamp(brand.tagline||'Mer oversikt. Bedre valg.',130),accent:/^#[0-9A-Fa-f]{6}$/.test(brand.accent)?brand.accent:'#0c8878',logoUrl:clamp(brand.logoUrl,500),heroVisual:brand.heroVisual!==false,heroMotion:brand.heroMotion!==false},
+ brand:{name:clamp(brand.name||'LÅNESJEKK NORGE',70),tagline:clamp(brand.tagline||'Mer oversikt. Bedre valg.',130),theme:['light','dark','auto'].includes(brand.theme)?brand.theme:'light',accent:/^#[0-9A-Fa-f]{6}$/.test(brand.accent)?brand.accent:'#0c8878',logoUrl:clamp(brand.logoUrl,500),heroVisual:brand.heroVisual!==false,heroMotion:brand.heroMotion!==false},
  budget:{order,visible:Object.fromEntries(DEFAULT_IDS.map(id=>[id,id==='workbook'?true:budget.visible?.[id]!==false])),
  title:clamp(budget.title||'Ditt budsjett.',90),subtitle:clamp(budget.subtitle||'Din økonomiske kontroll.',120),
  quickTitle:clamp(budget.quickTitle||'Tre steg til økonomisk oversikt',100)},
@@ -258,6 +258,7 @@ function render(){
  $('site-name').value=draft.brand.name;
  $('site-tagline').value=draft.brand.tagline;
  $('site-color').value=draft.brand.accent;
+ $('site-theme').value=draft.brand.theme;
  $('site-hero-visual').checked=draft.brand.heroVisual!==false;
  $('site-hero-motion').checked=draft.brand.heroMotion!==false;
  $('budget-title').value=draft.budget.title;
@@ -274,6 +275,7 @@ function gather(){
  draft.brand.name=clamp($('site-name').value,70)||'LÅNESJEKK NORGE';
  draft.brand.tagline=clamp($('site-tagline').value,130);
  draft.brand.accent=$('site-color').value;
+ draft.brand.theme=$('site-theme').value;
  draft.brand.heroVisual=$('site-hero-visual').checked;
  draft.brand.heroMotion=$('site-hero-motion').checked;
  draft.budget.title=clamp($('budget-title').value,90);
