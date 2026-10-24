@@ -268,3 +268,25 @@ body[data-active-view="property"] .homepage-showcase{display:none!important}
 @keyframes vc-globe-float{50%{transform:translateY(-14px) rotate(5deg)}}@keyframes vc-money-float{50%{transform:translateY(-10px)}}@keyframes vc-arrow-pulse{50%{opacity:.4;transform:scale(1.07)}}
 @media(max-width:710px){.sc-currency-art{min-height:255px}.sc-currency-globe{font-size:140px}.sc-currency-token{min-width:0;padding:10px 12px}.sc-currency-footnote{bottom:1%;font-size:9px}}
 @media(prefers-reduced-motion:reduce){.sc-currency-globe,.sc-currency-token,.sc-currency-arrow{animation:none!important}}
+
+
+/* Savings: remove the accidental giant tool-animation "banner", keep calculators in view. */
+#sparing.savings-zone{max-width:1390px;width:calc(100% - 32px);margin:18px auto 25px!important;padding:13px clamp(13px,2.2vw,28px) 18px!important;min-width:0;overflow:clip;border-radius:21px!important}
+#sparing.savings-zone>.native-motion-demo,#sparing .native-motion-demo{display:none!important}
+#sparing .zone-heading{padding:8px 3px 17px!important;gap:14px;align-items:center}
+#sparing .zone-heading h2{font-size:clamp(23px,2.3vw,31px)!important;line-height:1.18!important;margin:4px 0 6px!important}
+#sparing .zone-heading p{max-width:780px;font-size:13px!important;line-height:1.6!important}
+#sparing .portal-section{min-width:0;padding-top:15px!important;padding-bottom:30px!important}
+#sparing .savings-workspace{min-width:0;align-items:start}
+#sparing .savings-workspace>.calc-panel,#sparing .savings-workspace>.results-panel{min-width:0;max-width:100%}
+#sparing .result-head,#sparing .winner-strip{min-width:0;overflow-wrap:anywhere}
+#sparing .result-head h3{font-size:clamp(19px,1.8vw,26px)!important}
+#sparing .winner-right strong{white-space:normal;overflow-wrap:anywhere}
+#sparing .light-strip{margin:15px 0!important}
+@media(max-width:780px){
+ #sparing.savings-zone{width:calc(100% - 18px);margin:9px auto!important;padding:11px!important;border-radius:16px!important}
+ #sparing .zone-heading{display:block!important}
+ #sparing .savings-workspace{grid-template-columns:minmax(0,1fr)!important}
+ #sparing .results-panel{width:100%}
+ #sparing .zone-heading a{margin-top:8px;display:inline-block}
+}
