@@ -14,4 +14,11 @@ const handler=require('../api/property-market.js');
  console.log('Kartverket address lookup',data.adresser?.slice(0,2).map(x=>({name:x.adressetekst,municipality:x.kommunenummer})));
  if(!Array.isArray(data.adresser)||!data.adresser.length||!data.adresser.some(x=>/^\d{4}$/.test(x.kommunenummer||'')))process.exit(1);
 
+ const suggest=require('../api/address-search.js')._test.lookup;
+ for(const query of ['Ammerud','Ammerudgrenda 172','Karl Johans gate 1']){
+  const found=await suggest(query);
+  console.log('ADDRESS TEST',query,JSON.stringify({total:found.resultsCount,count:found.suggestions.length,top:found.suggestions.slice(0,4),streets:found.streets.slice(0,4)}));
+  if(!found.suggestions.length)throw Error('No suggestions for '+query);
+ }
+
 })().catch(e=>{console.error(e);process.exit(1)});
