@@ -6,7 +6,7 @@ const BASE='https://pryrgwfjniggjlrizenh.supabase.co',KEY='sb_publishable_nMwApl
 const $=id=>document.getElementById(id);
 const DEFAULT_IDS=['quick','hero','stats','workbook','insights'];
 const SECTION_NAMES={quick:'Månedsplan + handlingsknapper',hero:'Budsjettets overskrift',stats:'Resultat og nøkkeltall',workbook:'Redigerbart regneark',insights:'Grafer og økonomiske analyser'};
-const MEDIA_IDS=['home','loans','budget','receipts','valuation','rental','savings','investing','carloan','academy'];
+const MEDIA_IDS=['home','loans','budget','receipts','valuation','rental','savings','investing','carloan','academy','currency'];
 const SLIDE_IDS=['loan','budget','receipts','invest','property','currency'];
 const CARD_IDS=['sjekk','budsjett','kvitteringer','sparing','utleie','billan','forbrukslan','akademi','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti'];
 const CARD_NAMES={kvitteringer:'Kvitteringsstudio',utleie:'Utleieanalyse',budsjett:'Personlig budsjett',billan:'Billån',forbrukslan:'Forbrukslån',akademi:'Læringsplattform',sparing:'Sparing',sjekk:'Boliglån',banker:'Bankoversikt','offisielle-renter':'Offisielle renter',bsu:'BSU',ask:'ASK',ips:'IPS',innskuddsgaranti:'Innskuddsgaranti'};
