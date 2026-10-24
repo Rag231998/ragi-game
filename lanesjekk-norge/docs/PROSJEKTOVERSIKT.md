@@ -3,6 +3,8 @@
 **Sist gjennomgått:** 25. oktober 2026  
 **Status:** Dokumentasjon av faktisk kode, tilkoblede tjenester og bekreftet produksjon. Et implementert skjermbilde eller en bestått enhetstest betyr ikke nødvendigvis at hele funksjonen er godkjent i sluttbrukertest.
 
+> **Oversikt over alle kontrollpaneler og sikkerhet:** [PLATTFORMER-ARKITEKTUR-SIKKERHET.md](PLATTFORMER-ARKITEKTUR-SIKKERHET.md) inneholder oppdatert plattformliste, to Mermaid-diagrammer og prioritert risikoregister.
+
 ## 1. Formål og omfang
 
 Lånesjekk Norge er en norsk, nettleserbasert portal for å forstå privatøkonomi gjennom kalkulatorer, grafer, eksempler og artikler. Verktøyene er ment som informasjon og læring, ikke personlige finansråd, banktilbud eller kreditbeslutninger.
