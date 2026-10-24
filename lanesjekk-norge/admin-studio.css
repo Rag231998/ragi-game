@@ -367,3 +367,27 @@ footer{padding:18px;text-align:center;color:#78919c;font-size:10px;border-top:1p
 @media(max-width:800px){#admin-workspace>.admin-command-center{padding:15px;border-radius:14px}.admin-command-stats{grid-template-columns:1fr}.admin-stat{min-height:80px}.admin-workspace-head .admin-top-actions{width:100%;justify-content:flex-start}.admin-action-bar{position:relative;top:auto}.admin-action-buttons{width:100%}.admin-action-buttons button{flex:1;white-space:normal}}
 @media(max-width:510px){.admin-action-buttons{flex-direction:column}.admin-action-buttons button{width:100%}.admin-preflight{padding:16px}.admin-preflight-actions{flex-direction:column}.admin-preflight-actions button{width:100%}#admin-workspace .admin-item{grid-template-columns:15px minmax(0,1fr) 36px}}
 @media(prefers-reduced-motion:reduce){#admin-workspace input[type="checkbox"],#admin-workspace input[type="checkbox"]:before{transition:none}}
+
+
+/* Preview is a work surface, not a cramped decorative sidebar. */
+#admin-workspace .admin-editor-layout{grid-template-columns:minmax(360px,.92fr) minmax(510px,1.55fr);align-items:start;gap:19px}
+#admin-workspace .admin-preview-panel{top:10px;z-index:9;border-radius:17px;box-shadow:0 20px 55px #152d481d}
+#admin-workspace .admin-preview-head{flex-wrap:wrap;gap:12px;padding:15px;background:linear-gradient(125deg,#f6fafb,#eef8f5)}
+#admin-workspace .admin-preview-head>div:first-child{display:grid;gap:4px}
+#admin-workspace .admin-preview-head strong{font-size:11px;letter-spacing:.05em;color:#184959}
+#admin-workspace .admin-preview-head small{font-size:10px;color:#64808a}
+#admin-workspace .admin-preview-tools{display:flex;gap:6px;flex-wrap:wrap}
+#admin-workspace .admin-preview-tools button{min-height:34px;white-space:normal;border-radius:8px;font-size:10px;padding:7px 10px}
+#admin-workspace .admin-preview-tools button[aria-pressed=true]{background:#0d806f;color:white;border-color:#0d806f}
+#admin-workspace #preview-viewport{min-height:0;padding:10px;background:linear-gradient(130deg,#e6eff2,#f3f8fa)}
+#admin-workspace #admin-frame{width:100%;height:min(79dvh,920px);min-height:590px;max-height:none;border-radius:10px;transition:width .16s ease}
+#admin-workspace #preview-viewport.mobile #admin-frame{width:390px;max-width:100%}
+#admin-workspace #preview-viewport.tablet #admin-frame{width:820px;max-width:100%}
+#admin-preview-panel:fullscreen{background:#eaf1f3;width:100vw;height:100dvh;max-height:none;display:flex;flex-direction:column;border:0;border-radius:0;overflow:hidden;box-shadow:none}
+#admin-preview-panel:fullscreen .admin-preview-head{flex:0 0 auto;padding:10px 20px}
+#admin-preview-panel:fullscreen #preview-viewport{height:100%;min-height:0;flex:1;overflow:auto;padding:8px}
+#admin-preview-panel:fullscreen #admin-frame{height:100%;min-height:0;max-height:none;border-radius:5px}
+#admin-preview-panel:fullscreen>.admin-hint,#admin-preview-panel:fullscreen>.admin-mini-preview-actions{display:none}
+@media(max-width:1230px){#admin-workspace .admin-editor-layout{grid-template-columns:1fr}#admin-workspace .admin-preview-panel{position:relative;top:auto}#admin-workspace #admin-frame{height:76dvh;min-height:520px}}
+@media(max-width:520px){#admin-workspace #preview-viewport{padding:5px}#admin-workspace #admin-frame{min-height:470px}#admin-workspace .admin-preview-tools{gap:4px}}
+@media(prefers-reduced-motion:reduce){#admin-workspace #admin-frame{transition:none}}
