@@ -45,18 +45,27 @@ async function lookup(municipality,type){
  const dims=meta.dimension||{},ids=meta.id||Object.keys(dims);
  const rg=keyFor(ids,/region/i),typ=keyFor(ids,/bolig|type/i),co=keyFor(ids,/contents|statistikk|variable/i),time=keyFor(ids,/tid|time|kvartal/i);
  if(!rg||!typ||!co||!time)throw httpError(502,'SSB-tabellen har uventet struktur.');
- const region=codes(dims[rg]).find(x=>x===municipality||x.endsWith('-'+municipality));
+ const region=codes(dims[rg]).find(x=>x===municipality||x.endsWith('-'+municipality)||x.endsWith(municipality));
  if(!region)throw httpError(404,'Kommunen er ikke tilgjengelig i statistikken. Velg en annen kommune.');
- const propertyType=pickValue(dims[typ],TYPE_PATTERNS[type]);
+ const propertyType=pickValue(dims[typ],TYPE_PATTERNS[type])||({block:'03',small:'02',house:'01'}[type]&&codes(dims[typ]).includes({block:'03',small:'02',house:'01'}[type])?{block:'03',small:'02',house:'01'}[type]:null);
  const priceCode=pickValue(dims[co],/gjennomsnittlig kvadratmeterpris|kvadratmeterpris|price per square metre/i);
  const salesCode=pickValue(dims[co],/antall boligomsetninger|number of sales/i);
  if(!propertyType||!priceCode)throw httpError(502,'SSB mangler boligtype eller prisserie.');
  const url=new URL(BASE+'/data');url.searchParams.set('lang','no');
  url.searchParams.set('valueCodes['+rg+']',region);
+ // Table 14310 exposes both county and municipality code lists. Select municipal values explicitly.
+ url.searchParams.set('codeList['+rg+']','vs_Kommun');
  url.searchParams.set('valueCodes['+typ+']',propertyType);
  url.searchParams.set('valueCodes['+co+']',[priceCode,salesCode].filter(Boolean).join(','));
  url.searchParams.set('valueCodes['+time+']','top(16)');
- const result=await json(url.toString());
+ let result;
+ try{result=await json(url.toString())}
+ catch(error){
+  // Some table revisions already expose the municipality value set as default.
+  // Retry without the explicit code list if the first query was rejected.
+  url.searchParams.delete('codeList['+rg+']');
+  result=await json(url.toString());
+ }
  const rows=rowsFromJsonStat(result,region,propertyType,priceCode,salesCode);
  if(!rows.length)throw httpError(404,'Ingen publiserte kvadratmeterpriser for dette utvalget.');
  return{source:'SSB',table:'14310',municipality,type,propertyTypeLabel:dims[typ]?.category?.label?.[propertyType]||type,
