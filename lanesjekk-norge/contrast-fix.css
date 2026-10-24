@@ -146,3 +146,12 @@ html{scroll-padding-top:92px}
 .site-header #site-search-open{flex:0 0 auto!important;white-space:nowrap!important}
 @media(max-width:1100px){.site-header .portal-nav{gap:4px!important}.site-header .portal-group-nav>.nav-group>summary{font-size:11px!important;padding:8px 6px!important}}
 @media(max-width:900px){.site-header .portal-group-nav{display:none!important}.site-header>.site-container.nav-row{width:calc(100% - 28px)!important}}
+
+
+/* Route isolation: home hero/carousel must never bleed into another tool. */
+body[data-active-view]:not([data-active-view="home"]) [data-portal-view="home"]{display:none!important}
+body[data-active-view="home"] [data-portal-view]:not([data-portal-view="home"]){display:none!important}
+body[data-active-view="property"] #loan-showcase,
+body[data-active-view="property"] .home-tool-grid,
+body[data-active-view="property"] .homepage-showcase{display:none!important}
+[data-portal-view][hidden]{display:none!important}
