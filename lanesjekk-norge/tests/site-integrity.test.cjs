@@ -24,7 +24,7 @@ test('All referenced local JavaScript and stylesheets are present',()=>{
  for(const ref of refs)assert.ok(fs.existsSync(path.join(root,ref)),ref+' missing');
 });
 test('All local JavaScript entrypoints compile',()=>{
- for(const ref of ['valutakompass.js','property-market-model.js','property-trends.js','site-media.js','site-search.js','single-page.js','homepage-showcase.js','site-cms.js','api/currency.js','api/currency-history.js']){
+ for(const ref of ['auth-recovery-redirect.js','admin-studio.js','valutakompass.js','property-market-model.js','property-trends.js','site-media.js','site-search.js','single-page.js','homepage-showcase.js','site-cms.js','api/currency.js','api/currency-history.js']){
   assert.doesNotThrow(()=>new vm.Script(file(ref),{filename:ref}),ref);
  }
 });
@@ -104,4 +104,29 @@ test('SSB 14310 municipality lookup selects declared labels and validates real J
   assert.ok(requested.some(u=>decodeURIComponent(u).includes('valueCodes[Region]=K-3209')));
   assert.ok(requested.some(u=>decodeURIComponent(u).includes('codeList[Region]=vs_Kommun')));
  }finally{global.fetch=previous}
+});
+
+
+test('Password reset redirects from the public homepage to the admin form, retaining recovery tokens',()=>{
+ const redirect=file('auth-recovery-redirect.js');
+ function visit(link){
+  const url=new URL(link);
+  const env={location:{
+   pathname:url.pathname,hash:url.hash,search:url.search,origin:url.origin,
+   href:url.href,replace(to){this.next=to}
+  },URL,URLSearchParams};
+  vm.runInNewContext(redirect,env);
+  return env.location.next||null;
+ }
+ assert.equal(visit('https://lanesjekk-norge.onrender.com/'),null);
+ assert.equal(visit('https://lanesjekk-norge.onrender.com/#sparing'),null);
+ const secret='https://lanesjekk-norge.onrender.com/#access_token=fake-test-token&type=recovery&refresh_token=fake-test-refresh';
+ assert.equal(visit(secret),'https://lanesjekk-norge.onrender.com/studio-admin.html#access_token=fake-test-token&type=recovery&refresh_token=fake-test-refresh');
+ const pkce=visit('https://lanesjekk-norge.onrender.com/?code=test-callback-code-12345678');
+ assert.match(pkce,/studio-admin\\.html\\?code=test-callback-code-12345678$/);
+ const expired=visit('https://lanesjekk-norge.onrender.com/#error=access_denied&error_code=otp_expired');
+ assert.match(expired,/studio-admin\\.html#error=access_denied&error_code=otp_expired$/);
+ assert.equal(visit('https://lanesjekk-norge.onrender.com/other.html#access_token=x&type=recovery'),null);
+ assert.match(file('index.html'),/auth-recovery-redirect\\.js/);
+ assert.match(file('admin-studio.js'),/redirectTo=new URL\\('\/studio-admin\\.html'/);
 });
