@@ -11,7 +11,96 @@ const SLIDE_IDS=['loan','budget','receipts','invest','property','currency'];
 const CARD_IDS=['sjekk','budsjett','kvitteringer','sparing','utleie','billan','forbrukslan','akademi','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti'];
 const CARD_NAMES={kvitteringer:'Kvitteringsstudio',utleie:'Utleieanalyse',budsjett:'Personlig budsjett',billan:'Billån',forbrukslan:'Forbrukslån',akademi:'Læringsplattform',sparing:'Sparing',sjekk:'Boliglån',banker:'Bankoversikt','offisielle-renter':'Offisielle renter',bsu:'BSU',ask:'ASK',ips:'IPS',innskuddsgaranti:'Innskuddsgaranti'};
 const CARDS_DEFAULT=['sjekk','budsjett','kvitteringer','sparing','utleie','billan','forbrukslan','akademi','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti'];
-let db=null,authUser=null,published=null,draft=null,revision=0,ready=false,busy=false;
+let db=null,authUser=null,published=null,draft=null,revision=0,ready=false,busy=false,lastPublishedAt='';
+let previewWindow=null,previewWindowReady=false,lastPreviewFingerprint='',publishEvents=[],historyOffset=0,historyHasMore=false;
+const fmtDate=stamp=>stamp?new Intl.DateTimeFormat('nb-NO',{dateStyle:'medium',timeStyle:'short'}).format(new Date(stamp)):'Ukjent tidspunkt';
+const FIELD_LABELS={brand:'Profil og farger',budget:'Budsjett',cards:'Forsidekort og objekter',slides:'Forsidescener',media:'Animation Studio',animations:'Animasjoner',investing:'Fond og aksjer'};
+function changesBetween(a,b){
+ const result=[];
+ function walk(before,after,path='',depth=0){
+  if(JSON.stringify(before)===JSON.stringify(after))return;
+  const complex=x=>x!==null&&typeof x==='object';
+  if(depth<5&&complex(before)&&complex(after)&&Array.isArray(before)===Array.isArray(after)){
+   for(const key of new Set([...Object.keys(before),...Object.keys(after)]))walk(before[key],after[key],path?path+'.'+key:key,depth+1);
+  }else result.push(path||'Innstillinger');
+ }
+ walk(a,b);return result;
+}
+function describePath(path){
+ const parts=path.split('.');
+ const section=FIELD_LABELS[parts[0]]||parts[0];
+ const key=parts.slice(1).map(part=>CARD_NAMES[part]||SECTION_NAMES[part]||part).join(' · ');
+ return section+(key?' · '+key:'');
+}
+function renderChangeDetails(root,paths,max=16){
+ root.replaceChildren();
+ if(!paths.length){root.append(create('p','Ingen endringer i de valgte innstillingene.','admin-hint'));return}
+ for(const path of paths.slice(0,max)){
+  const line=create('div',undefined,'admin-change-line');
+  line.append(create('span','●','admin-change-dot'),create('span',describePath(path)));root.append(line);
+ }
+ if(paths.length>max)root.append(create('p','Og '+(paths.length-max)+' andre endringer.','admin-hint'));
+}
+function refreshDashboard(){
+ if(!ready||!draft||!published||!$('admin-workspace')||$('admin-workspace').hidden)return;
+ const config=gather(),changes=changesBetween(published,config),count=changes.length;
+ $('admin-draft-status').textContent=count?count+' endringer':'Ingen endringer';
+ $('admin-draft-status').dataset.dirty=String(count>0);
+ $('admin-draft-count').textContent=count?'Utkast er ikke publisert':'Alt samsvarer med publisert nettside';
+ $('admin-action-status').textContent=count?'Du har '+count+' upubliserte endringer. Se hele nettsiden før du publiserer.':'Nettsiden er oppdatert. Gjør en endring for å starte et nytt utkast.';
+ $('admin-revision').textContent='Versjon '+revision;
+ $('admin-last-published').textContent=lastPublishedAt?'Sist publisert '+fmtDate(lastPublishedAt):'Publiseringstid ikke registrert';
+ $('admin-publish').disabled=busy||!count;
+ if($('admin-preflight').open){
+  const previewed=!!previewWindow&&!previewWindow.closed&&lastPreviewFingerprint===JSON.stringify(config);
+  $('admin-preview-confirm').disabled=!previewed;
+  if(!previewed)$('admin-preview-confirm').checked=false;
+  $('admin-confirm-publish').disabled=busy||!previewed||!$('admin-preview-confirm').checked||!count;
+ }
+}
+function collectChanges(){return changesBetween(published,gather())}
+async function prepareAssets(){
+ const logo=$('site-logo').files?.[0];
+ if(logo){
+  draft.brand.logoUrl=await upload(logo);$('site-logo').value='';
+  $('site-logo-preview').src=draft.brand.logoUrl;$('site-logo-preview').hidden=false;
+ }
+ for(const node of document.querySelectorAll('[data-upload-card]')){
+  const file=node.files?.[0];
+  if(file){draft.cards.appearance[node.dataset.uploadCard].imageUrl=await upload(file);node.value=''}
+ }
+}
+function deliverFullPreview(){
+ if(!previewWindow||previewWindow.closed||!previewWindowReady||!ready)return;
+ const config=gather();
+ previewWindow.postMessage({type:'lanesjekk-studio-preview-data',config,version:'Utkast til versjon '+(revision+1)},location.origin);
+}
+async function openFullPreview(){
+ if(!ready||!authUser)return false;
+ // Open synchronously on user click, before any asynchronous upload, to prevent popup blockers.
+ const win=window.open('./studio-preview.html','lanesjekk-studio-full-preview','width=1460,height=940');
+ if(!win){msg('Tillat popup-vinduer fra Lånesjekk Studio for å åpne full forhåndsvisning.',true);return false}
+ previewWindow=win;previewWindowReady=false;win.focus();
+ try{
+  await prepareAssets();
+  lastPreviewFingerprint=JSON.stringify(gather());deliverFullPreview();
+  msg('Hele nettsiden er åpnet som et utkast i eget vindu. Kontroller menyene og sidene før du publiserer.');
+  refreshDashboard();return true;
+ }catch(e){lastPreviewFingerprint='';msg('Kunne ikke klargjøre forhåndsvisning: '+(e.message||e),true);return false}
+}
+function openPreflight(){
+ if(busy||!ready)return;
+ const paths=collectChanges();
+ if(!paths.length){msg('Ingen endringer å publisere.');return}
+ $('admin-preflight-count').textContent=paths.length+' endringer i utkastet';
+ $('admin-preflight-version').textContent='Fra versjon '+revision+' til versjon '+(revision+1);
+ renderChangeDetails($('admin-preflight-changes'),paths);
+ $('admin-preview-confirm').checked=false;$('admin-preview-confirm').disabled=true;
+ $('admin-confirm-publish').disabled=true;
+ $('admin-preflight-status').textContent='Åpne full forhåndsvisning, og bekreft deretter publiseringen.';
+ $('admin-preflight').showModal();
+ refreshDashboard();
+}
 const create=(tag,value,cls)=>{const n=document.createElement(tag);if(value!==undefined)n.textContent=String(value);if(cls)n.className=cls;return n};
 const msg=(value,error=false,target='admin-message')=>{const n=$(target);n.textContent=value;n.classList.toggle('error',error)};
 const clamp=(str,max)=>String(str??'').trim().slice(0,max);
@@ -64,9 +153,9 @@ async function login(e){
 async function loadPublished(){
  const r=await db.from('lanesjekk_site_config').select('config,revision,updated_at').eq('id',1).maybeSingle();
  if(r.error||!r.data){msg('Kunne ikke hente nettstedinnstillinger: '+(r.error?.message||'Ingen data'),true);return}
- published=normalize(r.data.config);draft=clone(published);revision=r.data.revision||1;ready=true;
+ published=normalize(r.data.config);draft=clone(published);revision=r.data.revision||1;lastPublishedAt=r.data.updated_at||'';ready=true;lastPreviewFingerprint='';
  $('admin-revision').textContent='Publisert versjon '+revision;
- render();await loadRevisions();await window.lanesjekkAnimationStudio?.refreshLibrary();
+ render();await loadRevisions(true);await window.lanesjekkAnimationStudio?.refreshLibrary();refreshDashboard();
  $('admin-frame').src='./index.html#topp';
  msg('Nettstedsoppsettet er hentet. Du kan endre og forhåndsvise før du publiserer.');
 }
@@ -138,7 +227,7 @@ function renderSort(type){
 function renderSlides(){
  const wrap=$('slide-editor');if(!wrap)return;wrap.replaceChildren();
  $('slide-visible').checked=draft.slides.visible;
- const labels={loan:'Boliglån',budget:'Budsjett',receipts:'Kvitteringer',invest:'Sparing og investering',property:'Eiendom og utleie'};
+ const labels={loan:'Boliglån',budget:'Budsjett',receipts:'Kvitteringer',invest:'Sparing og investering',property:'Eiendom og utleie',currency:'Valuta'};
  for(const id of draft.slides.order){
   const item=draft.slides.items[id],outer=create('div',undefined,'admin-item'),body=create('div',undefined,'admin-item-main');
   const heading=create('strong',labels[id]),tools=create('div',undefined,'admin-item-controls');
@@ -187,7 +276,7 @@ function showPreview(){
  msg('Midlertidig layout er sendt til forhåndsvisningen. Oppdaterer du forhåndsvisningen, går den tilbake til publisert design.');
 }
 function statusDisabled(on){
- busy=on;$('admin-publish').disabled=on;$('admin-preview').disabled=on;
+ busy=on;$('admin-preview').disabled=on;$('admin-confirm-publish').disabled=on;refreshDashboard();
 }
 async function upload(file){
  if(!file)return null;
