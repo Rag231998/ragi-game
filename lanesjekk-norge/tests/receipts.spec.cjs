@@ -44,13 +44,14 @@ test('cinematic slider shows five independently animated scenes and navigates',a
  await expect(page.locator('.sc-slide[data-sc-index="0"]')).toHaveClass(/is-active/);
  await page.locator('.sc-next').click();
  await expect(page.locator('.sc-slide[data-sc-index="1"]')).toHaveClass(/is-active/);
- await page.locator('.sc-pause').click();
+ await expect(page.locator('.sc-pause')).toHaveCount(0);
+ await page.locator('#motion-toggle').click();
+ await expect(page.locator('html')).toHaveClass(/motion-stopped/);
  await expect(hero).toHaveClass(/sc-paused/);
- await expect(page.locator('.sc-pause')).toHaveAttribute('aria-pressed','true');
+ await page.locator('#motion-toggle').click();
+ await expect(page.locator('html')).not.toHaveClass(/motion-stopped/);
  await page.locator('.sc-chapter[data-sc-goto="2"]').click();
  await expect(page.locator('.sc-slide[data-sc-index="2"]')).toHaveClass(/is-active/);
- await page.locator('.sc-pause').click();
- await expect(page.locator('.sc-pause')).toHaveAttribute('aria-pressed','false');
  await page.locator('.sc-slide.is-active .sc-action').click();
  await expect(page.locator('#kvitteringer')).toBeVisible();
 });
