@@ -184,7 +184,7 @@ test('Account recovery has compact layout and explains email quota instead of co
  assert.doesNotMatch(page,/class="password-page-help"/);
  assert.doesNotMatch(page,/class="password-page-heading"/);
  assert.match(js,/status\('password-request-status',''\)/);
- assert.match(page,/admin-studio\.css\?v=8/);
+ assert.match(page,/admin-studio\.css\?v=9/);
  assert.match(css,/\.password-page-wrap\{max-width:430px/);
  assert.match(css,/\.password-page \.password-page-titleline h1\{font-size:22px/);
  assert.match(file('studio-admin.html'),/href="\.\/admin-password\.html" target="_blank" rel="noopener noreferrer" aria-label="Endre passord/);
@@ -210,4 +210,16 @@ test('Free administrator recovery code path is server-side and one-time only',()
  assert.doesNotMatch(page+client,/SUPABASE_SERVICE_ROLE_KEY|SUPABASE_SECRET_KEYS|sb_secret_/);
  assert.doesNotMatch(server,/console\.log\(.*code|console\.log\(.*password/);
  assert.doesNotThrow(()=>new vm.Script(client,{filename:'admin-password.js'}));
+});
+
+test('Password help does not claim unverified SMTP and separates backup options',()=>{
+ const html=file('admin-password.html'),css=file('admin-studio.css');
+ assert.match(html,/class="password-page-alternative"/);
+ assert.match(html,/id="backup-open"/);
+ assert.match(html,/class="password-page-info"/);
+ assert.match(html,/Hvorfor kommer ikke e-posten\?/);
+ assert.match(html,/ikke en garanti for at e-posten er levert/);
+ assert.doesNotMatch(html,/Vi må koble til en egen SMTP-leverandør/);
+ assert.match(css,/#reset-request \.password-page-alternative\{/);
+ assert.match(css,/#reset-request \.password-page-info\{/);
 });
