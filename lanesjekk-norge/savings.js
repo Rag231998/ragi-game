@@ -125,6 +125,32 @@
       $('save-share').textContent='✓ Kopiert';
    }).catch(()=>{$('save-share').textContent='Kopiering ikke tilgjengelig'});
  }
+ async function loadPublishedRates(){
+   // Remote verified updates can be published at any time without a site deployment.
+   // Missing or unverified records leave the dated illustrative snapshot intact.
+   const endpoint='https://pryrgwfjniggjlrizenh.supabase.co/rest/v1/lanesjekk_rate_updates?select=product_id,rate_tiers,checked_at,source_url&active=eq.true';
+   const key='sb_publishable_nMwAplLiIZ-p9zIu8F3yPQ_-_XwiMM9';
+   try{
+     const response=await fetch(endpoint,{headers:{apikey:key,Accept:'application/json'},cache:'no-store'});
+     if(!response.ok)throw Error('HTTP '+response.status);
+     const updates=await response.json();
+     if(!Array.isArray(updates))throw Error('Malformed rate response');
+     let changed=0;
+     for(const item of updates){
+       const product=data.products.find(p=>p.id===item.product_id);
+       if(!product||!Array.isArray(item.rate_tiers)||!item.rate_tiers.length)continue;
+       const checked=Date.parse(item.checked_at);
+       if(!Number.isFinite(checked)||checked>Date.now()+300000||checked<Date.now()-86400000*30)continue;
+       if(typeof item.source_url!=='string'||item.source_url!==product.source)continue;
+       const tiers=item.rate_tiers;
+       if(tiers.length>15||!tiers.every(t=>typeof t==='object'&&t!==null&&Number.isFinite(t.min)&&t.min>=0&&Number.isFinite(t.rate)&&t.rate>=0&&t.rate<=35))continue;
+       product.rateTiers=tiers.map(t=>({min:t.min,rate:t.rate}));
+       product.notes=product.notes.replace(/ Oppdatert fra verifisert datakilde.*$/,'')+' Oppdatert fra verifisert datakilde '+new Date(checked).toLocaleDateString('nb-NO')+'.';
+       changed++;
+     }
+     if(changed){render();document.dispatchEvent(new CustomEvent('lanesjekk:rates-updated',{detail:{count:changed}}));}
+   }catch(e){console.warn('Oppdaterte renteopplysninger er utilgjengelige; datert sammenligning beholdes.',e);}
+ }
  function install(){
    for(const id of ['save-amount','save-search','save-filter','save-members','projection-monthly','projection-rate','projection-years'])
     $(id)?.addEventListener('input',()=>{
@@ -156,6 +182,7 @@
      }
    });
    render();
+   void loadPublishedRates();
  }
  if(typeof document!=='undefined')document.addEventListener('DOMContentLoaded',install);
  if(typeof module!=='undefined'&&module.exports)module.exports={applicableRate,compare,project};
