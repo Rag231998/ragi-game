@@ -195,3 +195,7 @@ footer{padding:18px;text-align:center;color:#78919c;font-size:10px;border-top:1p
  #admin-auth{margin:15px auto}
 }
 @media(prefers-reduced-motion:reduce){#reset-create .admin-password-strength-meter span{transition:none}}
+
+
+.admin-account-link{display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;min-height:39px;white-space:nowrap;font-size:11px}
+.admin-account-link:hover{background:#daf0e8;color:#086e5c}
