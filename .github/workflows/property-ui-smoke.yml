@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/property-ui-smoke.yml'
+      - 'lanesjekk-norge/tests/property.spec.cjs'
   workflow_dispatch:
 permissions:
   contents: read
