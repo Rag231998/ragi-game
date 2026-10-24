@@ -13,7 +13,7 @@ function safeMedia(url,kind){
  const ok=kind==='video'?/^video\/[a-z0-9_-]+\.(?:mp4|webm)$/i.test(filename):/^poster\/[a-z0-9_-]+\.(?:png|jpg|jpeg|webp)$/i.test(filename);
  return ok?url:'';
 }
-const SLIDE_IDS=Object.freeze(['loan','budget','receipts','invest','property']);
+const SLIDE_IDS=Object.freeze(['loan','budget','receipts','invest','property','currency']);
 const SECTIONS=Object.freeze(['quick','hero','stats','workbook','insights']);
 const CARD_IDS=Object.freeze(['sjekk','budsjett','kvitteringer','sparing','utleie','billan','forbrukslan','akademi','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti']);
 const nodes=()=>({quick:document.querySelector('#budsjett > .budget-start-panel'),hero:document.querySelector('#budsjett > .budget-hero'),
