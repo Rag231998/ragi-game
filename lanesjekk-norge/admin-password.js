@@ -111,13 +111,16 @@ function init(){
    if(error){
     const emailLimit=error.code==='over_email_send_rate_limit'||/email rate limit/i.test(error.message||'');
     const perUser=error.code==='over_request_rate_limit'||/security purposes.*seconds/i.test(error.message||'');
-    if(emailLimit){
-     $('password-email-limit').hidden=false;
-     status('password-request-status','Ingen e-post ble sendt: prosjektets e-postkvote er brukt opp.',true);
-    }else if(perUser||error.status===429){
-     status('password-request-status','Ingen ny lenke ble sendt. Det er for kort tid siden forrige forespørsel. Prøv igjen senere.',true);
+    if(emailLimit||perUser||error.status===429){
+     const box=$('password-email-limit');
+     box.hidden=false;
+     box.querySelector('strong').textContent=emailLimit?'E-posttjenestens grense er nådd':'For mange forespørsler';
+     box.querySelector('p').textContent=emailLimit?
+      'Ingen lenke ble sendt. Supabase har nådd grensen for e-postutsending. Prøv igjen senere. Dersom du kjenner det gamle passordet, kan du logge inn og endre det uten e-post.':
+      'Ingen lenke ble sendt. Supabase har midlertidig begrenset nye forespørsler. Prøv senere, eller logg inn med det eksisterende passordet.';
+     status('password-request-status','');
     }else{
-     status('password-request-status','Kunne ikke sende e-post nå. '+(error.message||'Kontroller adressen og prøv senere.'),true);
+     status('password-request-status','Kunne ikke sende e-post nå. Prøv igjen senere.',true);
     }
    }else status('password-request-status','Hvis e-postadressen er registrert, får du en lenke på e-post. Sjekk også søppelpost.');
   }catch(e){status('password-request-status','Tilkoblingsfeil. Kontroller internett og prøv igjen.',true)}
