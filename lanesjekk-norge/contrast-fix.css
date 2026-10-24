@@ -46,3 +46,49 @@ body{color:var(--readable-text)}
 #portal-viewbar a[aria-current=page]{color:#065d53}
 @media(max-width:700px){#utleie .pv-note,#utleie .pv-source{font-size:12px}#utleie .pv-trend-region{width:100%}}
 @media(prefers-contrast:more){#utleie .pv-panel,#kvitteringer .receipt-pane{border-color:#588b90}#utleie .pv-note,#kvitteringer .receipt-note{color:#203f50}}
+
+/* Critical screenshot regression: dark CTA pills MUST have white, legible text. */
+body.portal-home .premium-dashboard .home-tool .home-tool-arrow,
+body.portal-home .home-tool-grid>.home-tool .home-tool-arrow,
+body.portal-home .premium-dashboard a.home-tool .home-tool-arrow,
+body.portal-home .premium-dashboard a.home-tool:visited .home-tool-arrow{
+  background:#123c61!important;color:#ffffff!important;
+  border:1px solid #123c61!important;
+  font-weight:850!important;letter-spacing:.01em!important;
+  text-shadow:none!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  min-height:41px!important;padding:10px 17px!important;
+  border-radius:100px!important;
+  box-shadow:0 5px 13px #102d4a24!important;
+}
+body.portal-home .premium-dashboard a.home-tool:is(:hover,:focus-visible) .home-tool-arrow{
+ background:#086957!important;color:#fff!important;border-color:#086957!important
+}
+body.portal-home .premium-dashboard a.home-tool:focus-visible{outline:3px solid #0e8f79!important;outline-offset:3px!important}
+body.portal-home .premium-dashboard a.home-tool .home-tool-arrow{max-width:100%;white-space:normal;text-align:center;line-height:1.3!important}
+@media(max-width:620px){
+ body.portal-home .premium-dashboard a.home-tool .home-tool-arrow{align-self:stretch!important;font-size:11px!important}
+}
+/* Refined anchored flyout navigation; dropdown remains constrained to viewport. */
+.portal-home .site-header .portal-nav>details.nav-group>summary{
+ min-height:45px;border-radius:12px;padding:10px 13px;
+ transition:background .18s,color .18s;line-height:1.3;
+}
+.portal-home .site-header .portal-nav>details.nav-group>summary:hover,
+.portal-home .site-header .portal-nav>details.nav-group[open]>summary{
+ background:#e5f7ef!important;color:#075e53!important;
+}
+.portal-home .site-header .portal-nav>details.nav-group>.nav-drop{
+ border:1px solid #cfdfdf;border-radius:16px;padding:8px;
+ min-width:215px;max-width:min(340px,calc(100vw - 30px));
+ box-shadow:0 21px 60px #1029392e;z-index:999;
+}
+.portal-home .site-header .portal-nav>details.nav-group>.nav-drop>a{
+ display:flex;align-items:center;min-height:45px;
+ padding:11px 13px;border-radius:10px;font-size:13px;font-weight:760!important;
+ color:#1e4052!important;white-space:normal;
+}
+.portal-home .site-header .portal-nav>details.nav-group>.nav-drop>a:hover,
+.portal-home .site-header .portal-nav>details.nav-group>.nav-drop>a:focus-visible{
+ color:#086454!important;background:#e8f7f1!important;
+}
