@@ -110,6 +110,7 @@ function render(){
   unit.oninput=()=>{const v=price(unit.value);if(!Number.isFinite(v))return;item.unitPrice=v;item.amount=round2(v*item.quantity);line.value=item.amount.toFixed(2);refresh()};unitcell.append(unit);moneycell.append(line);
   const action=el('td'),remove=el('button','×','receipt-delete');remove.type='button';remove.setAttribute('aria-label','Fjern '+item.name);
   remove.onclick=()=>{items.splice(index,1);render()};action.append(remove);
+  [namecell,qtycell,unitcell,catcell,moneycell,action].forEach((cell,i)=>cell.dataset.label=['Vare','Antall','Stykkpris','Kategori','Linjesum','Fjern'][i]);
   tr.append(namecell,qtycell,unitcell,catcell,moneycell,action);root.append(tr);
  });refresh();
 }
