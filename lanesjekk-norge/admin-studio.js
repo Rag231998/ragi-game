@@ -440,21 +440,50 @@ function boot(){
  'admin-panel-slides':'Forsidescener','admin-panel-motion':'Animasjoner','animation-studio-panel':'Animation Studio',
  'admin-panel-invest':'Fond og aksjer','admin-panel-history':'Publiseringslogg'
  };
- let panelTransition=false;
+ const panelPreviews={'admin-panel-brand':'topp','admin-panel-budget':'budsjett','admin-panel-cards':'topp','admin-panel-slides':'topp','admin-panel-motion':'boligverdi','animation-studio-panel':'topp','admin-panel-invest':'investering','admin-panel-history':'topp'};
+ const mediaRoutes={home:'topp',loans:'sjekk',budget:'budsjett',receipts:'kvitteringer',valuation:'boligverdi',rental:'utleieanalyse',savings:'sparing',investing:'investering',carloan:'billan',academy:'akademi',currency:'valutakompass'};
+ const panelHelp={'admin-panel-brand':'Logo, farger og visningsmodus.','admin-panel-budget':'Flytt budsjettseksjoner og kontroller synlighet.','admin-panel-cards':'Rediger hvert kort og objekt, inkludert ikon, tekst og synlighet.','admin-panel-slides':'Tilpass rekkefølge og tekst på forsiden.','admin-panel-motion':'Velg hvilke animasjoner som vises.','animation-studio-panel':'Velg modul og videofiler, og forhåndsvis resultatet.','admin-panel-invest':'Investeringsoversikt og overskrift.','admin-panel-history':'Se tidspunkt, endringer og gjenopprett en eldre publisering.'};
+ let panelTransition=false,previewSelection='topp';
+ function showPreviewSection(section){
+  const selector=$('preview-inline-section'),frame=$('admin-frame');
+  if(!selector||![...selector.options].some(option=>option.value===section))return;
+  previewSelection=section;selector.value=section;
+  $('admin-preview-current').textContent='Viser '+selector.selectedOptions[0].textContent+' · utkast';
+  if(ready&&frame?.contentWindow){
+   const hash='#'+section;
+   if(frame.contentWindow.location.hash!==hash)frame.contentWindow.location.hash=hash;
+   frame.contentWindow.postMessage({type:'lanesjekk-cms-preview',config:gather()},location.origin);
+  }
+ }
  function activatePanel(id,scroll=true){
   const target=$(id);if(!target||!adminPanels.includes(target))return;
   panelTransition=true;
   for(const panel of adminPanels)panel.open=panel===target;
-  for(const btn of jumpButtons)btn.setAttribute('aria-current',String(btn.dataset.adminJump===id));
-  $('admin-navigation-tip').textContent=(labels[id]||'Valgt område')+' · endringer lagres bare som utkast til du publiserer.';
+  for(const btn of jumpButtons){
+   if(btn.dataset.adminJump===id)btn.setAttribute('aria-current','page');
+   else btn.removeAttribute('aria-current');
+  }
+  $('admin-navigation-tip').textContent=(labels[id]||'Valgt kategori')+' · '+(panelHelp[id]||'Endringer lagres som utkast.');
   panelTransition=false;
+  showPreviewSection(id==='animation-studio-panel'?mediaRoutes[$('media-target').value]||'topp':panelPreviews[id]||'topp');
   if(scroll)target.scrollIntoView({behavior:'smooth',block:'start'});
  }
  jumpButtons.forEach(button=>button.addEventListener('click',()=>activatePanel(button.dataset.adminJump)));
- adminPanels.forEach(panel=>panel.addEventListener('toggle',()=>{
-  if(!panel.open||panelTransition)return;
-  activatePanel(panel.id,false);
+ jumpButtons.forEach((button,index)=>button.addEventListener('keydown',event=>{
+  const delta={ArrowRight:1,ArrowDown:1,ArrowLeft:-1,ArrowUp:-1};
+  if(!(event.key in delta)&&event.key!=='Home'&&event.key!=='End')return;
+  event.preventDefault();
+  const next=event.key==='Home'?0:event.key==='End'?jumpButtons.length-1:
+   (index+delta[event.key]+jumpButtons.length)%jumpButtons.length;
+  jumpButtons[next].focus();activatePanel(jumpButtons[next].dataset.adminJump,false);
  }));
+ adminPanels.forEach(panel=>panel.addEventListener('toggle',()=>{
+  if(panel.open&&!panelTransition)activatePanel(panel.id,false);
+ }));
+ $('preview-inline-section').addEventListener('change',event=>showPreviewSection(event.target.value));
+ $('media-target').addEventListener('change',event=>{
+  if($('animation-studio-panel').open)showPreviewSection(mediaRoutes[event.target.value]||'topp');
+ });
  activatePanel('admin-panel-brand',false);
  const queryInput=$('admin-object-search'),resultRoot=$('admin-object-results');
  const lookup=()=>{
