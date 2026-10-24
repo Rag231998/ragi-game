@@ -1,0 +1,19 @@
+/* Lånesjekk Animation Studio – premium contextual video media, layout independent */
+.studio-video-showcase{--video-blue:#0d263a;box-sizing:border-box;position:relative;display:grid;grid-template-columns:minmax(0,1.28fr) minmax(220px,.72fr);align-items:center;gap:0;width:min(100%,1220px);max-width:100%;min-width:0;margin:20px auto 28px;background:linear-gradient(132deg,#071d31,#143f50 58%,#116e71);border:1px solid #56a99c3c;border-radius:24px;color:#f8fcff;overflow:hidden;box-shadow:0 23px 65px #071d3030}
+.studio-video-showcase::before{content:"";position:absolute;right:-90px;bottom:-100px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,#5be1c422,transparent 67%);pointer-events:none}
+.studio-video-frame{position:relative;aspect-ratio:16 / 9;min-width:0;overflow:hidden;background:#0e2634;isolation:isolate}
+.studio-video-frame::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(to right,transparent 70%,#143f5035)}
+.studio-video-player{display:block;width:100%;height:100%;object-fit:cover;background:#0e2634;min-height:0}
+.studio-video-copy{position:relative;z-index:1;min-width:0;padding:clamp(20px,2.5vw,40px)}
+.studio-video-copy>span{font-size:10px;font-weight:850;letter-spacing:.16em;color:#8bf1d5}
+.studio-video-copy>h2{font-size:clamp(20px,2.55vw,34px);line-height:1.16;letter-spacing:-.035em;color:#f8ffff;margin:15px 0}
+.studio-video-copy>p{font-size:clamp(12px,1vw,14px);line-height:1.8;color:#d2ebec;max-width:40ch;margin:0}
+.studio-video-showcase[data-media-slot=home]{margin:18px auto 25px;width:min(100% - 32px,1190px)}
+body:not([data-active-view=home]) .studio-video-showcase[data-media-slot=home]{display:none}
+#utleie.pv-mode-rental .studio-video-showcase[data-media-slot=valuation]{display:none}
+#utleie:not(.pv-mode-rental) .studio-video-showcase[data-media-slot=rental]{display:none}
+#utleie .studio-video-showcase{margin:18px 0;max-width:100%}
+#kvitteringer .studio-video-showcase{margin:18px 0 22px;max-width:100%}
+@media(max-width:900px){.studio-video-showcase{grid-template-columns:minmax(0,1fr)}.studio-video-frame{aspect-ratio:16/9}.studio-video-copy{padding:20px}.studio-video-copy>h2{margin:8px 0}.studio-video-showcase[data-media-slot=home]{width:min(100% - 18px,1190px)}}
+@media(max-width:540px){.studio-video-showcase{border-radius:17px;margin:12px auto 16px}.studio-video-copy{padding:18px}.studio-video-copy>p{font-size:12px}.studio-video-copy>h2{font-size:23px}}
+@media(prefers-reduced-motion:reduce){.studio-video-showcase *{animation:none!important;transition:none!important}}
