@@ -197,3 +197,34 @@
  #kvitteringer .receipt-metrics{grid-template-columns:minmax(0,1fr)}
  #kvitteringer .receipt-summary-row{grid-template-columns:minmax(0,1fr)}
 }
+
+/* All receipt review columns fit the available pane; no horizontal scrollbar. */
+#kvitteringer .receipt-results .receipt-table-scroll{overflow-x:visible;overflow-y:visible;width:100%;max-width:100%}
+#kvitteringer .receipt-results .receipt-table{min-width:0;width:100%;table-layout:fixed;border-collapse:separate;border-spacing:0 8px}
+#kvitteringer .receipt-results .receipt-table th,#kvitteringer .receipt-results .receipt-table td{min-width:0!important;width:auto!important;max-width:none;padding:6px 4px;overflow-wrap:anywhere}
+#kvitteringer .receipt-results .receipt-table th:nth-child(1){width:26%}
+#kvitteringer .receipt-results .receipt-table th:nth-child(2){width:12%}
+#kvitteringer .receipt-results .receipt-table th:nth-child(3){width:16%}
+#kvitteringer .receipt-results .receipt-table th:nth-child(4){width:22%}
+#kvitteringer .receipt-results .receipt-table th:nth-child(5){width:18%}
+#kvitteringer .receipt-results .receipt-table th:nth-child(6){width:6%}
+#kvitteringer .receipt-results .receipt-table input,#kvitteringer .receipt-results .receipt-table select{min-width:0!important;width:100%;max-width:100%;padding:8px 5px;font-size:clamp(11px,.95vw,13px)}
+#kvitteringer .receipt-results .receipt-table .receipt-delete{padding:7px 4px;min-width:25px}
+@media(max-width:1050px){
+ #kvitteringer .receipt-results .receipt-table,#kvitteringer .receipt-results .receipt-table tbody{display:block;width:100%;min-width:0}
+ #kvitteringer .receipt-results .receipt-table thead{display:none}
+ #kvitteringer .receipt-results .receipt-table tr{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px 8px;width:100%;margin:0 0 12px;padding:12px;border:1px solid #dce8e9;border-radius:12px;background:#f9fcfc}
+ #kvitteringer .receipt-results .receipt-table td{display:flex;flex-direction:column;gap:5px;border:0;padding:0;min-width:0!important;width:auto!important}
+ #kvitteringer .receipt-results .receipt-table td:before{content:attr(data-label);font-size:10px;line-height:1.3;font-weight:800;color:#5b7983}
+ #kvitteringer .receipt-results .receipt-table td:nth-child(1){grid-column:span 6}
+ #kvitteringer .receipt-results .receipt-table td:nth-child(2){grid-column:span 2}
+ #kvitteringer .receipt-results .receipt-table td:nth-child(3){grid-column:span 2}
+ #kvitteringer .receipt-results .receipt-table td:nth-child(4){grid-column:span 2}
+ #kvitteringer .receipt-results .receipt-table td:nth-child(5){grid-column:span 5}
+ #kvitteringer .receipt-results .receipt-table td:nth-child(6){grid-column:span 1;align-items:stretch}
+ #kvitteringer .receipt-results .receipt-table input,#kvitteringer .receipt-results .receipt-table select{min-height:39px;font-size:13px}
+}
+@media(max-width:390px){
+ #kvitteringer .receipt-results .receipt-table td:nth-child(2),#kvitteringer .receipt-results .receipt-table td:nth-child(3){grid-column:span 3}
+ #kvitteringer .receipt-results .receipt-table td:nth-child(4){grid-column:span 6}
+}
