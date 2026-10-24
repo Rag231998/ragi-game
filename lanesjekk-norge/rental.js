@@ -45,7 +45,7 @@ function realEstate(values){
   grossYield,netYield,pretaxCashFlow,estimatedTax,afterTaxCash,breakevenRent,taxableProfit,firstMonthInterest};
 }
 function collect(){
- const n=id=>Number($(id).value);
+ const n=id=>{const raw=$(id).value;return $(id).matches('[data-money-input]')?(window.LANENUMBERS?.parseMoney(raw)??Number(String(raw).replace(/\\s/g,''))):Number(String(raw).replace(',','.'));};
  return {
   price:n('rental-price'),sharedDebt:n('rental-shared-debt'),buyCosts:n('rental-buy-costs'),rent:n('rental-rent'),
   equity:n('rental-equity'),rate:n('rental-interest'),years:n('rental-years'),common:n('rental-common'),running:n('rental-running'),
