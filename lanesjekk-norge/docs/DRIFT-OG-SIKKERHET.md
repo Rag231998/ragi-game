@@ -3,6 +3,8 @@
 **Sist oppdatert:** 25. oktober 2026  
 **Regel:** Ikke dokumenter tilgangsnøkler, passord, private e-postadresser, reservekoder, SMTP-hemmeligheter eller tokens i GitHub, skjermbilder eller supportsaker.
 
+> **Sikkerhetsfunn og oversikt over leverandører:** [PLATTFORMER-ARKITEKTUR-SIKKERHET.md](PLATTFORMER-ARKITEKTUR-SIKKERHET.md) beskriver kontrollerte Supabase-policyer, åpne rådgivervarsler, driftsplattformer og arkitekturen.
+
 ## 1. Driftsoversikt og lenker
 
 | Hva | Hvor |
