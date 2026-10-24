@@ -79,9 +79,9 @@ Endringer i CMS erstatter ikke endringer i kildekode. Oppdaterte kodeskript krev
 
 **Ønsket hovedflyt:** Glemt passord → registrert admin-e-post → autentisk Supabase-lenke → admin-password.html → nytt passord → innlogging.
 
-Supabase var tidligere konfigurert med den innebygde e-postsenderen. Auth-loggene har vist 429 over_email_send_rate_limit. Resend ble diskutert som SMTP-alternativ. Gratis prøvesender kan ha streng mottakerbegrensning. Resend krever normalt verifisert avsenderdomene for vanlig produksjonsutsending; et akseptert domenenavn i skjemaet er *ikke* det samme som å eie/verifisere domenet.
+Supabase var tidligere konfigurert med den innebygde e-postsenderen. Auth-loggene har vist 429 over_email_send_rate_limit. Resend ble brukt i SMTP-oppsettet, og administrator bekrefter 25.10.2026 at passord-e-post fungerer. Gratis prøvesender kan ha streng mottakerbegrensning. Resend krever normalt verifisert avsenderdomene for vanlig produksjonsutsending; et akseptert domenenavn i skjemaet er *ikke* det samme som å eie/verifisere domenet.
 
-Når SMTP blir konfigurert:
+Ved kontroll og vedlikehold av SMTP:
 1. Verifiser hvilken avsender og mottaker leverandøren tillater. Ikke gjett ut fra grønt domeneikon.
 2. Lag SMTP-legitimasjon hos leverandøren og lagre den i Supabase Auth SMTP-konfigurasjon, aldri i frontend eller repoet.
 3. Sett riktig senderadresse, sendernavn, host, port og brukernavn.
@@ -91,7 +91,7 @@ Når SMTP blir konfigurert:
 7. Sjekk Supabase Auth-logger og leverandørens leveranselogger. Skill HTTP 200 på forespørsel fra faktisk levert e-post.
 8. Merk dato, testkonto (ikke fullstendig adresse), leverandør, konfigurasjonsstatus og testresultat her.
 
-**Status ved dokumentasjon:** En fullstendig vellykket SMTP + mottatt passordlenke-test er **ikke bekreftet**. Ikke marker denne funksjonen som ferdig verifisert før prosedyren ovenfor er gjennomført. Reservekoder beholdes som valgfri nødløsning.
+**Status oppdatert 25.10.2026:** Administrator bekrefter at passord-e-post fungerer og mottas. Dette er brukerbekreftet funksjon, ikke en uavhengig SMTP-konfigurasjonsrevisjon eller dokumentert ende-til-ende passordbytte. Fortsett å følge prosedyren etter vesentlige endringer. Reservekoder beholdes som valgfri nødløsning.
 
 ## 7. Testmatrise
 
@@ -102,7 +102,7 @@ Når SMTP blir konfigurert:
 | Direkte datakildekontroll | Sjekk mot Kartverket, SSB og Frankfurter inngår i deployløpet |
 | Playwright nettlesertester | Testfiler finnes; full grønn kjøring for alle miljøer ikke bekreftet |
 | Visuell mobil-/Safari-QA | Ikke dokumentert fullført |
-| E-postlevering/SMTP | Ikke dokumentert fullført |
+| E-postlevering/SMTP | Brukerbekreftet fungerende 25.10.2026; uavhengig fulltest gjenstår |
 | Virkelig passordbytte for admin | Ikke automatisk utført eller bekreftet i denne dokumentasjonen |
 | Ende-til-ende reservekodegjenoppretting | Kode og tester finnes; faktisk reset av bruker ikke utført her |
 | Tilgjengelighet, kontrast og ytelse | Full revisjon gjenstår |
@@ -125,7 +125,7 @@ Når SMTP blir konfigurert:
 
 | Dato | Funksjon | Commit/deploy | Endret | Verifisert | Åpent |
 | --- | --- | --- | --- | --- | --- |
-| 25.10.2026 | Prosjektdokumentasjon | Se GitHub-historikk | Opprettet samlet arkitektur- og driftsoversikt | Kode-/konfigurasjonsinspeksjon | SMTP-sluttest, komplett QA |
+| 25.10.2026 | Prosjektdokumentasjon | Se GitHub-historikk | Opprettet samlet arkitektur- og driftsoversikt | Kode-/konfigurasjonsinspeksjon | Uavhengig SMTP/lenke-sluttest, komplett QA |
 
 Oppdater dato, eventuelle API-kildeendringer, auth/SMTP-status og nye avhengigheter hver gang strukturen endres.
 
