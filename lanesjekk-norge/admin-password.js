@@ -10,7 +10,7 @@ const errorCode=hash.get('error_code')||query.get('error_code')||hash.get('error
 const fromRecoveryLink=!errorCode&&(hash.get('type')==='recovery'||query.get('type')==='recovery'||query.has('code'));
 let recoveryMode=fromRecoveryLink,db=null,activeAdmin=false;
 function show(which){
- for(const section of ['account-change','reset-request','reset-create','reset-success'])$(section).hidden=section!==which;
+ for(const section of ['account-change','reset-request','reset-backup','reset-create','reset-success'])$(section).hidden=section!==which;
 }
 function status(id,msg,isError=false){
  const el=$(id);el.textContent=msg;el.dataset.error=String(isError);
@@ -61,6 +61,71 @@ function init(){
   }).catch(()=>{});
  }
  $('account-forgot-open').addEventListener('click',()=>show('reset-request'));
+
+ // Backup-code recovery: secure fallback that needs no SMTP or paid domain.
+ let generatedCodes=[];
+ const backupOpen=$('backup-open'),backupReturn=$('backup-return');
+ backupOpen.addEventListener('click',()=>{
+  $('backup-email').value=$('password-request-email').value.trim();
+  show('reset-backup');
+  $('backup-code').focus({preventScroll:true});
+ });
+ backupReturn.addEventListener('click',()=>{
+  $('password-request-email').value=$('backup-email').value.trim();
+  show('reset-request');
+ });
+ $('backup-generate').addEventListener('click',async()=>{
+  if(!activeAdmin||!db)return;
+  const btn=$('backup-generate');btn.disabled=true;
+  $('backup-generated').hidden=true;generatedCodes=[];
+  status('backup-generate-status','Oppretter engangskoder …');
+  try{
+   const {data:session,error:sessionError}=await db.auth.getSession();
+   if(sessionError||!session?.session){status('backup-generate-status','Økten har utløpt. Logg inn i Studio på nytt.',true);return}
+   const {data,error}=await db.functions.invoke('lanesjekk-admin-recovery',{body:{action:'generate'}});
+   if(error||!Array.isArray(data?.codes)||data.codes.length!==3){
+    status('backup-generate-status','Kunne ikke opprette nye koder. Prøv igjen senere.',true);return
+   }
+   generatedCodes=data.codes;
+   const list=$('backup-code-list');
+   list.replaceChildren();
+   for(const code of generatedCodes){
+    const item=document.createElement('li');item.textContent=code;list.appendChild(item);
+   }
+   $('backup-generated').hidden=false;
+   status('backup-generate-status','Tre engangskoder er opprettet. Lagre dem på et sikkert sted.');
+  }catch(err){status('backup-generate-status','Reservekodene kunne ikke opprettes nå.',true)}
+  finally{btn.disabled=false}
+ });
+ $('backup-copy').addEventListener('click',async()=>{
+  if(!generatedCodes.length)return;
+  try{
+   await navigator.clipboard.writeText(generatedCodes.join('\n'));
+   status('backup-generate-status','Alle kodene er kopiert. Lagre dem sikkert.');
+  }catch(err){status('backup-generate-status','Kunne ikke kopiere automatisk. Marker og kopier kodene manuelt.',true)}
+ });
+ $('backup-recover-form').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const email=$('backup-email').value.trim(),code=$('backup-code').value.trim();
+  const password=$('backup-new').value,repeat=$('backup-repeat').value;
+  if(password.length<8){status('backup-recover-status','Passordet må ha minst 8 tegn.',true);return}
+  if(password!==repeat){status('backup-recover-status','Passordene er ikke like.',true);return}
+  if(!/^[A-Za-z0-9_-]{43}$/.test(code)){status('backup-recover-status','En reservekode består av 43 tegn. Lim inn hele koden.',true);return}
+  const btn=$('backup-recover-submit');btn.disabled=true;
+  status('backup-recover-status','Kontrollerer reservekoden …');
+  try{
+   const {data,error}=await db.functions.invoke('lanesjekk-admin-recovery',{body:{action:'recover',email,code,password}});
+   if(error||!data?.success){
+    status('backup-recover-status','Kunne ikke tilbakestille passordet. Kontroller e-post og ubrukt reservekode.',true);return
+   }
+   $('backup-code').value='';$('backup-new').value='';$('backup-repeat').value='';
+   await db.auth.signOut();
+   history.replaceState(null,'',location.pathname);
+   show('reset-success');
+  }catch(err){status('backup-recover-status','Gjenoppretting kunne ikke fullføres. Prøv igjen senere.',true)}
+  finally{btn.disabled=false}
+ });
+
  $('password-open-account').addEventListener('click',()=>{if(activeAdmin)show('account-change')});
  $('account-change-form').addEventListener('submit',async e=>{
   e.preventDefault();
