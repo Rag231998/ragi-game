@@ -107,7 +107,7 @@ test('SSB 14310 municipality lookup selects declared labels and validates real J
 });
 
 
-test('Password reset redirects from the public homepage to the admin form, retaining recovery tokens',()=>{
+test('Password reset redirects from the public homepage to the dedicated password page, retaining recovery tokens',()=>{
  const redirect=file('auth-recovery-redirect.js');
  function visit(link){
   const url=new URL(link);
@@ -121,14 +121,14 @@ test('Password reset redirects from the public homepage to the admin form, retai
  assert.equal(visit('https://lanesjekk-norge.onrender.com/'),null);
  assert.equal(visit('https://lanesjekk-norge.onrender.com/#sparing'),null);
  const secret='https://lanesjekk-norge.onrender.com/#access_token=fake-test-token&type=recovery&refresh_token=fake-test-refresh';
- assert.equal(visit(secret),'https://lanesjekk-norge.onrender.com/studio-admin.html#access_token=fake-test-token&type=recovery&refresh_token=fake-test-refresh');
+ assert.equal(visit(secret),'https://lanesjekk-norge.onrender.com/admin-password.html#access_token=fake-test-token&type=recovery&refresh_token=fake-test-refresh');
  const pkce=visit('https://lanesjekk-norge.onrender.com/?code=test-callback-code-12345678');
- assert.ok(pkce.endsWith('/studio-admin.html?code=test-callback-code-12345678'));
+ assert.ok(pkce.endsWith('/admin-password.html?code=test-callback-code-12345678'));
  const expired=visit('https://lanesjekk-norge.onrender.com/#error=access_denied&error_code=otp_expired');
- assert.ok(expired.endsWith('/studio-admin.html#error=access_denied&error_code=otp_expired'));
+ assert.ok(expired.endsWith('/admin-password.html#error=access_denied&error_code=otp_expired'));
  assert.equal(visit('https://lanesjekk-norge.onrender.com/other.html#access_token=x&type=recovery'),null);
  assert.ok(file('index.html').includes('auth-recovery-redirect.js'));
- assert.ok(file('admin-studio.js').includes("redirectTo=new URL('/studio-admin.html'"));
+ assert.ok(file('admin-password.js').includes("new URL('/admin-password.html',location.origin)"));
 });
 
 
@@ -144,4 +144,27 @@ test('Admin password recovery minimum is eight characters in UI and JavaScript',
  assert.match(admin,/id="admin-password-strength"/);
  assert.match(admin,/id="admin-password-match"/);
  assert.equal((admin.match(/data-password-toggle=/g)||[]).length,2);
+});
+
+test('Forgot password opens a separate protected tab and the admin logo stays in Studio',()=>{
+ const admin=file('studio-admin.html'),page=file('admin-password.html'),client=file('admin-password.js');
+ assert.ok(admin.includes('href="./studio-admin.html" aria-label="Lånesjekk Studio – administrasjon"'));
+ assert.match(admin,/id="admin-forgot-open"[^>]*href="\.\/admin-password\.html"[^>]*target="_blank"[^>]*rel="noopener noreferrer"/);
+ assert.doesNotMatch(admin,/id="admin-forgot-form"/);
+ assert.doesNotMatch(admin,/<a href="\.\/index\.html" aria-label="Til forsiden"/);
+ for(const id of ['password-request-form','password-create-form','reset-success','password-new','password-repeat'])assert.ok(page.includes('id="'+id+'"'));
+ assert.match(client,/auth\.resetPasswordForEmail\(email,\{redirectTo\}\)/);
+ assert.match(client,/auth\.updateUser\(\{password:pass\}\)/);
+ assert.match(client,/if\(pass\.length<8\)/);
+ assert.match(client,/auth\.getSession\(\)/);
+ assert.doesNotMatch(client,/service_role|sb_secret_/);
+ assert.doesNotMatch(file('admin-studio.js'),/admin-forgot-form|forgotForm/);
+});
+test('The dedicated password page loads local assets and JavaScript compiles',()=>{
+ const page=file('admin-password.html');
+ for(const match of page.matchAll(/(?:href|src)="\.\/([^"?]+\.(?:js|css))(?:\?[^"]*)?"/g)){
+  assert.ok(fs.existsSync(path.join(root,match[1])),match[1]+' is missing');
+ }
+ assert.doesNotThrow(()=>new vm.Script(file('admin-password.js'),{filename:'admin-password.js'}));
+ assert.match(file('auth-recovery-redirect.js'),/admin-password\.html/);
 });
