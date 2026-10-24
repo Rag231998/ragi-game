@@ -14,8 +14,8 @@ test('SSB-based home value changes when apartment size or condition changes',asy
  await expect(page.locator('#pv-sales')).toContainText('119');
  await page.locator('#pv-area').fill('90');
  await expect(page.locator('#pv-value')).toContainText('7');
- await page.locator('#pv-adjust').evaluate(el=>{el.value='10';el.dispatchEvent(new Event('input',{bubbles:true}))});
- await expect(page.locator('#pv-adjust-output')).toHaveText('+10 %');
+ await expect(page.locator('#pv-adjust')).toHaveCount(0);
+ await expect(page.locator('#pv-value')).toContainText('7');
 });
 test('user-entered broker values are distinct, removable and median calculated',async({page})=>{
  await page.goto('/#utleie',{waitUntil:'domcontentloaded'});
@@ -36,4 +36,31 @@ test('property studio stays within the mobile viewport',async({page})=>{
  await expect(page.locator('#property-value-studio')).toBeVisible();
  const sizing=await page.evaluate(()=>({documentWidth:document.documentElement.scrollWidth,viewport:document.documentElement.clientWidth}));
  expect(sizing.documentWidth).toBeLessThanOrEqual(sizing.viewport+2);
+});
+
+test('live address suggestions appear while typing and exact address can be selected',async({page})=>{
+ const find={query:'Ammerudgrenda 172',streets:['Ammerudgrenda'],resultsCount:1,suggestions:[{id:'10144-172--0301',street:'Ammerudgrenda',text:'Ammerudgrenda 172',number:172,postal:'0960',place:'OSLO',municipality:'OSLO',municipalityCode:'0301'}]};
+ await page.route('**/api/address-search?*',async route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(find)}));
+ await page.goto('/#utleie',{waitUntil:'domcontentloaded'});
+ const input=page.locator('#pv-address');
+ await input.fill('Ammerudgrenda 172');
+ await expect(page.locator('.pv-address-choice').first()).toContainText('Ammerudgrenda 172');
+ await page.locator('.pv-address-choice').first().click();
+ await expect(page.locator('#pv-municipality')).toHaveValue('0301');
+ await expect(page.locator('#pv-address-verified')).toBeVisible();
+ await expect(page.locator('#pv-area')).toHaveValue('');
+ await page.locator('#pv-area').fill('76');
+ await page.locator('#pv-estimate').click();
+ await expect(page.locator('#pv-badge')).toContainText('SSB');
+ await expect(page.locator('#pv-value')).toContainText('6');
+});
+test('property tabs separate valuation and rental tools',async({page})=>{
+ await page.goto('/#utleie',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.pv-shell')).toBeVisible();
+ await expect(page.locator('.rental-workspace')).toBeHidden();
+ await page.locator('#pv-mode-rental').click();
+ await expect(page.locator('.rental-workspace')).toBeVisible();
+ await expect(page.locator('.pv-shell')).toBeHidden();
+ await page.locator('#pv-mode-valuation').click();
+ await expect(page.locator('.pv-shell')).toBeVisible();
 });
