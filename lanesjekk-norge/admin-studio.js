@@ -20,6 +20,7 @@ function normalize(data){
  const order=[...new Set([...(Array.isArray(budget.order)?budget.order.filter(x=>DEFAULT_IDS.includes(x)):[]),...DEFAULT_IDS])];
  const cardOrder=[...new Set([...(Array.isArray(cards.order)?cards.order.filter(x=>CARD_IDS.includes(x)):[]),...CARDS_DEFAULT])];
  return {
+ animations:{autoplay:src.animations?.autoplay!==false,valuation:src.animations?.valuation!==false,rental:src.animations?.rental!==false,receipts:src.animations?.receipts!==false},
  slides:{visible:src.slides?.visible!==false,order:[...new Set([...(Array.isArray(src.slides?.order)?src.slides.order.filter(id=>SLIDE_IDS.includes(id)):[]),...SLIDE_IDS])],items:Object.fromEntries(SLIDE_IDS.map(id=>[id,{title:clamp(src.slides?.items?.[id]?.title,95),description:clamp(src.slides?.items?.[id]?.description,220),enabled:src.slides?.items?.[id]?.enabled!==false}]))},
  brand:{name:clamp(brand.name||'LÅNESJEKK NORGE',70),tagline:clamp(brand.tagline||'Mer oversikt. Bedre valg.',130),accent:/^#[0-9A-Fa-f]{6}$/.test(brand.accent)?brand.accent:'#0c8878',logoUrl:clamp(brand.logoUrl,500),heroVisual:brand.heroVisual!==false,heroMotion:brand.heroMotion!==false},
  budget:{order,visible:Object.fromEntries(DEFAULT_IDS.map(id=>[id,id==='workbook'?true:budget.visible?.[id]!==false])),
@@ -148,6 +149,7 @@ function renderSlides(){
  }
 }
 function render(){
+ for(const key of ['autoplay','valuation','rental','receipts'])$('motion-'+key).checked=draft.animations[key];
  $('site-name').value=draft.brand.name;
  $('site-tagline').value=draft.brand.tagline;
  $('site-color').value=draft.brand.accent;
@@ -162,6 +164,7 @@ function render(){
  renderSort('budget');renderSort('cards');renderSlides();
 }
 function gather(){
+ for(const key of ['autoplay','valuation','rental','receipts'])draft.animations[key]=$('motion-'+key).checked;
  draft.slides.visible=$('slide-visible').checked;
  draft.brand.name=clamp($('site-name').value,70)||'LÅNESJEKK NORGE';
  draft.brand.tagline=clamp($('site-tagline').value,130);
