@@ -123,9 +123,9 @@
     <button id="admin-history-more" type="button" class="admin-secondary" hidden>Last 50 eldre publiseringer</button>
   </div></details>
  </div>
- <div class="admin-preview-panel">
-   <div class="admin-preview-head"><strong>MINIVISNING · UTKAST</strong><div><button id="preview-desktop" type="button" class="admin-secondary">PC</button><button id="preview-mobile" type="button" class="admin-secondary">Mobil</button><button id="preview-refresh" type="button" class="admin-secondary">Oppdater</button></div></div>
-   <div id="preview-viewport"><iframe id="admin-frame" title="Forhåndsvisning av publisert og midlertidig layout" src="./index.html#budsjett" loading="lazy"></iframe></div>
+ <div class="admin-preview-panel" id="admin-preview-panel">
+   <div class="admin-preview-head"><div><strong>FORHÅNDSVISNING</strong><small>Interaktiv nettside, kun for administrator</small></div><div class="admin-preview-tools"><button id="preview-desktop" type="button" class="admin-secondary" aria-pressed="true">PC</button><button id="preview-tablet" type="button" class="admin-secondary" aria-pressed="false">Nettbrett</button><button id="preview-mobile" type="button" class="admin-secondary" aria-pressed="false">Mobil</button><button id="preview-refresh" type="button" class="admin-secondary">↻ Oppdater utkast</button><button id="preview-inline-fullscreen" type="button" class="admin-secondary" aria-pressed="false">⛶ Fullskjerm</button></div></div>
+   <div id="preview-viewport"><iframe id="admin-frame" title="Fullstendig interaktiv forhåndsvisning av nettsiden" src="./index.html#topp"></iframe></div>
    <div class="admin-mini-preview-actions"><button id="preview-fullscreen" type="button" class="admin-secondary">↗ Åpne hele nettsiden i et eget vindu</button></div><p class="admin-hint">Minivisningen er kun en rask sjekk. Åpne full forhåndsvisning for å navigere gjennom alle faner før publisering.</p>
   </div>
  </div>
