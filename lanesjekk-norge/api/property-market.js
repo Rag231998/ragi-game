@@ -49,9 +49,9 @@ async function lookup(municipality,type){
  // The default region metadata may contain counties only. Municipality codes are
  // exposed by the explicit vs_Kommun value set, so do not reject valid IDs here.
  const region=available.find(x=>x===municipality||x==='K-'+municipality||x.endsWith('-'+municipality))||'K-'+municipality;
- const propertyType=pickValue(dims[typ],TYPE_PATTERNS[type])||({block:'03',small:'02',house:'01'}[type]&&codes(dims[typ]).includes({block:'03',small:'02',house:'01'}[type])?{block:'03',small:'02',house:'01'}[type]:null);
+ const propertyType=pickValue(dims[typ],TYPE_PATTERNS[type]);
  const priceCode=pickValue(dims[co],/gjennomsnittlig kvadratmeterpris|kvadratmeterpris|price per square metre/i);
- const salesCode=pickValue(dims[co],/antall boligomsetninger|number of sales/i);
+ const salesCode=pickValue(dims[co],/antall (?:bolig)?omsetninger|antall salg|number of sales|transactions/i);
  if(!propertyType||!priceCode)throw httpError(502,'SSB mangler boligtype eller prisserie.');
  const url=new URL(BASE+'/data');url.searchParams.set('lang','no');
  url.searchParams.set('valueCodes['+rg+']',region);
@@ -71,7 +71,7 @@ async function lookup(municipality,type){
  const rows=rowsFromJsonStat(result,region,propertyType,priceCode,salesCode);
  if(!rows.length)throw httpError(404,'Ingen publiserte kvadratmeterpriser for dette utvalget.');
  return{source:'SSB',table:'14310',municipality,type,propertyTypeLabel:dims[typ]?.category?.label?.[propertyType]||type,
-         regionLabel:dims[rg]?.category?.label?.[region]||municipality,rows,latest:rows.at(-1),method:'Areal × gjennomsnittlig kvadratmeterpris, korrigert med eventuell brukerjustering'};
+         regionLabel:result.dimension?.[rg]?.category?.label?.[region]||dims[rg]?.category?.label?.[region]||municipality,rows,latest:rows.at(-1),method:'BRA-i × publisert gjennomsnittlig kvadratmeterpris i kommunen (siste inntil fire kvartaler; evt. vektet etter omsetninger)'};
 }
 module.exports=async(req,res)=>{
  res.setHeader('Content-Type','application/json; charset=utf-8');
