@@ -23,7 +23,7 @@ module.exports=async(req,res)=>{
   const points=body.filter(r=>r.base===from&&r.quote===to&&/^\d{4}-\d{2}-\d{2}$/.test(r.date)&&Number.isFinite(r.rate)&&r.rate>0)
    .map(r=>({date:r.date,rate:r.rate})).sort((a,b)=>a.date.localeCompare(b.date)).slice(-370);
   if(!points.length)throw Error('Ingen registrerte historiske valutakurser');
-  const data={from,to,points,source:'Frankfurter – daglige historiske referansekurser',lastDate:points.at(-1).date};
+  const data={from,to,points,source:'Frankfurter (historiske valutakurser)',lastDate:points.at(-1).date};
   cache.set(key,{saved:Date.now(),data});
   res.setHeader('Cache-Control','public, s-maxage=3600, stale-while-revalidate=7200');
   return res.status(200).json(data);
