@@ -442,9 +442,31 @@ function boot(){
  $('admin-workspace').addEventListener('change',refreshSoon);
  $('admin-workspace').addEventListener('click',refreshSoon);
  $('admin-restore').addEventListener('click',()=>{if(published){draft=clone(published);render();lastPreviewFingerprint='';refreshDashboard();$('admin-frame').src='./index.html#topp';msg('Utkastet er nullstilt til sist publiserte versjon.')}} );
- $('preview-mobile').addEventListener('click',()=>$('preview-viewport').classList.add('mobile'));
- $('preview-desktop').addEventListener('click',()=>$('preview-viewport').classList.remove('mobile'));
- $('preview-refresh').addEventListener('click',()=>{$('admin-frame').src='./index.html#topp';msg('Forhåndsvisningen er oppdatert – bare publisert design vises.');});
+ const setPreviewDevice=mode=>{
+  $('preview-viewport').classList.toggle('mobile',mode==='mobile');
+  $('preview-viewport').classList.toggle('tablet',mode==='tablet');
+  for(const [id,m] of [['preview-desktop','desktop'],['preview-tablet','tablet'],['preview-mobile','mobile']])$(id).setAttribute('aria-pressed',String(m===mode));
+ };
+ $('preview-mobile').addEventListener('click',()=>setPreviewDevice('mobile'));
+ $('preview-tablet').addEventListener('click',()=>setPreviewDevice('tablet'));
+ $('preview-desktop').addEventListener('click',()=>setPreviewDevice('desktop'));
+ $('preview-refresh').addEventListener('click',()=>{
+  const config=gather();
+  const frame=$('admin-frame');
+  frame.src='./index.html#topp';
+  frame.addEventListener('load',()=>frame.contentWindow?.postMessage({type:'lanesjekk-cms-preview',config},location.origin),{once:true});
+  msg('Minivisningen viser nå det gjeldende utkastet. Ingenting er publisert.');
+ });
+ const inlineFullscreen=$('preview-inline-fullscreen');
+ inlineFullscreen.addEventListener('click',async()=>{
+  try{if(document.fullscreenElement)await document.exitFullscreen();else await $('admin-preview-panel').requestFullscreen()}
+  catch(e){msg('Fullskjerm er ikke tillatt her. Prøv «Åpne hele nettsiden i eget vindu».',true)}
+ });
+ document.addEventListener('fullscreenchange',()=>{
+  const full=document.fullscreenElement===$('admin-preview-panel');
+  inlineFullscreen.textContent=full?'⛶ Avslutt fullskjerm (Esc)':'⛶ Fullskjerm';
+  inlineFullscreen.setAttribute('aria-pressed',String(full));
+ });
  $('site-logo-reset').addEventListener('click',()=>{draft.brand.logoUrl='';$('site-logo').value='';$('site-logo-preview').hidden=true;msg('Standardlogo er valgt i utkastet.')});
  $('site-logo').addEventListener('change',e=>{
   const file=e.target.files?.[0];if(!file)return;
