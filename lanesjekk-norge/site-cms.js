@@ -18,7 +18,7 @@ const SECTIONS=Object.freeze(['quick','hero','stats','workbook','insights']);
 const CARD_IDS=Object.freeze(['sjekk','budsjett','kvitteringer','sparing','utleie','billan','forbrukslan','akademi','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti']);
 const nodes=()=>({quick:document.querySelector('#budsjett > .budget-start-panel'),hero:document.querySelector('#budsjett > .budget-hero'),
 stats:document.querySelector('#budsjett > .tool-overview'),workbook:document.querySelector('#budsjett > .budget-workbook'),insights:document.querySelector('#budsjett > .budget-insights-grid')});
-const defaults={animations:{autoplay:true,valuation:true,rental:true,receipts:true},brand:{name:'LÅNESJEKK NORGE',tagline:'Mer oversikt. Bedre valg.',accent:'#0c8878',logoUrl:'',heroVisual:true,heroMotion:true},
+const defaults={animations:{autoplay:true,valuation:true,rental:true,receipts:true},brand:{name:'LÅNESJEKK NORGE',tagline:'Mer oversikt. Bedre valg.',theme:'light',accent:'#0c8878',logoUrl:'',heroVisual:true,heroMotion:true},
 budget:{order:['quick','hero','stats','workbook','insights'],visible:{quick:true,hero:true,stats:true,workbook:true,insights:true},title:'Ditt budsjett.',subtitle:'Din økonomiske kontroll.',quickTitle:'Tre steg til økonomisk oversikt'},
 investing:{title:'Fond og aksjer – forstå risiko og muligheter'}};
 let published=null,preview=false;
@@ -34,7 +34,7 @@ function configClean(input){
  slides:{visible:a.slides?.visible!==false,order:[...new Set([...(Array.isArray(a.slides?.order)?a.slides.order.filter(id=>SLIDE_IDS.includes(id)):[]),...SLIDE_IDS])],items:Object.fromEntries(SLIDE_IDS.map(id=>[id,{title:plain(a.slides?.items?.[id]?.title,95),description:plain(a.slides?.items?.[id]?.description,220),enabled:a.slides?.items?.[id]?.enabled!==false}]))},
  brand:{
  name:plain(b.name,70)||defaults.brand.name,tagline:plain(b.tagline,130)||defaults.brand.tagline,
- accent:/^#[0-9a-fA-F]{6}$/.test(b.accent)?b.accent:defaults.brand.accent,
+ theme:['light','dark','auto'].includes(b.theme)?b.theme:'light',accent:/^#[0-9a-fA-F]{6}$/.test(b.accent)?b.accent:defaults.brand.accent,
  heroVisual:b.heroVisual!==false,heroMotion:b.heroMotion!==false,
  logoUrl:typeof b.logoUrl==='string'&&/^https:\/\/pryrgwfjniggjlrizenh\.supabase\.co\/storage\/v1\/object\/public\/site-assets\/[a-z0-9_.-]+$/i.test(b.logoUrl)?b.logoUrl:''
  },
@@ -55,6 +55,9 @@ function configClean(input){
 }
 function apply(input){
  const cfg=configClean(input);
+ const themeDark=cfg.brand.theme==='dark'||(cfg.brand.theme==='auto'&&window.matchMedia?.('(prefers-color-scheme: dark)').matches);
+ document.documentElement.dataset.cmsTheme=cfg.brand.theme;
+ document.documentElement.classList.toggle('cms-dark',themeDark);
  const demoNodes={valuation:document.getElementById('pv-valuation-guide'),rental:document.getElementById('pv-rental-guide'),receipts:document.querySelector('#kvitteringer .receipt-tour')};
  for(const [key,node] of Object.entries(demoNodes))if(node)node.hidden=!cfg.animations[key];
  document.documentElement.classList.toggle('cms-stop-demo-motion',!cfg.animations.autoplay);
@@ -130,6 +133,10 @@ async function init(){
   if(error)throw error;
   if(data?.config){published=data.config;if(!preview)apply(published)}
  }catch(e){console.warn('Published design settings could not be loaded; using default',e)}
+}
+if(window.matchMedia){
+ const query=window.matchMedia('(prefers-color-scheme: dark)');
+ query.addEventListener?.('change',()=>{if(document.documentElement.dataset.cmsTheme==='auto')document.documentElement.classList.toggle('cms-dark',query.matches)});
 }
 window.lanesjekkCms={apply,configClean,defaults,getPublished:()=>published};
 document.addEventListener('DOMContentLoaded',init);
