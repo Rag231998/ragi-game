@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node server.js",
     "test": "node --test tests/site-integrity.test.cjs",
-    "prestart": "npm test"
+    "prestart": "npm test",
+    "postinstall": "node scripts/check-live-data.cjs"
   },
   "engines": {
     "node": ">=20"
