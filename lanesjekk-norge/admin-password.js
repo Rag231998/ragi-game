@@ -8,9 +8,9 @@ const hash=new URLSearchParams(location.hash.slice(1));
 const query=new URLSearchParams(location.search);
 const errorCode=hash.get('error_code')||query.get('error_code')||hash.get('error')||query.get('error');
 const fromRecoveryLink=!errorCode&&(hash.get('type')==='recovery'||query.get('type')==='recovery'||query.has('code'));
-let recoveryMode=fromRecoveryLink,db=null;
+let recoveryMode=fromRecoveryLink,db=null,activeAdmin=false;
 function show(which){
- for(const section of ['reset-request','reset-create','reset-success'])$(section).hidden=section!==which;
+ for(const section of ['account-change','reset-request','reset-create','reset-success'])$(section).hidden=section!==which;
 }
 function status(id,msg,isError=false){
  const el=$(id);el.textContent=msg;el.dataset.error=String(isError);
@@ -49,6 +49,46 @@ function init(){
    status('password-create-status','Gjenopprettingslenken er bekreftet. Velg nå et nytt passord.');
   }
  });
+ // Logged-in admins can update their own password without the email sender.
+ if(!fromRecoveryLink&&!errorCode){
+  void db.auth.getUser().then(async({data,error})=>{
+   if(error||!data?.user)return;
+   const {data:admin,error:adminError}=await db.from('admins').select('user_id').eq('user_id',data.user.id).maybeSingle();
+   if(adminError||!admin)return;
+   activeAdmin=true;
+   $('password-open-account').hidden=false;
+   show('account-change');
+  }).catch(()=>{});
+ }
+ $('account-forgot-open').addEventListener('click',()=>show('reset-request'));
+ $('password-open-account').addEventListener('click',()=>{if(activeAdmin)show('account-change')});
+ $('account-change-form').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const current=$('account-current').value,newPassword=$('account-new').value,repeat=$('account-repeat').value;
+  if(!activeAdmin){status('account-change-status','Logg inn i Studio for å endre passord direkte.',true);return}
+  if(!current){status('account-change-status','Skriv inn det nåværende passordet.',true);return}
+  if(newPassword.length<8){status('account-change-status','Det nye passordet må ha minst 8 tegn.',true);return}
+  if(newPassword!==repeat){status('account-change-status','De nye passordene er ikke like.',true);return}
+  if(current===newPassword){status('account-change-status','Velg et annet passord enn det du bruker nå.',true);return}
+  const button=$('account-change-submit');button.disabled=true;
+  status('account-change-status','Kontrollerer nåværende passord …');
+  try{
+   const {data:authenticated,error:userError}=await db.auth.getUser();
+   if(userError||!authenticated?.user){status('account-change-status','Økten er utløpt. Logg inn igjen i Studio.',true);return}
+   const {error}=await db.auth.updateUser({password:newPassword,current_password:current});
+   if(error){
+    const msg=/invalid.*password|incorrect.*password|current_password/i.test(error.message||'')?
+     'Nåværende passord ble ikke godkjent. Kontroller at det er riktig.':
+     error.message||'Endringen ble avvist av innloggingstjenesten.';
+    status('account-change-status',msg,true);
+    return;
+   }
+   $('account-current').value='';$('account-new').value='';$('account-repeat').value='';
+   status('account-change-status','Passordet er oppdatert. Du kan fortsette å bruke Studio – neste innlogging bruker det nye passordet.');
+  }catch(err){status('account-change-status','Kunne ikke oppdatere passordet nå. Prøv igjen.',true)}
+  finally{button.disabled=false}
+ });
+
  if(fromRecoveryLink){
   status('password-create-status','Bekrefter gjenopprettingslenken …');
   // Supabase processes implicit/PKCE recovery tokens asynchronously on page entry.
@@ -64,14 +104,22 @@ function init(){
   if(!db)return;
   const btn=$('password-request-send'),email=$('password-request-email').value.trim();
   if(!email)return;
-  btn.disabled=true;status('password-request-status','Sender forespørselen …');
+  btn.disabled=true;$('password-email-limit').hidden=true;status('password-request-status','Sender forespørselen …');
   try{
    const redirectTo=new URL('/admin-password.html',location.origin).href;
    const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo});
    if(error){
-    const limit=error.status===429||/rate limit/i.test(error.message||'');
-    status('password-request-status',limit?'For mange forespørsler. Prøv igjen senere.':'Kunne ikke sende lenken: '+error.message,true);
-   }else status('password-request-status','Hvis e-postadressen er registrert, får du snart en lenke for å velge nytt passord. Sjekk også søppelpost.');
+    const emailLimit=error.code==='over_email_send_rate_limit'||/email rate limit/i.test(error.message||'');
+    const perUser=error.code==='over_request_rate_limit'||/security purposes.*seconds/i.test(error.message||'');
+    if(emailLimit){
+     $('password-email-limit').hidden=false;
+     status('password-request-status','Ingen e-post ble sendt: prosjektets e-postkvote er brukt opp.',true);
+    }else if(perUser||error.status===429){
+     status('password-request-status','Ingen ny lenke ble sendt. Det er for kort tid siden forrige forespørsel. Prøv igjen senere.',true);
+    }else{
+     status('password-request-status','Kunne ikke sende e-post nå. '+(error.message||'Kontroller adressen og prøv senere.'),true);
+    }
+   }else status('password-request-status','Hvis e-postadressen er registrert, får du en lenke på e-post. Sjekk også søppelpost.');
   }catch(e){status('password-request-status','Tilkoblingsfeil. Kontroller internett og prøv igjen.',true)}
   finally{btn.disabled=false}
  });
