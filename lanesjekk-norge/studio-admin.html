@@ -1,7 +1,7 @@
 <!doctype html><html lang="nb"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#101f31">
 <title>Lånesjekk · Privat administrasjon</title>
-<link rel="stylesheet" href="./admin-studio.css?v=1"></head><body>
+<link rel="stylesheet" href="./admin-studio.css?v=2"></head><body>
 <header class="admin-header"><a href="./index.html" aria-label="Til forsiden">◈ <strong>LÅNESJEKK</strong><span> / STUDIO</span></a><div class="admin-header-right"><span class="admin-badge">Kun godkjente administratorer</span><button id="admin-signout" hidden type="button">Logg ut</button></div></header>
 <main>
 <section id="admin-auth" class="admin-login">
@@ -43,11 +43,28 @@
    <div id="card-sort" class="admin-sort"></div>
   </div></details>
   <details class="admin-panel"><summary>04 · Reklamescener på forsiden</summary><div class="admin-body"><p class="admin-hint">Endre rekkefølge med pilene, rediger overskrifter og beskrivelser, eller skjul en scene. Forhåndsvis før publisering.</p><label class="admin-inline"><input id="slide-visible" type="checkbox" checked> Vis reklamescener</label><div id="slide-editor" class="admin-sort"></div></div></details>
-  <details class="admin-panel"><summary>05 · Animasjoner</summary><div class="admin-body"><p class="admin-hint">Vis og administrer automatiske produktdemoer. Besøkende kan slå av bevegelse nederst på nettsiden.</p><label class="admin-inline"><input id="motion-autoplay" type="checkbox" checked> Spill demoene automatisk</label><label class="admin-inline"><input id="motion-valuation" type="checkbox" checked> Vis demo i Boligverdi</label><label class="admin-inline"><input id="motion-rental" type="checkbox" checked> Vis demo i Utleieanalyse</label><label class="admin-inline"><input id="motion-receipts" type="checkbox" checked> Vis demo i Kvitteringsstudio</label><p class="admin-hint">Velg Publiser permanent når du er fornøyd.</p></div></details><details class="admin-panel"><summary>06 · Fond og aksjer</summary><div class="admin-body">
+  <details class="admin-panel"><summary>05 · Animasjoner</summary><div class="admin-body"><p class="admin-hint">Vis og administrer automatiske produktdemoer. Besøkende kan slå av bevegelse nederst på nettsiden.</p><label class="admin-inline"><input id="motion-autoplay" type="checkbox" checked> Spill demoene automatisk</label><label class="admin-inline"><input id="motion-valuation" type="checkbox" checked> Vis demo i Boligverdi</label><label class="admin-inline"><input id="motion-rental" type="checkbox" checked> Vis demo i Utleieanalyse</label><label class="admin-inline"><input id="motion-receipts" type="checkbox" checked> Vis demo i Kvitteringsstudio</label><p class="admin-hint">Velg Publiser permanent når du er fornøyd.</p></div></details><details class="admin-panel" id="animation-studio-panel"><summary>06 · Animation Studio – videoarkiv og publisering</summary><div class="admin-body animation-studio">
+<div class="media-studio-intro"><span class="admin-eyebrow">PREMIUM MEDIA · ADMINISTRATOR</span><h2>Bytt video uten å endre kode.</h2><p>Last opp korte produktvideoer (MP4 eller WebM), velg modul, legg til forsidebilde og forhåndsvis. Ingen video publiseres før du trykker «Publiser permanent» øverst.</p></div>
+<div class="media-module-grid" id="media-module-grid" aria-label="Moduler med egne videoer"></div>
+<label>Hvilken del av nettsiden vil du redigere?<select id="media-target" aria-label="Velg plassering for video"></select></label>
+<div class="media-setting-card">
+<strong id="media-selected-name">Forsiden</strong>
+<label class="admin-inline"><input type="checkbox" id="media-enabled" checked> Vis denne videoen når den er publisert</label>
+<div class="admin-duo"><label>Videoens overskrift<input id="media-title" maxlength="90" placeholder="Kort og tydelig overskrift"></label><label>Skalering<select id="media-fit"><option value="cover">Fyll hele bildeflaten</option><option value="contain">Vis hele videoen</option></select></label></div>
+<label>Beskrivelse / forklarende tekst<textarea id="media-description" maxlength="210" rows="2" placeholder="Forklar hva dette verktøyet gjør"></textarea></label>
+<label class="admin-inline"><input type="checkbox" id="media-loop" checked> Spill videoen på nytt automatisk</label>
+</div>
+<div class="media-upload-pair"><label>Video (MP4/WebM, opptil 40 MB)<input id="media-video" type="file" accept="video/mp4,video/webm,.mp4,.webm"></label><label>Forsidebilde (PNG/JPG/WebP, opptil 4 MB)<input id="media-poster" type="file" accept="image/png,image/jpeg,image/webp"></label></div>
+<div class="media-upload-actions"><button id="media-upload" type="button" class="admin-primary">↑ Last opp og legg i utkast</button><button id="media-reset" type="button" class="admin-secondary">Bruk standardanimasjon</button></div>
+<p id="media-status" class="media-status" role="status" aria-live="polite">Velg en modul og last opp videoen.</p>
+<div class="media-preview-box"><div class="media-preview-header"><strong>FORHÅNDSVISNING</strong><span>Kun for deg før publisering</span></div><video id="media-preview" controls muted playsinline preload="metadata" hidden></video><img id="media-preview-poster" alt="Valgt forsidebilde" hidden><p id="media-preview-empty">Ingen video valgt. Den eksisterende animerte illustrasjonen fortsetter å vises.</p><p id="media-file-status" class="admin-hint">Ingen video valgt.</p></div>
+<details class="media-library-details"><summary>Mediebibliotek – bruk tidligere opplastede videoer</summary><p class="admin-hint">Velg «Bruk» ved en fil for å bruke den på valgt modul. Opplastede filer ligger i et eget, offentlig tilgjengelig mediearkiv. Kun administratorer kan laste opp.</p><button id="media-refresh" type="button" class="admin-secondary">↻ Oppdater mediebibliotek</button><div id="media-library" class="media-library">Biblioteket lastes etter innlogging.</div></details>
+<div class="media-publish-note">✓ Videoer spiller uten lyd og tilpasser seg mobilen. Original animasjon brukes som reserve. Nettstedets tilgjengelighetsvalg lar besøkende stoppe automatisk bevegelse.</div>
+</div></details><details class="admin-panel"><summary>07 · Fond og aksjer</summary><div class="admin-body">
    <label>Overskrift til investeringsstudio<input id="invest-title" maxlength="110"></label>
    <p class="admin-hint">De faglige beregningene kan ikke slettes eller erstattes med fritekst fra denne portalen. Innholdet redigeres fortsatt i kildekoden for å beskytte faktagrunnlaget.</p>
   </div></details>
-  <details class="admin-panel"><summary>07 · Tidligere publiseringer</summary><div class="admin-body">
+  <details class="admin-panel"><summary>08 · Tidligere publiseringer</summary><div class="admin-body">
    <p class="admin-hint">Databasen lagrer revisjoner hver gang en administrator publiserer. Velg en tidligere versjon og publiser den igjen for å gjenopprette.</p>
    <div id="admin-history">Laster revisjoner …</div>
   </div></details>
@@ -60,5 +77,5 @@
  </div>
  <p id="admin-message" class="admin-message" role="status" aria-live="polite"></p>
 </section></main><footer>Privat administrasjon for Lånesjekk Norge. Bare medlemmer av databasens administratorrolle kan lagre endringer. <a href="./index.html">Til offentlig nettside ↗</a></footer>
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./admin-studio.js?v=2"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./admin-animation-studio.js?v=1"></script><script defer src="./admin-studio.js?v=3"></script>
 </body></html>
