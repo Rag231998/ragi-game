@@ -123,10 +123,10 @@ test('Password reset redirects from the public homepage to the admin form, retai
  const secret='https://lanesjekk-norge.onrender.com/#access_token=fake-test-token&type=recovery&refresh_token=fake-test-refresh';
  assert.equal(visit(secret),'https://lanesjekk-norge.onrender.com/studio-admin.html#access_token=fake-test-token&type=recovery&refresh_token=fake-test-refresh');
  const pkce=visit('https://lanesjekk-norge.onrender.com/?code=test-callback-code-12345678');
- assert.match(pkce,/studio-admin\\.html\\?code=test-callback-code-12345678$/);
+ assert.ok(pkce.endsWith('/studio-admin.html?code=test-callback-code-12345678'));
  const expired=visit('https://lanesjekk-norge.onrender.com/#error=access_denied&error_code=otp_expired');
- assert.match(expired,/studio-admin\\.html#error=access_denied&error_code=otp_expired$/);
+ assert.ok(expired.endsWith('/studio-admin.html#error=access_denied&error_code=otp_expired'));
  assert.equal(visit('https://lanesjekk-norge.onrender.com/other.html#access_token=x&type=recovery'),null);
- assert.match(file('index.html'),/auth-recovery-redirect\\.js/);
- assert.match(file('admin-studio.js'),/redirectTo=new URL\\('\/studio-admin\\.html'/);
+ assert.ok(file('index.html').includes('auth-recovery-redirect.js'));
+ assert.ok(file('admin-studio.js').includes("redirectTo=new URL('/studio-admin.html'"));
 });
