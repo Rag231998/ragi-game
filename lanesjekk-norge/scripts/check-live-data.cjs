@@ -9,7 +9,7 @@ const checks=[
 async function probe(name,handler,req,verify){
  const res={code:200,setHeader(){return this},status(value){this.code=value;return this},json(value){this.body=value;return this}};
  try{
-  await Promise.race([handler(req,res),new Promise((_,reject)=>setTimeout(()=>reject(new Error('timed out')),13000))]);
+  await Promise.race([handler(req,res),new Promise((_,reject)=>setTimeout(()=>reject(new Error('timed out')),29000))]);
   if(res.code===200&&verify(res.body)){console.log('[live-data-check] '+name+' PASS'+(name.startsWith('SSB-')?' published quarters='+res.body.rows.length:''));return}
   console.log('[live-data-check] '+name+' UNAVAILABLE HTTP '+res.code+' '+String(res.body?.error||'missing verified data').slice(0,140));
  }catch(e){console.log('[live-data-check] '+name+' UNAVAILABLE '+String(e.message).slice(0,140))}
