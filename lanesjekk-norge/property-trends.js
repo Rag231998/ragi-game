@@ -95,19 +95,19 @@ function rentForecast(){
  $('pv-rent-summary').textContent='Månedlig kontantstrøm før skatt: '+nok(rows[0].value)+' nå → '+nok(rows.at(-1).value)+' i år 10 (scenario). 2,5 % kostnadsvekst årlig, uendret lånerente og '+fmt.format(inflation*100)+' % årlig leievekst.';
 }
 function guide(id){
- const shell=$(id);if(!shell)return;const stages=[...shell.querySelectorAll('.pv-guide-step')],progress=shell.querySelector('.pv-guide-progress > span'),label=shell.querySelector('.pv-guide-current'),button=shell.querySelector('.pv-guide-toggle');
+ const shell=$(id);if(!shell)return;const stages=[...shell.querySelectorAll('.pv-guide-step')],progress=shell.querySelector('.pv-guide-progress > span'),label=shell.querySelector('.pv-guide-current'),button=null;
  let playing=!matchMedia('(prefers-reduced-motion: reduce)').matches,started=performance.now(),elapsed=0,visible=true;
  const observer=new IntersectionObserver(entries=>{visible=!!entries[0]?.isIntersecting;if(visible)started=performance.now()-elapsed},{threshold:.05});observer.observe(shell);
  function render(now){
-  if(playing&&visible){elapsed=(now-started)%12000;const stage=Math.min(stages.length-1,Math.floor(elapsed/(12000/stages.length)));
+  if(playing&&visible&&!document.documentElement.classList.contains('motion-stopped')){elapsed=(now-started)%12000;const stage=Math.min(stages.length-1,Math.floor(elapsed/(12000/stages.length)));
    stages.forEach((s,i)=>s.classList.toggle('is-active',i===stage));
    if(label)label.textContent=String(stage+1).padStart(2,'0')+' / '+String(stages.length).padStart(2,'0');
    if(progress)progress.style.width=(elapsed/12000*100)+'%';
   }
   if(shell.isConnected)requestAnimationFrame(render)
  }
- button?.addEventListener('click',()=>{playing=!playing;started=performance.now()-elapsed;button.textContent=playing?'Pause':'Spill av';button.setAttribute('aria-pressed',String(!playing))});
- shell.querySelector('.pv-guide-replay')?.addEventListener('click',()=>{elapsed=0;started=performance.now();playing=true;button.textContent='Pause'});
+
+ shell.querySelector('.pv-guide-replay')?.addEventListener('click',()=>{elapsed=0;started=performance.now();playing=true});
  requestAnimationFrame(render);
 }
 function boot(){
