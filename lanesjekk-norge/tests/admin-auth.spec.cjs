@@ -28,7 +28,7 @@ test('Studio logo keeps user inside the admin portal',async({page})=>{
 });
 test('Password page has accessible recovery steps and 8-character minimum',async({page})=>{
  await page.goto('/admin-password.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('h1')).toContainText('Tilbakestill passordet');
+ await expect(page.locator('h1')).toContainText('Glemt passord?');
  await expect(page.locator('#password-request-form')).toBeVisible();
  await expect(page.locator('#password-new')).toHaveAttribute('minlength','8');
  await expect(page.locator('#password-repeat')).toHaveAttribute('minlength','8');
@@ -68,5 +68,6 @@ test('Existing administrator can change password without triggering a recovery e
  await page.locator('#password-request-email').fill('test@example.invalid');
  await page.locator('#password-request-send').click();
  await expect(page.locator('#password-email-limit')).toBeVisible();
- await expect(page.locator('#password-request-status')).toContainText('Ingen e-post ble sendt');
+ await expect(page.locator('#password-email-limit strong')).toContainText('grense');
+ await expect(page.locator('#password-request-status')).toBeEmpty();
 });
