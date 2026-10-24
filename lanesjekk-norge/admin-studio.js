@@ -12,7 +12,7 @@ const CARD_IDS=['sjekk','budsjett','kvitteringer','sparing','utleie','billan','f
 const CARD_NAMES={kvitteringer:'Kvitteringsstudio',utleie:'Utleieanalyse',budsjett:'Personlig budsjett',billan:'Billån',forbrukslan:'Forbrukslån',akademi:'Læringsplattform',sparing:'Sparing',sjekk:'Boliglån',banker:'Bankoversikt','offisielle-renter':'Offisielle renter',bsu:'BSU',ask:'ASK',ips:'IPS',innskuddsgaranti:'Innskuddsgaranti'};
 const CARDS_DEFAULT=['sjekk','budsjett','kvitteringer','sparing','utleie','billan','forbrukslan','akademi','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti'];
 let db=null,authUser=null,published=null,draft=null,revision=0,ready=false,busy=false,lastPublishedAt='';
-let previewWindow=null,previewWindowReady=false,lastPreviewFingerprint='',publishEvents=[],historyOffset=0,historyHasMore=false;
+let previewWindow=null,previewWindowReady=false,lastPreviewFingerprint='',previewSection='topp',publishEvents=[],historyOffset=0,historyHasMore=false;
 const fmtDate=stamp=>stamp?new Intl.DateTimeFormat('nb-NO',{dateStyle:'medium',timeStyle:'short'}).format(new Date(stamp)):'Ukjent tidspunkt';
 const FIELD_LABELS={brand:'Profil og farger',budget:'Budsjett',cards:'Forsidekort og objekter',slides:'Forsidescener',media:'Animation Studio',animations:'Animasjoner',investing:'Fond og aksjer'};
 function changesBetween(a,b){
@@ -73,10 +73,11 @@ async function prepareAssets(){
 function deliverFullPreview(){
  if(!previewWindow||previewWindow.closed||!previewWindowReady||!ready)return;
  const config=gather();
- previewWindow.postMessage({type:'lanesjekk-studio-preview-data',config,version:'Utkast til versjon '+(revision+1)},location.origin);
+ previewWindow.postMessage({type:'lanesjekk-studio-preview-data',config,section:previewSection,version:'Utkast til versjon '+(revision+1)},location.origin);
 }
-async function openFullPreview(){
+async function openFullPreview(section='topp'){
  if(!ready||!authUser)return false;
+ previewSection=section;
  // Open synchronously on user click, before any asynchronous upload, to prevent popup blockers.
  const win=window.open('./studio-preview.html','lanesjekk-studio-full-preview','width=1460,height=940');
  if(!win){msg('Tillat popup-vinduer fra Lånesjekk Studio for å åpne full forhåndsvisning.',true);return false}
@@ -183,7 +184,7 @@ function rowEl(id,type,label){
  up.title='Flytt opp';down.title='Flytt ned';
  up.addEventListener('click',()=>move(type,id,-1));
  down.addEventListener('click',()=>move(type,id,1));
- const inspect=create('button','↗');inspect.type='button';inspect.title='Åpne objektet i full forhåndsvisning';inspect.setAttribute('aria-label','Forhåndsvis '+label);inspect.addEventListener('click',()=>{void openFullPreview()});actions.append(up,down,inspect);
+ const inspect=create('button','↗');inspect.type='button';inspect.title='Åpne objektet i full forhåndsvisning';inspect.setAttribute('aria-label','Forhåndsvis '+label);inspect.addEventListener('click',()=>{void openFullPreview(type==='budget'?'budsjett':id)});actions.append(up,down,inspect);
  container.append(grip,main,actions);
  container.addEventListener('dragstart',e=>{container.classList.add('dragging');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',type+':'+id)});
  container.addEventListener('dragend',()=>container.classList.remove('dragging'));
@@ -415,6 +416,10 @@ function boot(){
  });
  $('admin-preview').addEventListener('click',()=>{void openFullPreview()});
  $('preview-fullscreen').addEventListener('click',()=>{void openFullPreview()});
+ $('media-preview-page').addEventListener('click',()=>{
+  const routes={home:'topp',loans:'sjekk',budget:'budsjett',receipts:'kvitteringer',valuation:'boligverdi',rental:'utleieanalyse',savings:'sparing',investing:'investering',carloan:'billan',academy:'akademi',currency:'valutakompass'};
+  void openFullPreview(routes[$('media-target').value]||'topp');
+ });
  $('admin-publish').addEventListener('click',()=>{
   openPreflight();
   if($('admin-preflight').open)void openFullPreview();
