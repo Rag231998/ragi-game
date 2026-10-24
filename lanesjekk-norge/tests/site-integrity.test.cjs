@@ -168,3 +168,19 @@ test('The dedicated password page loads local assets and JavaScript compiles',()
  assert.doesNotThrow(()=>new vm.Script(file('admin-password.js'),{filename:'admin-password.js'}));
  assert.match(file('auth-recovery-redirect.js'),/admin-password\.html/);
 });
+
+
+test('Account recovery has compact layout and explains email quota instead of concealing failure',()=>{
+ const page=file('admin-password.html'),js=file('admin-password.js'),css=file('admin-studio.css');
+ for(const id of ['account-change-form','account-current','account-new','account-repeat','account-change-status','password-email-limit','password-open-account']){
+  assert.ok(page.includes('id="'+id+'"'),id);
+ }
+ assert.match(js,/over_email_send_rate_limit/);
+ assert.match(js,/auth\.updateUser\(\{password:newPassword,current_password:current\}\)/);
+ assert.match(js,/auth\.getUser\(\)/);
+ assert.match(js,/from\('admins'\)/);
+ assert.match(page,/Minst 8 tegn/);
+ assert.match(css,/\.password-page-wrap\{max-width:500px/);
+ assert.match(css,/\.password-page-heading h1\{color:#fff;font-size:clamp\(24px/);
+ assert.match(file('studio-admin.html'),/href="\.\/admin-password\.html" target="_blank" rel="noopener noreferrer" aria-label="Endre passord/);
+});
