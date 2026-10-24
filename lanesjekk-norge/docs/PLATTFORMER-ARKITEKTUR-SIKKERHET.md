@@ -12,11 +12,11 @@
 | **GitHub** | Kildekode, commit-historikk, dokumentasjon, testskript og GitHub Actions. Oppdatering av `main` kan starte deploy. | [Rag231998/ragi-game / lanesjekk-norge](https://github.com/Rag231998/ragi-game/tree/main/lanesjekk-norge) | Aktiv |
 | **Render** | Faktisk produksjonsserver, Node.js-drift, byggebeskjeder, deploys, helsesjekk og logger. | [Render: lanesjekk-norge](https://dashboard.render.com/web/srv-dbecojo473hc73csuvlg) | Aktiv og sist bekreftet live |
 | **Lånesjekk Studio** | Redigering av visse layouter, tekster, media og publisert CMS-konfigurasjon; bruk administratorkonto. | [Studio](https://lanesjekk-norge.onrender.com/studio-admin.html) | Implementert, avgrenset til CMS-feltene |
-| **Supabase Auth** | Kontoer, passord, sesjoner, tillatte redirect-adresser og eventuell SMTP-konfigurasjon. | [Authentication](https://supabase.com/dashboard/project/pryrgwfjniggjlrizenh/auth/users) | Aktiv; end-to-end e-postlevering ikke dokumentert |
+| **Supabase Auth** | Kontoer, passord, sesjoner, tillatte redirect-adresser og eventuell SMTP-konfigurasjon. | [Authentication](https://supabase.com/dashboard/project/pryrgwfjniggjlrizenh/auth/users) | Aktiv; bruker har bekreftet at passordlenke via e-post fungerer (25.10.2026) |
 | **Supabase Database** | `admins`, site-konfigurasjon, revisjoner, rentesats-data, reservekode-hasher og RLS. | [Database](https://supabase.com/dashboard/project/pryrgwfjniggjlrizenh/editor) | Aktiv; sikkerhetsrådgiver har åpne funn |
 | **Supabase Storage** | `site-assets` og `animation-assets`: logo, bilder, poster og video; filer i disse bucketene er offentlig lesbare. | [Storage](https://supabase.com/dashboard/project/pryrgwfjniggjlrizenh/storage/buckets) | Aktiv konfigurasjon; opplastingsrutiner krever videre QA |
 | **Supabase Edge Functions** | Serverkjøring for engangs-reservekoder og privilegerte admin-operasjoner. | [Functions](https://supabase.com/dashboard/project/pryrgwfjniggjlrizenh/functions) | `lanesjekk-admin-recovery` distribuert |
-| **Resend** | Mulig SMTP-leverandør for passord-e-post, samt utsendingslogger og avsenderrettigheter. | [Resend](https://resend.com/) | Konto diskutert; **SMTP-integrasjon/levering ikke endelig verifisert** |
+| **Resend** | SMTP-/e-postleverandør brukt i oppsett av passordlenker; utsendingslogger og avsenderrettigheter administreres her. | [Resend](https://resend.com/) | **Passord-e-post bekreftet fungerende av administrator 25.10.2026**; leveransegrenser og SMTP-konfigurasjon er ikke uavhengig inspisert |
 | **dynv6** | Gratis DNS-underdomene prøvd til e-postverifisering. Ikke domene for aktiv nettside. | [dynv6](https://dynv6.com/) | Forsøk, **ikke produksjonsavhengighet** |
 | **Vercel** | Tidligere/alternativt publiseringsoppsett og gamle integrasjonsvarsler. | [Vercel](https://vercel.com/dashboard) | **Ikke** bekreftet produksjonsplattform for portalen |
 | **Kartverket** | Adresser, postnumre, kommunenummer gjennom vårt API. | [Kartverket](https://www.kartverket.no/) | Ekstern datakilde; avhengig av tilgjengelighet |
@@ -49,7 +49,7 @@ flowchart TB
   ADMIN -->|"opprett reservekoder"| EDGE["Supabase Edge Function"]
   EDGE -->|"privilegert tilgang"| DB
   EDGE -->|"passordendring etter<br/>gyldig engangskode"| AUTH
-  AUTH -.->|"sender passordlenker<br/>levering ikke sluttverifisert"| EMAIL["Supabase e-post / mulig Resend SMTP"]
+  AUTH -.->|"sender passordlenker<br/>mottak bekreftet av administrator"| EMAIL["Supabase e-post / mulig Resend SMTP"]
 ```
 
 **Les diagrammet slik:** Render leverer nettstedet; Supabase er separat for admin/kontostyring og CMS. Renteberegninger og budsjettberegninger skjer i stor grad lokalt i nettleseren. Valuta og eiendomsstatistikk kan kalle serverruter, som igjen henter eksterne data. GitHub er ikke en database.
@@ -77,8 +77,8 @@ Det er to uavhengige løp. Et nytt menyvalg i HTML krever kode-deploy; endringer
 **Reserveflyt:** Mens administrator er innlogget, opprettes tre 256-bit engangskoder. Bare SHA-256-hash lagres i `lanesjekk_admin_recovery_codes`, og en kode forbrukes før serverfunksjonen forsøker passordendring. Reservekoder er frivillige.
 
 - 24. oktober viste eldre Auth-logger flere `429 over_email_send_rate_limit`.
-- 24. oktober kl. 22:45 UTC aksepterte Supabase en ny `/recover`-forespørsel med HTTP 200. **Dette beviser ikke levering til innboksen eller at SMTP er ferdig verifisert.**
-- Det finnes ingen bekreftet konfigurasjonslesetilgang til Supabase SMTP-innstillingene gjennom den tilgjengelige integrasjonen. Vellykket faktisk leverings- og klikketest må protokollføres før «ferdig» brukes.
+- 24. oktober kl. 22:45 UTC aksepterte Supabase en ny `/recover`-forespørsel med HTTP 200. HTTP 200 beviser ikke alene levering, men administrator har i etterkant bekreftet at passord-e-post fungerer (25.10.2026).
+- **Brukerbekreftet status 25.10.2026:** Passord-e-post fungerer. Denne bekreftelsen kommer fra administrator, ikke en uavhengig kontroll av SMTP-innstillingene eller en dokumentert ende-til-ende-test av passordbytte. Etter større endringer bør mottak, lenke og innlogging testes igjen.
 - Resend kan ha begrensning på mottakere/avsender i testmodus uten domeneverifisering. Ingen nøkkel eller privat e-postadresse skal dokumenteres.
 
 ## 5. Sikkerhet: hva er kontrollert?
@@ -106,7 +106,7 @@ Resultatene under kommer fra Supabase Security Advisor og manuell, begrenset kod
 | **Høy (undersøk)** | Brede database-privilegier på `lanesjekk_site_config` og `lanesjekk_site_revisions` for `anon`/`authenticated` inkluderer `TRUNCATE`. RLS er aktiv og begrenser vanlige radoperasjoner, men er ikke i seg selv en beskyttelse mot TRUNCATE ved direkte SQL-tilgang. | Unødvendig bred tillatelse; ikke bevis på offentlig utnyttbarhet gjennom dagens Data API. | Gjennomgå databasetilkobling og trekk tilbake overflødige privilegier med test av Studio. |
 | **Middels (rådgivervarsel)** | `public.is_admin()` er `SECURITY DEFINER` og kan kalles av `anon` via RPC. Funksjonskoden gjør oppslag på `auth.uid()` og bør returnere false uten innlogget bruker, men unødvendig eksponering må vurderes. | Privilegert funksjon skal ha smalest mulig tillatelser. Den er brukt i policies for mer enn én applikasjon i samme Supabase-prosjekt. | Gjennomgå avhengigheter før `REVOKE EXECUTE` eller refaktorering. [Supabase råd](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable). |
 | **Middels** | Beskyttelse mot kjente lekkede passord er deaktivert i Supabase Auth (Security Advisor WARN). | Et lekket passord kan godtas uten denne tilleggsjekken. | Aktiver `Leaked Password Protection` dersom tilgjengelig for prosjektets plan; [dokumentasjon](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). |
-| **Middels** | Reell SMTP-levering, e-postlenken og passordbytte er ikke bekreftet ende-til-ende; eldre forespørsler ble begrenset med 429. | Administrator kan bli låst ute om e-post feiler og reservekoder ikke er opprettet. | Test faktisk mottatt melding, redirect og passordendring med egen godkjent testkonto. |
+| **Middels** | Administrator bekrefter at passord-e-post fungerer nå; tidligere forespørsler ble begrenset med 429. Uavhengig verifisering av SMTP og full ende-til-ende passordbytte er ikke dokumentert. | Administrator kan bli låst ute om e-post feiler og reservekoder ikke er opprettet. | Behold brukerbekreftelsen som driftsstatus, og gjennomfør dokumentert ende-til-ende-test av lenke, redirect og innlogging ved neste endring. |
 | **Middels** | Enkel `server.js` tillater offentlig levering av flere kode-/dokumentasjonsfiler ved filsti. `api/` og `.git` sperres, men bl.a. `tests/`, `scripts/` og `supabase/` sperres ikke eksplisitt. | Informasjonslekkasje av interne filstrukturer, selv om nøkler ikke skal ligge der. | Sjekk behov og sperr internmappe-ruter etter regresjonstest; ikke behold hemmeligheter i repo. |
 | **Middels** | Delt Supabase-prosjekt har også tabeller/funksjoner fra andre prosjekter (PrisKart/drivpris). | Feil i delte privilegier eller endring av Auth kan påvirke flere nettsteder. | Vurder separasjon i eget Supabase-prosjekt før profesjonell lansering. |
 | **Lav / oppfølging** | RLS uten policy på `lanesjekk_admin_recovery_codes` (INFO). | Dette er bevisst: direkte API-tilgang skal nektes, og kun den privilegerte serverfunksjonen skal lese/skrive. | Behold RLS og dokumenter formålet. |
