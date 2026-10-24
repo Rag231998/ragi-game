@@ -65,6 +65,13 @@ test('dashboard CTA pills have readable foreground on dark blue background',asyn
 test('top-level menus open with mouse and close by Escape',async({page})=>{
  await page.goto('/#topp',{waitUntil:'domcontentloaded'});
  const group=page.locator('.portal-nav .nav-group').filter({has:page.locator('summary', {hasText:'Eiendom'})});
+ if((page.viewportSize()?.width||0)<810){
+  await page.locator('.mobile-menu summary').click();
+  await expect(page.locator('.mobile-menu')).toHaveAttribute('open','');
+  await expect(page.locator('.mobile-menu a[href="#boligverdi"]')).toBeVisible();
+  await page.keyboard.press('Escape');
+  return;
+ }
  await group.locator('summary').click();
  await expect(group).toHaveAttribute('open','');
  await expect(group.locator('a[href="#boligverdi"]')).toBeVisible();
