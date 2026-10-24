@@ -13,7 +13,7 @@ test('admin Animation Studio can stage a video and update module config without 
  await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',route=>route.abort());
  await page.goto('/studio-admin.html',{waitUntil:'domcontentloaded'});
  const setup=await page.evaluate(()=>{
-  const ids=['home','loans','budget','receipts','valuation','rental','savings','investing','carloan','academy'];
+  const ids=['home','loans','budget','receipts','valuation','rental','savings','investing','carloan','academy','currency'];
   const draft={slots:Object.fromEntries(ids.map(id=>[id,{enabled:true,videoUrl:'',posterUrl:'',title:'',description:'',fit:'cover',loop:true}]))};
   window.__mediaDraft=draft;
   const db={storage:{from:()=>({upload:async()=>({error:null}),list:async()=>({data:[],error:null}),getPublicUrl:(path)=>({data:{publicUrl:'https://pryrgwfjniggjlrizenh.supabase.co/storage/v1/object/public/animation-assets/'+path}})})}};
@@ -23,7 +23,7 @@ test('admin Animation Studio can stage a video and update module config without 
   window.lanesjekkAnimationStudio.render();
   return document.querySelectorAll('.media-module-choice').length;
  });
- expect(setup).toBe(10);
+ expect(setup).toBe(11);
  await page.locator('#media-target').selectOption('valuation');
  await page.locator('#media-title').fill('Premium boligvideo');
  await page.locator('#media-description').fill('Slik fungerer prisestimater');
