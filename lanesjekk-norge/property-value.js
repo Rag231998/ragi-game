@@ -8,7 +8,24 @@ async function get(url){const r=await fetch(url,{headers:{Accept:'application/js
 function notice(s){$('pv-status').textContent=s}
 function catIndex(dim,key){const arr=Object.entries(dim.category.index||{});return arr.find(([code])=>code===key)?.[1]}
 function chart(rows){const svg=$('pv-chart');svg.replaceChildren();if(!rows.length)return;const ns='http://www.w3.org/2000/svg';const v=rows.map(x=>x.value),lo=Math.min(...v)*.9,hi=Math.max(...v)*1.1;const point=(a,i)=>[45+i*510/Math.max(1,rows.length-1),155-(a-lo)*115/Math.max(1,hi-lo)];const path=rows.map((r,i)=>{const [x,y]=point(r.value,i);return(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)}).join(' ');const el=(name,attr)=>{const n=document.createElementNS(ns,name);for(const[k,v]of Object.entries(attr))n.setAttribute(k,v);svg.append(n);return n};for(let i=0;i<4;i++)el('line',{x1:45,x2:556,y1:40+i*38,y2:40+i*38,stroke:'#dce7eb'});el('path',{d:path,fill:'none',stroke:'#0e927a','stroke-width':4,'stroke-linecap':'round','stroke-linejoin':'round'});rows.forEach((r,i)=>{const[x,y]=point(r.value,i);if(i===rows.length-1||i===0)el('circle',{cx:x,cy:y,r:5,fill:'#0d8e75'})});const mk=(val,x,y)=>{const t=el('text',{x,y,'font-size':11,fill:'#516f7c'});t.textContent=val};mk(rows[0].period,45,177);mk(rows.at(-1).period,490,177);$('pv-chart-legend').textContent='Kvadratmeterpriser fra SSB · '+rows.length+' rapporterte perioder.'}
-function display(){if(!prices.length)return;const area=decimal($('pv-area').value);if(!(area>=15&&area<=1500&&Number.isInteger(area)))return;const latest=prices.at(-1),val=latest.value*area;lastEstimate=val;$('pv-value').textContent=M(val);$('pv-low').textContent=M(val*.85);$('pv-high').textContent=M(val*1.15);$('pv-sqm').textContent=M(latest.value);$('pv-quarter').textContent=latest.period;$('pv-period').textContent='SSB '+latest.period+' · '+$('pv-municipality').value+' · '+fmtArea(area)+' m²';$('pv-growth').textContent=prices.length>1?((latest.value/prices[0].value-1)*100).toFixed(1).replace('.',',')+' %':'Ikke tilgjengelig';chart(prices);renderComparison()}
+function display(){
+ if(!prices.length)return;
+ const area=decimal($('pv-area').value);
+ if(!(area>=15&&area<=1500&&Number.isInteger(area)))return;
+ const summary=window.LANEPROPERTYMARKET?.basis(prices);
+ if(!summary){notice('Kan ikke beregne et estimat fra tilgjengelige prisobservasjoner.');return}
+ const total=summary.pricePerSqm*area;lastEstimate=total;
+ $('pv-value').textContent=M(Math.round(total/1000)*1000);
+ $('pv-low').textContent=summary.singleQuarter?'—':M(Math.round(summary.lowestSqm*area/1000)*1000);
+ $('pv-high').textContent=summary.singleQuarter?'—':M(Math.round(summary.highestSqm*area/1000)*1000);
+ $('pv-sqm').textContent=M(Math.round(summary.pricePerSqm));
+ $('pv-quarter').textContent=summary.firstQuarter===summary.lastQuarter?summary.lastQuarter:summary.firstQuarter+'–'+summary.lastQuarter;
+ $('pv-period').textContent='SSB '+summary.firstQuarter+'–'+summary.lastQuarter+' · '+fmtArea(area)+' m² · '+summary.quarters+' kvartal(er)';
+ $('pv-growth').textContent=prices.length>1?new Intl.NumberFormat('nb-NO',{maximumFractionDigits:1}).format((prices.at(-1).value/prices[0].value-1)*100)+' %':'Ikke tilgjengelig';
+ $('pv-price-method').textContent='Beregning: '+fmtArea(area)+' m² × '+M(Math.round(summary.pricePerSqm))+'/m² ('+(summary.weighted?'vektet etter antall salg':'snitt av publiserte kvartalspriser')+') = '+M(Math.round(total/1000)*1000)+'.';
+ $('pv-range-method').textContent=summary.singleQuarter?'Bare ett kvartal tilgjengelig – historisk spenn kan ikke beregnes.':'Nedre og øvre tall viser laveste og høyeste observerte kvartalspris per m² i perioden, multiplisert med ditt areal. Dette er IKKE et usikkerhetsintervall eller en takst.';
+ chart(prices);renderComparison()
+}
 function decode(raw,region,type){const d=raw.dimension||{},ids=raw.id||Object.keys(d),size=raw.size||ids.map(k=>Object.keys(d[k].category.index).length);const idxs=ids.map((id,i)=>Object.entries(d[id].category.index||{}).sort((a,b)=>a[1]-b[1]).map(([code])=>code));const dimRegion=ids.find(x=>/region/i.test(x)),dimType=ids.find(x=>/bolig|type/i.test(x)),dimContent=ids.find(x=>/contents/i.test(x)),dimTime=ids.find(x=>/tid|time/i.test(x));if(!dimTime)throw Error('SSB mangler tidsdimensjon');const lines=[];const values=Array.isArray(raw.value)?raw.value:[];for(let n=0;n<values.length;n++){let k=n,code={};for(let i=ids.length-1;i>=0;i--){code[ids[i]]=idxs[i][k%size[i]];k=Math.floor(k/size[i])}if(code[dimRegion]!==region||code[dimType]!==type||!Number.isFinite(values[n])||values[n]<=0)continue;const text=(d[dimContent]?.category?.label||{})[code[dimContent]]||'';if(!/kvadratmeter|square metre/i.test(text))continue;lines.push({period:code[dimTime],value:values[n]})}return lines.sort((a,b)=>a.period.localeCompare(b.period)).slice(-12)}
 async function estimate(){
  const myRequest=++reqEstimate;
@@ -24,11 +41,12 @@ async function estimate(){
   prices=(data.rows||[]).filter(r=>Number.isFinite(r.sqm)&&r.sqm>0).map(r=>({period:r.period,value:r.sqm,sales:r.sales}));
   if(!prices.length)throw Error('Ingen gyldige prisobservasjoner.');
   display();
-  const last=prices.at(-1),sales=last.sales;
-  $('pv-sales').textContent=Number.isFinite(sales)?sales.toLocaleString('nb-NO')+' registrerte omsetninger':'Antall salg ikke oppgitt';
-  $('pv-confidence').textContent=!Number.isFinite(sales)?'Ikke vurdert':sales<10?'Lite datagrunnlag':sales<30?'Begrenset utvalg':'Offentlig omsetningsstatistikk';
-  $('pv-market-location').textContent=data.regionLabel||municipality;
-  notice('SSB tabell 14310 · '+(data.regionLabel||municipality)+' · '+(data.propertyTypeLabel||'Bolig')+'. Merk: Kommunegjennomsnitt, ikke adressespesifikk takst.');
+  const summary=window.LANEPROPERTYMARKET?.basis(prices);
+  const sales=summary?.sales;
+  $('pv-sales').textContent=Number.isFinite(sales)?sales.toLocaleString('nb-NO')+' omsetninger i '+summary.quarters+' kvartaler':'Antall salg ikke oppgitt';
+  $('pv-confidence').textContent=!Number.isFinite(sales)?'Datagrunnlag ikke oppgitt':sales<20?'Få salg – stor variasjon mulig':sales<60?'Begrenset statistisk grunnlag':'Kommunestatistikk';
+  $('pv-market-location').textContent=(selectedAddress?.municipality||data.regionLabel||municipality)+' (kommunenr. '+municipality+')';
+  notice('SSB 14310 · '+(selectedAddress?.municipality||municipality)+' · '+(data.propertyTypeLabel||'Bolig')+' · '+(summary?.quarters||1)+' publiserte kvartal(er). Dette er et grovt kommunetall, ikke en individuell verdi for adressen.');
   $('pv-badge').textContent='✓ SSB-verdi';
   document.dispatchEvent(new CustomEvent('property:market',{detail:{municipality,type:kind}}));
  }catch(e){
@@ -42,6 +60,8 @@ async function estimate(){
   $('pv-confidence').textContent='Ikke vurdert';
   $('pv-market-location').textContent='Ingen bekreftet statistikk';
   $('pv-period').textContent='SSB-data mangler for dette utvalget';
+ $('pv-price-method').textContent='Ingen verifisert kommunestatistikk tilgjengelig.';
+ $('pv-range-method').textContent='Ingen dokumentert kvartalsvariasjon tilgjengelig.';
  }finally{if(myRequest===reqEstimate){btn.disabled=false;btn.removeAttribute('aria-busy');renderComparison()}}
 }
 function clearAddressResults(){
