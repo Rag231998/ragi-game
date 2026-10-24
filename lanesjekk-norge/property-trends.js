@@ -2,7 +2,7 @@
 const $=id=>document.getElementById(id);
 const fmt=new Intl.NumberFormat('nb-NO',{maximumFractionDigits:1});
 const nok=n=>new Intl.NumberFormat('nb-NO',{style:'currency',currency:'NOK',maximumFractionDigits:0}).format(Math.round(n));
-const money=id=>{const raw=$(id)?.value??'';if(!String(raw).trim())return 0;return window.LANENUMBERS?.parseMoney(raw)??Number(String(raw).replace(/[\\s\\u00a0\\u202f]/g,'').replace(',','.'));};
+const money=id=>{const raw=$(id)?.value??'';if(!String(raw).trim())return 0;return window.LANENUMBERS?.parseMoney(raw)??Number(String(raw).replace(/[\s\u00a0\u202f]/g,'').replace(',','.'));};
 let indexRows=[],meta=null,periodCount=20,marketController=null;
 const chartNS='http://www.w3.org/2000/svg';
 function node(name,attributes,root){const el=document.createElementNS(chartNS,name);for(const [key,val]of Object.entries(attributes||{}))el.setAttribute(key,String(val));if(root)root.append(el);return el}
