@@ -132,3 +132,6 @@ html{scroll-padding-top:92px}
 #utleie .pv-guide-window .pv-guide-step:not(.is-active){pointer-events:none!important}
 @media(max-width:1200px){.site-header .portal-group-nav>.nav-group>summary{font-size:12px!important;padding:9px 8px!important}}
 @media(max-width:900px){.site-header .portal-group-nav{display:none!important}.site-header #site-search-open{margin-left:auto}}
+
+/* Mobile viewport regression: avoid 12px horizontal overflow in property widgets. */
+@media(max-width:600px){#utleie,#utleie .pv-shell,#utleie .pv-rental-extras,#utleie .pv-guide,#utleie .pv-guide-screen,#utleie .pv-guide-window,#utleie .pv-trend-lab,#utleie .pv-rent-trend,#utleie .pv-layout,#utleie .pv-panel{box-sizing:border-box!important;min-width:0!important;max-width:100%!important}#utleie .pv-guide-screen{padding:12px!important}#utleie .pv-guide-window{width:100%!important}#utleie .pv-trend-tools,#utleie .pv-index-tool,#utleie .pv-index-fields{min-width:0!important;max-width:100%!important}#utleie .pv-trend-tools>*{min-width:0!important;max-width:100%!important}}
