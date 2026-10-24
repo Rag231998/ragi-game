@@ -5,6 +5,14 @@
 'use strict';
 const base='https://pryrgwfjniggjlrizenh.supabase.co';
 const key='sb_publishable_nMwAplLiIZ-p9zIu8F3yPQ_-_XwiMM9';
+const MEDIA_IDS=Object.freeze(['home','loans','budget','receipts','valuation','rental','savings','investing','carloan','academy']);
+const MEDIA_BASE='https://pryrgwfjniggjlrizenh.supabase.co/storage/v1/object/public/animation-assets/';
+function safeMedia(url,kind){
+ if(typeof url!=='string'||!url.startsWith(MEDIA_BASE))return '';
+ const filename=url.slice(MEDIA_BASE.length);
+ const ok=kind==='video'?/^video\/[a-z0-9_-]+\.(?:mp4|webm)$/i.test(filename):/^poster\/[a-z0-9_-]+\.(?:png|jpg|jpeg|webp)$/i.test(filename);
+ return ok?url:'';
+}
 const SLIDE_IDS=Object.freeze(['loan','budget','receipts','invest','property']);
 const SECTIONS=Object.freeze(['quick','hero','stats','workbook','insights']);
 const CARD_IDS=Object.freeze(['sjekk','budsjett','kvitteringer','sparing','utleie','billan','forbrukslan','akademi','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti']);
@@ -21,6 +29,7 @@ function configClean(input){
  const inputCardOrder=Array.isArray(a.cards?.order)?a.cards.order.filter(id=>CARD_IDS.includes(id)):CARD_IDS;
  for(const id of SECTIONS)if(!order.includes(id))order.push(id);
  return {
+ media:{slots:Object.fromEntries(MEDIA_IDS.map(id=>{const x=a.media?.slots?.[id]||{};return [id,{enabled:x.enabled!==false,videoUrl:safeMedia(x.videoUrl,'video'),posterUrl:safeMedia(x.posterUrl,'image'),title:plain(x.title,90),description:plain(x.description,210),fit:x.fit==='contain'?'contain':'cover',loop:x.loop!==false}]}))},
  animations:{autoplay:a.animations?.autoplay!==false,valuation:a.animations?.valuation!==false,rental:a.animations?.rental!==false,receipts:a.animations?.receipts!==false},
  slides:{visible:a.slides?.visible!==false,order:[...new Set([...(Array.isArray(a.slides?.order)?a.slides.order.filter(id=>SLIDE_IDS.includes(id)):[]),...SLIDE_IDS])],items:Object.fromEntries(SLIDE_IDS.map(id=>[id,{title:plain(a.slides?.items?.[id]?.title,95),description:plain(a.slides?.items?.[id]?.description,220),enabled:a.slides?.items?.[id]?.enabled!==false}]))},
  brand:{
@@ -49,6 +58,7 @@ function apply(input){
  const demoNodes={valuation:document.getElementById('pv-valuation-guide'),rental:document.getElementById('pv-rental-guide'),receipts:document.querySelector('#kvitteringer .receipt-tour')};
  for(const [key,node] of Object.entries(demoNodes))if(node)node.hidden=!cfg.animations[key];
  document.documentElement.classList.toggle('cms-stop-demo-motion',!cfg.animations.autoplay);
+ window.lanesjekkSiteMedia?.apply(cfg.media,cfg.animations);
  const showcase=document.getElementById('loan-showcase');
  if(showcase){showcase.hidden=!cfg.slides.visible;const holder=showcase.querySelector('.sc-slides');
   for(const id of cfg.slides.order){const slide=holder?.querySelector('.sc-'+id);if(!slide)continue;const settings=cfg.slides.items[id];slide.dataset.cmsEnabled=String(settings.enabled);slide.hidden=!settings.enabled;const heading=slide.querySelector('h1,h2'),description=slide.querySelector('.sc-copy p');if(settings.title&&heading)heading.textContent=settings.title;if(settings.description&&description)description.textContent=settings.description;holder.append(slide)}
