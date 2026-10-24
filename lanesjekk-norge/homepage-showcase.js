@@ -3,14 +3,14 @@
 function init(){
  const root=document.getElementById('loan-showcase');if(!root)return;
  let scenes=[...root.querySelectorAll('.sc-slide')];const chapters=[...root.querySelectorAll('.sc-chapter')];
- const previous=root.querySelector('.sc-previous'),next=root.querySelector('.sc-next'),pause=root.querySelector('.sc-pause'),announcer=root.querySelector('.sc-announcer');
- if(scenes.length!==5||chapters.length!==5||!previous||!next||!pause)return;
+ const previous=root.querySelector('.sc-previous'),next=root.querySelector('.sc-next'),announcer=root.querySelector('.sc-announcer');
+ if(scenes.length!==5||chapters.length!==5||!previous||!next)return;
  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
- let current=0,manualPause=false,visible=true,timeout=null;
- const blocked=()=>reduced.matches||document.documentElement.classList.contains('cms-pause-hero-motion')||document.documentElement.classList.contains('cms-hide-hero-visual');
+ let current=0,visible=true,timeout=null;
+ const blocked=()=>reduced.matches||document.documentElement.classList.contains('cms-pause-hero-motion')||document.documentElement.classList.contains('cms-hide-hero-visual')||document.documentElement.classList.contains('motion-stopped');
  function clear(){if(timeout!==null){clearTimeout(timeout);timeout=null}}
- function stopCondition(){return manualPause||blocked()||document.hidden||!visible||root.hidden||document.body.dataset.activeView!=='home'}
- function sync(){const paused=manualPause||blocked();root.classList.toggle('sc-paused',paused);pause.setAttribute('aria-pressed',String(paused));pause.setAttribute('aria-label',paused?'Spill av scenene automatisk':'Pause automatisk avspilling');pause.innerHTML=paused?'▶ <span>Spill</span>':'Ⅱ <span>Pause</span>'}
+ function stopCondition(){return blocked()||document.hidden||!visible||root.hidden||document.body.dataset.activeView!=='home'}
+ function sync(){root.classList.toggle('sc-paused',blocked())}
  function display(index,announce=true){
   if(!scenes.length)return;
   current=(index+scenes.length)%scenes.length;
@@ -22,7 +22,7 @@ function init(){
  previous.addEventListener('click',()=>{display(current-1);schedule()});
  next.addEventListener('click',()=>{display(current+1);schedule()});
  chapters.forEach(b=>b.addEventListener('click',()=>{const ix=scenes.findIndex(s=>s.dataset.scIndex===b.dataset.scGoto);if(ix>=0)display(ix);schedule()}));
- pause.addEventListener('click',()=>{if(blocked())return;manualPause=!manualPause;schedule()});
+
  document.addEventListener('visibilitychange',schedule);
  const obs=new MutationObserver(schedule);obs.observe(document.documentElement,{attributes:true,attributeFilter:['class']});
  if('IntersectionObserver' in window){const io=new IntersectionObserver(x=>{visible=x[0].isIntersecting;schedule()},{threshold:.08});io.observe(root);window.addEventListener('pagehide',()=>io.disconnect(),{once:true})}
