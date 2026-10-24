@@ -45,8 +45,10 @@ async function lookup(municipality,type){
  const dims=meta.dimension||{},ids=meta.id||Object.keys(dims);
  const rg=keyFor(ids,/region/i),typ=keyFor(ids,/bolig|type/i),co=keyFor(ids,/contents|statistikk|variable/i),time=keyFor(ids,/tid|time|kvartal/i);
  if(!rg||!typ||!co||!time)throw httpError(502,'SSB-tabellen har uventet struktur.');
- const region=codes(dims[rg]).find(x=>x===municipality||x.endsWith('-'+municipality)||x.endsWith(municipality));
- if(!region)throw httpError(404,'Kommunen er ikke tilgjengelig i statistikken. Velg en annen kommune.');
+ const available=codes(dims[rg]);
+ // The default region metadata may contain counties only. Municipality codes are
+ // exposed by the explicit vs_Kommun value set, so do not reject valid IDs here.
+ const region=available.find(x=>x===municipality||x==='K-'+municipality||x.endsWith('-'+municipality))||'K-'+municipality;
  const propertyType=pickValue(dims[typ],TYPE_PATTERNS[type])||({block:'03',small:'02',house:'01'}[type]&&codes(dims[typ]).includes({block:'03',small:'02',house:'01'}[type])?{block:'03',small:'02',house:'01'}[type]:null);
  const priceCode=pickValue(dims[co],/gjennomsnittlig kvadratmeterpris|kvadratmeterpris|price per square metre/i);
  const salesCode=pickValue(dims[co],/antall boligomsetninger|number of sales/i);
