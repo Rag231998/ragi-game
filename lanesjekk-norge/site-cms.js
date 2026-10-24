@@ -5,7 +5,7 @@
 'use strict';
 const base='https://pryrgwfjniggjlrizenh.supabase.co';
 const key='sb_publishable_nMwAplLiIZ-p9zIu8F3yPQ_-_XwiMM9';
-const MEDIA_IDS=Object.freeze(['home','loans','budget','receipts','valuation','rental','savings','investing','carloan','academy']);
+const MEDIA_IDS=Object.freeze(['home','loans','budget','receipts','valuation','rental','savings','investing','carloan','academy','currency']);
 const MEDIA_BASE='https://pryrgwfjniggjlrizenh.supabase.co/storage/v1/object/public/animation-assets/';
 function safeMedia(url,kind){
  if(typeof url!=='string'||!url.startsWith(MEDIA_BASE))return '';
