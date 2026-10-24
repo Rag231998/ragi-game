@@ -116,7 +116,7 @@ const allowed=(value)=>{
 };
 function updateValuation(){
  const area=Number($('rental-area')?.value);
- const comps=['rental-comp-1','rental-comp-2','rental-comp-3'].map(id=>Number($(id)?.value)).filter((v,i)=>$('rental-comp-'+(i+1))?.value&&valid(v,1000,1000000));
+ const comps=['rental-comp-1','rental-comp-2','rental-comp-3'].map(id=>window.LANENUMBERS?.parseMoney($(id)?.value)??Number(String($(id)?.value||'').replace(/\s/g,''))).filter((v,i)=>$('rental-comp-'+(i+1))?.value&&valid(v,1000,1000000));
  const value=$('rental-value'),range=$('rental-value-range'),diff=$('rental-value-diff'),future=$('rental-future-value');
  const annual=Number($('rental-growth')?.value)||0;$('rental-growth-label').textContent=percent.format(annual)+' %';
  if(!valid(area,10,2000)||comps.length<2){value.textContent='–';range.textContent='Registrer gyldig BRA-i og minst to sammenlignbare kvadratmeterpriser.';diff.textContent='';future.replaceChildren();$('rental-value-marker').style.left='50%';return}
