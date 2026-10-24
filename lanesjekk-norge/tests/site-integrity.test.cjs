@@ -180,7 +180,7 @@ test('Account recovery has compact layout and explains email quota instead of co
  assert.match(js,/auth\.getUser\(\)/);
  assert.match(js,/from\('admins'\)/);
  assert.match(page,/Minst 8 tegn/);
- assert.ok(page.includes('Hvorfor kan e-postutsending stoppe?'));
+ assert.ok(page.includes('Hvorfor kommer ikke e-posten?'));
  assert.doesNotMatch(page,/class="password-page-help"/);
  assert.doesNotMatch(page,/class="password-page-heading"/);
  assert.match(js,/status\('password-request-status',''\)/);
