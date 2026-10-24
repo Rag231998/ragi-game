@@ -80,7 +80,8 @@ async function openFullPreview(){
  // Open synchronously on user click, before any asynchronous upload, to prevent popup blockers.
  const win=window.open('./studio-preview.html','lanesjekk-studio-full-preview','width=1460,height=940');
  if(!win){msg('Tillat popup-vinduer fra Lånesjekk Studio for å åpne full forhåndsvisning.',true);return false}
- previewWindow=win;previewWindowReady=false;win.focus();
+ if(previewWindow!==win||win.closed)previewWindowReady=false;
+ previewWindow=win;win.focus();
  try{
   await prepareAssets();
   lastPreviewFingerprint=JSON.stringify(gather());deliverFullPreview();
@@ -168,7 +169,7 @@ function rowEl(id,type,label){
  up.title='Flytt opp';down.title='Flytt ned';
  up.addEventListener('click',()=>move(type,id,-1));
  down.addEventListener('click',()=>move(type,id,1));
- actions.append(up,down);
+ const inspect=create('button','↗');inspect.type='button';inspect.title='Åpne objektet i full forhåndsvisning';inspect.setAttribute('aria-label','Forhåndsvis '+label);inspect.addEventListener('click',()=>{void openFullPreview()});actions.append(up,down,inspect);
  container.append(grip,main,actions);
  container.addEventListener('dragstart',e=>{container.classList.add('dragging');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',type+':'+id)});
  container.addEventListener('dragend',()=>container.classList.remove('dragging'));
@@ -200,7 +201,8 @@ function renderSort(type){
   check.type='checkbox';check.checked=type==='budget'?draft.budget.visible[id]:appearance.visible;
   if(type==='budget'&&id==='workbook'){check.disabled=true;check.title='Budsjettarket må være tilgjengelig'}
   check.onchange=()=>{if(type==='budget')draft.budget.visible[id]=check.checked;else appearance.visible=check.checked};
-  toggle.append(check,create('span','Vis på nettsiden'));main.append(toggle);
+  toggle.classList.add('admin-switch');toggle.append(check,create('span','Vis på nettsiden'));
+   toggle.append(create('small',type==='budget'?'På: denne budsjettseksjonen vises. Av: seksjonen skjules etter publisering.':'På: dette objektet vises. Av: kortet skjules etter publisering.','admin-toggle-hint'));main.append(toggle);
   if(type==='cards'){
    const title=create('input');title.type='text';title.maxLength=85;title.value=appearance.title;title.placeholder='Kortets tittel (tom = standard)';
    title.setAttribute('aria-label',CARD_NAMES[id]+' tittel');title.oninput=()=>appearance.title=title.value;
@@ -233,7 +235,7 @@ function renderSlides(){
   const heading=create('strong',labels[id]),tools=create('div',undefined,'admin-item-controls');
   for(const [label,delta] of [['↑',-1],['↓',1]]){const b=create('button',label);b.type='button';b.onclick=()=>{const a=draft.slides.order,i=a.indexOf(id),n=i+delta;if(n<0||n>=a.length)return;[a[i],a[n]]=[a[n],a[i]];renderSlides()};tools.append(b)}
   const shown=create('input');shown.type='checkbox';shown.checked=item.enabled;shown.onchange=()=>item.enabled=shown.checked;
-  const shownLabel=create('label',undefined,'admin-inline');shownLabel.append(shown,create('span','Vis scene'));
+  const shownLabel=create('label',undefined,'admin-inline');shownLabel.classList.add('admin-switch');shownLabel.append(shown,create('span','Vis scene'));shownLabel.append(create('small','På: scenen vises på forsiden. Av: scenen skjules.','admin-toggle-hint'));
   const title=create('input');title.type='text';title.maxLength=95;title.value=item.title;title.placeholder='Overskrift – tom = standard';title.oninput=()=>item.title=title.value;title.setAttribute('aria-label',labels[id]+' overskrift');
   const desc=create('textarea');desc.maxLength=220;desc.value=item.description;desc.placeholder='Beskrivelse – tom = standard';desc.oninput=()=>item.description=desc.value;desc.setAttribute('aria-label',labels[id]+' beskrivelse');
   body.append(heading,shownLabel,title,desc);outer.append(body,tools);wrap.append(outer);
@@ -391,8 +393,36 @@ function boot(){
  $('admin-signout').addEventListener('click',async()=>{
   await db.auth.signOut();authUser=null;ready=false;published=null;draft=null;await check();
  });
- $('admin-preview').addEventListener('click',showPreview);
- $('admin-publish').addEventListener('click',publish);
+ $('admin-preview').addEventListener('click',()=>{void openFullPreview()});
+ $('preview-fullscreen').addEventListener('click',()=>{void openFullPreview()});
+ $('admin-publish').addEventListener('click',()=>{
+  openPreflight();
+  if($('admin-preflight').open)void openFullPreview();
+ });
+ $('admin-preflight-preview').addEventListener('click',()=>{void openFullPreview()});
+ $('admin-preflight-close').addEventListener('click',()=>$('admin-preflight').close());
+ $('admin-preflight-cancel').addEventListener('click',()=>$('admin-preflight').close());
+ $('admin-preview-confirm').addEventListener('change',refreshDashboard);
+ $('admin-confirm-publish').addEventListener('click',publish);
+ $('admin-preflight').addEventListener('close',refreshDashboard);
+ $('admin-history-search').addEventListener('input',renderPublishEvents);
+ $('admin-history-refresh').addEventListener('click',()=>{void loadRevisions(true)});
+ $('admin-history-more').addEventListener('click',()=>{void loadRevisions(false)});
+ document.querySelectorAll('[data-admin-jump]').forEach(button=>button.addEventListener('click',()=>{
+  const target=$(button.dataset.adminJump);if(!target)return;
+  if(target.tagName==='DETAILS')target.open=true;
+  target.scrollIntoView({behavior:'smooth',block:'start'});
+ }));
+ window.addEventListener('message',event=>{
+  if(event.origin!==location.origin||!previewWindow||event.source!==previewWindow)return;
+  if(event.data?.type==='lanesjekk-studio-preview-ready'){
+   previewWindowReady=true;deliverFullPreview();refreshDashboard();
+  }
+ });
+ const refreshSoon=()=>requestAnimationFrame(refreshDashboard);
+ $('admin-workspace').addEventListener('input',refreshSoon);
+ $('admin-workspace').addEventListener('change',refreshSoon);
+ $('admin-workspace').addEventListener('click',refreshSoon);
  $('admin-restore').addEventListener('click',()=>{if(published){draft=clone(published);render();$('admin-frame').src='./index.html#topp';msg('Utkastet er nullstilt til sist publiserte versjon.')}} );
  $('preview-mobile').addEventListener('click',()=>$('preview-viewport').classList.add('mobile'));
  $('preview-desktop').addEventListener('click',()=>$('preview-viewport').classList.remove('mobile'));
