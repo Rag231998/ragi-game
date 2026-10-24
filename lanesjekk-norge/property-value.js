@@ -172,6 +172,15 @@ function boot(){if(!$('pv-estimate'))return;
  const switchTo=setupMode();
  $('pv-search').addEventListener('click',()=>triggerSearch($('pv-address').value,true));
  $('pv-address').addEventListener('input',()=>{
+  if(selectedAddress){
+   prices=[];lastEstimate=null;estimates=[];renderComparison();
+   ['pv-value','pv-low','pv-high','pv-sqm','pv-quarter','pv-growth'].forEach(id=>$(id).textContent='—');
+   $('pv-sales').textContent='Ingen omsetningstall';$('pv-chart-legend').textContent='';
+   $('pv-badge').textContent='Venter på bolig';
+   const chart=$('pv-chart');chart.replaceChildren();
+   $('pv-market-location').textContent='Kommune';
+   notice('Velg en ny adresse og fyll inn BRA-i. Gamle prisanslag er nullstilt.');
+  }
   selectedAddress=null;$('pv-address-verified').hidden=true;$('pv-municipality').value='';
   triggerSearch($('pv-address').value);
  });
