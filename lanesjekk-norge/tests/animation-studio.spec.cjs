@@ -38,9 +38,10 @@ test('admin Animation Studio can stage a video and update module config without 
  expect((await page.evaluate(()=>window.__mediaDraft.slots.valuation.videoUrl))).toBe('');
 });
 test('published CMS media video replaces demo and restores native animation',async({page})=>{
+ const config=fixture();
+ await page.route('**/rest/v1/lanesjekk_site_config*',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({config,revision:1})}));
  await page.goto('/#utleie',{waitUntil:'domcontentloaded'});
  await expect.poll(()=>page.evaluate(()=>!!window.lanesjekkCms?.configClean&&!!window.lanesjekkSiteMedia?.apply)).toBe(true);
- const config=fixture();
  await page.evaluate(cfg=>window.lanesjekkCms.apply(cfg),config);
  await expect(page.locator('.studio-video-showcase[data-media-slot=valuation]')).toHaveCount(1);
  await expect(page.locator('#pv-valuation-guide')).toBeHidden();
