@@ -36,3 +36,37 @@ test('Password page has accessible recovery steps and 8-character minimum',async
  await page.locator('.password-page-back').click();
  await expect(page).toHaveURL(/\/studio-admin\.html$/);
 });
+
+
+test('Existing administrator can change password without triggering a recovery email',async({page})=>{
+ await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',route=>route.abort());
+ await page.addInitScript(()=>{
+  window.__passwordCalls=[];
+  window.supabase={createClient:()=>({
+   auth:{
+    onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),
+    getUser:async()=>({data:{user:{id:'admin-test'}},error:null}),
+    getSession:async()=>({data:{session:{access_token:'stub'}},error:null}),
+    updateUser:async payload=>{window.__passwordCalls.push(payload);return {error:null}},
+    resetPasswordForEmail:async()=>({error:{status:429,code:'over_email_send_rate_limit',message:'email rate limit exceeded'}})
+   },
+   from:()=>({select:()=>({eq:()=>({maybeSingle:async()=>({data:{user_id:'admin-test'},error:null})})})})
+  })}
+ });
+ await page.goto('/admin-password.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#account-change')).toBeVisible();
+ await expect(page.locator('#reset-request')).toBeHidden();
+ await page.locator('#account-current').fill('OldPassword123!');
+ await page.locator('#account-new').fill('NewPassword123!');
+ await page.locator('#account-repeat').fill('NewPassword123!');
+ await page.locator('#account-change-submit').click();
+ await expect(page.locator('#account-change-status')).toContainText('Passordet er oppdatert');
+ const calls=await page.evaluate(()=>window.__passwordCalls);
+ expect(calls).toEqual([{password:'NewPassword123!',current_password:'OldPassword123!'}]);
+ await page.locator('#account-forgot-open').click();
+ await expect(page.locator('#reset-request')).toBeVisible();
+ await page.locator('#password-request-email').fill('test@example.invalid');
+ await page.locator('#password-request-send').click();
+ await expect(page.locator('#password-email-limit')).toBeVisible();
+ await expect(page.locator('#password-request-status')).toContainText('Ingen e-post ble sendt');
+});
