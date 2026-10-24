@@ -283,11 +283,33 @@ function boot(){
   if(!recoveryMode)setTimeout(check,0)
  });
  if(!linkError&&(recoveryHash.get('type')==='recovery'||recoveryQuery.get('type')==='recovery'||recoveryQuery.has('code')))showRecovery();
+ const newPass=$('admin-new-password'),repeatPass=$('admin-repeat-password'),strength=$('admin-password-strength'),strengthBar=$('admin-password-strength-bar'),match=$('admin-password-match');
+ const updatePasswordGuidance=()=>{
+  const length=newPass.value.length,repeat=repeatPass.value;
+  const met=length>=8;strengthBar.style.width=Math.min(100,length/12*100)+'%';
+  strengthBar.dataset.valid=String(met);
+  strength.textContent=length===0?'Minst 8 tegn – anbefalt 12 eller flere.':!met?'Legg til '+(8-length)+' tegn for å oppfylle minstekravet.':length<12?'Minstekravet på 8 tegn er oppfylt. 12 eller flere anbefales.':'Lengdeanbefalingen er oppfylt. Bruk et unikt passord.';
+  match.textContent=!repeat?'Skriv inn det samme passordet på nytt.':repeat===newPass.value?'Passordene er like.':'Passordene er ikke like.';
+  match.dataset.matches=String(!!repeat&&repeat===newPass.value);
+ };
+ newPass.addEventListener('input',updatePasswordGuidance);
+ repeatPass.addEventListener('input',updatePasswordGuidance);
+ recovery.querySelectorAll('[data-password-toggle]').forEach(button=>{
+  button.addEventListener('click',()=>{
+   const input=$(button.dataset.passwordToggle),revealed=input.type==='password';
+   input.type=revealed?'text':'password';
+   button.textContent=revealed?'Skjul':'Vis';
+   button.setAttribute('aria-pressed',String(revealed));
+   button.setAttribute('aria-label',(revealed?'Skjul':'Vis')+' '+(input===newPass?'nytt passord':'bekreftelse av passord'));
+   input.focus({preventScroll:true});
+  })
+ });
+ updatePasswordGuidance();
  $('admin-recovery-form').addEventListener('submit',async e=>{
   e.preventDefault();
-  const pass=$('admin-new-password').value,again=$('admin-repeat-password').value,out=$('admin-recovery-status');
-  if(pass!==again){out.textContent='Passordene er ikke like.';return}
-  if(pass.length<12){out.textContent='Bruk minst 12 tegn.';return}
+  const pass=newPass.value,again=repeatPass.value,out=$('admin-recovery-status');
+  if(pass.length<8){out.textContent='Passordet må inneholde minst 8 tegn.';newPass.focus();return}
+  if(pass!==again){out.textContent='Passordene er ikke like.';repeatPass.focus();return}
   const btn=$('admin-recovery-save');btn.disabled=true;
   try{
    const {data,error:sessionError}=await db.auth.getSession();
@@ -297,6 +319,9 @@ function boot(){
    out.textContent='Passordet er oppdatert. Du kan nå logge inn med det nye passordet.';
    await db.auth.signOut();
    recoveryMode=false;recovery.hidden=true;$('admin-auth').hidden=false;
+   newPass.value='';repeatPass.value='';newPass.type='password';repeatPass.type='password';
+   recovery.querySelectorAll('[data-password-toggle]').forEach(button=>{button.textContent='Vis';button.setAttribute('aria-pressed','false')});
+   updatePasswordGuidance();
    history.replaceState(null,'',location.pathname);$('admin-password').value='';
   }catch(e){out.textContent='Kunne ikke tilbakestille passordet. Be om en ny lenke.'}
   finally{btn.disabled=false}
