@@ -11,7 +11,7 @@ function chart(rows){const svg=$('pv-chart');svg.replaceChildren();if(!rows.leng
 function display(){
  if(!prices.length)return;
  const area=decimal($('pv-area').value);
- if(!(area>=15&&area<=1500&&Number.isInteger(area)))return;
+ if(!(area>=15&&area<=1500&&Number.isInteger(area))){lastEstimate=null;['pv-value','pv-low','pv-high'].forEach(id=>$(id).textContent='—');notice('BRA-i må være et helt tall mellom 15 og 1 500 m².');renderComparison();return;}
  const summary=window.LANEPROPERTYMARKET?.basis(prices);
  if(!summary){notice('Kan ikke beregne et estimat fra tilgjengelige prisobservasjoner.');return}
  const total=summary.pricePerSqm*area;lastEstimate=total;
@@ -48,7 +48,7 @@ async function estimate(){
   $('pv-market-location').textContent=(selectedAddress?.municipality||data.regionLabel||municipality)+' (kommunenr. '+municipality+')';
   notice('SSB 14310 · '+(selectedAddress?.municipality||municipality)+' · '+(data.propertyTypeLabel||'Bolig')+' · '+(summary?.quarters||1)+' publiserte kvartal(er). Dette er et grovt kommunetall, ikke en individuell verdi for adressen.');
   $('pv-badge').textContent='✓ SSB-verdi';
-  document.dispatchEvent(new CustomEvent('property:market',{detail:{municipality,type:kind}}));
+
  }catch(e){
   if(myRequest!==reqEstimate)return;
   notice('Ingen verifisert pris kunne hentes: '+e.message+' Sjekk boligtype og prøv igjen. Vi viser ikke oppdiktede markedsverdier.');
@@ -80,6 +80,7 @@ function chooseAddress(a){
  $('pv-selected-address').textContent=a.text+', '+a.postal+' '+a.place;
  const number=$('pv-unit');number.placeholder='F.eks. H0201 (oppgis manuelt)';
  clearAddressResults();
+ document.dispatchEvent(new CustomEvent('property:market',{detail:{municipality:a.municipalityCode,type:$('pv-type').value}}));
  if(decimal($('pv-area').value)>=15)estimate();
  else{$('pv-area').focus();notice('Adresse funnet. Fyll inn BRA-i fra salgsoppgave eller matrikkel for å beregne boligverdi.');}
 }
@@ -230,7 +231,7 @@ function boot(){if(!$('pv-estimate'))return;
  $('pv-estimate').addEventListener('click',estimate);
  $('pv-municipality').addEventListener('input',()=>{if(selectedAddress)$('pv-address-codes').textContent='Postnummer '+($('pv-postal').value||'—')+' · Kommunenummer '+($('pv-municipality').value||'—')+' (manuelt korrigert)';++reqEstimate;prices=[];lastEstimate=null;$('pv-value').textContent='—';$('pv-low').textContent='—';$('pv-high').textContent='—';$('pv-badge').textContent='Ny beregning kreves';notice('Kommunenummeret er endret manuelt. Kontroller kommunenummeret mot Kartverket før du beregner på nytt.');});
  $('pv-postal').addEventListener('input',()=>{const val=$('pv-postal').value.trim();if(val&&!/^\\d{4}$/.test(val)){$('pv-postal').setCustomValidity('Oppgi et norsk postnummer med fire sifre.')}else $('pv-postal').setCustomValidity('');});
- $('pv-type').addEventListener('change',()=>{if(prices.length)estimate()});
+ $('pv-type').addEventListener('change',()=>{if(selectedAddress)document.dispatchEvent(new CustomEvent('property:market',{detail:{municipality:$('pv-municipality').value.trim(),type:$('pv-type').value}}));if(prices.length)estimate()});
  $('pv-area').addEventListener('input',display);
  $('pv-to-rental').addEventListener('click',()=>{
   if(!lastEstimate){notice('Hent et offentlig prisanslag først.');return}
