@@ -15,7 +15,7 @@ let index=0,timer=null;const change=()=>{
  const scene=scenes[index];wrap.querySelector('.ln-explainer-count').textContent=scene.num+' / 04';
  for(const [sel,key] of [['.ln-scene-tag','tag'],['.ln-scene-title','title'],['.ln-scene-sub','sub'],['.ln-scene-result','result'],['.ln-scene-note','note']])wrap.querySelector(sel).textContent=scene[key];
  for(const [sel,key] of [['.ln-number-one','a'],['.ln-number-two','b'],['.ln-number-three','c']])wrap.querySelector(sel).textContent=scene[key];
- wrap.dataset.scene=scene.num;wrap.querySelector('.ln-explainer-cta').href=['#sjekk','#budsjett','#sparing','#valutakompass'][index];
+ wrap.dataset.scene=scene.num;wrap.querySelector('.ln-explainer-cta').href=['#sjekk','#budsjett','#sparing','#sparing'][index];
  wrap.querySelectorAll('.ln-explainer-dots button').forEach((b,i)=>{b.setAttribute('aria-current',String(i===index));b.setAttribute('aria-label','Vis '+scenes[i].tag.toLowerCase())});
  wrap.classList.remove('ln-playing');void wrap.offsetWidth;wrap.classList.add('ln-playing');
  };
