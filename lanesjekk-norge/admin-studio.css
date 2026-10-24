@@ -110,3 +110,20 @@ footer{padding:18px;text-align:center;color:#78919c;font-size:10px;border-top:1p
 .media-library-row button{padding:8px 11px;min-width:48px}
 .media-publish-note{font-size:11px;color:#406f63;line-height:1.65;border-left:3px solid #20a88b;padding:10px 14px;background:#eef9f5}
 @media(max-width:700px){.media-upload-pair,.media-module-grid{grid-template-columns:minmax(0,1fr)}.media-preview-header{flex-wrap:wrap}}
+
+
+/* Password recovery: compact, accessible and readable on mobile. */
+#admin-password-recovery .admin-password-field{display:grid;gap:7px;min-width:0}
+#admin-password-recovery .admin-password-field>label{color:#35596a;font-weight:850;font-size:12px}
+#admin-password-recovery .admin-password-control{display:flex;align-items:stretch;min-width:0;position:relative}
+#admin-password-recovery .admin-password-control input{flex:1;min-width:0;padding-right:76px;font-size:15px;letter-spacing:.01em}
+#admin-password-recovery .admin-password-control .admin-password-toggle{position:absolute;right:5px;top:5px;bottom:5px;min-height:0;padding:4px 12px;border:0;background:#edf7f5;color:#0c685c;font-size:12px;border-radius:6px;font-weight:800}
+#admin-password-recovery .admin-password-control .admin-password-toggle:hover{background:#d7efea}
+#admin-password-recovery .admin-password-strength-meter{height:5px;max-width:100%;background:#e1ebed;border-radius:5px;overflow:hidden;margin-top:3px}
+#admin-password-recovery .admin-password-strength-meter span{height:100%;width:0;display:block;background:#8f9eac;border-radius:5px;transition:width 160ms ease,background 160ms ease}
+#admin-password-recovery .admin-password-strength-meter span[data-valid="true"]{background:#138873}
+#admin-password-recovery .admin-password-hint{font-size:11px;line-height:1.5;color:#617b87;display:block}
+#admin-password-recovery #admin-password-match[data-matches="true"]{color:#097963;font-weight:750}
+#admin-password-recovery #admin-recovery-status{font-size:12px;line-height:1.5;color:#325c69;overflow-wrap:anywhere}
+@media(max-width:520px){#admin-password-recovery{padding:22px 17px;margin:18px auto}}
+@media(prefers-reduced-motion:reduce){#admin-password-recovery .admin-password-strength-meter span{transition:none}}
