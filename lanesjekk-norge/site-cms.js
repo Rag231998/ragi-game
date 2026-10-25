@@ -100,7 +100,14 @@ function configClean(input){
     id:plain(item.id,50)||'nyhet-'+index,title:plain(item.title,110),
     summary:plain(item.summary,500),route:RELEASE_ROUTES.has(item.route)?item.route:'topp',
     date:/^\d{4}-\d{2}-\d{2}$/.test(item.date||'')?item.date:''
-  })).filter(item=>item.title)
+  })).filter(item=>item.title),
+  tools:(Array.isArray(a.catalog?.tools)?a.catalog.tools:[]).filter(item=>item&&typeof item==='object').slice(0,18).map((item,index)=>({
+   id:/^custom-[a-z0-9-]{5,43}$/i.test(String(item.id||''))?item.id:'custom-'+index,
+   route:RELEASE_ROUTES.has(item.route)?item.route:'budsjett',
+   cat:['Lån','Økonomi','Sparing','Eiendom','Læring'].includes(item.cat)?item.cat:'Økonomi',
+   title:plain(item.title,85),subtitle:plain(item.subtitle,170),
+   how:plain(item.how,450),icon:plain(item.icon,8)||'✦',enabled:item.enabled!==false
+  }))
  },
  cards:{order:[...new Set([...inputCardOrder,...CARD_IDS])],
  appearance:Object.fromEntries(CARD_IDS.map(id=>{
