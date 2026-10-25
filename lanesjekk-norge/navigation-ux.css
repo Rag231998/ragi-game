@@ -90,3 +90,32 @@ html{scroll-padding-top:calc(86px + env(safe-area-inset-top,0px))}
 @media(prefers-reduced-motion:reduce){
  .portal-home .viewbar-switch,.portal-home .mobile-menu>div{animation:none!important;transition:none!important}
 }
+
+/* The same navigation remains legible in Studio-managed dark mode. */
+html.cms-dark .portal-home .portal-viewbar{
+ background:linear-gradient(115deg,#172f40,#193e47)!important;
+ border-color:#3c6370!important;color:#e9f6f7!important
+}
+html.cms-dark .portal-home .viewbar-crumb a,
+html.cms-dark .portal-home .viewbar-crumb strong{color:#e7f8f4!important}
+html.cms-dark .portal-home .viewbar-switch{
+ background:#244e52!important;color:#e8fff5!important;border-color:#508577!important
+}
+html.cms-dark .portal-home .viewbar-switch:hover{background:#316760!important}
+html.cms-dark .portal-home .site-header .portal-group-nav>.nav-group.is-current-group>summary{
+ background:#255b55!important;color:#effff8!important;border-color:#548d7e!important
+}
+html.cms-dark .portal-home .site-header .portal-group-nav>.nav-group>.nav-drop a[aria-current="page"]{
+ background:#285b52!important;color:#e8fff4!important
+}
+@media(max-width:1140px){
+ html.cms-dark .portal-home .site-header .mobile-menu[open]>div{
+  background:#193342!important;border-color:#426e73!important;color:#f1ffff!important
+ }
+ html.cms-dark .portal-home .site-header .mobile-menu[open]>div>a{color:#e7f7f8!important}
+ html.cms-dark .portal-home .site-header .mobile-menu[open]>div>a[aria-current="page"],
+ html.cms-dark .portal-home .site-header .mobile-menu[open]>div>a:hover{
+  color:#eafff7!important;background:#265e57!important
+ }
+ html.cms-dark .portal-home .site-header .mobile-menu[open]>div>strong{color:#aadbd2!important}
+}
