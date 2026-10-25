@@ -35,11 +35,11 @@ test('menu dropdowns are exclusive and close with Escape',async({page},testInfo)
  await expect(groups.nth(1)).not.toHaveAttribute('open','');
 });
 
-test('cinematic slider shows five independently animated scenes and navigates',async({page})=>{
+test('cinematic slider shows six independently animated scenes and navigates',async({page})=>{
  await page.goto('/',{waitUntil:'domcontentloaded'});
  const hero=page.locator('#loan-showcase');
  await expect(hero).toBeVisible();
- await expect(page.locator('.sc-slide')).toHaveCount(5);
+ await expect(page.locator('.sc-slide')).toHaveCount(6);
  await expect(page.locator('.sc-slide.is-active')).toHaveCount(1);
  await expect(page.locator('.sc-slide[data-sc-index="0"]')).toHaveClass(/is-active/);
  await page.locator('.sc-next').click();
