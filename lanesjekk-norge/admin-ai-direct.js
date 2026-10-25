@@ -69,8 +69,12 @@ async function refreshStatus(){
   const data=await request('status',{videoId:task.id,signature:task.signature});
   const state=String(data.status||'pending');
   if(state==='completed'){
-   if(!data.videoUrl)throw Error('Videoen er ferdig, men leverandøren har ikke gitt en direkte forhåndsvisning. Bruk «Sjekk videostatus» eller prøv igjen senere.');
-   task.videoUrl=data.videoUrl;task.state='completed';persist();
+   if(!data.videoUrl){
+    const copy=await request('import',{videoId:task.id,signature:task.signature},'POST');
+    if(!copy.videoUrl)throw Error('Ingen gyldig videofil ble hentet.');
+    task.videoUrl=copy.videoUrl;task.imported=true;
+   }else task.videoUrl=data.videoUrl;
+   task.state='completed';persist();
    renderResult(task.videoUrl);
    stopMonitoring();
   }else if(state==='failed'||state==='cancelled'){
@@ -97,6 +101,12 @@ async function updateReady(){
  try{
   const result=await request('ready');
   configured=Boolean(result.configured);
+  const durations=Array.isArray(result.durations)?result.durations:[5,10,15];
+  const selector=$('studio-ai-duration');
+  if(selector){
+   for(const option of selector.options)option.disabled=!durations.includes(Number(option.value));
+   if(configured&&!durations.includes(Number(selector.value)))selector.value=String(durations.includes(10)?10:durations[0]);
+  }
   if(!configured){
    report(result.setup||'Den gratis videomodellen er ikke tilgjengelig akkurat nå. Det blir aldri valgt en betalt modell.','warning');
   }else if(!task)report('Gratis AI-video er klar til bruk. Ingen betalte modeller eller automatisk oppgradering.','success');
@@ -120,7 +130,7 @@ async function createVideo(){
  try{
   setProgress('Sender video til gratis AI-modell …','Kostnad: 0 kr. Gratis kvoter og køtid kan gjelde. Ingen publisering uten godkjenning.');
   const result=await request('create',{module:slot,topic,description,style,duration},'POST');
-  task={id:result.videoId,signature:result.signature,module:slot,state:'pending',createdAt:Date.now()};
+  task={id:result.videoId,signature:result.signature,module:slot,state:'pending',costNok:0,createdAt:Date.now()};
   persist();$('studio-ai-status-check').hidden=false;
   startMonitoring();
  }catch(e){
@@ -134,7 +144,7 @@ async function applyVideo(){
  importing=true;
  const button=$('studio-ai-apply');button.disabled=true;button.textContent='Lagrer i mediearkivet …';
  try{
-  const result=await request('import',{videoId:task.id,signature:task.signature},'POST');
+  const result=task.imported?{videoUrl:task.videoUrl}:await request('import',{videoId:task.id,signature:task.signature},'POST');
   window.lanesjekkAnimationStudio.useGeneratedVideo(task.module,result.videoUrl);
   report('Videoen ligger nå som upublisert utkast under «'+modules[task.module][0]+'». Åpne full forhåndsvisning og publiser når du er fornøyd.','success');
   $('studio-ai-result-message').textContent='Videoen er importert i valgt modul som utkast. Den vises ikke offentlig før du publiserer.';
