@@ -1,8 +1,8 @@
 <!doctype html><html lang="nb"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#101f31">
 <title>Lånesjekk · Privat administrasjon</title>
-<link rel="stylesheet" href="./admin-studio.css?v=12"></head><body>
-<header class="admin-header"><a href="./studio-admin.html" aria-label="Lånesjekk Studio – administrasjon">◈ <strong>LÅNESJEKK</strong><span> / STUDIO</span></a><div class="admin-header-right"><span class="admin-badge">Kun godkjente administratorer</span>
+<link rel="stylesheet" href="./admin-studio.css?v=12"><link rel="stylesheet" href="./admin-dark-mode.css?v=1"><script>try{const v=localStorage.getItem('lanesjekk.studio.theme.v1')||'auto';if(v==='dark'||(v==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('studio-dark')}catch{}</script></head><body>
+<header class="admin-header"><a href="./studio-admin.html" aria-label="Lånesjekk Studio – administrasjon">◈ <strong>LÅNESJEKK</strong><span> / STUDIO</span></a><div class="admin-header-right"><label class="admin-ui-theme-wrap" for="admin-ui-theme"><span>Utseende</span><select id="admin-ui-theme" aria-label="Utseende for administrasjonsportalen"><option value="auto">◐ Automatisk</option><option value="light">☀ Lys</option><option value="dark">☾ Mørk</option></select></label><span class="admin-badge">Kun godkjente administratorer</span>
 <div class="admin-account-wrapper" id="admin-account-wrapper" hidden>
  <button id="admin-account-menu-toggle" type="button" aria-expanded="false" aria-controls="admin-account-menu">◉ Konto og sikkerhet <span aria-hidden="true">⌄</span></button>
  <div id="admin-account-menu" class="admin-account-menu" hidden>
@@ -96,7 +96,7 @@
       <option value="dark">Mørk – mørkt design for besøkende</option>
       <option value="auto">Automatisk – følger besøkendes enhet</option>
     </select>
-  </label><p id="site-theme-help" class="admin-media-hint">Du kan forhåndsvise alle tre modusene før du publiserer. Endring av tema påvirker farger og kontrast på den offentlige nettsiden.</p>
+  </label><p id="site-theme-help" class="admin-media-hint">Du kan forhåndsvise alle tre modusene før du publiserer. Denne innstillingen bestemmer standardutseendet på den offentlige nettsiden. Besøkende kan selv velge lyst eller mørkt tema på sin enhet. Innstillingen «Utseende» øverst styrer bare hvordan din adminportal ser ut.</p>
   <div class="admin-duo"><label>Hovedfarge<input id="site-color" type="color" value="#0c8878"></label><label>Logo (PNG, JPEG eller WebP, maks 2 MB)<input id="site-logo" type="file" accept="image/png,image/jpeg,image/webp"></label></div>
   <img id="site-logo-preview" alt="Forhåndsvisning av nettsidens logo" hidden style="height:58px;max-width:200px;object-fit:contain;background:#edf5f3;padding:6px;border-radius:10px">
   <label class="admin-hint" style="display:flex;align-items:center;gap:10px;margin:12px 0"><input id="site-hero-visual" type="checkbox" checked> Vis animert økonomiillustrasjon på forsiden</label>
@@ -164,5 +164,5 @@
   <p id="admin-preflight-status" class="admin-hint" aria-live="polite"></p>
 </dialog>
 <footer>Privat administrasjon for Lånesjekk Norge. Bare medlemmer av databasens administratorrolle kan lagre endringer. <a href="./index.html">Til offentlig nettside ↗</a></footer>
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./admin-session.js?v=2"></script><script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script><script defer src="./admin-animation-studio.js?v=7"></script><script defer src="./admin-studio.js?v=13"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./admin-session.js?v=2"></script><script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script><script defer src="./admin-animation-studio.js?v=7"></script><script defer src="./admin-studio.js?v=13"></script><script defer src="./admin-theme.js?v=1"></script>
 </body></html>
