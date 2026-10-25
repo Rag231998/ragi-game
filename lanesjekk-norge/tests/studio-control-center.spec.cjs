@@ -71,6 +71,7 @@ test('publish requires whole-site preview and confirmation; history captures the
 });
 
 test('remember me is off by default with session-only or opt-in 24-hour storage',async({page})=>{
+ await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',route=>route.abort());
  await page.goto('/studio-admin.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#admin-remember')).not.toBeChecked();
  const state=await page.evaluate(async()=>{
