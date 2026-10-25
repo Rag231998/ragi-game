@@ -3,4 +3,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://lanesjekk-norge.vercel.app/sitemap.xml
+Sitemap: https://lanesjekk-norge.onrender.com/sitemap.xml
