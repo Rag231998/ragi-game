@@ -49,6 +49,19 @@ function build(name,slot){
  video.style.objectFit=slot.fit==='contain'?'contain':'cover';
  const source=document.createElement('source');source.src=slot.videoUrl;source.type=slot.videoUrl.endsWith('.webm')?'video/webm':'video/mp4';
  video.append(source);display.append(video);
+ // Browsers only allow automatic playback without audio. A visible user-activated
+ // audio control is needed for AI presenter speech; it never auto-unmutes.
+ const sound=document.createElement('button');sound.type='button';sound.className='studio-video-sound';
+ sound.textContent='◖ Slå på lyd';sound.setAttribute('aria-label','Slå på lyd på produktvideo');
+ sound.setAttribute('aria-pressed','false');
+ sound.addEventListener('click',()=>{
+  video.muted=!video.muted;
+  sound.textContent=video.muted?'◖ Slå på lyd':'◖ Slå av lyd';
+  sound.setAttribute('aria-label',video.muted?'Slå på lyd på produktvideo':'Slå av lyd på produktvideo');
+  sound.setAttribute('aria-pressed',String(!video.muted));
+  if(!video.muted){const playing=video.play();if(playing?.catch)playing.catch(()=>{})}
+ });
+ display.append(sound);
  const copy=document.createElement('div');copy.className='studio-video-copy';
  const eyebrow=document.createElement('span');eyebrow.textContent='LÅNESJEKK NORGE · PRODUKTDEMO';
  const title=document.createElement('h2');title.textContent=slot.title||('Oppdag '+config.caption);
