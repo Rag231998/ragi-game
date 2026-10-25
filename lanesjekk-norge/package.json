@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node server.js",
-    "test": "node --test tests/site-integrity.test.cjs",
+    "test": "node --test tests/site-integrity.test.cjs tests/navigation-engine.test.cjs",
     "prestart": "npm test",
     "postinstall": "node scripts/check-live-data.cjs"
   },
