@@ -1,5 +1,5 @@
 /* Lånesjekk feature library: a real modal workspace, not another cramped page. */
-.fc-open{min-height:43px;display:inline-flex;gap:8px;align-items:center;justify-content:center;border:1px solid #b9d9d3;border-radius:11px;background:#e8f8f2;color:#0b6958;font:850 12px/1.2 inherit;font-size:12px;font-weight:850;padding:10px 13px;white-space:nowrap}
+.fc-open{min-height:43px;display:inline-flex;gap:8px;align-items:center;justify-content:center;border:1px solid #b9d9d3;border-radius:11px;background:#e8f8f2;color:#0b6958;font-size:12px;line-height:1.2;font-weight:850;font-family:inherit;padding:10px 13px;white-space:nowrap}
 .fc-open:hover,.fc-open:focus-visible{background:#cfefdf;color:#07564b;border-color:#6fb9a2}
 .fc-open strong{font-size:10px;min-width:16px;border-radius:999px;background:#087f6c;color:#fff;padding:2px 5px}
 #site-live-status{font-size:10px;color:#476b6e;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
