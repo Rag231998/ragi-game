@@ -1,0 +1,89 @@
+/* Lånesjekk Studio — independent, legible light/dark/auto preference. */
+.admin-ui-theme-wrap{display:flex;align-items:center;gap:8px;color:#c9e6e3;font-weight:780;font-size:11px;white-space:nowrap}
+.admin-ui-theme-wrap select{min-height:39px;max-width:150px;border:1px solid #527b83;border-radius:10px;padding:8px 10px;background:#204657;color:#f0fffb;font-size:12px;font-weight:800;cursor:pointer}
+.admin-ui-theme-wrap select:focus-visible{outline:3px solid #6be5c6;outline-offset:2px}
+@media(max-width:750px){.admin-ui-theme-wrap>span{display:none}.admin-ui-theme-wrap select{max-width:126px;font-size:11px}.admin-header-right{gap:7px}}
+@media(max-width:430px){.admin-header{padding:10px!important;gap:5px}.admin-header>a{font-size:14px!important;letter-spacing:0!important}.admin-header a span{font-size:10px!important}.admin-ui-theme-wrap select{max-width:105px;padding:7px 5px;font-size:10px}.admin-header-right{gap:4px}}
+html.studio-dark{color-scheme:dark;--dark:#0c1d2b;--ink:#e6f4f7;--muted:#b4ced7;--line:#405e6d;--bg:#101d2b;--mint:#66d5b7}
+html.studio-dark body{background:#101d2b!important;color:#e7f4f7!important}
+html.studio-dark a{color:#84ead1}
+html.studio-dark .admin-header{background:#102537!important;border-bottom:1px solid #325364}
+html.studio-dark .admin-ui-theme-wrap{color:#cce9e4}
+html.studio-dark .admin-ui-theme-wrap select{background:#214d58;color:#eafff8;border-color:#638d91}
+html.studio-dark :is(.admin-login,.admin-panel,.admin-preview-panel,.admin-preflight,.admin-help,
+ .admin-command-center,.admin-stat,.admin-action-bar,.admin-item,.admin-history-entry,
+ .admin-change-line,.admin-remember-choice,.admin-navigation-tip,.admin-object-results,
+ .admin-history-detail,.admin-mini-preview-actions,.admin-account-menu,
+ .admin-history-feed,.admin-media-hint){
+ background:#1b3445!important;background-image:none!important;border-color:#426374!important;
+ color:#e7f4f7!important;box-shadow:0 9px 29px #0003
+}
+html.studio-dark #admin-workspace>.admin-command-center{background:#182f40!important}
+html.studio-dark #admin-workspace :is(.admin-panel[open]>summary,.admin-action-bar,.admin-preview-head,.admin-stat,.admin-item,.admin-history-entry,
+ .admin-navigation-tip,.admin-object-results,.admin-search-result,.admin-history-toolbar,.admin-preflight-head){
+ background:#203e50!important;background-image:none!important;border-color:#476c79!important
+}
+html.studio-dark :is(.admin-login,.admin-panel,.admin-body,.admin-command-center,.admin-preview-panel,.admin-preflight) :is(h1,h2,h3,h4,strong,label,summary){
+ color:#edf9fb!important
+}
+html.studio-dark :is(.admin-login,.admin-panel,.admin-body,.admin-command-center,.admin-preview-panel,.admin-preflight) :is(p,small,.admin-hint,.admin-media-hint,.admin-toggle-hint,.admin-navigation-tip,time){
+ color:#bad2dc!important
+}
+html.studio-dark :is(.admin-workspace-head p,.admin-action-copy,.admin-nav-hint,.admin-history-summary,.admin-history-entry-head time,
+ .admin-history-row span,.admin-preview-head small,.admin-preview-section-field,.admin-object-search-wrap>label,.admin-account-email){
+ color:#c9dce4!important
+}
+html.studio-dark :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),textarea,select){
+ background:#102c3d!important;color:#ecfafb!important;border-color:#63838e!important
+}
+html.studio-dark :is(input,textarea)::placeholder{color:#bdd0da!important;opacity:1}
+html.studio-dark :is(input,select,textarea):focus-visible{outline:3px solid #79e7c8!important;outline-offset:2px}
+html.studio-dark #admin-workspace :is(.admin-item-main>input,.admin-item-main>select,.admin-item-main>textarea,#admin-object-search,#preview-inline-section){
+ background:#142f40!important;color:#f2fcfc!important;border-color:#6b8a91!important
+}
+html.studio-dark #admin-workspace :is(.admin-section-nav button,.admin-item-controls button,.admin-search-result,
+ .admin-secondary,.admin-history-actions button,.admin-preview-tools button,.admin-restore,
+ .admin-object-results button){
+ background:#254b5a!important;color:#e5f8f5!important;border-color:#53827f!important
+}
+html.studio-dark #admin-workspace :is(.admin-section-nav button,.admin-item-controls button,.admin-search-result,
+ .admin-secondary,.admin-history-actions button,.admin-preview-tools button):hover{
+ background:#30645f!important;color:#fff!important;border-color:#67b09b!important
+}
+html.studio-dark #admin-workspace .admin-section-nav button[aria-current="page"],
+html.studio-dark #admin-workspace .admin-preview-tools button[aria-pressed="true"]{
+ background:#116f61!important;color:#f4fff9!important;border-color:#62bfa7!important
+}
+html.studio-dark :is(.admin-primary,#admin-workspace .admin-primary){
+ background:#118471!important;color:#fff!important;border-color:#3ba88e!important
+}
+html.studio-dark :is(.admin-primary,#admin-workspace .admin-primary):hover{background:#0e9d83!important}
+html.studio-dark #admin-workspace :is(.admin-item-main>strong,.admin-history-entry-head strong,.admin-stat>strong,
+ .admin-workspace-head h1,.admin-preview-head strong,.admin-search-result,.admin-media-hint,.admin-object-results>p){
+ color:#e7f5f7!important
+}
+html.studio-dark #admin-workspace :is(.admin-remember-choice,label.admin-inline:has(input[type="checkbox"]),label.admin-hint:has(>input[type="checkbox"])) {
+ background:#244454!important;color:#eaf7f7!important;border-color:#526f7b!important
+}
+html.studio-dark #admin-workspace :is(.admin-body label,.admin-item-main label,.admin-label,.admin-badge,.admin-nav-hint,.admin-stat span){
+ color:#c5dce2!important
+}
+html.studio-dark .admin-account-menu :is(strong,a,button){color:#edfafb!important}
+html.studio-dark .admin-account-menu :is(a,button):hover{background:#2c5f5c!important}
+html.studio-dark .admin-hint,
+html.studio-dark .admin-media-hint{background-color:#203e4d!important}
+html.studio-dark #admin-preview-panel #preview-viewport{background:linear-gradient(130deg,#112736,#193243)!important}
+html.studio-dark #admin-workspace #admin-preview-panel .admin-preview-head{background:#203e50!important}
+html.studio-dark #admin-frame{border-color:#587b86!important}
+html.studio-dark #admin-preview-panel:fullscreen{background:#112333!important}
+html.studio-dark #admin-workspace :is(.admin-object-results,.admin-history-row,.admin-history-entry,.admin-change-line){
+ border-color:#4b7080!important
+}
+html.studio-dark :is(.admin-message,#admin-workspace .admin-action-status){background:#215046!important;color:#defff3!important;border-color:#459680!important}
+html.studio-dark .admin-message.error{background:#572f35!important;color:#ffe0d8!important;border-color:#c06d69!important}
+html.studio-dark .admin-preflight-check{background:#244354!important;color:#edf9fb!important;border-color:#4f7784!important}
+html.studio-dark #admin-workspace .admin-stat>strong[data-dirty="true"]{color:#ffd38d!important}
+html.studio-dark #admin-workspace .admin-search-control>span{color:#a4c9d2!important}
+html.studio-dark :is(footer,footer a){color:#bcd8dd!important;border-color:#3e5b66!important}
+html.studio-dark ::selection{background:#2c9a80;color:white}
+@media(prefers-reduced-motion:reduce){html.studio-dark *{transition:none!important}}
