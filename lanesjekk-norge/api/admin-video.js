@@ -59,7 +59,7 @@ function promptFor({topic,description,style,duration}){
   'Style: '+direction,
   'Topic: '+topic+'.',
   'Scenario: '+description,
-  'Natural Norwegian Bokmål spoken narration, audible clean voice. Avoid unnatural hands, warped faces and garbled text.',
+  'If the free model supports audio, include a clean natural Norwegian Bokmål voiceover; otherwise depict the scene visually without pretending speech exists. Avoid unnatural hands, warped faces and garbled text.',
   'Do not show identifiable real people or imitate a bank brand. No logos, invented interface screenshots, fabricated savings amounts or investment promises.',
   'Voiceover call to action: Utforsk '+topic+' hos Lånesjekk Norge.',
   'No baked-in on-screen letters or numbers. The website may add captions afterwards.'
@@ -98,7 +98,7 @@ const supportsFreeDuration=(entry,duration)=>
  Boolean(preferredResolution(entry));
 async function freeModel(key,duration){
  const models=await availableModels(key);
- return models.find(entry=>supportsFreeDuration(entry,duration));
+ return models.filter(entry=>supportsFreeDuration(entry,duration)).sort((a,b)=>Number(b.generate_audio===true)-Number(a.generate_audio===true))[0];
 }
 function responseError(message){
  if(typeof message==='string')return cleanMessage(message);
@@ -156,7 +156,7 @@ module.exports=async(req,res)=>{
    const selected=await freeModel(key,body.duration);
    if(!selected)return fail(res,503,'Ingen bekreftet gratis videomodell støtter denne varigheten akkurat nå. Ingen kostnad påløper.');
    rate.set(user.id,now);
-   const payload={model:selected.id,prompt:promptFor(body),duration:body.duration,resolution:preferredResolution(selected),aspect_ratio:'16:9',generate_audio:false};
+   const payload={model:selected.id,prompt:promptFor(body),duration:body.duration,resolution:preferredResolution(selected),aspect_ratio:'16:9',generate_audio:selected.generate_audio===true};
    const {response,body:result}=await readApi(PROVIDER,{
     method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json','Idempotency-Key':crypto.randomUUID()},
     body:JSON.stringify(payload)
