@@ -238,7 +238,7 @@ function renderSort(type){
   const {container,main}=rowEl(id,type,type==='budget'?SECTION_NAMES[id]:CARD_NAMES[id]);
   const appearance=draft.cards.appearance[id];
   const toggle=create('label',undefined,'admin-inline'),check=create('input');
-  check.type='checkbox';check.checked=type==='budget'?draft.budget.visible[id]:appearance.visible;
+  check.type='checkbox';check.setAttribute('role','switch');check.checked=type==='budget'?draft.budget.visible[id]:appearance.visible;
   if(type==='budget'&&id==='workbook'){check.disabled=true;check.title='Budsjettarket må være tilgjengelig'}
   check.onchange=()=>{if(type==='budget')draft.budget.visible[id]=check.checked;else appearance.visible=check.checked};
   toggle.classList.add('admin-switch');toggle.append(check,create('span','Vis på nettsiden'));
@@ -274,7 +274,7 @@ function renderSlides(){
   const item=draft.slides.items[id],outer=create('div',undefined,'admin-item'),body=create('div',undefined,'admin-item-main');
   const heading=create('strong',labels[id]),tools=create('div',undefined,'admin-item-controls');
   for(const [label,delta] of [['↑',-1],['↓',1]]){const b=create('button',label);b.type='button';b.onclick=()=>{const a=draft.slides.order,i=a.indexOf(id),n=i+delta;if(n<0||n>=a.length)return;[a[i],a[n]]=[a[n],a[i]];renderSlides()};tools.append(b)}
-  const shown=create('input');shown.type='checkbox';shown.checked=item.enabled;shown.onchange=()=>item.enabled=shown.checked;
+  const shown=create('input');shown.type='checkbox';shown.setAttribute('role','switch');shown.checked=item.enabled;shown.onchange=()=>item.enabled=shown.checked;
   const shownLabel=create('label',undefined,'admin-inline');shownLabel.classList.add('admin-switch');shownLabel.append(shown,create('span','Vis scene'));shownLabel.append(create('small','På: scenen vises på forsiden. Av: scenen skjules.','admin-toggle-hint'));
   const title=create('input');title.type='text';title.maxLength=95;title.value=item.title;title.placeholder='Overskrift – tom = standard';title.oninput=()=>item.title=title.value;title.setAttribute('aria-label',labels[id]+' overskrift');
   const desc=create('textarea');desc.maxLength=220;desc.value=item.description;desc.placeholder='Beskrivelse – tom = standard';desc.oninput=()=>item.description=desc.value;desc.setAttribute('aria-label',labels[id]+' beskrivelse');
