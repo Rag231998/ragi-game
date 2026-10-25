@@ -55,7 +55,7 @@ test('AI presenter brief is generated per tool but a video is only published thr
  const result=elements['ai-video-brief'].value;
  assert.match(result,/Utleieanalyse/);
  assert.match(result,/realistisk, fiktiv, voksen AI-skuespiller/);
- assert.match(result,/HeyGen|HEYGEN/);
+ assert.match(result,/GRATIS AI-VIDEO/);
  assert.match(result,/Ingen garanti/);
  assert.match(result,/MP4/);
  assert.equal(elements['ai-video-copy'].disabled,false);
