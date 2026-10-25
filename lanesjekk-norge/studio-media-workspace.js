@@ -117,8 +117,8 @@
   modules.addEventListener('click',()=>{window.requestAnimationFrame(()=>updateSelection())});
   window.addEventListener('lanesjekk-studio-media-target',updateSelection);
   window.addEventListener('lanesjekk-studio-ready',updateSelection);
-  updateSelection();
   built=true;
+  updateSelection();
   activate(selected);
  }
  document.addEventListener('DOMContentLoaded',setup);
