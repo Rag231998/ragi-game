@@ -10,12 +10,12 @@ test('Valutakompass is a separate working view with real calculations and histor
  await expect(page.locator('#valutakompass')).toBeVisible();
  await expect(page.locator('#loan-showcase')).toBeHidden();
  await expect(page.locator('#ln-explainer')).toHaveCount(0);
- await expect(page.locator('#vc-converted')).toContainText('850,00');
+ await expect(page.locator('#vc-converted')).toHaveValue('850,00');
  await expect(page.locator('#vc-rate')).toContainText('0,085000');
  await expect(page.locator('#vc-date')).toHaveText('2026-10-23');
  await expect(page.locator('#vc-chart path')).not.toHaveCount(0);
  await page.locator('#vc-amount').fill('20 000');
- await expect(page.locator('#vc-result')).toContainText('1 700,00');
+ await expect(page.locator('#vc-converted')).toHaveValue('1 700,00');
  await page.locator('#vc-converted').fill('850');
  await expect(page.locator('#vc-amount')).toHaveValue('10 000,00');
  await expect(page.locator('#vc-fee')).toHaveCount(0);
