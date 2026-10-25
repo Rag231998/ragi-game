@@ -1,0 +1,84 @@
+/* Unified iOS-like controls across Lånesjekk Studio.
+   Keep native form inputs to preserve keyboard, form state and screen readers. */
+#admin-workspace label.admin-switch,
+#admin-workspace label.admin-inline:has(>input[type=checkbox]),
+#admin-workspace label.admin-hint:has(>input[type=checkbox]){
+  display:grid!important;grid-template-columns:47px minmax(0,1fr);
+  align-items:center;gap:4px 12px;
+  min-height:54px;padding:11px 13px!important;
+  margin:0!important;border:1px solid #d6e5e6!important;
+  border-radius:13px!important;background:#f5faf9!important;
+  cursor:pointer;
+  line-height:1.4
+}
+#admin-workspace label.admin-switch span,
+#admin-workspace label.admin-inline span{font-weight:760;color:#244a55}
+#admin-workspace label.admin-switch small.admin-toggle-hint{
+  grid-column:2;display:block;font-size:11px;color:#5a7580;
+  line-height:1.5;font-weight:500
+}
+#admin-workspace label.admin-switch input[type=checkbox],
+#admin-workspace label.admin-inline input[type=checkbox],
+#admin-workspace label.admin-hint>input[type=checkbox],
+.admin-remember-choice input[type=checkbox]{
+  -webkit-appearance:none!important;appearance:none!important;
+  position:relative!important;display:block!important;
+  box-sizing:border-box!important;flex:none!important;
+  width:44px!important;min-width:44px!important;max-width:44px!important;
+  height:27px!important;min-height:27px!important;max-height:27px!important;
+  padding:0!important;margin:0!important;
+  border:1px solid #afc0c8!important;border-radius:999px!important;
+  background:#bfcbd0!important;cursor:pointer;
+  box-shadow:inset 0 1px 3px #133b471c;
+  transition:background .2s ease,border-color .2s ease!important
+}
+#admin-workspace label.admin-switch input[type=checkbox]::before,
+#admin-workspace label.admin-inline input[type=checkbox]::before,
+#admin-workspace label.admin-hint>input[type=checkbox]::before,
+.admin-remember-choice input[type=checkbox]::before{
+  content:"";position:absolute!important;top:2px!important;left:2px!important;
+  width:21px!important;height:21px!important;display:block!important;
+  border-radius:50%!important;background:white!important;
+  box-shadow:0 2px 5px #0a2d3640!important;
+  transition:transform .2s cubic-bezier(.2,.8,.2,1)!important
+}
+#admin-workspace label.admin-switch input[type=checkbox]:checked,
+#admin-workspace label.admin-inline input[type=checkbox]:checked,
+#admin-workspace label.admin-hint>input[type=checkbox]:checked,
+.admin-remember-choice input[type=checkbox]:checked{
+  background:#0b987d!important;border-color:#0b987d!important
+}
+#admin-workspace label.admin-switch input[type=checkbox]:checked::before,
+#admin-workspace label.admin-inline input[type=checkbox]:checked::before,
+#admin-workspace label.admin-hint>input[type=checkbox]:checked::before,
+.admin-remember-choice input[type=checkbox]:checked::before{
+  transform:translateX(17px)!important
+}
+#admin-workspace input[type=checkbox]:disabled,
+.admin-remember-choice input[type=checkbox]:disabled{opacity:.55;cursor:not-allowed}
+#admin-workspace label.admin-switch:has(input:disabled){cursor:not-allowed;opacity:.72}
+#admin-workspace label.admin-switch:focus-within,
+#admin-workspace label.admin-inline:focus-within,
+.admin-remember-choice:focus-within{outline:3px solid #81d5bd;outline-offset:2px}
+html.studio-dark #admin-workspace :is(label.admin-switch,label.admin-inline:has(>input[type=checkbox]),label.admin-hint:has(>input[type=checkbox])){
+  background:#203b4a!important;border-color:#4a6b79!important;color:#f1f9fb!important
+}
+html.studio-dark #admin-workspace label.admin-switch :is(span,small),
+html.studio-dark #admin-workspace label.admin-inline :is(span,small){color:#dfedf1!important}
+html.studio-dark #admin-workspace input[type=checkbox]:not(:checked),
+html.studio-dark .admin-remember-choice input[type=checkbox]:not(:checked){
+ background:#617783!important;border-color:#8297a2!important
+}
+@media(max-width:620px){
+ #admin-workspace label.admin-switch,
+ #admin-workspace label.admin-inline:has(>input[type=checkbox]){
+  padding:11px!important;gap:5px 10px
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ #admin-workspace label.admin-switch input[type=checkbox],
+ #admin-workspace label.admin-inline input[type=checkbox],
+ #admin-workspace label.admin-switch input[type=checkbox]::before,
+ #admin-workspace label.admin-inline input[type=checkbox]::before,
+ .admin-remember-choice input[type=checkbox]::before{transition:none!important}
+}
