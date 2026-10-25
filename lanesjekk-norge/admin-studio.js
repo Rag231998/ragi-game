@@ -458,6 +458,7 @@ function boot(){
  function activatePanel(id,scroll=true){
   const target=$(id);if(!target||!adminPanels.includes(target))return;
   panelTransition=true;
+  try{window.sessionStorage.setItem('lanesjekk-studio-active-panel',id)}catch{}
   for(const panel of adminPanels)panel.open=panel===target;
   for(const btn of jumpButtons){
    if(btn.dataset.adminJump===id)btn.setAttribute('aria-current','page');
@@ -484,7 +485,9 @@ function boot(){
  $('media-target').addEventListener('change',event=>{
   if($('animation-studio-panel').open)showPreviewSection(mediaRoutes[event.target.value]||'topp');
  });
- activatePanel('admin-panel-brand',false);
+ let initialPanel='admin-panel-brand';
+ try{initialPanel=window.sessionStorage.getItem('lanesjekk-studio-active-panel')||initialPanel}catch{}
+ activatePanel(adminPanels.some(panel=>panel.id===initialPanel)?initialPanel:'admin-panel-brand',false);
  const queryInput=$('admin-object-search'),resultRoot=$('admin-object-results');
  const lookup=()=>{
   const items=adminPanels.map(panel=>({label:labels[panel.id]||panel.id,panel:panel.id}));
@@ -513,7 +516,7 @@ function boot(){
      const root=item.panel==='admin-panel-budget'?'budget-sort':'card-sort';
      const target=[...$(root).children].find(el=>el.dataset.id===item.object);
      if(target){
-      showPreviewSection(item.panel==='admin-panel-budget'?'budsjett':item.object);
+      showPreviewSection(item.panel==='admin-panel-budget'?'budsjett':'topp');
       target.scrollIntoView({behavior:'smooth',block:'center'});
       target.querySelector('input[type="text"],textarea,input[type="checkbox"]')?.focus({preventScroll:true});
      }
