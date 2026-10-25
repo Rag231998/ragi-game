@@ -1,7 +1,7 @@
 <!doctype html><html lang="nb"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#101f31">
 <title>Lånesjekk · Privat administrasjon</title>
-<link rel="stylesheet" href="./admin-studio.css?v=12"><link rel="stylesheet" href="./admin-dark-mode.css?v=3"><link rel="stylesheet" href="./ios-controls.css?v=1"><link rel="stylesheet" href="./site-feature-catalog.css?v=1"><link rel="stylesheet" href="./admin-feature-catalog.css?v=1"><link rel="stylesheet" href="./studio-control-center.css?v=2"><script>try{const v=localStorage.getItem('lanesjekk.studio.theme.v1')||'auto';if(v==='dark'||(v==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('studio-dark')}catch{}</script></head><body>
+<link rel="stylesheet" href="./admin-studio.css?v=12"><link rel="stylesheet" href="./admin-dark-mode.css?v=3"><link rel="stylesheet" href="./ios-controls.css?v=1"><link rel="stylesheet" href="./site-feature-catalog.css?v=1"><link rel="stylesheet" href="./admin-feature-catalog.css?v=1"><link rel="stylesheet" href="./studio-control-center.css?v=3"><script>try{const v=localStorage.getItem('lanesjekk.studio.theme.v1')||'auto';if(v==='dark'||(v==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('studio-dark')}catch{}</script></head><body>
 <header class="admin-header"><a href="./studio-admin.html" aria-label="Lånesjekk Studio – administrasjon">◈ <strong>LÅNESJEKK</strong><span> / STUDIO</span></a><div class="admin-header-right"><label class="admin-ui-theme-wrap" for="admin-ui-theme"><span>Utseende</span><select id="admin-ui-theme" aria-label="Utseende for administrasjonsportalen"><option value="auto">◐ Automatisk</option><option value="light">☀ Lys</option><option value="dark">☾ Mørk</option></select></label><span class="admin-badge">Kun godkjente administratorer</span>
 <div class="admin-account-wrapper" id="admin-account-wrapper" hidden>
  <button id="admin-account-menu-toggle" type="button" aria-expanded="false" aria-controls="admin-account-menu">◉ Konto og sikkerhet <span aria-hidden="true">⌄</span></button>
@@ -133,6 +133,7 @@
  <div class="studio-ai-result" id="studio-ai-result" hidden><video id="studio-ai-result-video" controls playsinline preload="metadata"></video><div><strong>Videoen er klar</strong><p id="studio-ai-result-message">Kontroller filmen med lyd før du legger den i utkastet.</p><button id="studio-ai-apply" type="button" class="admin-primary">Bruk video i valgt modul</button></div></div>
  </div>
 </section>
+<details class="studio-ai-manual"><summary>Alternativ: lengre avatarfilm og manus i HeyGen</summary>
 <section class="admin-ai-video" aria-labelledby="admin-ai-video-title">
  <div><span class="admin-eyebrow">AI VIDEO · REALISTISKE MENNESKER</span>
  <h3 id="admin-ai-video-title">Alternativ: manus for lengre AI-avatarvideo</h3>
@@ -142,6 +143,7 @@
  <label>Videobrief for realistisk AI-skuespiller<textarea id="ai-video-brief" readonly rows="9" placeholder="Velg en modul og trykk «Lag manus og videobrief»."></textarea></label>
  <p class="admin-hint">Bruk en fiktiv voksen skuespiller og unngå å etterligne en virkelig person uten samtykke. Ingen bank, avkastning eller økonomisk gevinst skal loves.</p>
 </section>
+</details>
 <label>Hvilken del av nettsiden vil du redigere?<select id="media-target" aria-label="Velg plassering for video"></select></label>
 <div class="media-setting-card">
 <strong id="media-selected-name">Forsiden</strong>
