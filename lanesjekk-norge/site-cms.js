@@ -101,7 +101,7 @@ function configClean(input){
   news:(Array.isArray(a.catalog?.news)?a.catalog.news:[]).slice(0,12).map((item,index)=>({
     id:plain(item.id,50)||'nyhet-'+index,title:plain(item.title,110),
     summary:plain(item.summary,500),route:RELEASE_ROUTES.has(item.route)?item.route:'topp',
-    date:/^\\d{4}-\\d{2}-\\d{2}$/.test(item.date||'')?item.date:'2026-10-25'
+    date:/^\d{4}-\d{2}-\d{2}$/.test(item.date||'')?item.date:''
   })).filter(item=>item.title)
  },
  cards:{order:[...new Set([...inputCardOrder,...CARD_IDS])],
@@ -201,9 +201,9 @@ async function init(){
  }
  if(!window.supabase){liveStatus('offline');console.warn('Supabase unavailable');return}
  const db=window.supabase.createClient(base,key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
- let refreshing=false;
+ let refreshing=false,refreshQueued=false;
  async function refreshPublished(){
-  if(refreshing)return;
+  if(refreshing){refreshQueued=true;return}
   refreshing=true;
   try{
    const {data,error}=await db.from('lanesjekk_site_config').select('config,revision').eq('id',1).maybeSingle();
@@ -218,7 +218,10 @@ async function init(){
     }
    }
   }catch(error){liveStatus('offline');console.warn('Published configuration refresh failed',error)}
-  finally{refreshing=false}
+  finally{
+   refreshing=false;
+   if(refreshQueued){refreshQueued=false;void refreshPublished()}
+  }
  }
  await refreshPublished();
  liveStatus('connecting');
