@@ -353,7 +353,7 @@ function renderPublishEvents(){
   if(event.revision===revision)tag.dataset.current='true';
   head.append(tag);row.append(head);
   const summary=paths===null?'Eldre versjoner må lastes for sammenligning.':
-   paths.length?paths.slice(0,3).map(describePath).join(' · ')+(paths.length>3?' · +'+(paths.length-3)+' flere'):'Ingen endringer i CMS-innstillinger';
+   paths.length?paths.slice(0,3).map(describePath).join(' · ')+(paths.length>3?' · +'+(paths.length-3)+' flere':''):'Ingen endringer i CMS-innstillinger';
   row.append(create('p',summary,'admin-history-summary'));
   const actions=create('div',undefined,'admin-history-actions'),detailBox=create('div',undefined,'admin-history-detail');
   detailBox.hidden=true;
