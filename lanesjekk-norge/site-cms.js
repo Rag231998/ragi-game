@@ -94,7 +94,7 @@ function configClean(input){
  const inputCardOrder=Array.isArray(a.cards?.order)?a.cards.order.filter(id=>CARD_IDS.includes(id)):CARD_IDS;
  for(const id of SECTIONS)if(!order.includes(id))order.push(id);
  return {
- media:{slots:Object.fromEntries(MEDIA_IDS.map(id=>{const x=a.media?.slots?.[id]||{};return [id,{enabled:x.enabled!==false,videoUrl:safeMedia(x.videoUrl,'video'),posterUrl:safeMedia(x.posterUrl,'image'),title:plain(x.title,90),description:plain(x.description,210),fit:x.fit==='contain'?'contain':'cover',loop:x.loop!==false}]}))},
+ media:{slots:Object.fromEntries(MEDIA_IDS.map(id=>{const x=a.media?.slots?.[id]||{};return [id,{enabled:x.enabled!==false,videoUrl:safeMedia(x.videoUrl,'video'),posterUrl:safeMedia(x.posterUrl,'image'),title:plain(x.title,90),description:plain(x.description,210),fit:x.fit==='contain'?'contain':'cover',loop:x.loop!==false,placement:['before','after-intro','bottom'].includes(x.placement)?x.placement:'after-intro'}]}))},
  animations:{autoplay:a.animations?.autoplay!==false,valuation:a.animations?.valuation!==false,rental:a.animations?.rental!==false,receipts:a.animations?.receipts!==false},
  slides:{visible:a.slides?.visible!==false,order:[...new Set([...(Array.isArray(a.slides?.order)?a.slides.order.filter(id=>SLIDE_IDS.includes(id)):[]),...SLIDE_IDS])],items:Object.fromEntries(SLIDE_IDS.map(id=>[id,{title:plain(a.slides?.items?.[id]?.title,95),description:plain(a.slides?.items?.[id]?.description,220),enabled:a.slides?.items?.[id]?.enabled!==false}]))},
  brand:{
