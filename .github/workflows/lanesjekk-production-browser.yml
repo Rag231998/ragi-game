@@ -1,0 +1,39 @@
+name: Lånesjekk production browser smoke
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lanesjekk-norge/tests/production-smoke-trigger.txt'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: lanesjekk-norge/tests
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: Install Playwright dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium and OS libraries
+        run: npx playwright install --with-deps chromium
+      - name: Verify public Render production over HTTPS in desktop and Android browsers
+        env:
+          LANESJEKK_BASE_URL: https://lanesjekk-norge.onrender.com
+        run: npx playwright test navigation-search.spec.cjs dark-mode.spec.cjs feature-catalog.spec.cjs receipts.spec.cjs currency.spec.cjs --project=desktop-chromium --project=android-chromium --workers=2 --retries=0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: lanesjekk-render-production-playwright
+          path: |
+            lanesjekk-norge/tests/playwright-report
+            lanesjekk-norge/tests/test-results
+          retention-days: 3
