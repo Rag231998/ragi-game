@@ -20,6 +20,9 @@ on:
       - 'lanesjekk-norge/valutakompass.js'
       - 'lanesjekk-norge/valutakompass.css'
       - 'lanesjekk-norge/admin-animation-studio.js'
+      - 'lanesjekk-norge/studio-media-workspace.js'
+      - 'lanesjekk-norge/studio-media-workspace.css'
+      - 'lanesjekk-norge/tests/animation-studio-workspace.spec.cjs'
       - 'lanesjekk-norge/site-media.js'
       - 'lanesjekk-norge/site-cms.js'
       - 'lanesjekk-norge/admin-studio.js'
@@ -48,7 +51,7 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Test uploader, CMS media, and browser layouts
-        run: npx playwright test animation-studio.spec.cjs currency.spec.cjs admin-auth.spec.cjs studio-control-center.spec.cjs studio-ai-ui.spec.cjs --project=desktop-chromium --project=android-chromium --workers=2 --retries=0
+        run: npx playwright test animation-studio.spec.cjs animation-studio-workspace.spec.cjs currency.spec.cjs admin-auth.spec.cjs studio-control-center.spec.cjs studio-ai-ui.spec.cjs --project=desktop-chromium --project=android-chromium --workers=2 --retries=0
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
