@@ -204,6 +204,7 @@ async function loadPublished(){
  published=normalize(r.data.config);draft=clone(published);revision=r.data.revision||1;lastPublishedAt=r.data.updated_at||'';ready=true;lastPreviewFingerprint='';
  $('admin-revision').textContent='Publisert versjon '+revision;
  render();await loadRevisions(true);await window.lanesjekkAnimationStudio?.refreshLibrary();refreshDashboard();
+ window.dispatchEvent(new CustomEvent('lanesjekk-studio-ready'));
  $('admin-frame').src='./index.html#topp';
  msg('Nettstedsoppsettet er hentet. Du kan endre og forhåndsvise før du publiserer.');
 }
