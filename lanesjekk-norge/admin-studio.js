@@ -404,7 +404,7 @@ function renderCatalog(focus){
   };
   up.onclick=()=>shift(-1);down.onclick=()=>shift(1);
   const remove=create('button','Slett kort','admin-secondary');remove.type='button';
-  remove.addEventListener('click',()=>{draft.catalog.tools=draft.catalog.tools.filter(x=>x!==item);renderCatalog();catalogChanged('Funksjonskortet ble fjernet fra utkastet.')});
+  remove.addEventListener('click',()=>{draft.catalog.tools=draft.catalog.tools.filter(x=>x!==item);if($('catalog-next-step')?.dataset.catalogId===item.id)$('catalog-next-step').hidden=true;renderCatalog();catalogChanged('Funksjonskortet ble fjernet fra utkastet.')});
   actions.append(preview,up,down,remove);card.append(head,grid,actions);toolsRoot.append(card);
  }
  for(const item of draft.catalog.news){
@@ -647,9 +647,21 @@ function boot(){
    route:route in CATALOG_META?route:'budsjett',date:new Date().toISOString().slice(0,10)};
   draft.catalog.news.unshift(item);
   renderCatalog(item.id);
-  catalogChanged('Oppdateringen er opprettet som utkast. Rediger teksten, kontroller forhåndsvisningen og publiser når du er klar.');
+  if($('catalog-news-next'))$('catalog-news-next').hidden=false;
+  showPreviewSection(item.route);
+  catalogChanged('Oppdateringen er opprettet som utkast. Rediger tittelen under før du publiserer.');
+  requestAnimationFrame(()=>document.querySelector('[data-catalog-focus="'+CSS.escape(item.id)+'"]')?.focus({preventScroll:true}));
  });
- $('catalog-add-tool')?.addEventListener('click',()=>{
+ $('catalog-next-edit')?.addEventListener('click',()=>{
+  const id=$('catalog-next-step')?.dataset.catalogId;
+  if(!id)return;
+  const target=document.querySelector('[data-catalog-id="'+CSS.escape(id)+'"]');
+  target?.scrollIntoView({behavior:'smooth',block:'center'});
+  target?.querySelector('[data-catalog-focus]')?.focus({preventScroll:true});
+ });
+ $('catalog-next-preview')?.addEventListener('click',()=>{void openFullPreview('topp')});
+ $('catalog-next-publish')?.addEventListener('click',()=>$('admin-publish')?.click());
+  $('catalog-add-tool')?.addEventListener('click',()=>{
   if(!ready||!draft)return;
   if(draft.catalog.tools.length>=18){catalogNote('Maks 18 ekstra funksjonskort. Rediger eller slett et eksisterende kort.',true);return}
   const route=$('catalog-tool-route').value,meta=CATALOG_META[route]||CATALOG_META.budsjett;
@@ -657,7 +669,20 @@ function boot(){
     cat:meta.cat,title:meta.name,subtitle:meta.summary,how:meta.how,icon:meta.icon,enabled:true};
   draft.catalog.tools.unshift(item);
   renderCatalog(item.id);
-  catalogChanged('Funksjonskort opprettet for «'+meta.name+'». Det vises på forsiden i forhåndsvisningen. Kontroller og publiser når du er klar.');
+  const nextStep=$('catalog-next-step');
+  if(nextStep){
+   nextStep.hidden=false;
+   $('catalog-next-title').textContent='«'+meta.name+'» er lagt til som utkast';
+   $('catalog-next-description').textContent='Kortet er automatisk knyttet til '+meta.name+' i kategorien '+meta.cat+'. Rediger detaljene under, kontroller hvordan det vises på forsiden og godkjenn publisering.';
+   nextStep.dataset.catalogId=item.id;
+   nextStep.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+  showPreviewSection('topp');
+  catalogChanged('«'+meta.name+'» er opprettet. Neste steg: rediger kortet, kontroller forhåndsvisningen og publiser.');
+  requestAnimationFrame(()=>{
+   const input=document.querySelector('[data-catalog-focus="'+CSS.escape(item.id)+'"]');
+   if(input){input.closest('.catalog-editor-card')?.classList.add('catalog-just-created');input.focus({preventScroll:true});input.select?.()}
+  });
  });
  $('catalog-open-news-preview')?.addEventListener('click',()=>{
   if(!ready||!authUser)return;
