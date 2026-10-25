@@ -116,6 +116,7 @@ window.lanesjekkStudioVideoAuth=async()=>{
 };
 function openPreflight(){
  if(busy||!ready)return;
+ if(!validateCatalogDraft()){document.querySelector('[data-admin-jump="admin-panel-catalog"]')?.click();return}
  const paths=collectChanges();
  if(!paths.length){msg('Ingen endringer å publisere.');return}
  $('admin-preflight-count').textContent=paths.length+' endringer i utkastet';
@@ -510,6 +511,7 @@ async function upload(file){
 }
 async function publish(){
  if(busy||!authUser||!$('admin-preflight').open||!$('admin-preview-confirm').checked)return;
+ if(!validateCatalogDraft())return;
  const config=gather();
  if(!previewWindow||previewWindow.closed||lastPreviewFingerprint!==JSON.stringify(config)||!collectChanges().length){
   msg('Utkastet er endret etter forhåndsvisningen. Kontroller nettsiden på nytt.',true);
@@ -637,9 +639,30 @@ function boot(){
   window.lanesjekkCatalog?.setNews(gather().catalog);
  });
  $('catalog-add-news')?.addEventListener('click',()=>{
-  if(!ready||!draft||draft.catalog.news.length>=12){msg('Maks 12 nyheter per publisering.',true);return}
-  draft.catalog.news.unshift({id:'nyhet-'+crypto.randomUUID(),title:'Ny funksjon',summary:'Beskriv hva brukeren kan gjøre og hvordan funksjonen brukes.',route:'topp',date:new Date().toISOString().slice(0,10)});
-  renderCatalog();refreshDashboard();
+  if(!ready||!draft)return;
+  if(draft.catalog.news.length>=12){catalogNote('Maks 12 oppdateringer per publisering. Rediger eller slett en eksisterende oppdatering først.',true);return}
+  const route=$('catalog-news-route').value,meta=CATALOG_META[route]||CATALOG_META.budsjett;
+  const item={id:'nyhet-'+crypto.randomUUID(),title:'Nytt i '+meta.name,
+   summary:'Utforsk '+meta.name.toLocaleLowerCase('nb-NO')+': '+meta.summary,
+   route:route in CATALOG_META?route:'budsjett',date:new Date().toISOString().slice(0,10)};
+  draft.catalog.news.unshift(item);
+  renderCatalog(item.id);
+  catalogChanged('Oppdateringen er opprettet som utkast. Rediger teksten, kontroller forhåndsvisningen og publiser når du er klar.');
+ });
+ $('catalog-add-tool')?.addEventListener('click',()=>{
+  if(!ready||!draft)return;
+  if(draft.catalog.tools.length>=18){catalogNote('Maks 18 ekstra funksjonskort. Rediger eller slett et eksisterende kort.',true);return}
+  const route=$('catalog-tool-route').value,meta=CATALOG_META[route]||CATALOG_META.budsjett;
+  const item={id:'custom-'+crypto.randomUUID(),route:route in CATALOG_META&&route!=='topp'?route:'budsjett',
+    cat:meta.cat,title:meta.name,subtitle:meta.summary,how:meta.how,icon:meta.icon,enabled:true};
+  draft.catalog.tools.unshift(item);
+  renderCatalog(item.id);
+  catalogChanged('Funksjonskort opprettet for «'+meta.name+'». Det vises på forsiden i forhåndsvisningen. Kontroller og publiser når du er klar.');
+ });
+ $('catalog-open-news-preview')?.addEventListener('click',()=>{
+  if(!ready||!authUser)return;
+  window.lanesjekkCatalog?.setNews(gather().catalog);
+  window.lanesjekkCatalog?.open('news');
  });
  $('media-preview-page').addEventListener('click',()=>{
   const routes={home:'topp',loans:'sjekk',budget:'budsjett',receipts:'kvitteringer',valuation:'boligverdi',rental:'utleieanalyse',savings:'sparing',investing:'investering',carloan:'billan',academy:'akademi',currency:'valutakompass'};
@@ -667,7 +690,7 @@ function boot(){
  };
  const panelPreviews={'admin-panel-brand':'topp','admin-panel-budget':'budsjett','admin-panel-cards':'topp','admin-panel-slides':'topp','admin-panel-motion':'boligverdi','animation-studio-panel':'topp','admin-panel-invest':'investering','admin-panel-catalog':'topp'};
  const mediaRoutes={home:'topp',loans:'sjekk',budget:'budsjett',receipts:'kvitteringer',valuation:'boligverdi',rental:'utleieanalyse',savings:'sparing',investing:'investering',carloan:'billan',academy:'akademi',currency:'valutakompass'};
- const panelHelp={'admin-panel-brand':'Logo, farger og visningsmodus.','admin-panel-budget':'Flytt budsjettseksjoner og kontroller synlighet.','admin-panel-cards':'Rediger hvert kort og objekt, inkludert ikon, tekst og synlighet.','admin-panel-slides':'Tilpass rekkefølge og tekst på forsiden.','admin-panel-motion':'Velg hvilke animasjoner som vises.','animation-studio-panel':'Velg modul og videofiler, og forhåndsvis resultatet.','admin-panel-invest':'Investeringsoversikt og overskrift.','admin-panel-history':'Se tidspunkt, endringer og gjenopprett en eldre publisering.','admin-panel-catalog':'Administrer nyheter i funksjonsoversikten. Funksjonene og forklaringene vises i en egen dialog.'};
+ const panelHelp={'admin-panel-brand':'Logo, farger og visningsmodus.','admin-panel-budget':'Flytt budsjettseksjoner og kontroller synlighet.','admin-panel-cards':'Rediger hvert kort og objekt, inkludert ikon, tekst og synlighet.','admin-panel-slides':'Tilpass rekkefølge og tekst på forsiden.','admin-panel-motion':'Velg hvilke animasjoner som vises.','animation-studio-panel':'Velg modul og videofiler, og forhåndsvis resultatet.','admin-panel-invest':'Investeringsoversikt og overskrift.','admin-panel-history':'Se tidspunkt, endringer og gjenopprett en eldre publisering.','admin-panel-catalog':'Opprett funksjonskort som åpner eksisterende verktøy, og skriv nyheter om forbedringene. Alt lagres som utkast.'};
  let panelTransition=false,previewSelection='topp';
  function showPreviewSection(section){
   const selector=$('preview-inline-section'),frame=$('admin-frame');
@@ -821,6 +844,7 @@ function boot(){
  $('admin-workspace').addEventListener('click',refreshSoon);
  $('admin-workspace').addEventListener('drop',refreshSoon);
  window.addEventListener('lanesjekk-studio-media-dirty',refreshSoon);
+ window.addEventListener('lanesjekk-studio-catalog-changed',refreshSoon);
  $('admin-frame').addEventListener('load',()=>{
   if(ready){
    setTimeout(refreshMiniPreview,120);
