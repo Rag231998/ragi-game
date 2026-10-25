@@ -1,0 +1,26 @@
+/* Contextual next-step guidance for newly added function shortcuts. */
+#admin-workspace .catalog-next-step{
+ margin:16px 0;padding:18px 20px;border:1px solid #8ed7be;border-radius:15px;
+ background:linear-gradient(115deg,#e7fbef,#f4fcff);
+ box-shadow:0 9px 25px #065b4510;color:#214a54
+}
+#admin-workspace .catalog-next-step[hidden]{display:none!important}
+#admin-workspace .catalog-next-step>strong{display:block;font-size:15px;font-weight:890;color:#096957;margin-bottom:7px}
+#admin-workspace .catalog-next-step>p{margin:0 0 13px;font-size:12px;color:#416571;line-height:1.7}
+#admin-workspace .catalog-next-actions{display:flex;flex-wrap:wrap;gap:9px}
+#admin-workspace .catalog-next-actions button{min-height:43px;font-size:12px;border-radius:10px}
+#admin-workspace #catalog-tool-editor .catalog-editor-card.catalog-just-created{
+ border:2px solid #21a781!important;box-shadow:0 0 0 4px #1ca27b13,0 10px 30px #0e554019!important
+}
+#admin-workspace .catalog-editor-card{scroll-margin-top:25px}
+html.studio-dark #admin-workspace .catalog-next-step{
+ background:linear-gradient(125deg,#1e594a,#1b4255)!important;
+ border-color:#5eac91!important;color:#f0fcf8!important
+}
+html.studio-dark #admin-workspace .catalog-next-step>strong{color:#c5ffe7!important}
+html.studio-dark #admin-workspace .catalog-next-step>p{color:#d0e9e7!important}
+@media(max-width:660px){
+ #admin-workspace .catalog-next-step{padding:13px}
+ #admin-workspace .catalog-next-actions{display:grid;grid-template-columns:1fr}
+ #admin-workspace .catalog-next-actions button{width:100%}
+}
