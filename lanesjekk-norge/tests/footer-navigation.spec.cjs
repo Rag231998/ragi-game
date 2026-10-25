@@ -11,7 +11,13 @@ test('Modern footer has grouped useful navigation and no unprofessional one-line
  await expect(footer.locator('a[href="#budsjett"]')).toHaveCount(1);
  await expect(footer.locator('a[href="#guider"]')).toHaveCount(1);
  await expect(footer.locator('a[href="#topp"]')).toHaveCount(2);
- const internal=await footer.locator('a[href^="#"]').evaluateAll(links=>links.map(a=>({route:a.getAttribute('href'),valid:Boolean(document.querySelector(a.getAttribute('href')))})));
+ const internal=await footer.locator('a[href^="#"]').evaluateAll(links=>links.map(a=>{
+  const route=a.getAttribute('href');
+  const target=document.querySelector(route);
+  // Forbrukslån intentionally routes to the consumer mode inside the billån panel.
+  const alias=route==='#forbrukslan'&&!!document.getElementById('billan');
+  return {route,valid:Boolean(target||alias)};
+ }));
  expect(internal.filter(x=>!x.valid)).toEqual([]);
 });
 test('All footer links lead to the correct section via the real navigation engine',async({page})=>{
