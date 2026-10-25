@@ -72,7 +72,10 @@ function render(){
  }
  $('media-selected-name').textContent=SLOT_NAMES[active];
  $('media-file-status').textContent=item.videoUrl?'Video valgt · '+item.videoUrl.split('/').at(-1):'Ingen video valgt. Eksisterende animasjon beholdes.';
- drawPreview()
+ drawPreview();
+ // Keep archive actions, selected-module labels and deletion protection in sync
+ // as soon as a clip is staged, switched or removed from the draft.
+ if(libraryItems.length)drawLibrary();
 }
 function changeSlot(id){
  if(uploading||!Object.hasOwn(SLOT_NAMES,id))return;
@@ -145,7 +148,7 @@ async function uploadSelection(){
   text('Opplastet til '+SLOT_NAMES[target]+' og lagt i utkastet. Se hele nettsiden før du publiserer.');
   await refreshLibrary();
  }catch(e){text('Opplasting feilet: '+(e.message||e),true)}
- finally{setDisabledUploads(false);$('media-progress').hidden=true}
+ finally{setDisabledUploads(false);$('media-progress').hidden=true;if(libraryItems.length)drawLibrary()}
 }
 const loadState={video:0,poster:0};
 let loadingLibrary=false,moreLibrary=false;
