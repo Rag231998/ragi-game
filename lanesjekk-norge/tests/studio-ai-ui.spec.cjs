@@ -32,6 +32,9 @@ test('Mocked provider creates a commercial, reviews it and stages it without pub
   select.dispatchEvent(new Event('change',{bubbles:true}));
   window.dispatchEvent(new Event('lanesjekk-studio-ready'));
  });
+ await page.evaluate(()=>{document.getElementById('animation-studio-panel').open=true});
+ await page.locator('#media-workspace-tab-ai').click();
+ await expect(page.locator('#studio-ai-create')).toBeVisible();
  await expect(page.locator('#studio-ai-generate')).toBeEnabled();
  await page.locator('#studio-ai-topic').fill('Økonomisk budsjett');
  await page.locator('#studio-ai-scene').fill('En voksen norsk person sitter ved kjøkkenbordet og forklarer et enkelt månedsbudsjett.');
