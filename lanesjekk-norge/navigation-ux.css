@@ -1,0 +1,92 @@
+/* Lånesjekk Norge — one coherent navigation layer. Loaded last. */
+:root{--ln-nav-accent:#087d70}
+html{scroll-padding-top:calc(86px + env(safe-area-inset-top,0px))}
+.portal-home .site-header .portal-group-nav>.nav-group.is-current-group>summary{
+ color:#065e55!important;background:#e5f7ef!important;box-shadow:inset 0 0 0 1px #b7e6d5
+}
+.portal-home .site-header .portal-group-nav>.nav-group.is-current-group>summary:before{
+ content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#07826d;flex:none
+}
+.portal-home .site-header .portal-group-nav>.nav-group>.nav-drop a[aria-current="page"]{
+ background:#dff5ed!important;color:#075f53!important;font-weight:900!important
+}
+.portal-home .portal-viewbar{
+ background:linear-gradient(115deg,#fff 25%,#f2faf7 100%);
+ border:1px solid #d1e7e0;box-shadow:0 9px 28px #082e3810;
+ min-width:0;gap:12px;scroll-margin-top:86px
+}
+.portal-home .viewbar-crumb{min-width:0;flex:1;gap:9px;font-size:12px}
+.portal-home .viewbar-crumb a{display:inline-flex;align-items:center;min-height:43px;color:#086958;font-weight:900;border-radius:9px;padding:6px 8px}
+.portal-home .viewbar-crumb a:hover{background:#e3f5ee}
+.portal-home .viewbar-crumb strong{min-width:0;white-space:normal;overflow-wrap:anywhere;font-size:13px;font-weight:880;color:#193e4d}
+.portal-home .viewbar-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.portal-home .viewbar-switch{
+ border:1px solid #a8d7ca;border-radius:11px;background:#e5f6ef;color:#095f53;
+ font-size:12px;font-weight:850;padding:10px 14px;min-height:43px;display:inline-flex;gap:7px;align-items:center
+}
+.portal-home .viewbar-switch:hover,.portal-home .viewbar-switch:focus-visible{background:#c9eede;border-color:#2c977c}
+.portal-home .viewbar-switch:active{transform:translateY(1px)}
+.portal-home .site-search-open{min-height:43px!important}
+.portal-home .mobile-menu>summary{min-height:44px;border-radius:11px}
+.portal-home .mobile-menu[open]>summary{color:#065f52!important;background:#ddf3e9!important}
+.portal-home .mobile-bottom-tabs a[aria-current="page"]{font-weight:850;box-shadow:inset 0 0 0 1px #b6e7d7}
+.portal-home :is(.nav-group summary,.mobile-menu summary,.mobile-menu a,.viewbar-crumb a,.viewbar-switch,.mobile-bottom-tabs a):focus-visible{
+ outline:3px solid #15a78f!important;outline-offset:2px
+}
+@media(max-width:1140px){
+ .portal-home .site-header .portal-group-nav{display:none!important}
+ .portal-home .site-header .mobile-menu{display:block!important;position:relative;z-index:2;justify-self:end}
+ .portal-home .site-header .nav-row{display:grid!important;grid-template-columns:minmax(0,1fr) auto auto!important;gap:10px!important}
+ .portal-home .site-header .portal-logo{grid-column:1!important}
+ .portal-home .site-header .mobile-menu{grid-column:2!important}
+ .portal-home .site-header #site-search-open{grid-column:3!important;margin-left:0}
+}
+@media(max-width:1140px){
+ .portal-home .site-header .mobile-menu[open]>div{
+  position:fixed!important;top:calc(70px + env(safe-area-inset-top,0px))!important;
+  left:12px!important;right:12px!important;bottom:auto!important;width:auto!important;
+  margin:0!important;max-height:calc(100dvh - 95px - env(safe-area-inset-bottom,0px))!important;
+  overflow-y:auto!important;overscroll-behavior:contain;
+  background:#fff!important;color:#153b4c!important;
+  border:1px solid #b6dcd2!important;border-radius:18px!important;
+  box-shadow:0 30px 90px #08253c50!important;padding:15px!important;
+  z-index:1100!important
+ }
+ .portal-home .site-header .mobile-menu[open]>div>a{
+  display:flex;align-items:center;min-height:45px!important;border-radius:10px!important;
+  padding:10px 14px!important;color:#204a58!important;font-size:13px!important;font-weight:750
+ }
+ .portal-home .site-header .mobile-menu[open]>div>a:hover,
+ .portal-home .site-header .mobile-menu[open]>div>a[aria-current="page"]{
+  background:#e1f6ee!important;color:#075f50!important;font-weight:900!important
+ }
+ .portal-home .site-header .mobile-menu[open]>div>strong{
+  display:block;margin:12px 6px 4px!important;padding:12px 6px 4px!important;
+  color:#427369!important;font-size:10px!important;letter-spacing:.095em
+ }
+ body.mobile-nav-open:before{
+  content:"";position:fixed;inset:0;z-index:150;background:#071e309c;backdrop-filter:blur(3px);
+  pointer-events:none
+ }
+ body.mobile-nav-open .site-header{z-index:400}
+}
+@media(max-width:700px){
+ .portal-home .portal-viewbar{padding:10px 12px;flex-wrap:nowrap;gap:6px;margin-bottom:15px}
+ .portal-home .viewbar-crumb{gap:5px}
+ .portal-home .viewbar-crumb a{font-size:11px;padding:6px 4px}
+ .portal-home .viewbar-crumb strong{font-size:12px}
+ .portal-home .viewbar-switch{min-height:42px;padding:8px 10px;font-size:11px}
+ .portal-home .mobile-bottom-tabs{grid-template-columns:repeat(6,minmax(0,1fr))!important;padding-left:4px;padding-right:4px}
+ .portal-home .mobile-bottom-tabs a{min-width:0;padding:4px 1px}
+ .portal-home .mobile-bottom-tabs a>span{font-size:20px}
+ .portal-home .mobile-bottom-tabs a>strong{font-size:clamp(8px,2.3vw,10px);white-space:nowrap;letter-spacing:-.02em}
+ .portal-home{padding-bottom:calc(78px + env(safe-area-inset-bottom,0px))}
+}
+@media(max-width:360px){
+ .portal-home .viewbar-switch{font-size:0;gap:0;min-width:43px;justify-content:center}
+ .portal-home .viewbar-switch span{font-size:19px}
+ .portal-home .mobile-bottom-tabs a>strong{font-size:8px}
+}
+@media(prefers-reduced-motion:reduce){
+ .portal-home .viewbar-switch,.portal-home .mobile-menu>div{animation:none!important;transition:none!important}
+}
