@@ -283,18 +283,58 @@ function renderSort(type){
  }
 }
 function renderSlides(){
- const wrap=$('slide-editor');if(!wrap)return;wrap.replaceChildren();
+ const wrap=$('slide-editor');if(!wrap)return;
+ wrap.replaceChildren();
  $('slide-visible').checked=draft.slides.visible;
- const labels={loan:'Boliglån',budget:'Budsjett',receipts:'Kvitteringer',invest:'Sparing og investering',property:'Eiendom og utleie',currency:'Valuta'};
+ const labels={loan:'Boliglån',budget:'Budsjett',receipts:'Kvitteringsstudio',invest:'Sparing og investering',property:'Eiendom og utleie',currency:'Valuta'};
  for(const id of draft.slides.order){
-  const item=draft.slides.items[id],outer=create('div',undefined,'admin-item'),body=create('div',undefined,'admin-item-main');
-  const heading=create('strong',labels[id]),tools=create('div',undefined,'admin-item-controls');
-  for(const [label,delta] of [['↑',-1],['↓',1]]){const b=create('button',label);b.type='button';b.onclick=()=>{const a=draft.slides.order,i=a.indexOf(id),n=i+delta;if(n<0||n>=a.length)return;[a[i],a[n]]=[a[n],a[i]];renderSlides()};tools.append(b)}
-  const shown=create('input');shown.type='checkbox';shown.setAttribute('role','switch');shown.checked=item.enabled;shown.onchange=()=>item.enabled=shown.checked;
-  const shownLabel=create('label',undefined,'admin-inline');shownLabel.classList.add('admin-switch');shownLabel.append(shown,create('span','Vis scene'));shownLabel.append(create('small','På: scenen vises på forsiden. Av: scenen skjules.','admin-toggle-hint'));
-  const title=create('input');title.type='text';title.maxLength=95;title.value=item.title;title.placeholder='Overskrift – tom = standard';title.oninput=()=>item.title=title.value;title.setAttribute('aria-label',labels[id]+' overskrift');
-  const desc=create('textarea');desc.maxLength=220;desc.value=item.description;desc.placeholder='Beskrivelse – tom = standard';desc.oninput=()=>item.description=desc.value;desc.setAttribute('aria-label',labels[id]+' beskrivelse');
-  body.append(heading,shownLabel,title,desc);outer.append(body,tools);wrap.append(outer);
+  const item=draft.slides.items[id];
+  const outer=create('section',undefined,'admin-slide-item');
+  outer.dataset.slideId=id;
+  const heading=create('div',undefined,'admin-slide-heading');
+  const name=create('strong',labels[id]||id);
+  const tools=create('div',undefined,'admin-slide-tools');
+  for(const [label,delta,title] of [['↑',-1,'Flytt opp'],['↓',1,'Flytt ned']]){
+   const b=create('button',label,'admin-secondary');b.type='button';
+   b.setAttribute('aria-label',title+' '+(labels[id]||id));
+   b.title=title;
+   const ix=draft.slides.order.indexOf(id);b.disabled=ix+delta<0||ix+delta>=draft.slides.order.length;
+   b.onclick=()=>{
+    const a=draft.slides.order,i=a.indexOf(id),n=i+delta;
+    if(n<0||n>=a.length)return;
+    [a[i],a[n]]=[a[n],a[i]];
+    renderSlides();
+    const focused=wrap.querySelector('[data-slide-id="'+id+'"] .admin-slide-tools button');
+    focused?.focus({preventScroll:true});
+    window.dispatchEvent(new Event('lanesjekk-studio-media-dirty'));
+   };
+   tools.append(b);
+  }
+  heading.append(name,tools);
+  const shown=create('input');shown.type='checkbox';shown.setAttribute('role','switch');
+  shown.checked=item.enabled;
+  shown.onchange=()=>{item.enabled=shown.checked;window.dispatchEvent(new Event('lanesjekk-studio-media-dirty'))};
+  const shownLabel=create('label',undefined,'admin-slide-visibility admin-switch');
+  shownLabel.append(shown,create('span','Vis scenen på forsiden'));
+  shownLabel.append(create('small','På: scenen vises etter publisering. Av: skjult.','admin-toggle-hint'));
+  const fieldwrap=create('div',undefined,'admin-slide-fields');
+  const titleLabel=create('label',undefined,'admin-slide-field');
+  titleLabel.append(create('span','Overskrift'));
+  const title=create('input');title.type='text';title.maxLength=95;title.value=item.title;
+  title.placeholder='Tomt felt bruker standardoverskriften';
+  title.setAttribute('aria-label',labels[id]+' overskrift');
+  title.oninput=()=>{item.title=title.value};
+  titleLabel.append(title);
+  const descLabel=create('label',undefined,'admin-slide-field');
+  descLabel.append(create('span','Beskrivelse'));
+  const desc=create('textarea');desc.maxLength=220;desc.rows=3;desc.value=item.description;
+  desc.placeholder='Tomt felt bruker standardbeskrivelsen';
+  desc.setAttribute('aria-label',labels[id]+' beskrivelse');
+  desc.oninput=()=>{item.description=desc.value};
+  descLabel.append(desc);
+  fieldwrap.append(titleLabel,descLabel);
+  outer.append(heading,shownLabel,fieldwrap);
+  wrap.append(outer);
  }
 }
 const CATALOG_META={
