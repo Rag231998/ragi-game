@@ -93,7 +93,7 @@ async function openFullPreview(section='topp',historyVersion=null){
  // Popup must be opened synchronously from the click event.
  const win=window.open('./studio-preview.html','lanesjekk-studio-full-preview','width=1460,height=940');
  if(!win){msg('Tillat popup-vinduer fra Lånesjekk Studio for å åpne full forhåndsvisning.',true);return false}
- previewWindowReady=false;
+ if(previewWindow!==win||win.closed)previewWindowReady=false;
  previewWindow=win;win.focus();
  try{
   if(!historical)await prepareAssets();
