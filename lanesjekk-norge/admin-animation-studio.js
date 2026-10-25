@@ -7,9 +7,21 @@ const SLOT_NAMES={home:'Forsiden / kampanje',loans:'Boliglån',budget:'Budsjett'
  savings:'Sparing',investing:'Fond og aksjer',carloan:'Billån',academy:'Læringsplattform',currency:'Valutakompass'};
 const VIDEO=['video/mp4','video/webm'],POSTER=['image/jpeg','image/png','image/webp'];
 const MAX_VIDEO=40*1024*1024,MAX_POSTER=4*1024*1024;
-let db,source,notify,bucket,active='home',objects=[],previewUrl='',posterPreviewUrl='';
+let db,source,notify,bucket,getPublished,active='home',previewUrl='',posterPreviewUrl='',uploading=false,libraryItems=[],libraryFilter='all',libraryQuery='';
 function fields(){return source()?.slots?.[active]}
-function text(message,error=false){$('media-status').textContent=message;$('media-status').dataset.error=error?'true':'false';if(error)notify(message,true)}
+function dirty(){window.dispatchEvent(new Event('lanesjekk-studio-media-dirty'))}
+function setDisabledUploads(value){
+ uploading=value;
+ for(const id of ['media-upload','media-target','media-video','media-poster','media-reset']){
+  const node=$(id);if(node)node.disabled=value;
+ }
+ document.querySelectorAll('#media-module-grid button').forEach(node=>node.disabled=value);
+}
+function readableSize(bytes){return bytes>=1048576?(bytes/1048576).toFixed(1)+' MB':Math.max(1,Math.round(bytes/1024))+' KB'}
+function text(message,error=false){
+ const status=$('media-status');if(status){status.textContent=message;status.dataset.error=error?'true':'false'}
+ if(error&&typeof notify==='function')notify(message,true);
+}
 function mediaUrl(path){return db.storage.from(bucket).getPublicUrl(path).data.publicUrl}
 function verifyFile(file,types,limit,description){
  if(!file)return;
@@ -33,6 +45,10 @@ function drawPreview(){
  image.hidden=!poster;
  if(poster)image.src=poster;
  player.style.objectFit=item.fit==='contain'?'contain':'cover';player.loop=item.loop!==false;
+ if($('media-staged-status')){
+  $('media-staged-status').textContent=local?'Lokal fil · ikke lastet opp':
+   item.videoUrl?'Valgt som utkast · publiseres først etter godkjenning':'Bruker standardanimasjon';
+ }
 }
 function render(){
  const item=fields();if(!item)return;
@@ -43,7 +59,6 @@ function render(){
  $('media-placement').value=item.placement||'after-intro';
  $('media-title').value=item.title||'';
  $('media-description').value=item.description||'';
- $('media-video').value='';$('media-poster').value='';
  const grid=$('media-module-grid');grid.replaceChildren();
  for(const [id,name] of Object.entries(SLOT_NAMES)){
   const m=source().slots[id];
@@ -59,46 +74,66 @@ function render(){
  $('media-file-status').textContent=item.videoUrl?'Video valgt · '+item.videoUrl.split('/').at(-1):'Ingen video valgt. Eksisterende animasjon beholdes.';
  drawPreview()
 }
-function changeSlot(id){if(!Object.hasOwn(SLOT_NAMES,id))return;active=id;render();window.dispatchEvent(new CustomEvent('lanesjekk-studio-media-target',{detail:{module:id}}));text('Redigerer '+SLOT_NAMES[id]+'. Endringer vises offentlig først etter publisering.')}
+function changeSlot(id){
+ if(uploading||!Object.hasOwn(SLOT_NAMES,id))return;
+ if(( $('media-video').files?.length || $('media-poster').files?.length ) &&
+  !window.confirm('Du har valgt filer som ennå ikke er lastet opp. Bytte modul og forkaste filvalget?')){
+  $('media-target').value=active;return
+ }
+ $('media-video').value='';$('media-poster').value='';
+ active=id;render();
+ window.dispatchEvent(new CustomEvent('lanesjekk-studio-media-target',{detail:{module:id}}));
+ text('Valgt modul: '+SLOT_NAMES[id]+'. Endringer lagres først ved publisering.')
+}
 async function uploadFile(file,folder){
  const ext=file.type==='video/mp4'?'mp4':file.type==='video/webm'?'webm':file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';
  const path=folder+'/media-'+crypto.randomUUID()+'.'+ext;
  const progress=$('media-progress');
- if(file.size>6*1024*1024){
-  if(!window.tus?.Upload)throw Error('Store videoer krever TUS-biblioteket. Tillat biblioteker fra cdn.jsdelivr.net og prøv på nytt.');
-  const {data:{session},error:sessionError}=await db.auth.getSession();
-  if(sessionError||!session?.access_token)throw Error('Økten har utløpt. Logg inn igjen før du laster opp.');
-  await new Promise((resolve,reject)=>{
-   const upload=new window.tus.Upload(file,{
-    endpoint:'https://pryrgwfjniggjlrizenh.storage.supabase.co/storage/v1/upload/resumable',
-    retryDelays:[0,3000,5000,10000,20000],chunkSize:6*1024*1024,
-    headers:{authorization:'Bearer '+session.access_token,apikey:'sb_publishable_nMwAplLiIZ-p9zIu8F3yPQ_-_XwiMM9'},
-    uploadDataDuringCreation:true,removeFingerprintOnSuccess:true,
-    metadata:{bucketName:bucket,objectName:path,contentType:file.type,cacheControl:'3600'},
-    onError:error=>reject(Error(error?.message||'Videoopplasting ble avbrutt.')),
-    onProgress:(done,total)=>{
-     const percent=Math.min(100,Math.round(done/total*100));
-     progress.hidden=false;progress.value=percent;
-     text('Laster opp «'+file.name+'» · '+percent+' %. Ikke lukk fanen.');
-    },
-    onSuccess:resolve
-   });
-   upload.start();
-  });
- }else{
+ progress.hidden=false;progress.removeAttribute('value');
+ text('Sender '+file.name+' ('+readableSize(file.size)+') til mediearkivet …');
+ const standard=async()=>{
+  text('Lagrer '+file.name+' i mediearkivet …');
   const {error}=await db.storage.from(bucket).upload(path,file,{upsert:false,cacheControl:'3600',contentType:file.type});
   if(error)throw Error(error.message||'Supabase avviste opplastingen.');
- }
+  progress.value=100;
+ };
+ // TUS gives true progress for large videos. If the third-party library was blocked,
+ // fall back to the official Storage SDK rather than making the entire uploader unusable.
+ if(file.size>6*1024*1024&&window.tus?.Upload){
+  const {data:{session},error:sessionError}=await db.auth.getSession();
+  if(sessionError||!session?.access_token)throw Error('Økten har utløpt. Logg inn igjen før du laster opp.');
+  let uploaded=0;
+  const job=new window.tus.Upload(file,{
+   endpoint:'https://pryrgwfjniggjlrizenh.storage.supabase.co/storage/v1/upload/resumable',
+   retryDelays:[0,3000,5000,10000,20000],chunkSize:6*1024*1024,
+   headers:{authorization:'Bearer '+session.access_token,apikey:'sb_publishable_nMwAplLiIZ-p9zIu8F3yPQ_-_XwiMM9'},
+   uploadDataDuringCreation:true,removeFingerprintOnSuccess:true,
+   metadata:{bucketName:bucket,objectName:path,contentType:file.type,cacheControl:'3600'},
+   onProgress:(done,total)=>{
+    uploaded=done;
+    progress.value=Math.min(100,Math.round(done/total*100));
+    text('Laster opp '+file.name+' · '+progress.value+' %. Ikke lukk fanen.');
+   }
+  });
+  try{
+   await new Promise((resolve,reject)=>{job.options.onError=error=>reject(Error(error?.message||'Opplastingen ble avbrutt.'));job.options.onSuccess=resolve;job.start()});
+  }catch(error){
+   if(uploaded>0)throw error; // Do not create a second upload after partial transmission.
+   text('Fortsetter opplasting gjennom Supabase Storage …');
+   await standard();
+  }
+ }else await standard();
  return mediaUrl(path)
 }
 async function uploadSelection(){
  const video=$('media-video').files?.[0],poster=$('media-poster').files?.[0],btn=$('media-upload'),target=active;
  $('media-progress').value=0;$('media-progress').hidden=true;
+ if(uploading)return;
  if(!video&&!poster){text('Velg en video eller et forsidebilde først.',true);return}
  try{
   verifyFile(video,VIDEO,MAX_VIDEO,'Video må være MP4 eller WebM, maks 40 MB.');
   verifyFile(poster,POSTER,MAX_POSTER,'Forsidebilde må være PNG/JPEG/WebP, maks 4 MB.');
-  btn.disabled=true;text('Laster opp filer til sikkert mediearkiv … Ikke lukk fanen.');
+  setDisabledUploads(true);text('Laster opp filer til mediearkiv … Ikke lukk fanen.');
   const uploadedVideo=video?await uploadFile(video,'video'):null;
   const uploadedPoster=poster?await uploadFile(poster,'poster'):null;
   const item=source()?.slots?.[target];
@@ -106,11 +141,11 @@ async function uploadSelection(){
   if(uploadedVideo)item.videoUrl=uploadedVideo;
   if(uploadedPoster)item.posterUrl=uploadedPoster;
   $('media-video').value='';$('media-poster').value='';
-  render();
+  render();dirty();
   text('Opplastet til '+SLOT_NAMES[target]+' og lagt i utkastet. Se hele nettsiden før du publiserer.');
   await refreshLibrary();
  }catch(e){text('Opplasting feilet: '+(e.message||e),true)}
- finally{btn.disabled=false;$('media-progress').hidden=true}
+ finally{setDisabledUploads(false);$('media-progress').hidden=true}
 }
 async function refreshLibrary(){
  if(!db||!source())return;
