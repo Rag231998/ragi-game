@@ -104,3 +104,15 @@
 .portal-home .premium-dashboard .home-tool-arrow{background:#213e67!important;color:white!important}
 .portal-home .premium-dashboard .home-tool-art{background:#e9eefb!important;color:#526caf!important}
 .portal-home .premium-dashboard .home-tool-category{color:#5c7298!important}
+
+/* Fix: chapter rail never blocks active scene CTA. Slide visuals remain non-interactive. */
+#loan-showcase .sc-slide-content{z-index:12;pointer-events:none}
+#loan-showcase .sc-slide-content .sc-action{position:relative;z-index:13;pointer-events:auto}
+#loan-showcase .sc-bottom{z-index:10}
+#loan-showcase .sc-controls #motion-toggle{display:inline-flex;align-items:center;justify-content:center;width:auto;max-width:170px;min-width:0;height:38px;padding:0 11px;font-size:10px;line-height:1.2;font-weight:790;white-space:nowrap;border-color:#c4e8df88;color:#e7fff6}
+#loan-showcase .sc-controls #motion-toggle[aria-pressed="true"]{background:#2c6d62;color:#fff;border-color:#82c4b4}
+@media(max-width:700px){
+ #loan-showcase .sc-controls #motion-toggle{max-width:69px;white-space:normal;font-size:9px;min-height:36px;padding:0 5px}
+ #loan-showcase .sc-bottom{gap:7px}
+ #loan-showcase .sc-controls{gap:4px}
+}
