@@ -107,3 +107,69 @@ test('remember me is off by default with session-only or opt-in 24-hour storage'
  });
  expect(state).toEqual({sessionOnly:true,remembered:true,timedOut:true});
 });
+
+
+test('Add Function creates editable card and real route immediately without losing the draft',async({page})=>{
+ await prepareStudio(page);
+ await page.locator('[data-admin-jump="admin-panel-catalog"]').click();
+ await expect(page.locator('#catalog-tool-route')).toBeVisible();
+ await page.locator('#catalog-tool-route').selectOption('kvitteringer');
+ await page.locator('#catalog-add-tool').click();
+ const card=page.locator('#catalog-tool-editor .catalog-editor-card').first();
+ await expect(card).toBeVisible();
+ await expect(card.locator('input[aria-label="Tittel på kortet"]')).toBeFocused();
+ await expect(card.locator('input[aria-label="Tittel på kortet"]')).toHaveValue('Kvitteringsstudio');
+ await expect(card.locator('select[aria-label="Åpner eksisterende verktøy"]')).toHaveValue('kvitteringer');
+ await expect(card.locator('input[role="switch"]')).toBeChecked();
+ await expect(page.locator('#catalog-tools-count')).toContainText('1 ekstra');
+ await expect(page.locator('#admin-draft-status')).toContainText('endringer');
+ await expect.poll(()=>page.frameLocator('#admin-frame').locator('.cms-custom-tool[href="#kvitteringer"]').count()).toBe(1);
+ await card.locator('input[aria-label="Tittel på kortet"]').fill('Kvitteringsanalyse');
+ await expect(page.frameLocator('#admin-frame').locator('.cms-custom-tool strong')).toContainText('Kvitteringsanalyse');
+ await page.locator('[data-admin-jump="admin-panel-budget"]').click();
+ await page.locator('[data-admin-jump="admin-panel-catalog"]').click();
+ await expect(page.locator('#catalog-tool-editor .catalog-editor-card input[aria-label="Tittel på kortet"]')).toHaveValue('Kvitteringsanalyse');
+ await page.locator('#catalog-tool-editor .catalog-editor-card button').filter({hasText:'Slett kort'}).click();
+ await expect(page.locator('#catalog-tools-count')).toContainText('0 ekstra');
+ await expect(page.frameLocator('#admin-frame').locator('.cms-custom-tool')).toHaveCount(0);
+});
+
+test('Add update instantly opens an editable prefilled item, previews news, and validates publish',async({page})=>{
+ await prepareStudio(page);
+ await page.locator('[data-admin-jump="admin-panel-catalog"]').click();
+ await page.locator('#catalog-news-route').selectOption('boligverdi');
+ await page.locator('#catalog-add-news').click();
+ const news=page.locator('#catalog-news-editor .catalog-editor-card').first();
+ await expect(news).toBeVisible();
+ await expect(news.locator('input[aria-label="Overskrift på oppdateringen"]')).toBeFocused();
+ await expect(news.locator('input[aria-label="Overskrift på oppdateringen"]')).toHaveValue('Nytt i Boligverdi');
+ await expect(news.locator('select[aria-label="Åpner funksjon"]')).toHaveValue('boligverdi');
+ await expect(news.locator('input[type="date"]')).toHaveValue(/\d{4}-\d{2}-\d{2}/);
+ await expect(page.locator('#admin-draft-status')).toContainText('endringer');
+ await news.locator('button').filter({hasText:'Vis oppdateringen i Studio'}).click();
+ await expect(page.locator('#site-feature-dialog')).toBeVisible();
+ await expect(page.locator('#site-feature-list .fc-news')).toContainText('Nytt i Boligverdi');
+ await page.keyboard.press('Escape');
+ await news.locator('input[aria-label="Overskrift på oppdateringen"]').fill('');
+ await page.locator('#admin-publish').click();
+ await expect(page.locator('#admin-preflight')).not.toHaveAttribute('open','');
+ await expect(page.locator('#admin-catalog-status')).toContainText('Fyll ut');
+ await news.locator('input[aria-label="Overskrift på oppdateringen"]').fill('Nye boligdata og bedre oversikt');
+ await expect(page.locator('#admin-draft-status')).toContainText('endringer');
+ await expect(page.locator('#catalog-news-count')).toContainText('1 oppdateringer');
+});
+
+test('Additional cards require functioning internal route, not a fictitious calculator',async({page})=>{
+ await prepareStudio(page);
+ await page.locator('[data-admin-jump="admin-panel-catalog"]').click();
+ await page.locator('#catalog-tool-route').selectOption('budsjett');
+ await page.locator('#catalog-add-tool').click();
+ const card=page.locator('#catalog-tool-editor .catalog-editor-card').first();
+ await card.locator('select[aria-label="Åpner eksisterende verktøy"]').selectOption('billan');
+ await expect(card.locator('input[aria-label="Tittel på kortet"]')).toHaveValue('Billån');
+ await expect(page.frameLocator('#admin-frame').locator('.cms-custom-tool[href="#billan"]')).toHaveCount(1);
+ await card.locator('input[role="switch"]').uncheck();
+ await expect(page.frameLocator('#admin-frame').locator('.cms-custom-tool')).toHaveCount(0);
+ await card.locator('input[role="switch"]').check();
+ await expect(page.frameLocator('#admin-frame').locator('.cms-custom-tool')).toHaveCount(1);
+});
