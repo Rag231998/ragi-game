@@ -512,14 +512,14 @@ function boot(){
  $('admin-history-search').addEventListener('input',renderPublishEvents);
  $('admin-history-refresh').addEventListener('click',()=>{void loadRevisions(true)});
  $('admin-history-more').addEventListener('click',()=>{void loadRevisions(false)});
- const adminPanels=[...document.querySelectorAll('.admin-edit-panel > details.admin-panel')];
+ const adminPanels=[...document.querySelectorAll('.admin-edit-panel > details.admin-panel')].filter(panel=>panel.id!=='admin-panel-history');
  const jumpButtons=[...document.querySelectorAll('[data-admin-jump]')];
  const labels={
  'admin-panel-brand':'Design, logo og farger','admin-panel-budget':'Budsjett og beregning','admin-panel-cards':'Objekter og forsidekort',
  'admin-panel-slides':'Forsidescener','admin-panel-motion':'Animasjoner','animation-studio-panel':'Animation Studio',
- 'admin-panel-invest':'Fond og aksjer','admin-panel-history':'Publiseringslogg','admin-panel-catalog':'Funksjoner og nyheter'
+ 'admin-panel-invest':'Fond og aksjer','admin-panel-catalog':'Funksjoner og nyheter'
  };
- const panelPreviews={'admin-panel-brand':'topp','admin-panel-budget':'budsjett','admin-panel-cards':'topp','admin-panel-slides':'topp','admin-panel-motion':'boligverdi','animation-studio-panel':'topp','admin-panel-invest':'investering','admin-panel-history':'topp','admin-panel-catalog':'topp'};
+ const panelPreviews={'admin-panel-brand':'topp','admin-panel-budget':'budsjett','admin-panel-cards':'topp','admin-panel-slides':'topp','admin-panel-motion':'boligverdi','animation-studio-panel':'topp','admin-panel-invest':'investering','admin-panel-catalog':'topp'};
  const mediaRoutes={home:'topp',loans:'sjekk',budget:'budsjett',receipts:'kvitteringer',valuation:'boligverdi',rental:'utleieanalyse',savings:'sparing',investing:'investering',carloan:'billan',academy:'akademi',currency:'valutakompass'};
  const panelHelp={'admin-panel-brand':'Logo, farger og visningsmodus.','admin-panel-budget':'Flytt budsjettseksjoner og kontroller synlighet.','admin-panel-cards':'Rediger hvert kort og objekt, inkludert ikon, tekst og synlighet.','admin-panel-slides':'Tilpass rekkefølge og tekst på forsiden.','admin-panel-motion':'Velg hvilke animasjoner som vises.','animation-studio-panel':'Velg modul og videofiler, og forhåndsvis resultatet.','admin-panel-invest':'Investeringsoversikt og overskrift.','admin-panel-history':'Se tidspunkt, endringer og gjenopprett en eldre publisering.','admin-panel-catalog':'Administrer nyheter i funksjonsoversikten. Funksjonene og forklaringene vises i en egen dialog.'};
  let panelTransition=false,previewSelection='topp';
