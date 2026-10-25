@@ -66,3 +66,27 @@ test('Studio uses native iOS switches for its visibility and animation controls'
  }
  await expect(page.locator('#admin-remember')).toHaveAttribute('role','switch');
 });
+test('One unmistakable moon icon is paired with the actual dark mode switch',async({page})=>{
+ await page.goto('/#topp',{waitUntil:'domcontentloaded'});
+ for(const width of [1440,820,390]){
+  await page.setViewportSize({width,height:850});
+  const moon=page.locator('.site-header .header-theme-moon');
+  const toggle=page.locator('#site-theme-quick');
+  await expect(moon).toBeVisible();
+  await expect(moon).toHaveText('☾');
+  await expect(toggle).toBeVisible();
+  await expect(page.locator('.site-header [role="switch"]')).toHaveCount(1);
+  await expect(page.locator('.site-header .site-theme-picker')).toHaveCount(0);
+  const positions=await page.evaluate(()=>{
+   const m=document.querySelector('.header-theme-moon').getBoundingClientRect();
+   const t=document.getElementById('site-theme-quick').getBoundingClientRect();
+   return{distance:t.left-(m.left+m.width),overlap:Math.abs((m.top+m.height/2)-(t.top+t.height/2))}
+  });
+  expect(positions.distance).toBeGreaterThanOrEqual(0);
+  expect(positions.distance).toBeLessThan(60);
+  expect(positions.overlap).toBeLessThan(15);
+ }
+ await page.locator('#site-theme-quick').click();
+ await expect(page.locator('html')).toHaveClass(/cms-dark/);
+ await expect(page.locator('.site-header .header-theme-moon')).toBeVisible();
+});
