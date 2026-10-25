@@ -1,7 +1,7 @@
 <!doctype html><html lang="nb"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#101f31">
 <title>Lånesjekk · Privat administrasjon</title>
-<link rel="stylesheet" href="./admin-studio.css?v=12"><link rel="stylesheet" href="./admin-dark-mode.css?v=3"><link rel="stylesheet" href="./ios-controls.css?v=1"><script>try{const v=localStorage.getItem('lanesjekk.studio.theme.v1')||'auto';if(v==='dark'||(v==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('studio-dark')}catch{}</script></head><body>
+<link rel="stylesheet" href="./admin-studio.css?v=12"><link rel="stylesheet" href="./admin-dark-mode.css?v=3"><link rel="stylesheet" href="./ios-controls.css?v=1"><link rel="stylesheet" href="./site-feature-catalog.css?v=1"><link rel="stylesheet" href="./admin-feature-catalog.css?v=1"><script>try{const v=localStorage.getItem('lanesjekk.studio.theme.v1')||'auto';if(v==='dark'||(v==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('studio-dark')}catch{}</script></head><body>
 <header class="admin-header"><a href="./studio-admin.html" aria-label="Lånesjekk Studio – administrasjon">◈ <strong>LÅNESJEKK</strong><span> / STUDIO</span></a><div class="admin-header-right"><label class="admin-ui-theme-wrap" for="admin-ui-theme"><span>Utseende</span><select id="admin-ui-theme" aria-label="Utseende for administrasjonsportalen"><option value="auto">◐ Automatisk</option><option value="light">☀ Lys</option><option value="dark">☾ Mørk</option></select></label><span class="admin-badge">Kun godkjente administratorer</span>
 <div class="admin-account-wrapper" id="admin-account-wrapper" hidden>
  <button id="admin-account-menu-toggle" type="button" aria-expanded="false" aria-controls="admin-account-menu">◉ Konto og sikkerhet <span aria-hidden="true">⌄</span></button>
@@ -148,7 +148,7 @@
    <p class="admin-hint">De faglige beregningene kan ikke slettes eller erstattes med fritekst fra denne portalen. Innholdet redigeres fortsatt i kildekoden for å beskytte faktagrunnlaget.</p>
   </div></details>
   <details class="admin-panel" id="admin-panel-catalog"><summary>08 · Funksjonsoversikt og nyheter</summary><div class="admin-body">
- <p class="admin-hint">Den offentlige knappen «Alle funksjoner» viser hvert verktøy med forklaring, kategorier og søk. Her administrerer du nyheter som vises under «Nytt og oppdatert». Publiser dem først når de er klare.</p>
+ <p class="admin-hint">Her har du en intern oversikt over tilgjengelige verktøy, formål, forklaringer og funksjonsnyheter. Oversikten vises bare i Studio, ikke som en knapp på den offentlige nettsiden.</p><button type="button" id="admin-open-features" class="admin-primary" data-open-catalog="tools" aria-haspopup="dialog" aria-controls="site-feature-dialog">▦ Åpne oversikt over alle funksjoner</button>
  <label>Overskrift for funksjonsoversikten<input id="catalog-headline" type="text" maxlength="100" placeholder="Oppdag alt du kan gjøre"></label>
  <div id="catalog-news-editor" class="admin-sort"></div>
  <button type="button" id="catalog-add-news" class="admin-secondary">+ Legg til nyhet</button>
@@ -180,6 +180,22 @@
   <div class="admin-preflight-actions"><button id="admin-preflight-cancel" type="button" class="admin-secondary">Tilbake til redigering</button><button id="admin-confirm-publish" type="button" class="admin-primary" disabled>Publiser på nettsiden</button></div>
   <p id="admin-preflight-status" class="admin-hint" aria-live="polite"></p>
 </dialog>
+<dialog id="site-feature-dialog" aria-labelledby="site-feature-title">
+ <div class="fc-window">
+  <div class="fc-top"><div><small>STUDIO · INTERN FUNKSJONSOVERSIKT</small><h2 id="site-feature-title">Oversikt over alle funksjoner</h2></div><button type="button" id="site-feature-close" aria-label="Lukk funksjonsoversikten">×</button></div>
+  <div class="fc-tabs" id="site-feature-tabs" role="tablist" aria-label="Vis funksjoner eller nyheter">
+   <button type="button" role="tab" data-fc-tab="tools" aria-selected="true">Alle funksjoner</button>
+   <button type="button" role="tab" data-fc-tab="news" aria-selected="false">Nytt og oppdatert</button>
+  </div>
+  <div id="site-feature-controls" class="fc-controls">
+   <label class="fc-search"><span aria-hidden="true">⌕</span><input type="search" id="site-feature-input" aria-label="Søk i funksjonsoversikten" placeholder="Søk etter tema eller funksjon" autocomplete="off"></label>
+   <div class="fc-categories" id="site-feature-categories" aria-label="Kategorier"></div>
+  </div>
+  <div class="fc-meta"><span id="site-feature-count">Alle verktøy og forklaringer</span><span>Velg for å lese mer</span></div>
+  <div class="fc-list" id="site-feature-list"></div>
+  <div class="fc-detail" id="site-feature-detail" hidden></div>
+ </div>
+</dialog>
 <footer>Privat administrasjon for Lånesjekk Norge. Bare medlemmer av databasens administratorrolle kan lagre endringer. <a href="./index.html">Til offentlig nettside ↗</a></footer>
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./admin-session.js?v=2"></script><script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script><script defer src="./admin-animation-studio.js?v=7"></script><script defer src="./admin-studio.js?v=17"></script><script defer src="./ai-video-brief.js?v=1"></script><script defer src="./admin-theme.js?v=1"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./admin-session.js?v=2"></script><script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script><script defer src="./admin-animation-studio.js?v=7"></script><script defer src="./admin-studio.js?v=18"></script><script defer src="./site-feature-catalog.js?v=3"></script><script defer src="./ai-video-brief.js?v=1"></script><script defer src="./admin-theme.js?v=1"></script>
 </body></html>
