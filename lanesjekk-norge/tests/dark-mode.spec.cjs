@@ -37,7 +37,7 @@ test('Dark mode gives primary calculator surfaces dark backgrounds in each key t
   await expect(element).toBeVisible();
   const paint=await element.evaluate(el=>{
    const bg=getComputedStyle(el).backgroundColor;
-   const parts=bg.match(/[\\d.]+/g)?.slice(0,3).map(Number)||[];
+   const parts=bg.match(/[\d.]+/g)?.slice(0,3).map(Number)||[];
    return {bg,brightness:parts.length===3?parts.reduce((s,v)=>s+v,0)/3:255};
   });
   expect(paint.brightness,`${route}: ${paint.bg}`).toBeLessThan(105);
