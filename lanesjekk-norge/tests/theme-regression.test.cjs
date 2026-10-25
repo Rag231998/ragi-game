@@ -79,8 +79,8 @@ test('Studio and password page use the same persisted appearance choice',()=>{
  const html=file('studio-admin.html'),reset=file('admin-password.html');
  for(const text of [html,reset]){
   assert.match(text,/id="admin-ui-theme"/);
-  assert.match(text,/admin-theme\\.js/);
-  assert.match(text,/admin-dark-mode\\.css/);
+  assert.match(text,/admin-theme\.js/);
+  assert.match(text,/admin-dark-mode\.css/);
  }
  const store=new Map([['lanesjekk.studio.theme.v1','dark']]);
  const callbacks={};
