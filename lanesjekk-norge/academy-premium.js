@@ -1,0 +1,35 @@
+(()=>{'use strict';
+const root=document.getElementById('academy-premium-experience');if(!root)return;
+const $=id=>document.getElementById(id),money=n=>new Intl.NumberFormat('nb-NO',{style:'currency',currency:'NOK',maximumFractionDigits:0}).format(n);
+const key='lanesjekk.academy.progress.v2';
+let progress={xp:0,completed:[],achievements:[]};
+try{const item=JSON.parse(localStorage.getItem(key)||'null');if(item&&typeof item==='object'){progress.xp=Math.max(0,Math.min(100000,Number(item.xp)||0));progress.completed=Array.isArray(item.completed)?item.completed.slice(0,100):[];}}catch{}
+const save=()=>{try{localStorage.setItem(key,JSON.stringify(progress))}catch{}};
+const award=id=>{if(progress.completed.includes(id))return;progress.completed.push(id);progress.xp+=25;save();renderProgress()};
+function renderProgress(){const level=Math.floor(progress.xp/100)+1;$('academy-xp').textContent=progress.xp+' XP';$('academy-level').textContent='Nivå '+level;$('academy-level-fill').style.width=(progress.xp%100)+'%';$('academy-achievement').textContent=progress.completed.length+' gjennomførte utfordringer · Lagres kun på denne enheten';}
+const games=[
+{id:'budget',name:'Budsjettmesteren',icon:'💳',question:'Du får 32 000 kr etter skatt. Faste utgifter er 21 500 kr og variable utgifter er 6 500 kr. Hvor mye kan du spare?',answers:[4000,6500,10500],correct:0,explain:'32 000 − 21 500 − 6 500 = 4 000 kr. Et budsjett hjelper deg å planlegge sparing.'},
+{id:'interest',name:'Rentekampen',icon:'🏠',question:'Du har 2 000 000 kr i lån. Omtrent hvor mye er ett prosentpoeng høyere rente per år før skattevirkninger og avdrag?',answers:[2000,20000,200000],correct:1,explain:'1 % av 2 000 000 kr er 20 000 kr i ekstra årlig rente før skattevirkninger og avdrag.'},
+{id:'fund',name:'Fondsreisen',icon:'📈',question:'Du har kort tidshorisont og trenger pengene om seks måneder. Hva er normalt viktigst?',answers:['Maksimere risiko','Vurdere lav risiko og tilgjengelighet','Velge fond med høyest historisk avkastning'],correct:1,explain:'Kort sparehorisont gjør risiko for tap særlig relevant. Historisk avkastning er ingen garanti.'},
+{id:'tax',name:'Skattekoden',icon:'🧾',question:'Inntekten din endres betydelig. Hva gjør du for å redusere risikoen for feil forskuddstrekk?',answers:['Sjekker skattekortet','Sletter skattekortet','Venter alltid til neste år'],correct:0,explain:'Oppdatering av skattekortet kan gi mer riktig forskuddstrekk.'},
+{id:'receipt',name:'Forbruksdetektiven',icon:'🛒',question:'Du kjøper kaffe for 45 kr fem dager i uken i 46 uker. Hva bruker du omtrent?',answers:[1035,5175,10350],correct:2,explain:'45 × 5 × 46 = 10 350 kr. Små gjentakende kjøp kan utgjøre mye.'},
+{id:'property',name:'Boligvalget',icon:'🔑',question:'To boliger har samme pris, men én har vesentlig høyere felleskostnader. Hva bør du sammenligne?',answers:['Kun prisantydning','Totale månedlige kostnader','Kun størrelsen på balkongen'],correct:1,explain:'Samlet kostnad, fellesgjeld og løpende utgifter er viktige i boligbudsjettet.'}
+];
+let selected=null;
+function drawGames(){const grid=$('academy-challenge-grid');grid.replaceChildren();games.forEach(g=>{const b=document.createElement('button');b.type='button';b.className='academy-challenge-card';b.innerHTML='<span aria-hidden="true">'+g.icon+'</span><strong></strong><small></small>';b.querySelector('strong').textContent=g.name;b.querySelector('small').textContent=progress.completed.includes(g.id)?'✓ Gjennomført':'25 XP · Start spill';b.onclick=()=>openGame(g.id);grid.append(b)})}
+function openGame(id){const g=games.find(x=>x.id===id);if(!g)return;selected=g;$('academy-question-title').textContent=g.name;$('academy-question-copy').textContent=g.question;$('academy-question-feedback').textContent='';const answers=$('academy-question-answers');answers.replaceChildren();g.answers.forEach((a,i)=>{const b=document.createElement('button');b.type='button';b.className='academy-answer';b.textContent=String(a)+(typeof a==='number'?' kr':'');b.onclick=()=>{answers.querySelectorAll('button').forEach(x=>x.disabled=true);const ok=i===g.correct;b.dataset.correct=String(ok);$('academy-question-feedback').textContent=(ok?'Riktig! ':'Ikke helt. ')+g.explain;if(ok){award(g.id);drawGames()}};answers.append(b)});$('academy-question-dialog').hidden=false;$('academy-question-dialog').scrollIntoView({behavior:'smooth',block:'center'})}
+$('academy-question-close').onclick=()=>{$('academy-question-dialog').hidden=true;selected=null};
+const bounded=(id,min,max)=>{const n=Number($(id).value);return Number.isFinite(n)?Math.max(min,Math.min(max,n)):min};
+const simulations={
+budget(){const income=bounded('sim-income',0,1e8),fixed=bounded('sim-fixed',0,1e8),variable=bounded('sim-variable',0,1e8),left=income-fixed-variable;return {main:money(left)+' per måned',detail:'Årlig '+(left>=0?'mulig overskudd':'underskudd')+': '+money(Math.abs(left)*12)+'.',warning:left<0?'Utgiftene overstiger inntektene. Se på faste og variable kostnader.':'Dette er et regneeksempel, ikke en personlig anbefaling.'}},
+mortgage(){const loan=bounded('sim-loan',0,1e9),rate=bounded('sim-interest',0,40)/1200,years=bounded('sim-years',1,50),n=years*12,monthly=rate===0?loan/n:loan*rate/(1-Math.pow(1+rate,-n));return{main:money(monthly)+' per måned',detail:'Samlet nominell betaling: '+money(monthly*n)+'. Renter: '+money(monthly*n-loan)+'.',warning:'Forenklet annuitetslån uten gebyrer, skattevirkninger eller renteendringer.'}},
+savings(){const start=bounded('sim-start',0,1e9),deposit=bounded('sim-deposit',0,1e8),years=bounded('sim-save-years',1,70),rate=bounded('sim-return',-20,30)/1200;let balance=start;for(let m=0;m<years*12;m++)balance=balance*(1+rate)+deposit;return{main:money(balance)+' etter '+years+' år',detail:'Innskudd: '+money(start+deposit*years*12)+'. Beregnet endring: '+money(balance-(start+deposit*years*12))+'.',warning:'Illustrasjon med konstant nominell avkastning, før skatt og gebyrer. Ingen avkastning er garantert.'}}
+};
+const simInputs={budget:['sim-income','sim-fixed','sim-variable'],mortgage:['sim-loan','sim-interest','sim-years'],savings:['sim-start','sim-deposit','sim-save-years','sim-return']};
+let mode='budget';
+function calculate(){const a=simulations[mode]();$('academy-sim-main').textContent=a.main;$('academy-sim-details').textContent=a.detail;$('academy-sim-warning').textContent=a.warning}
+$('academy-sim-type').onchange=e=>{mode=e.target.value;Object.keys(simInputs).forEach(k=>{$('academy-sim-'+k).hidden=k!==mode});calculate()};
+Object.values(simInputs).flat().forEach(id=>$(id).addEventListener('input',calculate));
+$('academy-progress-reset').onclick=()=>{if(!confirm('Nullstille lokal spillprogresjon på denne enheten?'))return;progress={xp:0,completed:[],achievements:[]};save();renderProgress();drawGames()};
+renderProgress();drawGames();calculate();
+})();
