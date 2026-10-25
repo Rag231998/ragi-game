@@ -186,7 +186,7 @@ function liveStatus(state){
  const labels={connected:'Nettstedet synkroniseres automatisk',connecting:'Kobler til nettstedsoppdateringer …',fallback:'Oppdateringer kontrolleres automatisk',offline:'Kunne ikke kontrollere oppdateringer'};
  node.textContent=labels[state]||labels.fallback;
  // This describes CMS publishing, NEVER bank quotes, property prices or external data.
- node.title='Status gjelder publiserte nettstedinnstillinger, ikke finansielle data eller boligpriser.';
+ node.title='Status gjelder bare publiserte nettstedinnstillinger, ikke live-renter, finansielle data eller boligpriser.';
 }
 async function init(){
  initThemeControls();
