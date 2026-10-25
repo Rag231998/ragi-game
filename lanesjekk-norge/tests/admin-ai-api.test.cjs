@@ -55,7 +55,7 @@ test('Missing free API key displays setup requirement and forbids generation',as
  }finally{reset();restore()}
 });
 test('Provider pricing changes to paid: hard block, never send a chargeable generation request',async()=>{
- const restore=setSecret(SECRET);let creations=0;
+ const restore=setSecret(SECRET+'-paid');let creations=0;
  const reset=mockFetch((u,options)=>{
   if(u.endsWith('/videos/models'))return json({data:[{...freeEntry,pricing_skus:{generate:'0.02'}}]});
   if(options.method==='POST'){creations++;throw Error('Paid request attempted')}
@@ -69,7 +69,7 @@ test('Provider pricing changes to paid: hard block, never send a chargeable gene
  }finally{reset();restore()}
 });
 test('When a zero-cost model is verified, only its :free ID is submitted',async()=>{
- const restore=setSecret(SECRET),payloads=[];
+ const restore=setSecret(SECRET+'-free'),payloads=[];
  const reset=mockFetch((u,options)=>{
   if(u.endsWith('/videos/models'))return json({data:[freeEntry,{...freeEntry,id:PAY,pricing_skus:{generate:'99'}}]});
   if(u.endsWith('/videos')&&options.method==='POST'){payloads.push(JSON.parse(options.body));return json({id:JOB,status:'pending'})}
@@ -86,7 +86,7 @@ test('When a zero-cost model is verified, only its :free ID is submitted',async(
  }finally{reset();restore()}
 });
 test('Completed free video provides provider preview and authenticated zero-charge download',async()=>{
- const restore=setSecret(SECRET),requests=[];
+ const restore=setSecret(SECRET+'-import'),requests=[];
  const reset=mockFetch((u,options)=>{
   requests.push(u);
   if(u.endsWith('/videos/models'))return json({data:[freeEntry]});
