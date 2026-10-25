@@ -8,7 +8,7 @@ test('Academy economic games are reachable and have complete accessible interact
  }
  for(const topic of ['budget','loan','saving','tax'])assert.match(script,new RegExp(topic+':\\['));
  assert.match(html,/academy-game-lab\.js/);assert.match(html,/academy-game-lab\.css/);
- assert.match(script,/addEventListener\('change'/);assert.match(script,/role/,'data presentation should retain ARIA status');
+ assert.match(script,/addEventListener\('change'/);assert.match(html,/aria-live="polite"/);
 });
 test('Economic feed validates input and does not invent live prices',async()=>{
  const handler=require('../api/market-feed.js');
