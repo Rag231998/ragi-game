@@ -16,7 +16,9 @@ const FEATURES=Object.freeze([
  {id:'guider',cat:'Læring',title:'Guider og artikler',subtitle:'Finn bakgrunnskunnskap, råd og metodeforklaringer.',how:'Bla gjennom artikler om lån, sparing og økonomi. Følg kildehenvisningene for detaljer.',icon:'☷',keywords:'artikler hjelp guide forklaring'}
 ]);
 const categories=['Alle','Lån','Økonomi','Sparing','Eiendom','Læring'];
-let catalog={headline:'Oppdag alt du kan gjøre',news:[]},category='Alle',tab='tools',search='',lastFocus=null;
+let catalog={headline:'Oppdag alt du kan gjøre',news:[],tools:[]},category='Alle',tab='tools',search='',lastFocus=null;
+const routes=new Set([...FEATURES.map(item=>item.id),'topp']);
+const allFeatures=()=>[...FEATURES,...catalog.tools.filter(item=>item.enabled&&item.title&&item.subtitle&&item.how)];
 const SEEN_KEY='lanesjekk.catalog.read-news.v1';
 function readSeen(){
  try{const result=JSON.parse(window.localStorage.getItem(SEEN_KEY)||'[]');return new Set(Array.isArray(result)?result.slice(-100):[])}catch{return new Set()}
@@ -50,12 +52,12 @@ function searched(item){
  return !needle||[item.cat,item.title,item.subtitle,item.how,item.keywords].join(' ').toLocaleLowerCase('nb-NO').includes(needle);
 }
 function openFeature(id){
- const item=FEATURES.find(x=>x.id===id);if(!item)return;
+ const item=allFeatures().find(x=>x.id===id);if(!item)return;
  const area=$('site-feature-detail');area.replaceChildren();
  const back=node('button','fc-back','← Tilbake til oversikten');back.type='button';back.addEventListener('click',()=>{draw();$('site-feature-input')?.focus()});
  const icon=node('div','fc-detail-icon',item.icon),title=node('h3','',item.title),subtitle=node('p','fc-subtitle',item.subtitle);
  const guide=node('section','fc-explainer');guide.append(node('h4','', 'Slik bruker du funksjonen'),node('p','',item.how));
- const link=node('button','fc-go','Åpne '+item.title);link.type='button';link.addEventListener('click',()=>navigate(item.id));
+ const link=node('button','fc-go','Åpne '+item.title);link.type='button';link.addEventListener('click',()=>navigate(item.route||item.id));
  area.append(back,icon,title,subtitle,guide,link);area.hidden=false;
  $('site-feature-list').hidden=true;$('site-feature-controls').hidden=true;
  area.querySelector('button')?.focus();
@@ -83,7 +85,7 @@ function draw(){
    const button=node('button','fc-category'+(cat===category?' is-selected':''),cat);button.type='button';
    button.setAttribute('aria-pressed',String(cat===category));button.addEventListener('click',()=>{category=cat;draw()});cats.append(button);
   }
-  const shown=FEATURES.filter(x=>(category==='Alle'||category===x.cat)&&searched(x));
+  const shown=allFeatures().filter(x=>(category==='Alle'||category===x.cat)&&searched(x));
   if(!shown.length)list.append(node('p','fc-empty','Ingen funksjoner passet søket.'));
   for(const item of shown){
    const card=node('button','fc-card');card.type='button';card.dataset.featureId=item.id;
@@ -116,7 +118,14 @@ function close(){
 function setNews(input){
  catalog={
   headline:typeof input?.headline==='string'&&input.headline.trim()?input.headline.slice(0,100):'Oppdag alt du kan gjøre',
-  news:(Array.isArray(input?.news)?input.news:[]).filter(x=>x&&typeof x.title==='string'&&x.title.trim()&&FEATURES.some(f=>f.id===x.route||x.route==='topp')).slice(0,12)
+  news:(Array.isArray(input?.news)?input.news:[]).filter(x=>x&&typeof x.title==='string'&&x.title.trim()&&routes.has(x.route)).slice(0,12),
+  tools:(Array.isArray(input?.tools)?input.tools:[]).slice(0,18).filter(x=>
+   x&&typeof x.id==='string'&&/^custom-[a-z0-9-]{5,43}$/i.test(x.id)&&routes.has(x.route)&&
+   categories.includes(x.cat)&&typeof x.title==='string'&&typeof x.subtitle==='string').map(x=>({
+    id:x.id,route:x.route,cat:x.cat,title:x.title.slice(0,85),
+    subtitle:x.subtitle.slice(0,170),how:String(x.how||'').slice(0,450),
+    icon:String(x.icon||'✦').slice(0,8),enabled:x.enabled!==false,keywords:''
+   }))
  };
  if(root()?.open)draw();
  updateBadge();
@@ -133,6 +142,6 @@ function init(){
  });
  $('site-feature-input')?.addEventListener('input',event=>{search=event.target.value;const focus=document.activeElement;draw();if(focus?.id==='site-feature-input')focus.focus()});
 }
-window.lanesjekkCatalog={setNews,open,getFeatures:()=>FEATURES.map(({id,cat,title,subtitle})=>({id,cat,title,subtitle}))};
+window.lanesjekkCatalog={setNews,open,getFeatures:()=>allFeatures().map(({id,cat,title,subtitle,route})=>({id,cat,title,subtitle,route:route||id}))};
 document.addEventListener('DOMContentLoaded',init);
 })();
