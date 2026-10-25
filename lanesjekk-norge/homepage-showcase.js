@@ -26,7 +26,13 @@ function init(){
  document.addEventListener('visibilitychange',schedule);
  const obs=new MutationObserver(schedule);obs.observe(document.documentElement,{attributes:true,attributeFilter:['class']});
  if('IntersectionObserver' in window){const io=new IntersectionObserver(x=>{visible=x[0].isIntersecting;schedule()},{threshold:.08});io.observe(root);window.addEventListener('pagehide',()=>io.disconnect(),{once:true})}
- window.addEventListener('lanesjekk-slides-config',()=>{const enabled=[...root.querySelectorAll('.sc-slide')].filter(x=>x.dataset.cmsEnabled!=='false');chapters.forEach(b=>{b.hidden=!enabled.some(s=>s.dataset.scIndex===b.dataset.scGoto)});if(enabled.length){scenes=enabled;current=0;display(0,false)}else{scenes=[];clear()}schedule()});
+ window.addEventListener('lanesjekk-slides-config',()=>{const enabled=[...root.querySelectorAll('.sc-slide')].filter(x=>x.dataset.cmsEnabled!=='false');chapters.forEach(b=>{b.hidden=!enabled.some(s=>s.dataset.scIndex===b.dataset.scGoto)});if(enabled.length){
+  const previousId=scenes[current]?.dataset.scIndex;
+  scenes=enabled;
+  const stillActive=scenes.findIndex(s=>s.dataset.scIndex===previousId);
+  current=stillActive>=0?stillActive:0;
+  display(current,false);
+ }else{scenes=[];clear()}schedule()});
  window.addEventListener('hashchange',schedule);
  window.addEventListener('pageshow',schedule);
  window.addEventListener('pagehide',clear,{once:true});
