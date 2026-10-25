@@ -60,7 +60,7 @@ function renderResult(url){
  ui.result().hidden=false;setProgress('','');
  $('studio-ai-apply').disabled=false;
  $('studio-ai-apply').textContent='Bruk video i '+modules[task.module][0];
- report('Video generert. Se den med lyd før du velger å legge den i utkastet.','success');
+ report('AI-videoen er generert. Kontroller bildet og eventuell lyd før du legger den i utkastet.','success');
 }
 async function refreshStatus(){
  if(!task||checking||importing)return;
@@ -114,7 +114,8 @@ async function updateReady(){
   if(task){ui.button().disabled=true;if(task.state==='completed'&&task.videoUrl)renderResult(task.videoUrl);else startMonitoring();}
  }catch(e){
   configured=false;ui.button().disabled=true;
-  report('Logg inn som administrator for å aktivere videogenerering.','normal');
+  const detail=String(e?.message||e||'Ukjent tilkoblingsfeil');
+  report('AI-generering er ikke tilgjengelig: '+detail+'. Ingen betalte modeller blir brukt.','warning');
  }
 }
 async function createVideo(){
@@ -164,6 +165,7 @@ function init(){
  $('studio-ai-scene').addEventListener('input',()=>{$('studio-ai-scene').dataset.edited='true'});
  $('studio-ai-generate').addEventListener('click',()=>{void createVideo()});
  $('studio-ai-status-check').addEventListener('click',()=>{void refreshStatus()});
+ $('studio-ai-recheck')?.addEventListener('click',()=>{void updateReady()});
  $('studio-ai-apply').addEventListener('click',()=>{void applyVideo()});
  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&task&&task.state!=='completed')void refreshStatus()});
  window.addEventListener('lanesjekk-studio-ready',()=>{updateDestination();void updateReady()});
