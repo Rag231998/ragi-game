@@ -160,7 +160,10 @@ html.studio-dark #admin-workspace .studio-ai-progress :is(strong,p){color:#e7f4f
 html.studio-dark #admin-workspace .studio-ai-result{background:#224c45!important;border-color:#579282!important}
 html.studio-dark #admin-workspace .studio-ai-result p{color:#e2f4f0!important}
 @media(max-width:1670px){
- #admin-workspace .admin-dashboard-grid{grid-template-columns:220px minmax(0,1fr);gap:13px}
+ #admin-workspace .admin-dashboard-grid{grid-template-columns:215px minmax(0,1fr);gap:12px}
+ #admin-workspace .admin-dashboard-grid>.admin-editor-layout{grid-template-columns:minmax(385px,.87fr) minmax(410px,1.13fr)!important}
+}
+@media(max-width:1280px){
  #admin-workspace .admin-dashboard-grid>.admin-editor-layout{grid-template-columns:minmax(0,1fr)!important}
  #admin-workspace .admin-dashboard-grid .admin-preview-panel{position:relative!important;top:0!important;max-height:none!important}
  #admin-workspace .admin-dashboard-grid #admin-frame{height:70dvh;min-height:540px}
