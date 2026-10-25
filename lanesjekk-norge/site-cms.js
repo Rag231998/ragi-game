@@ -22,6 +22,58 @@ const defaults={animations:{autoplay:true,valuation:true,rental:true,receipts:tr
 budget:{order:['quick','hero','stats','workbook','insights'],visible:{quick:true,hero:true,stats:true,workbook:true,insights:true},title:'Ditt budsjett.',subtitle:'Din økonomiske kontroll.',quickTitle:'Tre steg til økonomisk oversikt'},
 investing:{title:'Fond og aksjer – forstå risiko og muligheter'}};
 let published=null,preview=false;
+const THEME_STORAGE_KEY='lanesjekk.public.theme.v1';
+const themeOptions=['site','light','dark'];
+let visitorTheme='site';
+try{
+ const saved=window.localStorage.getItem(THEME_STORAGE_KEY);
+ if(themeOptions.includes(saved))visitorTheme=saved;
+}catch{}
+const darkPreference=window.matchMedia?.('(prefers-color-scheme: dark)');
+function effectiveDark(siteTheme){
+ const selected=preview?'site':visitorTheme;
+ const mode=selected==='site'?siteTheme:selected;
+ return mode==='dark'||(mode==='auto'&&Boolean(darkPreference?.matches));
+}
+function updateThemeControls(){
+ const summary=document.getElementById('site-theme-trigger');
+ const mode=document.documentElement.dataset.activeTheme||'light';
+ if(summary){
+  summary.setAttribute('aria-label','Tema: '+(visitorTheme==='site'?'følg nettstedet':visitorTheme==='dark'?'mørkt':'lyst')+'. Åpne temavelger.');
+  const icon=summary.querySelector('.site-theme-icon');
+  if(icon)icon.textContent=mode==='dark'?'☀':'☾';
+ }
+ document.querySelectorAll('[data-public-theme]').forEach(button=>{
+  button.setAttribute('aria-pressed',String(button.dataset.publicTheme===visitorTheme));
+ });
+ const hint=document.getElementById('site-theme-current');
+ if(hint)hint.textContent='Viser '+(mode==='dark'?'mørkt':'lyst')+' tema';
+}
+function applyTheme(siteTheme=document.documentElement.dataset.cmsTheme||'light'){
+ const normalized=['dark','auto','light'].includes(siteTheme)?siteTheme:'light';
+ const dark=effectiveDark(normalized);
+ document.documentElement.dataset.cmsTheme=normalized;
+ document.documentElement.dataset.activeTheme=dark?'dark':'light';
+ document.documentElement.classList.toggle('cms-dark',dark);
+ document.querySelector('meta[name="theme-color"]')?.setAttribute('content',dark?'#101e2d':'#101c35');
+ updateThemeControls();
+}
+function setVisitorTheme(choice){
+ if(!themeOptions.includes(choice))return;
+ visitorTheme=choice;
+ try{if(choice==='site')window.localStorage.removeItem(THEME_STORAGE_KEY);else window.localStorage.setItem(THEME_STORAGE_KEY,choice)}catch{}
+ applyTheme();
+ document.getElementById('site-theme-picker')?.removeAttribute('open');
+}
+function initThemeControls(){
+ const picker=document.getElementById('site-theme-picker');
+ if(!picker)return;
+ picker.querySelectorAll('[data-public-theme]').forEach(button=>button.addEventListener('click',()=>setVisitorTheme(button.dataset.publicTheme)));
+ document.addEventListener('pointerdown',event=>{if(picker.open&&!picker.contains(event.target))picker.open=false});
+ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&picker.open){picker.open=false;picker.querySelector('summary')?.focus()}});
+ updateThemeControls();
+}
+
 function plain(s,max){return typeof s==='string'?s.trim().slice(0,max):''}
 function configClean(input){
  const a=input&&typeof input==='object'?input:{},b=a.brand||{},c=a.budget||{},v=c.visible||{};
@@ -55,9 +107,7 @@ function configClean(input){
 }
 function apply(input){
  const cfg=configClean(input);
- const themeDark=cfg.brand.theme==='dark'||(cfg.brand.theme==='auto'&&window.matchMedia?.('(prefers-color-scheme: dark)').matches);
- document.documentElement.dataset.cmsTheme=cfg.brand.theme;
- document.documentElement.classList.toggle('cms-dark',themeDark);
+ applyTheme(cfg.brand.theme);
  const demoNodes={valuation:document.getElementById('pv-valuation-guide'),rental:document.getElementById('pv-rental-guide'),receipts:document.querySelector('#kvitteringer .receipt-tour')};
  for(const [key,node] of Object.entries(demoNodes))if(node)node.hidden=!cfg.animations[key];
  document.documentElement.classList.toggle('cms-stop-demo-motion',!cfg.animations.autoplay);
@@ -96,6 +146,8 @@ function apply(input){
  const grid=document.querySelector('.home-tool-grid');
  if(grid){
   const found=Object.fromEntries([...grid.querySelectorAll('a.home-tool[href^="#"]')].map(a=>[a.getAttribute('href').slice(1),a]));
+  // The rental landing card targets the actual rental tab but retains its Studio object ID.
+  if(found.utleieanalyse&&!found.utleie)found.utleie=found.utleieanalyse;
   for(const id of cfg.cards.order){
    const card=found[id];if(!card)continue;
    const appearance=cfg.cards.appearance[id];
@@ -119,6 +171,7 @@ function apply(input){
  window.dispatchEvent(new CustomEvent('lanesjekk-cms-rendered',{detail:{preview}}));
 }
 async function init(){
+ initThemeControls();
  apply(defaults);
  if(window.parent!==window){
   window.addEventListener('message',e=>{
@@ -134,10 +187,8 @@ async function init(){
   if(data?.config){published=data.config;if(!preview)apply(published)}
  }catch(e){console.warn('Published design settings could not be loaded; using default',e)}
 }
-if(window.matchMedia){
- const query=window.matchMedia('(prefers-color-scheme: dark)');
- query.addEventListener?.('change',()=>{if(document.documentElement.dataset.cmsTheme==='auto')document.documentElement.classList.toggle('cms-dark',query.matches)});
-}
+darkPreference?.addEventListener?.('change',()=>applyTheme());
 window.lanesjekkCms={apply,configClean,defaults,getPublished:()=>published};
+window.lanesjekkTheme={setChoice:setVisitorTheme,getChoice:()=>visitorTheme,applyTheme,active:()=>document.documentElement.dataset.activeTheme};
 document.addEventListener('DOMContentLoaded',init);
 })();
