@@ -69,16 +69,16 @@ async function refreshStatus(){
   const data=await request('status',{videoId:task.id,signature:task.signature});
   const state=String(data.status||'pending');
   if(state==='completed'){
-   if(!data.videoUrl)throw Error('HeyGen leverte ikke en godkjent nedlastingsadresse.');
+   if(!data.videoUrl)throw Error('Videoen er ferdig, men leverandøren har ikke gitt en direkte forhåndsvisning. Bruk «Sjekk videostatus» eller prøv igjen senere.');
    task.videoUrl=data.videoUrl;task.state='completed';persist();
    renderResult(task.videoUrl);
    stopMonitoring();
   }else if(state==='failed'||state==='cancelled'){
    setProgress('','');
-   report('Video ble ikke generert: '+(data.message||state),'error');
+   report('Gratis AI-video kunne ikke genereres: '+(data.message||state),'error');
    task=null;persist();stopMonitoring();ui.button().disabled=!configured;
   }else{
-   setProgress('HeyGen produserer videoen …','Videostatus: '+(state==='processing'?'behandles':'venter')+'. Du kan bruke andre områder i Studio mens den produseres.');
+   setProgress('Gratis AI-modell produserer videoen …','Videostatus: '+(state==='processing'?'behandles':'venter')+'. Gratis kvoter og køer kan påvirke ventetiden.');
    report('Videooppdraget kjører. Plassering: '+modules[task.module][0]+'.','pending');
   }
  }catch(e){
@@ -98,8 +98,8 @@ async function updateReady(){
   const result=await request('ready');
   configured=Boolean(result.configured);
   if(!configured){
-   report('AI-video er ikke aktivert. Legg HEYGEN_API_KEY som hemmelig miljøvariabel på Render, og oppdater siden.','warning');
-  }else if(!task)report('HeyGen er tilkoblet. Velg modul og beskriv hva videoen skal vise.','success');
+   report(result.setup||'Den gratis videomodellen er ikke tilgjengelig akkurat nå. Det blir aldri valgt en betalt modell.','warning');
+  }else if(!task)report('Gratis AI-video er klar til bruk. Ingen betalte modeller eller automatisk oppgradering.','success');
   ui.button().disabled=!configured||Boolean(task)||importing;
   if(task){ui.button().disabled=true;if(task.state==='completed'&&task.videoUrl)renderResult(task.videoUrl);else startMonitoring();}
  }catch(e){
@@ -115,17 +115,17 @@ async function createVideo(){
  if(!Object.hasOwn(modules,slot)||topic.length<3||description.length<12){
   report('Velg en modul og skriv minst 12 tegn om scenen du vil generere.','error');return;
  }
- // Clicking this button deliberately starts a potentially billable generation.
+ // Submit ONLY a price-verified zero-cost model; provider refuses any nonfree fallback.
  const button=ui.button();button.disabled=true;ui.result().hidden=true;
  try{
-  setProgress('Sender bestilling til HeyGen …','Videoen lagres ikke på nettsiden før du godkjenner den i Studio.');
+  setProgress('Sender video til gratis AI-modell …','Kostnad: 0 kr. Gratis kvoter og køtid kan gjelde. Ingen publisering uten godkjenning.');
   const result=await request('create',{module:slot,topic,description,style,duration},'POST');
   task={id:result.videoId,signature:result.signature,module:slot,state:'pending',createdAt:Date.now()};
   persist();$('studio-ai-status-check').hidden=false;
   startMonitoring();
  }catch(e){
   setProgress('','');
-  report('Kunne ikke starte video: '+(e.message||e),'error');
+  report('Gratis videogenerering kunne ikke starte: '+(e.message||e),'error');
   button.disabled=!configured;
  }
 }
