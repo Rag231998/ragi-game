@@ -17,7 +17,11 @@ test('Feature library opens as a separate modal with searchable thematic guides'
  await expect(page.locator('#utleie')).toBeVisible();
 });
 test('Published catalog updates appear in the news tab and link to the correct module',async({page})=>{
+ await page.route('**/rest/v1/lanesjekk_site_config*',route=>route.fulfill({
+  status:200,contentType:'application/json',body:JSON.stringify({revision:1,config:{brand:{theme:'light'},catalog:{headline:'Oppdag alle verktøy',news:[]}}})
+ }));
  await page.goto('/#topp',{waitUntil:'domcontentloaded'});
+ await expect.poll(()=>page.evaluate(()=>Boolean(window.lanesjekkCms?.getPublished()))).toBe(true);
  await page.evaluate(()=>window.lanesjekkCatalog.setNews({headline:'Utforsk verktøyene',news:[
   {id:'test',title:'Ny budsjettoversikt',summary:'Se utgifter og inntekter.',date:'2026-10-25',route:'budsjett'}
  ]}));
