@@ -95,3 +95,16 @@ test('Studio user interface is wired to authenticated API, draft-only placement 
  assert.ok(!html.includes('id="studio-ai-api-key"'),'API key must not be entered in browser');
  for(const code of [script,media,layout,file('admin-studio.js'),file('site-media.js')])assert.doesNotThrow(()=>new vm.Script(code));
 });
+
+test('HTTP server exposes video API only to authenticated admin users',async()=>{
+ const server=require('../server.js');
+ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+ try{
+  const url='http://127.0.0.1:'+server.address().port;
+  const health=await fetch(url+'/health');assert.equal(health.status,200);
+  const unauthorized=await fetch(url+'/api/admin-video?action=ready');
+  assert.equal(unauthorized.status,403);
+  const invalid=await fetch(url+'/api/admin-video?action=invalid');
+  assert.equal(invalid.status,404);
+ }finally{await new Promise(resolve=>server.close(resolve))}
+});
