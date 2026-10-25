@@ -22,8 +22,9 @@ function mockFetch(fn){
  const previous=global.fetch;
  global.fetch=async(url,options={})=>{
   const u=String(url);
-  if(u.endsWith('/auth/v1/user'))return {ok:true,json:async()=>({id:ID})};
-  if(u.includes('/rest/v1/admins'))return {ok:true,json:async()=>([{user_id:ID}])};
+  const userId=String(options.headers?.authorization||'').includes('import-admin-token')?'22222222-2222-4222-a222-222222222222':ID;
+  if(u.endsWith('/auth/v1/user'))return {ok:true,json:async()=>({id:userId})};
+  if(u.includes('/rest/v1/admins'))return {ok:true,json:async()=>([{user_id:userId}])};
   return fn(u,options);
  };
  return()=>global.fetch=previous;
@@ -101,12 +102,12 @@ test('Completed free video provides provider preview and authenticated zero-char
   throw Error('Unexpected '+u);
  });
  try{
-  const created=response();await video(req('create',videoData),created);
+  const created=response();await video(req('create',videoData,'import-admin-token'),created);
   assert.equal(created.code,202);
   const job={videoId:created.result.videoId,signature:created.result.signature};
-  const status=response();await video(req('status',job),status);
+  const status=response();await video(req('status',job,'import-admin-token'),status);
   assert.equal(status.result.status,'completed');assert.equal(status.result.videoUrl,'https://cdn.example.com/sample.mp4');
-  const saved=response();await video(req('import',job),saved);
+  const saved=response();await video(req('import',job,'import-admin-token'),saved);
   assert.equal(saved.code,200);assert.match(saved.result.videoUrl,/\/animation-assets\/video\/ai-[0-9a-f-]+\.mp4$/);
   assert.ok(requests.some(x=>x.endsWith('/videos/'+JOB+'/content')));
   assert.ok(!requests.includes('https://cdn.example.com/sample.mp4'),'Server must not fetch external preview URL');
