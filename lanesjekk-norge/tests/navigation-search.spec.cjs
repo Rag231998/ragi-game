@@ -109,3 +109,66 @@ test('home-only hero and overview never appear inside any tool view',async({page
  await page.goto('/#topp',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#loan-showcase')).toBeVisible();
 });
+
+
+test('view switcher opens global search from a tool without resetting another tool',async({page})=>{
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('body')).toHaveAttribute('data-active-view','budget');
+ await page.locator('#viewbar-switch').click();
+ await expect(page.locator('#site-search-input')).toBeFocused();
+ await page.locator('#site-search-input').fill('fond');
+ await expect(page.locator('.site-search-result').first()).toContainText('Fond og aksjer');
+ await page.keyboard.press('Enter');
+ await expect(page).toHaveURL(/#investering$/);
+ await expect(page.locator('#investering')).toBeVisible();
+ await expect(page.locator('body')).toHaveAttribute('data-active-route','investering');
+ await expect(page.locator('#site-search')).toBeHidden();
+ await expect(page.locator('#viewbar-title')).toContainText('Fond og aksjer');
+});
+
+test('rental homepage shortcut opens rental mode and browser history restores the prior view',async({page})=>{
+ await page.goto('/#topp',{waitUntil:'domcontentloaded'});
+ await page.locator('.home-tool-property').click();
+ await expect(page).toHaveURL(/#utleieanalyse$/);
+ await expect(page.locator('#utleie')).toHaveClass(/pv-mode-rental/);
+ await expect(page.locator('.pv-rental-extras')).toBeVisible();
+ await expect(page.locator('#viewbar-title')).toContainText('Utleieanalyse');
+ await expect(page.locator('.portal-nav a[href="#utleieanalyse"]')).toHaveAttribute('aria-current','page');
+ await expect(page.locator('.portal-nav a[href="#boligverdi"]')).not.toHaveAttribute('aria-current','page');
+ await page.evaluate(()=>window.lanesjekkNavigate('boligverdi'));
+ await expect(page.locator('#viewbar-title')).toContainText('Boligverdi');
+ await expect(page.locator('.portal-nav a[href="#boligverdi"]')).toHaveAttribute('aria-current','page');
+ await page.goBack({waitUntil:'domcontentloaded'});
+ await expect(page).toHaveURL(/#utleieanalyse$/);
+ await expect(page.locator('#utleie')).toHaveClass(/pv-mode-rental/);
+ await page.goForward({waitUntil:'domcontentloaded'});
+ await expect(page).toHaveURL(/#boligverdi$/);
+ await expect(page.locator('#utleie')).not.toHaveClass(/pv-mode-rental/);
+});
+
+test('desktop navigation marks only its precise selected tool within a shared group',async({page})=>{
+ await page.goto('/#forbrukslan',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('body')).toHaveAttribute('data-active-view','financing');
+ await expect(page.locator('.portal-nav a[href="#forbrukslan"]')).toHaveAttribute('aria-current','page');
+ await expect(page.locator('.portal-nav a[href="#billan"]')).not.toHaveAttribute('aria-current','page');
+ await expect(page.locator('.portal-nav .nav-group').filter({has:page.locator('a[href="#forbrukslan"]')})).toHaveClass(/is-current-group/);
+ await page.evaluate(()=>window.lanesjekkNavigate('billan'));
+ await expect(page.locator('.portal-nav a[href="#billan"]')).toHaveAttribute('aria-current','page');
+ await expect(page.locator('.portal-nav a[href="#forbrukslan"]')).not.toHaveAttribute('aria-current','page');
+});
+
+test('mobile navigation is a single row of six actions and closes when choosing a destination',async({page},testInfo)=>{
+ test.skip(!testInfo.project.name.startsWith('android')&&!testInfo.project.name.startsWith('iphone'),'Mobile viewport only');
+ await page.goto('/#topp',{waitUntil:'domcontentloaded'});
+ const tabs=page.locator('.mobile-bottom-tabs');
+ await expect(tabs.locator('a')).toHaveCount(6);
+ const layout=await tabs.evaluate(el=>({count:getComputedStyle(el).gridTemplateColumns.split(' ').filter(Boolean).length,width:el.scrollWidth,viewport:document.documentElement.clientWidth}));
+ expect(layout.count).toBe(6);
+ expect(layout.width).toBeLessThanOrEqual(layout.viewport+2);
+ await page.locator('.mobile-menu > summary').click();
+ await expect(page.locator('.mobile-menu')).toHaveAttribute('open','');
+ await page.locator('.mobile-menu a[href="#utleieanalyse"]').click();
+ await expect(page).toHaveURL(/#utleieanalyse$/);
+ await expect(page.locator('.mobile-menu')).not.toHaveAttribute('open','');
+ await expect(page.locator('#utleie')).toHaveClass(/pv-mode-rental/);
+});
