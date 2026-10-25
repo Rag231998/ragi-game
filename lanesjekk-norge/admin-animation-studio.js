@@ -147,36 +147,119 @@ async function uploadSelection(){
  }catch(e){text('Opplasting feilet: '+(e.message||e),true)}
  finally{setDisabledUploads(false);$('media-progress').hidden=true}
 }
-async function refreshLibrary(){
- if(!db||!source())return;
- const root=$('media-library');root.replaceChildren();
- const status=document.createElement('p');status.className='admin-hint';status.textContent='Henter opplastede filer …';root.append(status);
- const lists=await Promise.all(['video','poster'].map(async folder=>{
-  const {data,error}=await db.storage.from(bucket).list(folder,{limit:100,sortBy:{column:'created_at',order:'desc'}});
-  return{folder,files:data||[],error}
- }));
+const loadState={video:0,poster:0};
+let loadingLibrary=false,moreLibrary=false;
+function usedInPublished(url){
+ return Object.values(getPublished?.()?.media?.slots||{}).some(item=>item?.videoUrl===url||item?.posterUrl===url);
+}
+function usedInDraft(url){
+ return Object.values(source()?.slots||{}).some(item=>item?.videoUrl===url||item?.posterUrl===url);
+}
+function libraryAlert(message){
+ const el=$('media-library-status');if(el){el.textContent=message;el.dataset.error='false'}
+}
+function showLibraryPreview(url,isVideo){
+ const dialog=$('media-library-dialog');
+ const video=$('media-library-video'),image=$('media-library-image');
+ if(!dialog||!video||!image)return;
+ video.pause();video.removeAttribute('src');image.removeAttribute('src');
+ video.hidden=!isVideo;image.hidden=isVideo;
+ if(isVideo){video.src=url;video.load()}else image.src=url;
+ if(!dialog.open)dialog.showModal();
+}
+function drawLibrary(){
+ const root=$('media-library');if(!root)return;
  root.replaceChildren();
- if(lists.some(x=>x.error)){const p=document.createElement('p');p.className='admin-hint';p.textContent='Mediearkivet kunne ikke leses. Kontroller tilgangen til Supabase Storage.';root.append(p);return}
- let count=0;
- for(const {folder,files} of lists){
-  for(const file of files){
-   if(!file.name||file.name==='.emptyFolderPlaceholder')continue;
-   const path=folder+'/'+file.name,link=mediaUrl(path),isVideo=folder==='video';
-   const row=document.createElement('div');row.className='media-library-row';
-   const icon=document.createElement('span');icon.className='media-library-icon';icon.textContent=isVideo?'▶':'▧';
-   const main=document.createElement('span');main.className='media-library-name';
-   const strong=document.createElement('strong');strong.textContent=isVideo?'Video':'Forsidebilde';
-   const small=document.createElement('small');small.textContent=file.name+' · '+Math.round((file.metadata?.size||0)/1024)+' KB';
-   main.append(strong,small);
-   const button=document.createElement('button');button.type='button';button.textContent='Bruk';button.className='admin-secondary';
-   button.addEventListener('click',()=>{const item=fields();if(isVideo)item.videoUrl=link;else item.posterUrl=link;render();text('Valgt fil er lagt til i '+SLOT_NAMES[active]+' (utkast). Publiser for å lagre.')});
-   row.append(icon,main,button);root.append(row);count++;
-  }
+ const needle=libraryQuery.toLocaleLowerCase('nb-NO');
+ const filtered=libraryItems.filter(item=>
+  (libraryFilter==='all'||libraryFilter===item.folder)&&
+  (!needle||item.name.toLocaleLowerCase('nb-NO').includes(needle)));
+ $('media-library-count').textContent=filtered.length+' filer'+(libraryFilter==='all'?' totalt':' i valgt kategori');
+ if(!filtered.length){
+  const empty=document.createElement('p');empty.className='media-library-empty';
+  empty.textContent=libraryItems.length?'Ingen filer samsvarer med søket.':
+   'Videoarkivet er tomt. Velg en modul, og last opp en MP4/WebM-video eller et forsidebilde over. Filen vises her straks opplastingen er ferdig.';
+  root.append(empty);
  }
- if(!count){const p=document.createElement('p');p.className='admin-hint';p.textContent='Mediebiblioteket er tomt. Last opp den første videoen.';root.append(p)}
+ for(const item of filtered){
+  const url=mediaUrl(item.folder+'/'+item.name),isVideo=item.folder==='video';
+  const row=document.createElement('article');row.className='media-library-row';row.dataset.kind=item.folder;
+  const thumb=document.createElement(isVideo?'video':'img');thumb.className='media-library-thumb';
+  if(isVideo){thumb.muted=true;thumb.preload='none';thumb.playsInline=true;thumb.src=url}
+  else{thumb.loading='lazy';thumb.src=url;thumb.alt='Forhåndsvisning av '+item.name}
+  const main=document.createElement('div');main.className='media-library-name';
+  const strong=document.createElement('strong');strong.textContent=item.name;
+  const size=Number(item.metadata?.size)||0;
+  const small=document.createElement('small');
+  small.textContent=(isVideo?'Video':'Bilde')+(size?' · '+readableSize(size):'')+
+    (usedInPublished(url)?' · Publisert':usedInDraft(url)?' · I utkast':'');
+  main.append(strong,small);
+  const actions=document.createElement('div');actions.className='media-library-actions';
+  const preview=document.createElement('button');preview.type='button';preview.textContent='Se';preview.className='admin-secondary';
+  preview.addEventListener('click',()=>showLibraryPreview(url,isVideo));
+  const use=document.createElement('button');use.type='button';use.textContent='Bruk i '+SLOT_NAMES[active];use.className='admin-primary';
+  use.addEventListener('click',()=>{
+   if(uploading)return;
+   const current=fields();if(!current){text('Velg en modul først.',true);return}
+   if(isVideo){current.videoUrl=url;current.enabled=true}
+   else current.posterUrl=url;
+   render();dirty();
+   text('«'+item.name+'» er valgt for '+SLOT_NAMES[active]+'. Dette er et utkast; kontroller forhåndsvisning og publiser når du er fornøyd.');
+  });
+  const remove=document.createElement('button');remove.type='button';remove.className='admin-secondary media-delete';
+  remove.textContent='Slett';remove.disabled=usedInPublished(url)||usedInDraft(url)||uploading;
+  remove.title=remove.disabled?'Filen er i bruk eller opplasting pågår. Fjern den fra alle moduler og publiser endringen før sletting.':'Slett denne ubrukte filen permanent fra arkivet';
+  remove.addEventListener('click',async()=>{
+   if(remove.disabled||usedInPublished(url)||usedInDraft(url))return;
+   if(!window.confirm('Vil du slette «'+item.name+'» permanent fra arkivet? Dette kan ikke angres.'))return;
+   remove.disabled=true;
+   const {error}=await db.storage.from(bucket).remove([item.folder+'/'+item.name]);
+   if(error){remove.disabled=false;text('Sletting feilet: '+error.message,true);return}
+   libraryItems=libraryItems.filter(x=>!(x.folder===item.folder&&x.name===item.name));
+   drawLibrary();libraryAlert('Filen «'+item.name+'» er slettet fra arkivet.');
+  });
+  actions.append(preview,use,remove);row.append(thumb,main,actions);root.append(row);
+ }
+ const loadMore=$('media-library-more');if(loadMore)loadMore.hidden=!moreLibrary;
+}
+async function refreshLibrary(more=false){
+ if(!db||!source()||loadingLibrary)return;
+ loadingLibrary=true;
+ const button=$('media-refresh');if(button)button.disabled=true;
+ libraryAlert('Henter filer fra mediearkivet …');
+ if(!more){libraryItems=[];loadState.video=0;loadState.poster=0;moreLibrary=false}
+ try{
+  const results=await Promise.all(['video','poster'].map(async folder=>{
+   if(more&&loadState[folder]===-1)return{folder,files:[],hasMore:false};
+   const {data,error}=await db.storage.from(bucket).list(folder,{
+    limit:100,offset:loadState[folder],sortBy:{column:'created_at',order:'desc'}
+   });
+   if(error)throw new Error('Supabase Storage: '+error.message+' ('+folder+')');
+   const files=(data||[]).filter(item=>item.name&&item.name!=='.emptyFolderPlaceholder');
+   return{folder,files,hasMore:(data||[]).length===100}
+  }));
+  for(const result of results){
+   for(const item of result.files){
+    if(!libraryItems.some(x=>x.folder===result.folder&&x.name===item.name))
+     libraryItems.push({...item,folder:result.folder});
+   }
+   loadState[result.folder]=result.hasMore?loadState[result.folder]+100:-1;
+  }
+  moreLibrary=results.some(x=>x.hasMore);
+  libraryAlert(libraryItems.length?'Mediearkivet er oppdatert. Velg «Se» eller «Bruk» ved en fil.':
+   'Mediearkivet er klart, men inneholder ingen filer ennå.');
+  drawLibrary();
+ }catch(error){
+  libraryAlert('Kunne ikke hente filer: '+(error.message||error));
+  $('media-library').replaceChildren();
+  const message=document.createElement('p');message.className='media-library-error';
+  message.textContent='Mediearkivet kunne ikke lastes. Kontroller at du er innlogget, og prøv «Oppdater arkivet» igjen.';
+  $('media-library').append(message);
+  text('Mediearkivet kunne ikke leses: '+(error.message||error),true);
+ }finally{loadingLibrary=false;if(button)button.disabled=false}
 }
 function init(options){
- db=options.db;source=()=>options.getDraft()?.media;notify=options.notify;bucket=options.bucket;
+ db=options.db;source=()=>options.getDraft()?.media;getPublished=options.getPublished;notify=options.notify;bucket=options.bucket;
  const select=$('media-target');select.replaceChildren();
  for(const [id,label] of Object.entries(SLOT_NAMES)){const option=document.createElement('option');option.value=id;option.textContent=label;select.append(option)}
  select.addEventListener('change',()=>changeSlot(select.value));
@@ -207,8 +290,17 @@ function init(options){
   if(!$('media-preview').hidden)text('Videoen kan ikke spilles av. Bruk MP4 med H.264 eller WebM med VP8/VP9.',true);
  });
  $('media-upload').addEventListener('click',uploadSelection);
- $('media-reset').addEventListener('click',()=>{if(!fields())return;fields().videoUrl='';fields().posterUrl='';render();text('Videoen er fjernet fra utkastet. Standardanimasjonen brukes etter publisering.')});
- $('media-refresh').addEventListener('click',refreshLibrary);
+ $('media-reset').addEventListener('click',()=>{if(!fields())return;fields().videoUrl='';fields().posterUrl='';render();dirty();text('Videoen er fjernet fra utkastet. Standardanimasjonen brukes etter publisering.')});
+ $('media-refresh').addEventListener('click',()=>{void refreshLibrary()});
+ $('media-library-more')?.addEventListener('click',()=>{void refreshLibrary(true)});
+ $('media-library-search')?.addEventListener('input',event=>{libraryQuery=event.target.value;drawLibrary()});
+ $('media-library-filter')?.addEventListener('change',event=>{libraryFilter=event.target.value;drawLibrary()});
+ $('media-library-close')?.addEventListener('click',()=>{
+  const dialog=$('media-library-dialog');$('media-library-video')?.pause();dialog?.close();
+ });
+ $('media-library-dialog')?.addEventListener('close',()=>{
+  const video=$('media-library-video');video.pause();video.removeAttribute('src');
+ });
 }
 function useGeneratedVideo(module,url){
  if(!Object.hasOwn(SLOT_NAMES,module))throw Error('Ukjent modul.');
@@ -216,7 +308,7 @@ function useGeneratedVideo(module,url){
  if(!source()?.slots?.[module])throw Error('Last inn Studio før du velger en video.');
  source().slots[module].videoUrl=url;
  source().slots[module].enabled=true;
- active=module;render();
+ active=module;render();dirty();
  text('AI-video er lagt inn som utkast på «'+SLOT_NAMES[module]+'». Forhåndsvis og publiser når du er fornøyd.');
  return true;
 }
