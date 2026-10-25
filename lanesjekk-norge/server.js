@@ -21,7 +21,7 @@ const server=http.createServer(async(req,res)=>{
     json(payload){if(res.writableEnded)return this;res.setHeader('Content-Type','application/json; charset=utf-8');res.end(JSON.stringify(payload));return this},
     end:(...a)=>res.end(...a),
    };
-   await handler({method:req.method,query,headers:req.headers,url:req.url},response);
+   await handler({method:req.method,query,headers:req.headers,url:req.url,stream:req},response);
    if(!res.writableEnded)res.end();
    return;
   }
