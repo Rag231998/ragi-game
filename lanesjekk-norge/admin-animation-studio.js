@@ -174,5 +174,15 @@ function init(options){
  $('media-reset').addEventListener('click',()=>{if(!fields())return;fields().videoUrl='';fields().posterUrl='';render();text('Videoen er fjernet fra utkastet. Standardanimasjonen brukes etter publisering.')});
  $('media-refresh').addEventListener('click',refreshLibrary);
 }
-window.lanesjekkAnimationStudio={init,render,refreshLibrary};
+function useGeneratedVideo(module,url){
+ if(!Object.hasOwn(SLOT_NAMES,module))throw Error('Ukjent modul.');
+ if(typeof url!=='string'||!/^https:\/\/pryrgwfjniggjlrizenh\.supabase\.co\/storage\/v1\/object\/public\/animation-assets\/video\/[a-z0-9_-]+\.mp4$/i.test(url))throw Error('Ugyldig medieadresse.');
+ if(!source()?.slots?.[module])throw Error('Last inn Studio før du velger en video.');
+ source().slots[module].videoUrl=url;
+ source().slots[module].enabled=true;
+ active=module;render();
+ text('AI-video er lagt inn som utkast på «'+SLOT_NAMES[module]+'». Forhåndsvis og publiser når du er fornøyd.');
+ return true;
+}
+window.lanesjekkAnimationStudio={init,render,refreshLibrary,useGeneratedVideo,changeSlot,slotNames:SLOT_NAMES};
 })();
