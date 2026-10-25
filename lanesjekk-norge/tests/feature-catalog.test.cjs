@@ -71,3 +71,33 @@ test('Realtime CMS subscription validates RLS via re-fetch and retains reconnect
  assert.doesNotMatch(index,/site-feature-catalog\.js/);
  assert.match(file('studio-admin.html'),/site-feature-catalog\.js/);
 });
+
+
+test('New CMS tool links can be added, selected, hidden, and navigate only to real pages',()=>{
+ const window={},document={addEventListener(){},getElementById(){return null}};
+ vm.runInNewContext(file('site-feature-catalog.js'),{window,document},{filename:'site-feature-catalog.js'});
+ const catalog=window.lanesjekkCatalog;
+ const original=catalog.getFeatures().length;
+ catalog.setNews({headline:'Verktøy',news:[],tools:[
+  {id:'custom-123456',route:'budsjett',cat:'Økonomi',title:'Nytt budsjettkort',
+   subtitle:'Åpne budsjett med grafer.',how:'Fyll inn inntekt og utgifter.',icon:'▦',enabled:true},
+  {id:'custom-987654',route:'guider',cat:'Læring',title:'Skjult kort',
+   subtitle:'Vises ikke når deaktivert.',how:'Åpne artiklene.',icon:'☷',enabled:false},
+  {id:'custom-222222',route:'not-a-route',cat:'Økonomi',title:'Falsk kalkulator',
+   subtitle:'Må avvises.',how:'Skal ikke eksistere.',icon:'◉',enabled:true}
+ ]});
+ const all=catalog.getFeatures();
+ assert.equal(all.length,original+1);
+ const created=all.find(x=>x.id==='custom-123456');
+ assert.ok(created);
+ assert.equal(created.route,'budsjett');
+ assert.equal(all.some(x=>x.title==='Skjult kort'),false);
+ assert.equal(all.some(x=>x.title==='Falsk kalkulator'),false);
+ const admin=file('admin-studio.js'),client=file('site-cms.js');
+ assert.match(admin,/catalog-add-tool/);
+ assert.match(admin,/catalog-tool-route/);
+ assert.match(admin,/validateCatalogDraft/);
+ assert.match(client,/cms-custom-tool/);
+ assert.match(client,/card\.href='#'\+entry\.route/);
+ assert.match(file('studio-admin.html'),/admin-catalog-workflow\.css/);
+});
