@@ -98,7 +98,7 @@ function configClean(input){
  investing:{title:plain(a.investing?.title,110)||defaults.investing.title},
  catalog:{
   headline:plain(a.catalog?.headline,100)||defaults.catalog.headline,
-  news:(Array.isArray(a.catalog?.news)?a.catalog.news:[]).slice(0,12).map((item,index)=>({
+  news:(Array.isArray(a.catalog?.news)?a.catalog.news:[]).filter(item=>item&&typeof item==='object').slice(0,12).map((item,index)=>({
     id:plain(item.id,50)||'nyhet-'+index,title:plain(item.title,110),
     summary:plain(item.summary,500),route:RELEASE_ROUTES.has(item.route)?item.route:'topp',
     date:/^\d{4}-\d{2}-\d{2}$/.test(item.date||'')?item.date:''
