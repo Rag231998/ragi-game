@@ -28,7 +28,8 @@ function updateBadge(){
  badge.hidden=!unread;
 }
 function markRead(){
- if(window.parent!==window||!catalog.news.length)return;
+ // Release-read markers are only useful to the public and must not persist in Studio.
+ if(document.getElementById('admin-workspace')||window.parent!==window||!catalog.news.length)return;
  try{
   const saved=readSeen();
   for(const item of catalog.news)saved.add(item.id);
@@ -61,6 +62,9 @@ function openFeature(id){
 }
 function navigate(route){
  close();
+ if(typeof window.lanesjekkStudioPreviewRoute==='function'){
+  window.lanesjekkStudioPreviewRoute(route);return;
+ }
  if(window.lanesjekkNavigate)window.lanesjekkNavigate(route);
  else window.location.hash='#'+route;
 }
