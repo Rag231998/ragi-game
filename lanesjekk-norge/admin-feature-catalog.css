@@ -1,0 +1,52 @@
+/* Internal feature directory only; no public navigation control.
+   Match Studio surfaces in dark mode without changing the legacy public site. */
+#admin-open-features{margin:9px 0 17px;min-height:44px;padding:10px 16px}
+#site-feature-dialog{
+  z-index:2000;
+  max-width:min(980px,calc(100vw - 24px));
+  max-height:min(90dvh,860px);
+  box-sizing:border-box;
+  font-family:inherit;
+}
+#site-feature-dialog button{font-family:inherit;cursor:pointer}
+#site-feature-dialog [hidden]{display:none!important}
+#site-feature-dialog .fc-window{min-height:0}
+#site-feature-dialog .fc-card:focus-visible,
+#site-feature-dialog .fc-go:focus-visible,
+#site-feature-dialog #site-feature-close:focus-visible{outline:3px solid #0eab8e;outline-offset:2px}
+html.studio-dark #site-feature-dialog{
+  color-scheme:dark!important;
+  background:#132b3b!important;color:#effafb!important;border-color:#547484!important
+}
+html.studio-dark #site-feature-dialog .fc-top{
+  background:linear-gradient(120deg,#1e3949,#245046)!important;border-color:#557d7b!important
+}
+html.studio-dark #site-feature-dialog :is(.fc-top h2,.fc-top small,.fc-news h3,.fc-detail h3,.fc-explainer h4,.fc-card strong){
+  color:#eaf9f8!important
+}
+html.studio-dark #site-feature-dialog :is(.fc-tabs,.fc-detail){
+  background:#152e3e!important;border-color:#486c79!important
+}
+html.studio-dark #site-feature-dialog :is(.fc-card,.fc-news,.fc-search,.fc-explainer){
+  background:#1e3d4d!important;color:#eaf8fa!important;border-color:#597d86!important
+}
+html.studio-dark #site-feature-dialog :is(.fc-meta,.fc-card small,.fc-subtitle,.fc-news p,.fc-explainer p,.fc-tabs button,.fc-card-cat){
+  color:#bfdbe0!important
+}
+html.studio-dark #site-feature-dialog :is(.fc-category,#site-feature-close){
+  background:#264d5a!important;border-color:#64848d!important;color:#eaf8f9!important
+}
+html.studio-dark #site-feature-dialog .fc-category.is-selected{
+  background:#0b9078!important;border-color:#0b9078!important;color:#fff!important
+}
+html.studio-dark #site-feature-dialog :is(.fc-detail-icon,.fc-card-icon){
+  background:#286058!important;color:#c6ffed!important
+}
+html.studio-dark #site-feature-dialog .fc-empty{background:#1c394a!important;color:#e5f3f5!important;border-color:#577985!important}
+html.studio-dark #site-feature-dialog #site-feature-input{
+  color:#f1ffff!important;background:transparent!important;border:0!important
+}
+html.studio-dark #site-feature-dialog .fc-card:hover{background:#2b5b54!important}
+@media(max-width:670px){
+ #site-feature-dialog{width:100vw!important;max-width:100vw!important;height:100dvh!important;max-height:100dvh!important;border-radius:0!important}
+}
