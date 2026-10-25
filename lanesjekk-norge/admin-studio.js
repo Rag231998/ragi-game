@@ -150,6 +150,13 @@ function normalize(data){
    id:clamp(x.id,50)||'nyhet-'+i,title:clamp(x.title,110),summary:clamp(x.summary,500),
    route:RELEASE_ROUTES.has(x.route)?x.route:'topp',
    date:/^\d{4}-\d{2}-\d{2}$/.test(x.date||'')?x.date:''
+  })),
+  tools:(Array.isArray(src.catalog?.tools)?src.catalog.tools:[]).filter(x=>x&&typeof x==='object').slice(0,18).map((x,i)=>({
+   id:/^custom-[a-z0-9-]{5,43}$/i.test(String(x.id||''))?x.id:'custom-'+i,
+   route:RELEASE_ROUTES.has(x.route)?x.route:'budsjett',
+   cat:['Lån','Økonomi','Sparing','Eiendom','Læring'].includes(x.cat)?x.cat:'Økonomi',
+   title:clamp(x.title,85),subtitle:clamp(x.subtitle,170),
+   how:clamp(x.how,450),icon:clamp(x.icon,8)||'✦',enabled:x.enabled!==false
   }))
  },
  cards:{order:cardOrder,appearance:Object.fromEntries(CARD_IDS.map(id=>{
