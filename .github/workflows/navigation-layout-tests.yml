@@ -6,6 +6,11 @@ on:
       - 'lanesjekk-norge/tests/navigation-search.spec.cjs'
       - 'lanesjekk-norge/tests/navigation-engine.test.cjs'
       - 'lanesjekk-norge/tests/theme-regression.test.cjs'
+      - 'lanesjekk-norge/tests/feature-catalog.test.cjs'
+      - 'lanesjekk-norge/tests/feature-catalog.spec.cjs'
+      - 'lanesjekk-norge/site-feature-catalog.js'
+      - 'lanesjekk-norge/site-feature-catalog.css'
+      - 'lanesjekk-norge/ai-video-brief.js'
       - 'lanesjekk-norge/tests/dark-mode.spec.cjs'
       - 'lanesjekk-norge/dark-mode-complete.css'
       - 'lanesjekk-norge/admin-dark-mode.css'
@@ -42,7 +47,7 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Test site search, page tabs, contrast and responsive layout
-        run: npx playwright test navigation-search.spec.cjs dark-mode.spec.cjs --project=desktop-chromium --project=android-chromium --workers=2 --retries=0
+        run: npx playwright test navigation-search.spec.cjs dark-mode.spec.cjs feature-catalog.spec.cjs --project=desktop-chromium --project=android-chromium --workers=2 --retries=0
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
