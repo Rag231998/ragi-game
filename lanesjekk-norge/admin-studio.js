@@ -142,7 +142,7 @@ function normalize(data){
   news:(Array.isArray(src.catalog?.news)?src.catalog.news:[]).slice(0,12).map((x,i)=>({
    id:clamp(x.id,50)||'nyhet-'+i,title:clamp(x.title,110),summary:clamp(x.summary,500),
    route:RELEASE_ROUTES.has(x.route)?x.route:'topp',
-   date:/^\\d{4}-\\d{2}-\\d{2}$/.test(x.date||'')?x.date:'2026-10-25'
+   date:/^\d{4}-\d{2}-\d{2}$/.test(x.date||'')?x.date:''
   }))
  },
  cards:{order:cardOrder,appearance:Object.fromEntries(CARD_IDS.map(id=>{
