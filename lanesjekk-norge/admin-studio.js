@@ -296,27 +296,166 @@ function renderSlides(){
   body.append(heading,shownLabel,title,desc);outer.append(body,tools);wrap.append(outer);
  }
 }
-function renderCatalog(){
- const root=$('catalog-news-editor');if(!root)return;
- root.replaceChildren();
- for(const item of draft.catalog.news){
-  const outer=create('div',undefined,'admin-item catalog-news-item'),main=create('div',undefined,'admin-item-main');
-  const title=create('input');title.type='text';title.maxLength=110;title.value=item.title;title.placeholder='Nyhetens tittel';
-  title.setAttribute('aria-label','Tittel for nyhet');title.oninput=()=>item.title=title.value;
-  const detail=create('textarea');detail.maxLength=500;detail.rows=3;detail.value=item.summary;detail.placeholder='Hva er nytt og hvordan bruker man funksjonen?';
-  detail.setAttribute('aria-label','Beskrivelse av nyhet');detail.oninput=()=>item.summary=detail.value;
-  const route=create('select');route.setAttribute('aria-label','Tilknyttet funksjon');
-  for(const [id,name] of Object.entries({topp:'Forside',sjekk:'Boliglån',billan:'Billån',forbrukslan:'Forbrukslån',banker:'Banker',budsjett:'Budsjett',kvitteringer:'Kvitteringer',sparing:'Sparing',investering:'Investering',valutakompass:'Valuta',boligverdi:'Boligverdi',utleieanalyse:'Utleie',akademi:'Akademiet',guider:'Guider'})){
-   const option=create('option',name);option.value=id;route.append(option);
+const CATALOG_META={
+ topp:{name:'Forsiden',cat:'Økonomi',icon:'◈',summary:'Se verktøyene som hjelper deg med privatøkonomi.',how:'Velg et verktøy fra forsiden for å starte.'},
+ sjekk:{name:'Boliglån',cat:'Lån',icon:'⌂',summary:'Beregn terminbeløp, rente og samlet lånekostnad.',how:'Åpne boliglånskalkulatoren, fyll inn lånebeløp, rente og løpetid.'},
+ billan:{name:'Billån',cat:'Lån',icon:'▣',summary:'Sammenlign kostnader ved bilfinansiering.',how:'Fyll inn bilpris, egenkapital og rente i billånsverktøyet.'},
+ forbrukslan:{name:'Forbrukslån',cat:'Lån',icon:'▤',summary:'Se hva et lån uten sikkerhet kan koste.',how:'Angi beløp og rente, og undersøk totalkostnaden.'},
+ banker:{name:'Bankoversikt',cat:'Lån',icon:'▥',summary:'Finn frem til banker og leverandørenes egne nettsteder.',how:'Finn en bank i oversikten og kontroller aktuelle priser hos banken.'},
+ budsjett:{name:'Budsjett',cat:'Økonomi',icon:'▦',summary:'Få oversikt over inntekter og utgifter.',how:'Legg til inntekter og utgifter og undersøk månedsplan og grafer.'},
+ kvitteringer:{name:'Kvitteringsstudio',cat:'Økonomi',icon:'▧',summary:'Analyser handlekurven, varer og kjøp.',how:'Registrer kvitteringsinnhold og sammenlign utgiftskategorier.'},
+ sparing:{name:'Sparing',cat:'Sparing',icon:'◉',summary:'Se hvordan sparebeløp og renter påvirker saldoen.',how:'Angi startsaldo, månedlig sparing og periode, og sammenlign alternativer.'},
+ investering:{name:'Fond og aksjer',cat:'Sparing',icon:'↗',summary:'Utforsk langsiktig sparing og investeringsrisiko.',how:'Se beregnede scenarier og les om risiko før du investerer.'},
+ valutakompass:{name:'Valutakompass',cat:'Sparing',icon:'¤',summary:'Regn om beløp mellom valutaer.',how:'Velg valutaer, beløp og se dato for den oppgitte kursen.'},
+ boligverdi:{name:'Boligverdi',cat:'Eiendom',icon:'⌂',summary:'Undersøk veiledende boligverdi.',how:'Søk etter adresse og vurder datagrunnlag og usikkerhet.'},
+ utleieanalyse:{name:'Utleieanalyse',cat:'Eiendom',icon:'▤',summary:'Regn på leieinntekt, kostnader og netto.',how:'Registrer forventet leie og kostnader i utleieanalysen.'},
+ akademi:{name:'Læringsplattform',cat:'Læring',icon:'✦',summary:'Lær om økonomi med forklaringer og oppgaver.',how:'Velg tema i Akademiet og gjennomfør øvelsene.'},
+ guider:{name:'Guider og artikler',cat:'Læring',icon:'☷',summary:'Finn forklaringer og metoder om privatøkonomi.',how:'Åpne guider og les anbefalte kilder.'}
+};
+const toolRouteList=Object.keys(CATALOG_META).filter(id=>id!=='topp');
+function catalogNote(message,error=false){
+ const el=$('admin-catalog-status');
+ if(el){el.textContent=message;el.dataset.error=String(error)}
+ if(error)msg(message,true);
+}
+function catalogChanged(message){
+ window.lanesjekkCatalog?.setNews(draft.catalog);
+ window.dispatchEvent(new Event('lanesjekk-studio-catalog-changed'));
+ refreshDashboard();
+ if(message)catalogNote(message);
+}
+function catalogSelector(value,label,items,onChange){
+ const field=create('label',undefined,'catalog-item-field');
+ const text=create('span',label);const input=create('select');input.setAttribute('aria-label',label);
+ for(const [key,title]of items){const option=create('option',title);option.value=key;input.append(option)}
+ input.value=value;input.addEventListener('change',()=>onChange(input.value));
+ field.append(text,input);return field;
+}
+function catalogField(label,type,value,max,onChange){
+ const field=create('label',undefined,'catalog-item-field');
+ const name=create('span',label),input=create(type==='multiline'?'textarea':'input');
+ if(type!=='multiline')input.type=type==='date'?'date':'text';
+ if(max)input.maxLength=max;
+ if(type==='multiline')input.rows=3;
+ input.value=value||'';input.setAttribute('aria-label',label);
+ input.addEventListener('input',()=>onChange(input.value));
+ if(type==='date')input.addEventListener('change',()=>onChange(input.value));
+ field.append(name,input);
+ return{field,input}
+}
+function fillCatalogRouteSelectors(){
+ const routes=Object.entries(CATALOG_META);
+ const tools=$('catalog-tool-route'),news=$('catalog-news-route');
+ for(const sel of [tools,news]){
+  if(!sel||sel.options.length)return;
+  for(const [id,item]of routes){
+   if(sel===tools&&id==='topp')continue;
+   const option=create('option',item.name);option.value=id;sel.append(option);
   }
-  route.value=item.route;route.onchange=()=>item.route=route.value;
-  const date=create('input');date.type='date';date.value=item.date;date.setAttribute('aria-label','Publiseringsdato');
-  date.onchange=()=>item.date=date.value;
-  const remove=create('button','Slett nyhet','admin-secondary');remove.type='button';remove.onclick=()=>{
-   draft.catalog.news=draft.catalog.news.filter(entry=>entry!==item);renderCatalog();refreshDashboard();
-  };
-  main.append(title,detail,route,date,remove);outer.append(main);root.append(outer);
+  sel.value='budsjett';
  }
+}
+function renderCatalog(focus){
+ const toolsRoot=$('catalog-tool-editor'),newsRoot=$('catalog-news-editor');
+ if(!toolsRoot||!newsRoot||!draft?.catalog)return;
+ fillCatalogRouteSelectors();
+ toolsRoot.replaceChildren();newsRoot.replaceChildren();
+ const toolCount=draft.catalog.tools?.length||0,newsCount=draft.catalog.news.length;
+ $('catalog-tools-count').textContent=toolCount+' ekstra funksjonskort';
+ $('catalog-news-count').textContent=newsCount+' oppdateringer';
+ if(!toolCount)toolsRoot.append(create('p','Ingen ekstra kort ennå. Velg et verktøy over og trykk «Legg til funksjonskort».','catalog-empty'));
+ if(!newsCount)newsRoot.append(create('p','Ingen oppdateringer ennå. Velg funksjonen over og trykk «Legg til oppdatering».','catalog-empty'));
+ for(const item of draft.catalog.tools||[]){
+  const card=create('article',undefined,'catalog-editor-card');card.dataset.catalogId=item.id;
+  const head=create('div',undefined,'catalog-editor-head');
+  head.append(create('strong','Funksjonskort · '+(item.title||'Uten tittel')),create('span','Utkast · '+(item.enabled?'vises etter publisering':'skjult'),'catalog-draft-pill'));
+  const grid=create('div',undefined,'catalog-editor-grid');
+  const title=catalogField('Tittel på kortet','text',item.title,85,value=>{item.title=value;catalogChanged()});
+  title.input.dataset.catalogFocus=item.id;
+  const subtitle=catalogField('Kort beskrivelse','multiline',item.subtitle,170,value=>{item.subtitle=value;catalogChanged()});
+  const how=catalogField('Slik brukes funksjonen','multiline',item.how,450,value=>{item.how=value;catalogChanged()});
+  const symbol=catalogField('Ikon eller emoji','text',item.icon,8,value=>{item.icon=value;catalogChanged()});
+  const route=catalogSelector(item.route,'Åpner eksisterende verktøy',toolRouteList.map(id=>[id,CATALOG_META[id].name]),value=>{
+   const was=CATALOG_META[item.route],next=CATALOG_META[value];
+   if(item.title===was.name)item.title=next.name;
+   if(item.subtitle===was.summary)item.subtitle=next.summary;
+   if(item.how===was.how)item.how=next.how;
+   if(item.icon===was.icon)item.icon=next.icon;
+   if(item.cat===was.cat)item.cat=next.cat;
+   item.route=value;renderCatalog();catalogChanged('Funksjonskortet åpner nå '+next.name+'.');
+  });
+  const cat=catalogSelector(item.cat,'Kategori',['Lån','Økonomi','Sparing','Eiendom','Læring'].map(id=>[id,id]),value=>{item.cat=value;catalogChanged()});
+  const visible=create('label',undefined,'catalog-visibility');
+  const switcher=create('input');switcher.type='checkbox';switcher.setAttribute('role','switch');
+  switcher.checked=item.enabled;switcher.addEventListener('change',()=>{item.enabled=switcher.checked;head.querySelector('.catalog-draft-pill').textContent=item.enabled?'Utkast · vises etter publisering':'Utkast · skjult';catalogChanged()});
+  visible.append(switcher,create('span','Vis kortet på forsiden etter publisering'));
+  grid.append(title.field,subtitle.field,how.field,route,cat,symbol.field,visible);
+  const actions=create('div',undefined,'catalog-editor-actions');
+  const preview=create('button','↗ Åpne funksjonen i full forhåndsvisning','admin-secondary');preview.type='button';
+  preview.addEventListener('click',()=>{void openFullPreview(item.route)});
+  const up=create('button','↑','admin-secondary');up.type='button';up.title='Flytt opp';up.setAttribute('aria-label','Flytt '+item.title+' opp');
+  const down=create('button','↓','admin-secondary');down.type='button';down.title='Flytt ned';down.setAttribute('aria-label','Flytt '+item.title+' ned');
+  const index=draft.catalog.tools.indexOf(item);up.disabled=index===0;down.disabled=index===toolCount-1;
+  const shift=delta=>{const ix=draft.catalog.tools.indexOf(item),to=ix+delta;
+   if(to<0||to>=draft.catalog.tools.length)return;
+   draft.catalog.tools.splice(ix,1);draft.catalog.tools.splice(to,0,item);
+   renderCatalog();catalogChanged('Rekkefølgen er oppdatert som utkast.');
+  };
+  up.onclick=()=>shift(-1);down.onclick=()=>shift(1);
+  const remove=create('button','Slett kort','admin-secondary');remove.type='button';
+  remove.addEventListener('click',()=>{draft.catalog.tools=draft.catalog.tools.filter(x=>x!==item);renderCatalog();catalogChanged('Funksjonskortet ble fjernet fra utkastet.')});
+  actions.append(preview,up,down,remove);card.append(head,grid,actions);toolsRoot.append(card);
+ }
+ for(const item of draft.catalog.news){
+  const card=create('article',undefined,'catalog-editor-card');card.dataset.catalogId=item.id;
+  const head=create('div',undefined,'catalog-editor-head');
+  head.append(create('strong','Oppdatering · '+(CATALOG_META[item.route]?.name||'Funksjon')),create('span','Utkast · '+(item.date||'dato ikke satt'),'catalog-draft-pill'));
+  const grid=create('div',undefined,'catalog-editor-grid');
+  const title=catalogField('Overskrift på oppdateringen','text',item.title,110,value=>{item.title=value;catalogChanged()});
+  title.input.dataset.catalogFocus=item.id;
+  const summary=catalogField('Hva er endret, og hva får brukeren ut av det?','multiline',item.summary,500,value=>{item.summary=value;catalogChanged()});
+  const route=catalogSelector(item.route,'Åpner funksjon',Object.entries(CATALOG_META).map(([id,x])=>[id,x.name]),value=>{
+   const old=CATALOG_META[item.route],next=CATALOG_META[value];
+   if(item.title==='Nytt i '+old.name)item.title='Nytt i '+next.name;
+   if(item.summary==='Utforsk '+old.name.toLocaleLowerCase('nb-NO')+': '+old.summary)item.summary='Utforsk '+next.name.toLocaleLowerCase('nb-NO')+': '+next.summary;
+   item.route=value;renderCatalog();catalogChanged('Oppdateringen er koblet til '+next.name+'.');
+  });
+  const date=catalogField('Dato (fylles inn automatisk)','date',item.date,0,value=>{item.date=value;catalogChanged()});
+  grid.append(title.field,summary.field,route,date.field);
+  const actions=create('div',undefined,'catalog-editor-actions');
+  const preview=create('button','↗ Vis oppdateringen i Studio','admin-secondary');preview.type='button';
+  preview.addEventListener('click',()=>{window.lanesjekkCatalog?.setNews(gather().catalog);window.lanesjekkCatalog?.open('news')});
+  const go=create('button','Åpne målverktøy i full forhåndsvisning','admin-secondary');go.type='button';go.onclick=()=>{void openFullPreview(item.route)};
+  const remove=create('button','Slett oppdatering','admin-secondary');remove.type='button';
+  remove.addEventListener('click',()=>{draft.catalog.news=draft.catalog.news.filter(entry=>entry!==item);renderCatalog();catalogChanged('Oppdateringen ble fjernet fra utkastet.')});
+  actions.append(preview,go,remove);card.append(head,grid,actions);newsRoot.append(card);
+ }
+ if(focus){
+  const target=document.querySelector('[data-catalog-focus="'+CSS.escape(focus)+'"]');
+  if(target){
+   target.closest('.catalog-editor-card')?.classList.add('catalog-just-created');
+   target.scrollIntoView({behavior:'smooth',block:'center'});
+   target.focus({preventScroll:true});target.select?.();
+  }
+ }
+}
+function validateCatalogDraft(){
+ if(!draft?.catalog)return true;
+ for(const item of draft.catalog.tools||[]){
+  if(!item.title.trim()||!item.subtitle.trim()||!item.how.trim()||!RELEASE_ROUTES.has(item.route)){
+   catalogNote('Fyll ut navn, beskrivelse, brukerveiledning og gyldig destinasjon for alle funksjonskort.',true);
+   document.querySelector('[data-catalog-id="'+item.id+'"]')?.scrollIntoView({behavior:'smooth',block:'center'});
+   return false;
+  }
+ }
+ for(const item of draft.catalog.news){
+  if(!item.title.trim()||!item.summary.trim()||!RELEASE_ROUTES.has(item.route)||!/\d{4}-\d{2}-\d{2}/.test(item.date)){
+   catalogNote('Fyll ut tittel, beskrivelse, målverktøy og dato for alle oppdateringer.',true);
+   document.querySelector('[data-catalog-id="'+item.id+'"]')?.scrollIntoView({behavior:'smooth',block:'center'});
+   return false;
+  }
+ }
+ return true;
 }
 function render(){
  for(const key of ['autoplay','valuation','rental','receipts'])$('motion-'+key).checked=draft.animations[key];
