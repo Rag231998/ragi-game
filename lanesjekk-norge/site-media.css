@@ -22,3 +22,19 @@ body:not([data-active-view=home]) .studio-video-showcase[data-media-slot=home]{d
 /* Property tools share one DOM view. Only show the video for the selected tool. */
 #utleie:not(.pv-mode-rental) .studio-video-showcase[data-media-slot="rental"],
 #utleie.pv-mode-rental .studio-video-showcase[data-media-slot="valuation"]{display:none!important}
+
+/* Video generated inside Studio: sound is opt-in for autoplay safety. */
+.studio-video-frame{position:relative}
+.studio-video-sound{
+ position:absolute;right:14px;bottom:13px;z-index:5;
+ min-height:38px;padding:8px 14px;border-radius:999px;
+ border:1px solid #ffffff91;background:#062b3cdd;color:#fff;
+ font:750 12px/1.2 inherit;font-size:12px;font-weight:760;
+ box-shadow:0 6px 20px #09172860;cursor:pointer;
+ backdrop-filter:blur(10px)
+}
+.studio-video-sound:hover,.studio-video-sound:focus-visible{
+ background:#0a806e;color:#fff;border-color:#cbffef
+}
+.studio-video-sound:focus-visible{outline:3px solid #74e5c7;outline-offset:3px}
+@media(max-width:620px){.studio-video-sound{right:8px;bottom:9px;padding:7px 11px;font-size:11px}}
