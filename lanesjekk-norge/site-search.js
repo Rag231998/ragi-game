@@ -34,7 +34,7 @@ function draw(){
  const field=$('site-search-input');if(field){if(active>=0)field.setAttribute('aria-activedescendant','site-search-option-0');else field.removeAttribute('aria-activedescendant');}
  if(!last.length){const p=document.createElement('p');p.className='site-search-empty';p.textContent='Ingen treff. Prøv «boligverdi», «sparing» eller «billån».';container.append(p);return}
  last.forEach((item,i)=>{
-  const b=document.createElement('button');b.type='button';b.className='site-search-result';b.id='site-search-option-'+i;
+  const b=document.createElement('button');b.type='button';b.className='site-search-result';b.tabIndex=-1;b.id='site-search-option-'+i;
   b.setAttribute('role','option');b.setAttribute('aria-selected',String(i===active));
   const icon=document.createElement('span');icon.className='site-search-result-icon';icon.textContent={home:'⌂',loans:'▤',financing:'▥',banks:'▦',budget:'▦',receipts:'▧',savings:'◈',investing:'↗',property:'⌂',academy:'✦',guides:'☷',currency:'⇄'}[item[3]]||'◈';
   const name=document.createElement('strong');name.textContent=item[0];
@@ -64,7 +64,7 @@ function init(){
   if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='k'){event.preventDefault();open?close():show()}
   else if(event.key==='/'&&!event.ctrlKey&&!event.metaKey&&!event.altKey&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&!document.activeElement?.isContentEditable){event.preventDefault();show()}
   else if(event.key==='Escape'&&open){event.preventDefault();close()}
-  else if(event.key==='Tab'&&open){const box=$('site-search');const focusable=[...box.querySelectorAll('button:not(:disabled),input:not(:disabled),a[href]')].filter(el=>el.getClientRects().length);if(!focusable.length)return;const first=focusable[0],lastItem=focusable[focusable.length-1];if(event.shiftKey&&(document.activeElement===first||!box.contains(document.activeElement))){event.preventDefault();lastItem.focus()}else if(!event.shiftKey&&(document.activeElement===lastItem||!box.contains(document.activeElement))){event.preventDefault();first.focus()}}
+  else if(event.key==='Tab'&&open){const box=$('site-search');const focusable=[...box.querySelectorAll('button:not(:disabled),input:not(:disabled),a[href]')].filter(el=>el.tabIndex>=0&&el.getClientRects().length);if(!focusable.length)return;const first=focusable[0],lastItem=focusable[focusable.length-1];if(event.shiftKey&&(document.activeElement===first||!box.contains(document.activeElement))){event.preventDefault();lastItem.focus()}else if(!event.shiftKey&&(document.activeElement===lastItem||!box.contains(document.activeElement))){event.preventDefault();first.focus()}}
  });
 }
 document.addEventListener('DOMContentLoaded',init);
