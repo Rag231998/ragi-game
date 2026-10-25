@@ -1,0 +1,163 @@
+/* Lånesjekk Norge: complete, opt-in theme layer for every public tool.
+   Loaded last to override legacy light-only module styles without altering calculations. */
+.site-theme-picker{position:relative;display:block;flex:0 0 auto;z-index:480}
+.site-theme-picker>summary{display:flex;align-items:center;justify-content:center;gap:7px;list-style:none;min-height:43px;min-width:80px;padding:8px 11px;border:1px solid #b7d0d3;border-radius:11px;background:#f6faf9;color:#18495a;font-size:12px;font-weight:850;cursor:pointer;user-select:none}
+.site-theme-picker>summary::-webkit-details-marker{display:none}
+.site-theme-picker>summary:hover,.site-theme-picker[open]>summary{background:#e2f5ec;color:#086b58;border-color:#78baa9}
+.site-theme-picker .site-theme-icon{font-size:21px;line-height:1}
+.site-theme-picker .site-theme-options{position:absolute;top:calc(100% + 10px);right:0;z-index:1800;width:240px;max-width:calc(100vw - 24px);display:grid;gap:5px;padding:12px;background:#fff;border:1px solid #c7e1de;border-radius:15px;box-shadow:0 24px 65px #0a2a3b3d;color:#203e4c}
+.site-theme-options strong{padding:4px 8px 0;color:#496575;font-size:10px;letter-spacing:.1em}
+.site-theme-options p{padding:0 8px;margin:0 0 3px;font-size:11px;color:#42606d}
+.site-theme-options button{min-height:43px;border:1px solid transparent;border-radius:10px;padding:10px 12px;text-align:left;background:transparent;color:#23495a;font-weight:780;font-size:12px}
+.site-theme-options button:hover,.site-theme-options button:focus-visible{background:#e4f7ee;color:#075d50}
+.site-theme-options button[aria-pressed=true]{border-color:#83c5b4;background:#dff5eb;color:#076553;font-weight:900}
+.site-theme-options button[aria-pressed=true]:after{content:" ✓";float:right}
+.site-theme-options small{font-size:10px;color:#5f7480;line-height:1.5;margin:5px 8px 2px}
+.site-theme-picker :is(summary,button):focus-visible{outline:3px solid #16a58a;outline-offset:2px}
+@media(max-width:1140px){
+ .portal-home .site-header .nav-row{grid-template-columns:minmax(0,1fr) auto auto auto!important;gap:8px!important}
+ .portal-home .site-header .site-theme-picker{grid-column:4!important;grid-row:1!important}
+ .portal-home .site-header #site-search-open{grid-column:3!important;grid-row:1!important}
+ .portal-home .site-header .mobile-menu{grid-column:2!important;grid-row:1!important}
+ .portal-home .site-header .portal-logo{grid-column:1!important;grid-row:1!important}
+}
+@media(max-width:670px){
+ .portal-home .site-header .nav-row{gap:5px!important;width:calc(100% - 18px)!important}
+ .portal-home .site-header #site-search-open{min-width:43px!important;width:43px!important;padding:6px!important;justify-content:center}
+ .portal-home .site-header #site-search-open>span:last-child{display:none!important}
+ .portal-home .site-header .mobile-menu>summary{font-size:11px!important;padding:6px 8px!important}
+ .site-theme-picker>summary{min-width:43px;width:43px;padding:7px}
+ .site-theme-picker .site-theme-label{display:none}
+}
+@media(max-width:390px){
+ .portal-home .site-header .portal-logo{font-size:11px!important;gap:5px}
+ .portal-home .site-header .portal-logo small{font-size:8px}
+ .portal-home .site-header .logo-emblem{width:30px;height:32px;font-size:18px}
+}
+/* Dark design palette. Real colors, no global invert filters. */
+html.cms-dark{color-scheme:dark;--ln-surface:#1a3445;--ln-surface-2:#203e4d;--ln-surface-3:#244958;--ln-outline:#436374;--ln-copy:#e8f4f7;--ln-muted:#b9d0da;--ln-positive:#83e6c8;--cms-accent:#4cceb0}
+html.cms-dark .portal-home{background:#101e2d!important;color:var(--ln-copy)!important}
+html.cms-dark .portal-home main{background:#101e2d!important}
+html.cms-dark .portal-home .site-header{background:#182e3f!important;border-bottom-color:#3b5868!important}
+html.cms-dark .portal-home .site-search-open,
+html.cms-dark .portal-home .site-theme-picker>summary{background:#25495a!important;color:#e8f8f7!important;border-color:#547986!important}
+html.cms-dark .portal-home .site-search-open:hover,
+html.cms-dark .portal-home .site-theme-picker[open]>summary{background:#326071!important;color:#fff!important}
+html.cms-dark .portal-home .site-theme-options{background:#1b3747!important;color:#e8f4f7!important;border-color:#4f7782!important}
+html.cms-dark .portal-home .site-theme-options :is(strong,p,small){color:#c5dce0!important}
+html.cms-dark .portal-home .site-theme-options button{color:#e9f8f8!important}
+html.cms-dark .portal-home .site-theme-options button[aria-pressed=true],
+html.cms-dark .portal-home .site-theme-options button:hover{background:#28584f!important;color:#effff6!important;border-color:#4c9b86!important}
+html.cms-dark .portal-home .home-intro :is(h1,h2,h3,p),
+html.cms-dark .portal-home .home-knowledge-heading :is(h2,p),
+html.cms-dark .portal-home .home-mortgage-heading :is(h2,p),
+html.cms-dark .portal-home .zone-heading :is(h1,h2,h3,p),
+html.cms-dark .portal-home .section-intro :is(h1,h2,h3,p){color:#e7f5f7!important}
+html.cms-dark .portal-home :is(.home-intro,.home-knowledge,.home-editorial,.home-navigation,.home-mortgage-heading,.portal-one-page-zone,.method-area,.bank-directory-view){color:#e8f4f7!important}
+html.cms-dark .portal-home :is(.section-overline,.home-tool-category,.eyebrow){color:#85ead0!important}
+html.cms-dark .portal-home :is(
+ .box,.loan-form,.summary-card,.offer-panel,.offer,.metric,.info-band,
+ .calc-panel,.results-panel,.projection-controls,.projection-chart-card,.projection-summary,
+ .tool-pane,.tool-kpi,.tool-empty,.scenario-card,.budget-workbook,.budget-start-panel,
+ .budget-insights-grid>*,.budget-salary-studio,.budget-selection-studio,.budget-scenario,
+ .finance-tabs,.finance-note,.finance-details,.finance-results,
+ .investment-controls,.investment-visual,.investment-lessons,.investment-kpis,
+ .academy-course,.academy-challenge,.academy-learn,.academy-options,.academy-feedback,
+ .receipt-pane,.receipt-chart-card,.receipt-history,.receipt-whatif,.receipt-tour,
+ .receipt-results,.receipt-analytics,.receipt-item-card,.receipt-history-entry,
+ .rental-card,.rental-valuation,.rental-chart,.rental-risk,
+ .pv-panel,.pv-broker-lab,.pv-trend-lab,.pv-rent-trend,.pv-index-tool,
+ .pv-method,.pv-guide,.pv-results,.pv-evidence,.pv-broker-grid>*,
+ .vc-card,.vc-simple-result,.vc-tip,.vc-data,.vc-history,
+ .bank-discovery,.bank-card,.bank-feature-note,.bank-register,
+ .light-strip,.guide-article,.guide-full,.guide-list details.long-guide,
+ .market,.method-area details,.official-box,.empty-state,.receipt-sample-box
+){
+ background:var(--ln-surface)!important;background-image:none!important;
+ border-color:var(--ln-outline)!important;color:var(--ln-copy)!important;
+ box-shadow:0 9px 26px #0003
+}
+html.cms-dark .portal-home :is(
+ .budget-advanced-tools,.budget-deep-tools,.budget-table-controls,.budget-table-wrap,
+ .budget-salary-results,.budget-selection-result,.budget-summary-strip,.budget-table-bottom,
+ .receipt-upload,.receipt-textentry,.receipt-insight,.receipt-whatif-result,
+ .receipt-reconcile,.receipt-capture,.receipt-item-list,.receipt-overview-heading,
+ .receipt-tour-screen,.rental-dashboard,.rental-valuation-output,
+ .pv-address-results,.pv-address-choice,.pv-compare-row,.pv-summary-row,
+ .pv-comparison-list,.pv-provider-info,.pv-suggestion-list,.pv-suggest-streets,
+ .pv-check-elsewhere,.pv-index-result,.pv-trend-tooltip,.pv-guide-info,
+ .vc-result,.vc-data-row,.vc-small-results,.vc-popular-item,.vc-history,
+ .bank-searchbar,.bank-results,.bank-empty,.bank-trust,.bank-select,
+ .scenario-output,.finance-saving,.finance-fields,.finance-kpis,.finance-cost-bar
+){
+ background-color:var(--ln-surface-2)!important;border-color:var(--ln-outline)!important;color:#e8f4f7!important
+}
+html.cms-dark .portal-home :is(
+ .tool-pane,.tool-kpi,.budget-workbook,.budget-start-panel,.budget-insights-grid,
+ .finance-results,.finance-note,.scenario-card,.investment-controls,.investment-visual,
+ .academy-course,.academy-learn,.receipt-pane,.receipt-item-card,.receipt-results,
+ .receipt-analytics,.receipt-insight,.rental-card,.pv-panel,.pv-broker-lab,.pv-trend-lab,
+ .pv-index-tool,.vc-card,.vc-result,.bank-card,.guide-full,.market,.offer,.metric
+) :is(h1,h2,h3,h4,strong,label,th){color:#eef8fa!important}
+html.cms-dark .portal-home :is(
+ .tool-pane,.tool-kpi,.budget-workbook,.budget-start-panel,.budget-insights-grid,
+ .finance-results,.finance-note,.scenario-card,.investment-controls,.investment-visual,
+ .academy-course,.academy-learn,.receipt-pane,.receipt-item-card,.receipt-results,
+ .receipt-analytics,.receipt-insight,.rental-card,.pv-panel,.pv-broker-lab,.pv-trend-lab,
+ .pv-index-tool,.vc-card,.vc-result,.bank-card,.guide-full,.market,.offer,.metric
+) :is(p,small,.subtitle,.description,.tool-hint,.receipt-helper,.pv-note,.vc-muted){color:var(--ln-muted)!important}
+html.cms-dark .portal-home :is(.tool-pane-head p,.receipt-disclaimer,.rental-note,.rental-sources,.pv-source,.pv-intro-hint,.vc-equation,.finance-note p,.receipt-workflow-privacy){color:#c6dae0!important}
+html.cms-dark .portal-home :is(
+ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+ textarea,select
+){background:#132d3d!important;color:#f1fbfc!important;border-color:#61808a!important;box-shadow:none}
+html.cms-dark .portal-home :is(input,textarea)::placeholder{color:#adc4ce!important;opacity:1}
+html.cms-dark .portal-home :is(input,textarea,select):focus-visible{outline:3px solid #59d6b7!important;outline-offset:2px}
+html.cms-dark .portal-home :is(input[type="checkbox"],input[type="radio"],input[type="range"]){accent-color:#61d8b9}
+html.cms-dark .portal-home :is(.input-wrap,.finance-field,.receipt-fields,.pv-search,.pv-search-wrap,.bank-searchbar){border-color:#587c87!important;background:#172f3f!important;color:#eaf6f6!important}
+html.cms-dark .portal-home :is(
+ .budget-table,.receipt-table,.offer-table,.finance-table,.loan-comparison,
+ .rental-chart,.pv-comparison-list,.vc-data
+){border-color:#40616c!important;color:#eaf5f7!important}
+html.cms-dark .portal-home :is(.budget-table,.receipt-table,.offer-table,table) :is(th,td){
+ background:#1d394a!important;color:#e6f2f6!important;border-color:#496674!important
+}
+html.cms-dark .portal-home :is(.budget-table,.receipt-table,table) tbody tr:nth-child(even) :is(td,th){background:#234354!important}
+html.cms-dark .portal-home :is(.budget-table,.receipt-table,table) tbody tr:first-child :is(td,th){background:#224c48!important}
+html.cms-dark .portal-home :is(.light-button,.pv-secondary,.vc-secondary,.receipt-btn.secondary,.tool-button.subtle,.bank-website,.rental-button.secondary,.zone-mini-link){
+ background:#254f55!important;color:#e3fff5!important;border-color:#4c867b!important
+}
+html.cms-dark .portal-home :is(.light-button,.pv-secondary,.vc-secondary,.receipt-btn.secondary,.tool-button.subtle,.bank-website,.rental-button.secondary,.zone-mini-link):hover{
+ background:#306b65!important;color:white!important
+}
+html.cms-dark .portal-home :is(.pv-primary,.tool-button.primary,.receipt-btn.primary,.admin-primary){color:#fff!important}
+html.cms-dark .portal-home :is(.tool-validation,.receipt-status,.rental-validation,.pv-caveat,.vc-error,.budget-error-summary){
+ color:#ffd0c0!important;border-color:#b7796f!important
+}
+html.cms-dark .portal-home :is(.tool-bar-track,.budget-health-track,.academy-track,.finance-cost-bar,.pv-compare-track,.pv-trend-line){background-color:#345464!important}
+html.cms-dark .portal-home :is(.receipt-tour-kicker,.pv-eyebrow,.vc-eyebrow,.rental-card-title p){color:#afe8d9!important}
+html.cms-dark .portal-home .site-search-overlay{background:#020e17d9!important}
+html.cms-dark .portal-home .site-search-dialog{background:#193545!important;border-color:#4a7180!important}
+html.cms-dark .portal-home .site-search-head{border-color:#486671!important}
+html.cms-dark .portal-home .site-search-head :is(input,button){color:#f0fbfb!important}
+html.cms-dark .portal-home .site-search-results .site-search-result{background:#193545!important;color:#eaf7f8!important;border-color:transparent!important}
+html.cms-dark .portal-home .site-search-results .site-search-result :is(strong,small){color:#dff0f4!important}
+html.cms-dark .portal-home .site-search-results .site-search-result:hover,
+html.cms-dark .portal-home .site-search-results .site-search-result[aria-selected="true"]{background:#285b52!important;border-color:#67ac9e!important}
+html.cms-dark .portal-home .site-search-result-icon{background:#2b625b!important;color:#e9fff9!important}
+html.cms-dark .portal-home .site-search-footer{color:#c0d9df!important;border-color:#476879!important}
+html.cms-dark .portal-home .site-search-empty{color:#d4e8ef!important}
+html.cms-dark .portal-home .mobile-bottom-tabs a[aria-current="page"]{background:#27554e!important;color:#e5fff5!important}
+html.cms-dark .portal-home .viewbar-crumb a:hover{background:#2d5a59!important}
+html.cms-dark .portal-home .portal-viewbar{box-shadow:0 12px 34px #0004}
+html.cms-dark .portal-home .site-header .mobile-menu>summary{color:#effafc!important;background:#254a5b!important;border-color:#487586!important}
+html.cms-dark .portal-home .site-header .mobile-menu[open]>summary{background:#2c615b!important;color:#fff!important}
+html.cms-dark .portal-home :is(.foot,footer){background:#0c1b29!important;color:#c7dce4!important}
+html.cms-dark .portal-home :is(.foot,footer) a{color:#8ee5ca!important}
+/* High-contrast empty states, helper text and graphs with no forced inversion. */
+html.cms-dark .portal-home .site-theme-options,
+html.cms-dark .portal-home .site-search-dialog,
+html.cms-dark .portal-home :is(.pv-panel,.vc-card,.receipt-pane,.budget-workbook,.rental-card) {color-scheme:dark}
+@media(prefers-reduced-motion:reduce){
+ .site-theme-picker *{transition:none!important;animation:none!important}
+}
