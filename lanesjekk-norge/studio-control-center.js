@@ -10,6 +10,14 @@ function init(){
  const shell=document.createElement('div');shell.className='admin-dashboard-grid';shell.id='admin-dashboard-grid';
  editor.before(shell);
  shell.append(sidebar,editor);
+ // Preserve the ONE existing publication log and its controls, but place it
+ // below the editing workspace, outside category switching. Never clone it.
+ const history=document.getElementById('admin-panel-history');
+ if(history){
+  shell.after(history);
+  history.classList.add('studio-publish-history');
+  history.open=true;
+ }
  const heading=document.createElement('div');heading.className='studio-rail-heading';
  heading.innerHTML='<span class="admin-eyebrow">ARBEIDSOMRÅDER</span><strong>Kontrollsenter</strong><small>Velg ett område om gangen</small>';
  sidebar.prepend(heading);
@@ -19,7 +27,7 @@ function init(){
   const btn=buttons[i];
   if(!btn.querySelector('.studio-rail-icon')){
    const icon=document.createElement('span');icon.className='studio-rail-icon';icon.setAttribute('aria-hidden','true');
-   icon.textContent=({ 'admin-panel-brand':'◈','admin-panel-budget':'▦','admin-panel-cards':'▤','admin-panel-slides':'◩','animation-studio-panel':'▶','admin-panel-catalog':'⌘','admin-panel-invest':'↗','admin-panel-motion':'◌','admin-panel-history':'◷' })[btn.dataset.adminJump]||'•';
+   icon.textContent=({ 'admin-panel-brand':'◈','admin-panel-budget':'▦','admin-panel-cards':'▤','admin-panel-slides':'◩','animation-studio-panel':'▶','admin-panel-catalog':'⌘','admin-panel-invest':'↗','admin-panel-motion':'◌' })[btn.dataset.adminJump]||'•';
    btn.prepend(icon);
   }
  }
