@@ -1,0 +1,159 @@
+/* Studio Feature Center · guided creation, clear previews, and consistent dark mode. */
+#admin-workspace #admin-panel-catalog>.admin-body{display:grid;gap:19px;min-width:0}
+#admin-workspace .catalog-workflow-intro{
+ padding:18px 20px;border:1px solid #c5e4d7;border-radius:16px;
+ background:linear-gradient(122deg,#eefbf5,#f6fbff);
+ display:grid;gap:9px;color:#254e5b;line-height:1.7
+}
+#admin-workspace .catalog-workflow-intro>strong{font-size:17px;font-weight:870;color:#123e4c}
+#admin-workspace .catalog-workflow-intro p{margin:0;font-size:12px;max-width:920px;color:#496b75}
+#admin-workspace .catalog-workflow-intro p strong{color:#176f5d}
+#admin-workspace .catalog-workflow-toolbar{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+#admin-workspace .catalog-workflow-toolbar button{min-height:42px}
+#admin-workspace .catalog-workflow-section{
+ display:grid;gap:15px;border:1px solid #d3e6e3;border-radius:17px;
+ background:linear-gradient(180deg,#fff,#f9fcfc);padding:19px;min-width:0
+}
+#admin-workspace .catalog-workflow-section-head{
+ display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap
+}
+#admin-workspace .catalog-workflow-section-head>div{display:grid;gap:5px}
+#admin-workspace .catalog-workflow-section-head h3{
+ margin:0;font-size:18px;font-weight:900;color:#1a3f50;letter-spacing:-.025em
+}
+#admin-workspace .catalog-workflow-section-head p{
+ margin:0;color:#5a7781;font-size:11px;line-height:1.7;max-width:640px
+}
+#admin-workspace .catalog-workflow-section-head output{
+ padding:8px 11px;white-space:nowrap;border-radius:999px;
+ background:#e8f7f0;color:#0b715f;font-size:10px;font-weight:850
+}
+#admin-workspace .catalog-workflow-create{
+ display:grid;grid-template-columns:minmax(0,1fr) auto;gap:11px;
+ background:#f2faf8;border:1px solid #d4e8e1;padding:12px;border-radius:12px;align-items:end
+}
+#admin-workspace .catalog-workflow-create label{display:grid;gap:7px;color:#345c67;font-size:11px;font-weight:810}
+#admin-workspace .catalog-workflow-create select{
+ min-height:46px;width:100%;font-size:12px;padding:9px 13px;
+ border:1px solid #b9d9d0;border-radius:10px;
+ background:#fff;color:#203f4c
+}
+#admin-workspace .catalog-workflow-create button{
+ min-height:46px;padding:11px 17px;border-radius:10px;
+ white-space:normal;font-size:12px
+}
+#admin-workspace .catalog-empty{
+ margin:0;padding:17px;border:1px dashed #badbd3;border-radius:11px;
+ font-size:12px;color:#54747d;background:#f9fdfc;line-height:1.6
+}
+#admin-workspace .catalog-editor-card{
+ min-width:0;display:grid;gap:14px;
+ padding:16px;border:1px solid #d2e5e1;
+ border-radius:14px;background:white;box-shadow:0 7px 24px #0c433b09
+}
+#admin-workspace .catalog-editor-card.catalog-just-created{
+ border-color:#19ad8b;box-shadow:0 0 0 3px #16b79020,0 12px 35px #134c3f16
+}
+#admin-workspace .catalog-editor-head{
+ display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap
+}
+#admin-workspace .catalog-editor-head strong{
+ font-size:13px;color:#1d4857;font-weight:880
+}
+#admin-workspace .catalog-draft-pill{
+ display:inline-flex;align-items:center;min-height:28px;
+ padding:5px 10px;border-radius:999px;background:#e8f8f1;
+ border:1px solid #c5e9d9;color:#126d59;font-size:10px;font-weight:800
+}
+#admin-workspace .catalog-editor-grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:12px;min-width:0
+}
+#admin-workspace .catalog-item-field{
+ display:grid;gap:6px;min-width:0;
+ font-size:11px;font-weight:800;color:#365967;
+}
+#admin-workspace .catalog-item-field>span{line-height:1.3}
+#admin-workspace .catalog-item-field :is(input,select,textarea){
+ width:100%;min-width:0;min-height:43px;
+ padding:10px 11px;border:1px solid #c4dad7;border-radius:10px;
+ color:#1c4552;background:#fff;font-family:inherit;font-size:12px;
+ line-height:1.5;box-sizing:border-box
+}
+#admin-workspace .catalog-item-field textarea{resize:vertical;min-height:79px}
+#admin-workspace .catalog-editor-grid>.catalog-item-field:has(textarea){grid-column:1/-1}
+#admin-workspace .catalog-visibility{
+ grid-column:1/-1;display:flex;align-items:center;gap:13px;
+ padding:11px 13px;background:#eef8f4;border:1px solid #d2e7de;border-radius:11px;
+ color:#1c6657;font-size:11px;font-weight:750
+}
+#admin-workspace .catalog-visibility input{
+ -webkit-appearance:none;appearance:none;
+ position:relative;display:block;flex:0 0 45px;
+ width:45px;height:27px;min-width:45px;max-width:45px;
+ border-radius:99px;background:#bbcbd1;border:1px solid #a9bfc6;
+ cursor:pointer;transition:background .2s
+}
+#admin-workspace .catalog-visibility input::before{
+ content:'';position:absolute;top:2px;left:2px;
+ width:21px;height:21px;border-radius:50%;background:white;
+ box-shadow:0 2px 6px #0e394c37;transition:transform .2s
+}
+#admin-workspace .catalog-visibility input:checked{background:#0c9880;border-color:#0c9880}
+#admin-workspace .catalog-visibility input:checked::before{transform:translateX(18px)}
+#admin-workspace .catalog-visibility input:focus-visible{
+ outline:3px solid #37c5a5;outline-offset:3px
+}
+#admin-workspace .catalog-editor-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#admin-workspace .catalog-editor-actions button{font-size:11px;min-height:39px;white-space:normal}
+#admin-workspace .catalog-editor-actions button:hover{border-color:#2c9a80}
+#admin-workspace .catalog-workflow-status{
+ margin:0;padding:13px 16px;border-radius:12px;
+ background:#eaf9f0;border:1px solid #bde7d2;
+ color:#16634f;font-size:12px;font-weight:730;line-height:1.7
+}
+#admin-workspace .catalog-workflow-status[data-error="true"]{
+ background:#fff0ea;border-color:#f0b9a4;color:#954834
+}
+html.studio-dark #admin-workspace .catalog-workflow-intro{
+ background:linear-gradient(122deg,#183d48,#204a40)!important;border-color:#497668!important
+}
+html.studio-dark #admin-workspace .catalog-workflow-intro :is(strong,p){color:#e4f7f2!important}
+html.studio-dark #admin-workspace .catalog-workflow-section{
+ background:linear-gradient(180deg,#1c3848,#1d3643)!important;border-color:#506f79!important
+}
+html.studio-dark #admin-workspace .catalog-workflow-section-head :is(h3,p){color:#e2f1f5!important}
+html.studio-dark #admin-workspace .catalog-workflow-create{
+ background:#264758!important;border-color:#527884!important
+}
+html.studio-dark #admin-workspace .catalog-workflow-create label,
+html.studio-dark #admin-workspace .catalog-item-field,
+html.studio-dark #admin-workspace .catalog-editor-head strong{color:#e4f6f9!important}
+html.studio-dark #admin-workspace .catalog-editor-card{background:#1b3544!important;border-color:#4e7180!important}
+html.studio-dark #admin-workspace .catalog-editor-card.catalog-just-created{
+ border-color:#63dfbb!important;box-shadow:0 0 0 3px #30c29b28!important
+}
+html.studio-dark #admin-workspace .catalog-item-field :is(input,select,textarea),
+html.studio-dark #admin-workspace .catalog-workflow-create select{
+ background:#102f3b!important;color:#eefaf8!important;border-color:#5a8188!important
+}
+html.studio-dark #admin-workspace .catalog-visibility{
+ background:#224d46!important;border-color:#548c80!important;color:#e3f9f2!important
+}
+html.studio-dark #admin-workspace .catalog-empty{
+ background:#224251!important;border-color:#5d8690!important;color:#d3e9ee!important
+}
+html.studio-dark #admin-workspace .catalog-workflow-status{
+ background:#225446!important;border-color:#4c8e75!important;color:#e4faee!important
+}
+@media(max-width:680px){
+ #admin-workspace .catalog-workflow-section{padding:12px}
+ #admin-workspace .catalog-editor-grid{grid-template-columns:1fr}
+ #admin-workspace .catalog-workflow-create{grid-template-columns:1fr}
+ #admin-workspace .catalog-workflow-toolbar button{flex:1 1 120px}
+ #admin-workspace .catalog-editor-card{padding:12px}
+}
+@media(prefers-reduced-motion:reduce){
+ #admin-workspace .catalog-visibility input,
+ #admin-workspace .catalog-visibility input::before{transition:none}
+}
