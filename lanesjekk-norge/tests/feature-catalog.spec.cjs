@@ -1,8 +1,20 @@
 const {test,expect}=require('@playwright/test');
 
-test('Feature library opens as a separate modal with searchable thematic guides',async({page})=>{
+test('Feature directory is absent from public navigation and belongs to Studio',async({page})=>{
  await page.goto('/#topp',{waitUntil:'domcontentloaded'});
- await page.locator('[data-open-catalog="tools"]').click();
+ await expect(page.locator('[data-open-catalog]')).toHaveCount(0);
+ await expect(page.locator('#site-feature-dialog')).toHaveCount(0);
+ await page.goto('/studio-admin.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#admin-open-features')).toHaveCount(1);
+ await expect(page.locator('#site-feature-dialog')).toHaveCount(1);
+ await expect.poll(()=>page.evaluate(()=>typeof window.lanesjekkCatalog?.open)).toBe('function');
+});
+
+test('Studio feature directory opens in its own searchable window with thematic guides',async({page})=>{
+ await page.goto('/studio-admin.html',{waitUntil:'domcontentloaded'});
+ await expect.poll(()=>page.evaluate(()=>typeof window.lanesjekkCatalog?.open)).toBe('function');
+ // Authentication is never bypassed: open the already rendered catalog component in an isolated UI test.
+ await page.evaluate(()=>window.lanesjekkCatalog.open('tools'));
  const dialog=page.locator('#site-feature-dialog');
  await expect(dialog).toHaveAttribute('open','');
  await expect(dialog.locator('.fc-card')).toHaveCount(13);
@@ -11,37 +23,40 @@ test('Feature library opens as a separate modal with searchable thematic guides'
  await dialog.locator('.fc-card').click();
  await expect(dialog.locator('#site-feature-detail')).toContainText('Utleieanalyse');
  await expect(dialog.locator('#site-feature-detail')).toContainText('Slik bruker du funksjonen');
- await dialog.locator('.fc-go').click();
+ await page.keyboard.press('Escape');
  await expect(dialog).not.toHaveAttribute('open','');
- await expect(page).toHaveURL(/#utleieanalyse$/);
- await expect(page.locator('#utleie')).toBeVisible();
 });
-test('Published catalog updates appear in the news tab and link to the correct module',async({page})=>{
- await page.route('**/rest/v1/lanesjekk_site_config*',route=>route.fulfill({
-  status:200,contentType:'application/json',body:JSON.stringify({revision:1,config:{brand:{theme:'light'},catalog:{headline:'Oppdag alle verktøy',news:[]}}})
- }));
- await page.goto('/#topp',{waitUntil:'domcontentloaded'});
- await expect.poll(()=>page.evaluate(()=>Boolean(window.lanesjekkCms?.getPublished()))).toBe(true);
- await page.evaluate(()=>window.lanesjekkCatalog.setNews({headline:'Utforsk verktøyene',news:[
-  {id:'test',title:'Ny budsjettoversikt',summary:'Se utgifter og inntekter.',date:'2026-10-25',route:'budsjett'}
- ]}));
- await page.locator('[data-open-catalog="tools"]').click();
- await page.locator('[data-fc-tab="news"]').click();
+
+test('Studio release-notes tab shows a draft announcement and links to draft preview route',async({page})=>{
+ await page.goto('/studio-admin.html',{waitUntil:'domcontentloaded'});
+ await expect.poll(()=>page.evaluate(()=>typeof window.lanesjekkCatalog?.open)).toBe('function');
+ await page.evaluate(()=>{
+  window.__catalogTestRoute=null;
+  window.lanesjekkStudioPreviewRoute=route=>{window.__catalogTestRoute=route};
+  window.lanesjekkCatalog.setNews({headline:'Verktøyoversikten',news:[{
+   id:'test',title:'Ny budsjettoversikt',summary:'Se utgifter og inntekter.',date:'2026-10-25',route:'budsjett'
+  }]});
+  window.lanesjekkCatalog.open('news');
+ });
  await expect(page.locator('#site-feature-list .fc-news')).toHaveCount(1);
  await expect(page.locator('#site-feature-list .fc-news')).toContainText('Ny budsjettoversikt');
  await page.locator('#site-feature-list .fc-news .fc-go').click();
- await expect(page).toHaveURL(/#budsjett$/);
+ await expect.poll(()=>page.evaluate(()=>window.__catalogTestRoute)).toBe('budsjett');
+ await expect(page).toHaveURL(/studio-admin\.html$/);
 });
-test('Catalog and dark-mode text/background have readable contrast on mobile',async({page},testInfo)=>{
+
+test('Studio directory has usable responsive dark-mode contrast',async({page},testInfo)=>{
  test.skip(!/android|iphone/.test(testInfo.project.name),'Mobile viewport only');
- await page.goto('/#topp',{waitUntil:'domcontentloaded'});
- await page.evaluate(()=>window.lanesjekkTheme.setChoice('dark'));
- await page.locator('[data-open-catalog="tools"]').click();
+ await page.goto('/studio-admin.html',{waitUntil:'domcontentloaded'});
+ await page.locator('#admin-ui-theme').selectOption('dark');
+ await expect.poll(()=>page.evaluate(()=>typeof window.lanesjekkCatalog?.open)).toBe('function');
+ await page.evaluate(()=>window.lanesjekkCatalog.open('tools'));
  await expect(page.locator('#site-feature-dialog')).toBeVisible();
- const metrics=await page.locator('#site-feature-dialog').evaluate(dialog=>{
-  const computed=getComputedStyle(dialog);
-  return{width:dialog.getBoundingClientRect().width,viewport:document.documentElement.clientWidth,background:computed.backgroundColor};
- });
+ const metrics=await page.locator('#site-feature-dialog').evaluate(dialog=>({
+  width:dialog.getBoundingClientRect().width,
+  viewport:document.documentElement.clientWidth,
+  background:getComputedStyle(dialog).backgroundColor
+ }));
  expect(metrics.width).toBeLessThanOrEqual(metrics.viewport+1);
  expect(metrics.background).not.toBe('rgb(255, 255, 255)');
  await page.keyboard.press('Escape');
