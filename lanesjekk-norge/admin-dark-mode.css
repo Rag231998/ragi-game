@@ -110,3 +110,21 @@ html.studio-dark .password-page :is(.password-page-quiet-button,.admin-secondary
 html.studio-dark .password-page :is(.password-page-quiet-button,.admin-secondary,.password-page-back):hover{
  background:#316961!important
 }
+
+/* Editor for feature library release notes and HeyGen production brief. */
+#admin-workspace .catalog-news-item{display:block}
+#admin-workspace .catalog-news-item .admin-item-main{grid-template-columns:minmax(0,1fr);gap:10px}
+#admin-workspace .catalog-news-item textarea{resize:vertical;min-height:90px}
+#admin-workspace #catalog-add-news{justify-self:start;min-height:42px}
+#admin-workspace .admin-ai-video{display:grid;gap:14px;padding:20px;border:1px solid #bdded6;background:linear-gradient(130deg,#ecf8f5,#f4fafb);border-radius:16px}
+#admin-workspace .admin-ai-video h3{margin:5px 0;font-size:19px;color:#153f4a}
+#admin-workspace .admin-ai-video p{font-size:11px;line-height:1.7;color:#5a7880}
+#admin-workspace .admin-ai-video .media-upload-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+#admin-workspace .admin-ai-video .media-upload-actions a{display:inline-flex;align-items:center;text-decoration:none;min-height:39px}
+#admin-workspace .admin-ai-video textarea{width:100%;min-height:225px;resize:vertical;font-size:11px;line-height:1.65}
+html.studio-dark #admin-workspace .admin-ai-video{background:#203d4d!important;border-color:#577783!important;color:#f1fafa!important}
+html.studio-dark #admin-workspace .admin-ai-video :is(h3,p,strong,small,label){color:#e2f4f4!important}
+html.studio-dark #admin-workspace .catalog-news-item{background:#1b3546!important;border-color:#4f7180!important}
+html.studio-dark #admin-workspace :is(.admin-ai-video textarea,.catalog-news-item input,.catalog-news-item textarea,.catalog-news-item select){
+ background:#102c3b!important;color:#f1fcfd!important;border-color:#607e8b!important
+}
