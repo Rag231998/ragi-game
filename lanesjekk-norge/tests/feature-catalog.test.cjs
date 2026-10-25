@@ -101,3 +101,19 @@ test('New CMS tool links can be added, selected, hidden, and navigate only to re
  assert.match(client,/card\.href='#'\+entry\.route/);
  assert.match(file('studio-admin.html'),/admin-catalog-workflow\.css/);
 });
+
+test('Adding an existing feature opens a guided editable draft with working next actions',()=>{
+ const html=file('studio-admin.html'),admin=file('admin-studio.js'),css=file('studio-catalog-flow.css');
+ for(const id of ['catalog-next-step','catalog-next-title','catalog-next-description','catalog-next-edit','catalog-next-preview','catalog-next-publish']){
+  assert.match(html,new RegExp('id="'+id+'"'));
+ }
+ assert.match(admin,/draft\.catalog\.tools\.unshift\(item\)/);
+ assert.match(admin,/renderCatalog\(item\.id\)/);
+ assert.match(admin,/showPreviewSection\('topp'\)/);
+ assert.match(admin,/catalog-next-step/);
+ assert.match(admin,/openFullPreview\('topp'\)/);
+ assert.match(admin,/\$\('admin-publish'\)\?\.click\(\)/);
+ assert.match(css,/catalog-next-step/);
+ assert.match(css,/studio-dark/);
+ assert.match(css,/max-width:660px/);
+});
