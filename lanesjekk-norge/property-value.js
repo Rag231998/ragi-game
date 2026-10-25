@@ -46,6 +46,8 @@ async function estimate(){
   $('pv-sales').textContent=Number.isFinite(sales)?sales.toLocaleString('nb-NO')+' omsetninger i '+summary.quarters+' kvartaler':'Antall salg ikke oppgitt';
   $('pv-confidence').textContent=!Number.isFinite(sales)?'Datagrunnlag ikke oppgitt':sales<20?'Få salg – stor variasjon mulig':sales<60?'Begrenset statistisk grunnlag':'Kommunestatistikk';
   $('pv-market-location').textContent=(selectedAddress?.municipality||data.regionLabel||municipality)+' (kommunenr. '+municipality+')';
+  const provenance={region:selectedAddress?.municipality||data.regionLabel||municipality,type:data.propertyTypeLabel||kind,period:summary?.firstQuarter===summary?.lastQuarter?summary?.lastQuarter:summary?.firstQuarter+'–'+summary?.lastQuarter,sales:Number.isFinite(sales)?sales.toLocaleString('nb-NO')+' registrerte omsetninger':'Antall omsetninger er ikke oppgitt',retrieved:new Intl.DateTimeFormat('nb-NO',{dateStyle:'long',timeStyle:'short',timeZone:'Europe/Oslo'}).format(new Date())};
+  [['pv-source-region',provenance.region+' (kommunenr. '+municipality+')'],['pv-source-type',provenance.type],['pv-source-period',provenance.period],['pv-source-sample',provenance.sales],['pv-source-fetched',provenance.retrieved]].forEach(([id,value])=>{const element=$(id);if(element)element.textContent=value});
   notice('SSB 14310 · '+(selectedAddress?.municipality||municipality)+' · '+(data.propertyTypeLabel||'Bolig')+' · '+(summary?.quarters||1)+' publiserte kvartal(er). Dette er et grovt kommunetall, ikke en individuell verdi for adressen.');
   $('pv-badge').textContent='✓ SSB-verdi';
 
@@ -59,6 +61,7 @@ async function estimate(){
   $('pv-sales').textContent='Ingen dokumentert omsetning';
   $('pv-confidence').textContent='Ikke vurdert';
   $('pv-market-location').textContent='Ingen bekreftet statistikk';
+  [['pv-source-region','Ingen bekreftet kommune'],['pv-source-type','Ikke bekreftet'],['pv-source-period','Ingen data hentet'],['pv-source-sample','Ikke tilgjengelig'],['pv-source-fetched','–']].forEach(([id,value])=>{const element=$(id);if(element)element.textContent=value});
   $('pv-period').textContent='SSB-data mangler for dette utvalget';
  $('pv-price-method').textContent='Ingen verifisert kommunestatistikk tilgjengelig.';
  $('pv-range-method').textContent='Ingen dokumentert kvartalsvariasjon tilgjengelig.';
