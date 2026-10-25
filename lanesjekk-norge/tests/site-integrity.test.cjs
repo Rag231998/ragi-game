@@ -224,3 +224,28 @@ test('Password help does not claim unverified SMTP and separates backup options'
  assert.match(css,/#reset-request \.password-page-alternative\{/);
  assert.match(css,/#reset-request \.password-page-info\{/);
 });
+
+test('Studio category navigation, full-window preview, time-limited login and media routing remain connected',()=>{
+ const html=file('studio-admin.html'),client=file('admin-studio.js'),preview=file('studio-preview.html');
+ const mediaCSS=file('site-media.css'),themeCSS=file('studio-theme.css'),auth=file('admin-session.js');
+ for(const id of ['admin-object-search','preview-inline-section','preview-inline-fullscreen','admin-preflight','admin-history','admin-remember']){
+  assert.ok(html.includes('id="'+id+'"'),id+' missing');
+ }
+ for(const id of ['admin-panel-brand','admin-panel-budget','admin-panel-cards','admin-panel-history','animation-studio-panel']){
+  assert.ok(html.includes('data-admin-jump="'+id+'"'),id+' not navigable');
+ }
+ assert.match(client,/function activatePanel\(/);
+ assert.match(client,/function showPreviewSection\(/);
+ assert.match(client,/event\.key==='ArrowDown'/);
+ assert.match(client,/lanesjekk-studio-preview-data/);
+ assert.match(client,/lanesjekk_publish_events/);
+ assert.match(client,/admin-preview-confirm/);
+ assert.match(preview,/requestFullscreen\(\)/);
+ assert.match(mediaCSS,/pv-mode-rental/);
+ assert.match(themeCSS,/html\.cms-dark/);
+ assert.match(auth,/DAY=86400000/);
+ for(const name of ['admin-studio.js','admin-session.js','admin-animation-studio.js']){
+  assert.doesNotThrow(()=>new vm.Script(file(name),{filename:name}));
+ }
+ assert.doesNotThrow(()=>new vm.Script(auth,{filename:'admin-session.js'}));
+});
