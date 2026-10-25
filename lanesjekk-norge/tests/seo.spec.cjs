@@ -75,6 +75,6 @@ test('all nine full-length guides are embedded inline and discoverable by anchor
  assert.ok(html.includes('id="innskuddsgaranti"'));
  assert.ok(html.includes('id="bsu"'));
  assert.ok(html.includes('id="ips"'));
- assert.ok(html.includes('<script src="./single-page.js" defer></script>'));
+ assert.ok(/<script src="\.\/single-page\.js(?:\?v=\d+)?" defer><\/script>/.test(html));
  assert.ok(html.includes('<script src="./savings.js" defer></script>'));
 });
