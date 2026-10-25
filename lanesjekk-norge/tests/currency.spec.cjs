@@ -17,7 +17,7 @@ test('Valutakompass is a separate working view with real calculations and histor
  await page.locator('#vc-amount').fill('20 000');
  await expect(page.locator('#vc-converted')).toHaveValue('1 700,00');
  await page.locator('#vc-converted').fill('850');
- await expect(page.locator('#vc-amount')).toHaveValue('10 000,00');
+ await expect(page.locator('#vc-amount')).toHaveValue('10 000,00');
  await expect(page.locator('#vc-fee')).toHaveCount(0);
 });
 test('Homepage has one carousel with six scenes, including Valutakompass',async({page})=>{
