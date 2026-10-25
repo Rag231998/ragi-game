@@ -40,7 +40,7 @@ test('admin Animation Studio can stage a video and update module config without 
 test('published CMS media video replaces demo and restores native animation',async({page})=>{
  const config=fixture();
  await page.route('**/rest/v1/lanesjekk_site_config*',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({config,revision:1})}));
- await page.goto('/#utleie',{waitUntil:'domcontentloaded'});
+ await page.goto('/#boligverdi',{waitUntil:'domcontentloaded'});
  await expect.poll(()=>page.evaluate(()=>!!window.lanesjekkCms?.configClean&&!!window.lanesjekkSiteMedia?.apply)).toBe(true);
  await page.evaluate(cfg=>window.lanesjekkCms.apply(cfg),config);
  await expect(page.locator('.studio-video-showcase[data-media-slot=valuation]')).toHaveCount(1);
@@ -52,7 +52,7 @@ test('published CMS media video replaces demo and restores native animation',asy
  await expect(page.locator('#pv-valuation-guide')).toBeVisible();
 });
 test('reject untrusted video URLs in published config',async({page})=>{
- await page.goto('/#utleie',{waitUntil:'domcontentloaded'});
+ await page.goto('/#boligverdi',{waitUntil:'domcontentloaded'});
  await expect.poll(()=>page.evaluate(()=>!!window.lanesjekkCms?.configClean)).toBe(true);
  const result=await page.evaluate(()=>window.lanesjekkCms.configClean({media:{slots:{valuation:{videoUrl:'https://malicious.example/video.mp4',posterUrl:'javascript:alert(1)'}}}}).media.slots.valuation);
  expect(result.videoUrl).toBe('');
@@ -60,7 +60,7 @@ test('reject untrusted video URLs in published config',async({page})=>{
 });
 test('premium video modules remain inside mobile viewport',async({page})=>{
  await page.setViewportSize({width:390,height:844});
- await page.goto('/#utleie',{waitUntil:'domcontentloaded'});
+ await page.goto('/#boligverdi',{waitUntil:'domcontentloaded'});
  await expect.poll(()=>page.evaluate(()=>!!window.lanesjekkCms?.apply)).toBe(true);
  await page.waitForLoadState('networkidle');
  await page.evaluate(cfg=>window.lanesjekkCms.apply(cfg),fixture());
