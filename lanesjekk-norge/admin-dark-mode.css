@@ -87,3 +87,26 @@ html.studio-dark #admin-workspace .admin-search-control>span{color:#a4c9d2!impor
 html.studio-dark :is(footer,footer a){color:#bcd8dd!important;border-color:#3e5b66!important}
 html.studio-dark ::selection{background:#2c9a80;color:white}
 @media(prefers-reduced-motion:reduce){html.studio-dark *{transition:none!important}}
+
+/* Same administration theme on the password and recovery pages. */
+html.studio-dark .password-page :is(.password-page-card,.password-page-info,.password-page-help,
+ .password-page-limit,.password-page-alternative,.backup-settings,.backup-generated,
+ .backup-recovery,.password-page-quiet-button,.password-page-actions){
+ background:#1d3a4b!important;background-image:none!important;border-color:#496d7a!important;color:#e9f5f7!important
+}
+html.studio-dark .password-page :is(.password-page-heading,.password-page-titleline,.password-page-info,
+ .password-page-help,.password-page-footer-note,.password-page-status,.password-page-eyebrow,
+ .password-page-limit,.password-page-back,.backup-settings) :is(h1,h2,h3,p,small,strong,label,summary){
+ color:#e6f3f7!important
+}
+html.studio-dark .password-page :is(.password-page-footer-note,.password-page-back,.password-page-help p,.password-page-info p){
+ color:#c3dce3!important
+}
+html.studio-dark .password-page :is(.backup-generated>strong,.backup-settings>h3){color:#e9faf8!important}
+html.studio-dark .password-page .admin-login input{background:#122f40!important;color:#edf8fb!important;border-color:#63818e!important}
+html.studio-dark .password-page :is(.password-page-quiet-button,.admin-secondary,.password-page-back){
+ background:#28535c!important;color:#eafff5!important;border-color:#568c86!important
+}
+html.studio-dark .password-page :is(.password-page-quiet-button,.admin-secondary,.password-page-back):hover{
+ background:#316961!important
+}
