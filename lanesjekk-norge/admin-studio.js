@@ -11,12 +11,14 @@ const SLIDE_IDS=['loan','budget','receipts','invest','property','currency'];
 const CARD_IDS=['sjekk','budsjett','kvitteringer','sparing','utleie','billan','forbrukslan','akademi','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti'];
 const CARD_NAMES={kvitteringer:'Kvitteringsstudio',utleie:'Utleieanalyse',budsjett:'Personlig budsjett',billan:'Billån',forbrukslan:'Forbrukslån',akademi:'Læringsplattform',sparing:'Sparing',sjekk:'Boliglån',banker:'Bankoversikt','offisielle-renter':'Offisielle renter',bsu:'BSU',ask:'ASK',ips:'IPS',innskuddsgaranti:'Innskuddsgaranti'};
 const CARDS_DEFAULT=['sjekk','budsjett','kvitteringer','sparing','utleie','billan','forbrukslan','akademi','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti'];
+const RELEASE_ROUTES=new Set(['topp','sjekk','billan','forbrukslan','banker','budsjett','kvitteringer','sparing','investering','valutakompass','boligverdi','utleieanalyse','akademi','guider']);
+const catalogNewsDefaults={headline:'Oppdag alt du kan gjøre',news:[]};
 const CARD_PREVIEW_ROUTES=Object.freeze({sjekk:'sjekk',budsjett:'budsjett',kvitteringer:'kvitteringer',sparing:'sparing',utleie:'utleieanalyse',billan:'billan',forbrukslan:'forbrukslan',akademi:'akademi',banker:'banker','offisielle-renter':'sparing',bsu:'guider',ask:'guider',ips:'guider',innskuddsgaranti:'guider'});
 const previewRouteForCard=id=>CARD_PREVIEW_ROUTES[id]||'topp';
 let db=null,authUser=null,published=null,draft=null,revision=0,ready=false,busy=false,lastPublishedAt='';
 let previewWindow=null,previewWindowReady=false,lastPreviewFingerprint='',previewSection='topp',previewPayload=null,publishEvents=[],historyOffset=0,historyHasMore=false;
 const fmtDate=stamp=>stamp?new Intl.DateTimeFormat('nb-NO',{dateStyle:'medium',timeStyle:'short'}).format(new Date(stamp)):'Ukjent tidspunkt';
-const FIELD_LABELS={brand:'Profil og farger',budget:'Budsjett',cards:'Forsidekort og objekter',slides:'Forsidescener',media:'Animation Studio',animations:'Animasjoner',investing:'Fond og aksjer'};
+const FIELD_LABELS={brand:'Profil og farger',budget:'Budsjett',cards:'Forsidekort og objekter',slides:'Forsidescener',media:'Animation Studio',animations:'Animasjoner',investing:'Fond og aksjer',catalog:'Funksjoner og nyheter'};
 function changesBetween(a,b){
  const result=[];
  function walk(before,after,path='',depth=0){
@@ -135,6 +137,14 @@ function normalize(data){
  title:clamp(budget.title||'Ditt budsjett.',90),subtitle:clamp(budget.subtitle||'Din økonomiske kontroll.',120),
  quickTitle:clamp(budget.quickTitle||'Tre steg til økonomisk oversikt',100)},
  investing:{title:clamp(src.investing?.title||'Fond og aksjer – forstå risiko og muligheter',110)},
+ catalog:{
+  headline:clamp(src.catalog?.headline||catalogNewsDefaults.headline,100),
+  news:(Array.isArray(src.catalog?.news)?src.catalog.news:[]).slice(0,12).map((x,i)=>({
+   id:clamp(x.id,50)||'nyhet-'+i,title:clamp(x.title,110),summary:clamp(x.summary,500),
+   route:RELEASE_ROUTES.has(x.route)?x.route:'topp',
+   date:/^\\d{4}-\\d{2}-\\d{2}$/.test(x.date||'')?x.date:'2026-10-25'
+  }))
+ },
  cards:{order:cardOrder,appearance:Object.fromEntries(CARD_IDS.map(id=>{
  const appearance=cards.appearance?.[id]||{};
  return [id,{title:clamp(appearance.title,85),description:clamp(appearance.description,200),
@@ -271,6 +281,28 @@ function renderSlides(){
   body.append(heading,shownLabel,title,desc);outer.append(body,tools);wrap.append(outer);
  }
 }
+function renderCatalog(){
+ const root=$('catalog-news-editor');if(!root)return;
+ root.replaceChildren();
+ for(const item of draft.catalog.news){
+  const outer=create('div',undefined,'admin-item catalog-news-item'),main=create('div',undefined,'admin-item-main');
+  const title=create('input');title.type='text';title.maxLength=110;title.value=item.title;title.placeholder='Nyhetens tittel';
+  title.setAttribute('aria-label','Tittel for nyhet');title.oninput=()=>item.title=title.value;
+  const detail=create('textarea');detail.maxLength=500;detail.rows=3;detail.value=item.summary;detail.placeholder='Hva er nytt og hvordan bruker man funksjonen?';
+  detail.setAttribute('aria-label','Beskrivelse av nyhet');detail.oninput=()=>item.summary=detail.value;
+  const route=create('select');route.setAttribute('aria-label','Tilknyttet funksjon');
+  for(const [id,name] of Object.entries({topp:'Forside',sjekk:'Boliglån',billan:'Billån',forbrukslan:'Forbrukslån',banker:'Banker',budsjett:'Budsjett',kvitteringer:'Kvitteringer',sparing:'Sparing',investering:'Investering',valutakompass:'Valuta',boligverdi:'Boligverdi',utleieanalyse:'Utleie',akademi:'Akademiet',guider:'Guider'})){
+   const option=create('option',name);option.value=id;route.append(option);
+  }
+  route.value=item.route;route.onchange=()=>item.route=route.value;
+  const date=create('input');date.type='date';date.value=item.date;date.setAttribute('aria-label','Publiseringsdato');
+  date.onchange=()=>item.date=date.value;
+  const remove=create('button','Slett nyhet','admin-secondary');remove.type='button';remove.onclick=()=>{
+   draft.catalog.news=draft.catalog.news.filter(entry=>entry!==item);renderCatalog();refreshDashboard();
+  };
+  main.append(title,detail,route,date,remove);outer.append(main);root.append(outer);
+ }
+}
 function render(){
  for(const key of ['autoplay','valuation','rental','receipts'])$('motion-'+key).checked=draft.animations[key];
  $('site-name').value=draft.brand.name;
@@ -285,7 +317,7 @@ function render(){
  $('invest-title').value=draft.investing.title;
  $('site-logo-preview').hidden=!draft.brand.logoUrl;
  if(draft.brand.logoUrl)$('site-logo-preview').src=draft.brand.logoUrl;
- renderSort('budget');renderSort('cards');renderSlides();window.lanesjekkAnimationStudio?.render();
+ renderSort('budget');renderSort('cards');renderSlides();renderCatalog();if($('catalog-headline'))$('catalog-headline').value=draft.catalog.headline;window.lanesjekkAnimationStudio?.render();
 }
 function gather(){
  for(const key of ['autoplay','valuation','rental','receipts'])draft.animations[key]=$('motion-'+key).checked;
@@ -294,6 +326,7 @@ function gather(){
  draft.brand.tagline=clamp($('site-tagline').value,130);
  draft.brand.accent=$('site-color').value;
  draft.brand.theme=$('site-theme').value;
+ if($('catalog-headline'))draft.catalog.headline=clamp($('catalog-headline').value,100)||catalogNewsDefaults.headline;
  draft.brand.heroVisual=$('site-hero-visual').checked;
  draft.brand.heroMotion=$('site-hero-motion').checked;
  draft.budget.title=clamp($('budget-title').value,90);
@@ -445,6 +478,11 @@ function boot(){
  });
  $('admin-preview').addEventListener('click',()=>{void openFullPreview()});
  $('preview-fullscreen').addEventListener('click',()=>{void openFullPreview()});
+ $('catalog-add-news')?.addEventListener('click',()=>{
+  if(!ready||!draft||draft.catalog.news.length>=12){msg('Maks 12 nyheter per publisering.',true);return}
+  draft.catalog.news.unshift({id:'nyhet-'+crypto.randomUUID(),title:'Ny funksjon',summary:'Beskriv hva brukeren kan gjøre og hvordan funksjonen brukes.',route:'topp',date:new Date().toISOString().slice(0,10)});
+  renderCatalog();refreshDashboard();
+ });
  $('media-preview-page').addEventListener('click',()=>{
   const routes={home:'topp',loans:'sjekk',budget:'budsjett',receipts:'kvitteringer',valuation:'boligverdi',rental:'utleieanalyse',savings:'sparing',investing:'investering',carloan:'billan',academy:'akademi',currency:'valutakompass'};
   void openFullPreview(routes[$('media-target').value]||'topp');
@@ -467,11 +505,11 @@ function boot(){
  const labels={
  'admin-panel-brand':'Design, logo og farger','admin-panel-budget':'Budsjett og beregning','admin-panel-cards':'Objekter og forsidekort',
  'admin-panel-slides':'Forsidescener','admin-panel-motion':'Animasjoner','animation-studio-panel':'Animation Studio',
- 'admin-panel-invest':'Fond og aksjer','admin-panel-history':'Publiseringslogg'
+ 'admin-panel-invest':'Fond og aksjer','admin-panel-history':'Publiseringslogg','admin-panel-catalog':'Funksjoner og nyheter'
  };
- const panelPreviews={'admin-panel-brand':'topp','admin-panel-budget':'budsjett','admin-panel-cards':'topp','admin-panel-slides':'topp','admin-panel-motion':'boligverdi','animation-studio-panel':'topp','admin-panel-invest':'investering','admin-panel-history':'topp'};
+ const panelPreviews={'admin-panel-brand':'topp','admin-panel-budget':'budsjett','admin-panel-cards':'topp','admin-panel-slides':'topp','admin-panel-motion':'boligverdi','animation-studio-panel':'topp','admin-panel-invest':'investering','admin-panel-history':'topp','admin-panel-catalog':'topp'};
  const mediaRoutes={home:'topp',loans:'sjekk',budget:'budsjett',receipts:'kvitteringer',valuation:'boligverdi',rental:'utleieanalyse',savings:'sparing',investing:'investering',carloan:'billan',academy:'akademi',currency:'valutakompass'};
- const panelHelp={'admin-panel-brand':'Logo, farger og visningsmodus.','admin-panel-budget':'Flytt budsjettseksjoner og kontroller synlighet.','admin-panel-cards':'Rediger hvert kort og objekt, inkludert ikon, tekst og synlighet.','admin-panel-slides':'Tilpass rekkefølge og tekst på forsiden.','admin-panel-motion':'Velg hvilke animasjoner som vises.','animation-studio-panel':'Velg modul og videofiler, og forhåndsvis resultatet.','admin-panel-invest':'Investeringsoversikt og overskrift.','admin-panel-history':'Se tidspunkt, endringer og gjenopprett en eldre publisering.'};
+ const panelHelp={'admin-panel-brand':'Logo, farger og visningsmodus.','admin-panel-budget':'Flytt budsjettseksjoner og kontroller synlighet.','admin-panel-cards':'Rediger hvert kort og objekt, inkludert ikon, tekst og synlighet.','admin-panel-slides':'Tilpass rekkefølge og tekst på forsiden.','admin-panel-motion':'Velg hvilke animasjoner som vises.','animation-studio-panel':'Velg modul og videofiler, og forhåndsvis resultatet.','admin-panel-invest':'Investeringsoversikt og overskrift.','admin-panel-history':'Se tidspunkt, endringer og gjenopprett en eldre publisering.','admin-panel-catalog':'Administrer nyheter i funksjonsoversikten. Funksjonene og forklaringene vises i en egen dialog.'};
  let panelTransition=false,previewSelection='topp';
  function showPreviewSection(section){
   const selector=$('preview-inline-section'),frame=$('admin-frame');
