@@ -52,7 +52,7 @@
     mobileTrigger?.focus();
    }
   });
-  window.addEventListener('resize',()=>{if(window.innerWidth>960)closeMobile()});
+  window.addEventListener('resize',()=>{if(window.innerWidth>1140)closeMobile()});
   syncMobile();
  });
 })();
