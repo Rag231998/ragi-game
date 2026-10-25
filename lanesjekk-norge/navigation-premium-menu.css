@@ -1,0 +1,26 @@
+/* Categorised navigation: progressive enhancement of native details/summary. */
+.site-header .portal-group-nav .nav-group{position:relative}
+.site-header .portal-group-nav .nav-group>summary{border-radius:12px;cursor:pointer;padding:10px 13px;transition:background .2s,color .2s}
+.site-header .portal-group-nav .nav-group[open]>summary,.site-header .portal-group-nav .nav-group>summary:hover{background:rgba(13,142,123,.1)}
+.site-header .portal-group-nav .nav-drop{min-width:240px;padding:10px!important;border:1px solid rgba(89,126,146,.24);border-radius:18px!important;box-shadow:0 20px 55px rgba(12,39,57,.18)!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.site-header .portal-group-nav .nav-drop>a{display:block;padding:12px 14px!important;border-radius:11px;min-height:44px;line-height:1.4}
+.site-header .portal-group-nav .nav-drop>a:hover,.site-header .portal-group-nav .nav-drop>a:focus-visible{background:rgba(13,142,123,.11)}
+.mobile-menu .mobile-menu-panel{padding:16px!important;max-height:min(78dvh,780px);overflow:auto;overscroll-behavior:contain;border-radius:20px!important;box-shadow:0 24px 65px rgba(7,32,47,.21)!important}
+.mobile-menu .mobile-menu-intro{padding:8px 8px 16px;display:flex;flex-direction:column;gap:5px}
+.mobile-menu .mobile-menu-intro strong{font-size:17px;letter-spacing:-.02em}
+.mobile-menu .mobile-menu-intro small{font-size:12px;opacity:.75;line-height:1.45}
+.mobile-menu .mobile-menu-home{display:flex!important;align-items:center;justify-content:space-between;font-weight:700;border-radius:12px!important;padding:14px!important;margin-bottom:8px;background:rgba(14,143,124,.1)}
+.mobile-menu .mobile-menu-category{border-bottom:1px solid rgba(108,144,162,.18);margin:0!important;padding:0!important}
+.mobile-menu .mobile-menu-category>summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:15px 9px;min-height:48px;font-weight:700;list-style:none;gap:10px}
+.mobile-menu .mobile-menu-category>summary::-webkit-details-marker{display:none}
+.mobile-menu .mobile-menu-category>summary span{margin-left:auto;transition:transform .2s}
+.mobile-menu .mobile-menu-category[open]>summary span{transform:rotate(180deg)}
+.mobile-menu .mobile-menu-category>div{display:grid;gap:4px;padding:0 5px 12px 15px}
+.mobile-menu .mobile-menu-category>div>a{display:block;min-height:44px;padding:11px 13px!important;border-radius:11px!important;font-size:14px;line-height:1.4}
+.mobile-menu .mobile-menu-category>div>a:hover,.mobile-menu .mobile-menu-category>div>a:focus-visible{background:rgba(11,137,121,.11)}
+.mobile-menu .mobile-menu-feature{padding:15px;margin-top:16px;border-radius:16px;background:linear-gradient(135deg,rgba(8,139,121,.13),rgba(79,155,200,.11));display:flex;flex-direction:column;gap:5px}
+.mobile-menu .mobile-menu-feature>span{font-weight:800;font-size:10px;letter-spacing:.12em;color:#098777;margin-bottom:5px}
+.mobile-menu .mobile-menu-feature>a{display:flex;justify-content:space-between;gap:10px;padding:9px 5px!important;font-weight:650}
+html.cms-dark .mobile-menu .mobile-menu-feature{background:#224656;color:#eaf8ff}
+html.cms-dark .mobile-menu .mobile-menu-feature>span{color:#9de3d4}
+@media(prefers-reduced-motion:reduce){.mobile-menu .mobile-menu-category>summary span{transition:none}}
