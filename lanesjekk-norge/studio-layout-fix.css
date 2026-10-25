@@ -1,0 +1,150 @@
+/* Critical layout correction for 04 · Reklamescener: no tiny 22px editor column. */
+#admin-workspace #slide-editor {
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ gap:13px!important;
+ min-width:0!important;
+ width:100%!important;
+}
+#admin-workspace #slide-editor .admin-slide-item {
+ min-width:0!important;
+ width:100%!important;
+ box-sizing:border-box!important;
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ gap:12px!important;
+ padding:17px!important;
+ border:1px solid #d5e6e2!important;
+ border-radius:15px!important;
+ background:#fbfefd!important;
+}
+#admin-workspace #slide-editor .admin-slide-heading {
+ display:flex!important;flex-direction:row!important;
+ flex-wrap:wrap;justify-content:space-between!important;align-items:center!important;
+ gap:9px!important;
+ padding-bottom:11px!important;border-bottom:1px solid #e0eeea!important;
+}
+#admin-workspace #slide-editor .admin-slide-heading>strong {
+ min-width:0!important;font-size:14px!important;
+ font-weight:850!important;color:#204855!important;
+ overflow-wrap:normal!important;word-break:normal!important;
+}
+#admin-workspace #slide-editor .admin-slide-tools{
+ display:flex!important;flex-direction:row!important;gap:6px!important;
+ width:auto!important;flex:0 0 auto!important;
+}
+#admin-workspace #slide-editor .admin-slide-tools>button {
+ min-width:37px!important;width:37px!important;height:36px!important;
+ min-height:36px!important;margin:0!important;padding:0!important;
+ font-size:16px!important;flex:0 0 37px!important;
+}
+#admin-workspace #slide-editor .admin-slide-visibility{
+ display:flex!important;align-items:center!important;flex-wrap:wrap!important;
+ gap:10px!important;min-width:0!important;padding:11px 12px!important;
+ border:1px solid #dcebe8!important;border-radius:11px!important;
+ background:#f0f8f5!important;
+}
+#admin-workspace #slide-editor .admin-slide-visibility>span{
+ flex:1 1 155px!important;font-size:12px!important;
+ font-weight:780!important;color:#254d55!important;
+ word-break:normal!important;
+}
+#admin-workspace #slide-editor .admin-slide-visibility>small{
+ flex:1 0 100%!important;
+ font-size:11px!important;line-height:1.5!important;color:#638078!important;
+ padding-left:0!important;white-space:normal!important;
+}
+#admin-workspace #slide-editor .admin-slide-fields{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ gap:12px!important;min-width:0!important;
+}
+#admin-workspace #slide-editor .admin-slide-field{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ gap:7px!important;min-width:0!important;
+ font-size:11px!important;font-weight:750!important;color:#496976!important;
+}
+#admin-workspace #slide-editor .admin-slide-field>input,
+#admin-workspace #slide-editor .admin-slide-field>textarea{
+ box-sizing:border-box!important;display:block!important;
+ min-width:0!important;width:100%!important;
+ border:1px solid #c9ded9!important;border-radius:10px!important;
+ background:#fff!important;color:#173f49!important;
+ padding:11px 12px!important;
+ font:inherit!important;font-size:13px!important;
+ line-height:1.5!important;
+ word-break:normal!important;
+ resize:vertical!important;
+}
+#admin-workspace #slide-editor .admin-slide-field>textarea{
+ min-height:90px!important;
+}
+#admin-workspace #slide-editor .admin-slide-field :is(input,textarea):focus-visible{
+ outline:3px solid #7bcfb8!important;outline-offset:2px!important;
+}
+#admin-workspace .admin-dashboard-grid>.admin-editor-layout{
+ min-width:0!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ gap:18px!important;
+}
+#admin-workspace .admin-dashboard-grid .admin-edit-panel,
+#admin-workspace .admin-dashboard-grid .admin-edit-panel>details.admin-panel[open],
+#admin-workspace .admin-dashboard-grid .admin-edit-panel>details.admin-panel[open]>.admin-body{
+ min-width:0!important;
+ width:100%!important;
+ box-sizing:border-box!important;
+}
+#admin-workspace .admin-dashboard-grid .admin-preview-panel{
+ min-width:0!important;max-width:100%!important;overflow:hidden!important;
+}
+@media(min-width:1440px){
+ #admin-workspace .admin-dashboard-grid>.admin-editor-layout{
+  grid-template-columns:minmax(440px,1.05fr) minmax(390px,1fr)!important;
+  gap:16px!important;
+ }
+ #admin-workspace .admin-dashboard-grid .admin-preview-panel{
+  position:sticky!important;top:16px!important;
+  max-height:calc(100dvh - 35px)!important;overflow:auto!important;
+ }
+}
+@media(max-width:1439px){
+ #admin-workspace .admin-dashboard-grid .admin-preview-panel{
+  position:relative!important;top:0!important;max-height:none!important;
+ }
+ #admin-workspace .admin-dashboard-grid #admin-frame{
+  min-height:540px!important;height:70dvh!important;
+ }
+}
+@media(max-width:1070px){
+ #admin-workspace .admin-dashboard-grid>.admin-editor-layout{
+  grid-template-columns:minmax(0,1fr)!important
+ }
+}
+@media(max-width:600px){
+ #admin-workspace #slide-editor .admin-slide-item{padding:13px!important}
+ #admin-workspace #slide-editor .admin-slide-heading>strong{font-size:13px!important}
+ #admin-workspace #slide-editor .admin-slide-visibility{padding:9px!important}
+}
+html.studio-dark #admin-workspace #slide-editor .admin-slide-item{
+ background:#1d3846!important;border-color:#4c7480!important;
+}
+html.studio-dark #admin-workspace #slide-editor .admin-slide-heading{
+ border-color:#466776!important;
+}
+html.studio-dark #admin-workspace #slide-editor .admin-slide-heading>strong,
+html.studio-dark #admin-workspace #slide-editor .admin-slide-visibility>span,
+html.studio-dark #admin-workspace #slide-editor .admin-slide-field{
+ color:#eaf8f7!important;
+}
+html.studio-dark #admin-workspace #slide-editor .admin-slide-visibility{
+ background:#254951!important;border-color:#4b7379!important;
+}
+html.studio-dark #admin-workspace #slide-editor .admin-slide-visibility>small{
+ color:#b7d7d6!important;
+}
+html.studio-dark #admin-workspace #slide-editor .admin-slide-field>input,
+html.studio-dark #admin-workspace #slide-editor .admin-slide-field>textarea{
+ background:#102d3d!important;color:#f1fafb!important;
+ border-color:#547684!important;
+}
