@@ -63,8 +63,9 @@ test('Studio preview uses draft theme even when local visitor preference is ligh
 });
 test('Public and private theme controls are independent and CSS is present',()=>{
  const index=file('index.html'),admin=file('studio-admin.html');
- assert.match(index,/id="site-theme-picker"/);
- for(const mode of ['site','light','dark'])assert.ok(index.includes('data-public-theme="'+mode+'"'));
+ assert.match(index,/id="site-theme-quick"/);
+ assert.doesNotMatch(index,/id="site-theme-picker"/);
+ assert.match(index,/role="switch"/);
  assert.match(index,/dark-mode-complete\.css/);
  assert.match(admin,/id="admin-ui-theme"/);
  assert.match(admin,/admin-theme\.js/);
