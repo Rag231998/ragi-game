@@ -149,6 +149,7 @@ async function applyVideo(){
 function init(){
  if(!$('studio-ai-generate'))return;
  $('media-target')?.addEventListener('change',updateDestination);
+ window.addEventListener('lanesjekk-studio-media-target',updateDestination);
  $('studio-ai-topic').addEventListener('input',()=>{$('studio-ai-topic').dataset.edited='true'});
  $('studio-ai-scene').addEventListener('input',()=>{$('studio-ai-scene').dataset.edited='true'});
  $('studio-ai-generate').addEventListener('click',()=>{void createVideo()});
