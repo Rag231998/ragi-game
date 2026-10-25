@@ -7,6 +7,7 @@ test('single-row premium header at 2048px with no enormous search or theme butto
  await expect(h).toBeVisible();
  await expect(page.locator('.site-header .portal-group-nav')).toBeVisible();
  await expect(page.locator('.site-header .mobile-menu')).toBeHidden();
+ await expect(page.locator('[data-open-catalog="tools"]')).toHaveCount(0);
  const metrics=await page.evaluate(()=>{
   const rect=sel=>document.querySelector(sel).getBoundingClientRect();
   const head=rect('.site-header'),logo=rect('.site-header .portal-logo'),nav=rect('.site-header .portal-group-nav'),actions=rect('.site-header .header-actions'),search=rect('#site-search-open'),switcher=rect('#site-theme-quick');
@@ -41,7 +42,7 @@ test('iOS dark-mode switch updates the actual live theme and persists on reload'
  await expect(picker.locator('[data-public-theme="site"]')).toHaveAttribute('aria-pressed','true');
  await expect.poll(()=>page.evaluate(()=>localStorage.getItem('lanesjekk.public.theme.v1'))).toBeNull();
 });
-test('tablet and phone keep one header row with accessible search, theme, feature library and menu',async({page})=>{
+test('tablet and phone keep one header row with accessible search, dark mode and menu',async({page})=>{
  for(const width of [1440,820,540,390,360,320]){
   await page.setViewportSize({width,height:800});
   await page.goto('/#topp',{waitUntil:'domcontentloaded'});
@@ -57,7 +58,7 @@ test('tablet and phone keep one header row with accessible search, theme, featur
   await expect(page.locator('.site-header .mobile-menu')).toBeVisible();
   await expect(page.locator('#site-search-open')).toBeVisible();
   await expect(page.locator('#site-theme-quick')).toBeVisible();
-  await expect(page.locator('[data-open-catalog="tools"]')).toBeVisible();
+  await expect(page.locator('[data-open-catalog="tools"]')).toHaveCount(0);
  }
 });
 test('Studio uses native iOS switches for its visibility and animation controls',async({page})=>{
