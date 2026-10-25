@@ -44,6 +44,8 @@ function updateThemeControls(){
   quick.setAttribute('aria-checked',String(checked));
   quick.setAttribute('aria-label',checked?'Mørk modus på. Slå av mørk modus':'Mørk modus av. Slå på mørk modus');
   quick.title=checked?'Slå av mørk modus':'Slå på mørk modus';
+  const icon=document.getElementById('site-theme-icon');
+  if(icon){icon.textContent=checked?'☀':'☾';icon.title=checked?'Bytt til lys modus':'Bytt til mørk modus';}
  }
 }
 function applyTheme(siteTheme=document.documentElement.dataset.cmsTheme||'light'){
@@ -66,6 +68,8 @@ function initThemeControls(){
  // One control only. Follow the site's published/system preference by default,
  // then persist an explicit visitor choice only when the switch is activated.
  const quick=document.getElementById('site-theme-quick');
+ const icon=document.getElementById('site-theme-icon');
+ icon?.addEventListener('click',()=>quick?.click());
  quick?.addEventListener('click',()=>{
   const dark=document.documentElement.dataset.activeTheme==='dark';
   setVisitorTheme(dark?'light':'dark');
