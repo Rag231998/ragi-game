@@ -107,6 +107,7 @@ async function openFullPreview(section='topp',historyVersion=null){
   msg('Kunne ikke klargjøre forhåndsvisning: '+(e.message||e),true);return false;
  }
 }
+window.lanesjekkStudioPreviewRoute=route=>{if(ready&&authUser&&typeof route==='string')void openFullPreview(route)};
 function openPreflight(){
  if(busy||!ready)return;
  const paths=collectChanges();
@@ -317,7 +318,7 @@ function render(){
  $('invest-title').value=draft.investing.title;
  $('site-logo-preview').hidden=!draft.brand.logoUrl;
  if(draft.brand.logoUrl)$('site-logo-preview').src=draft.brand.logoUrl;
- renderSort('budget');renderSort('cards');renderSlides();renderCatalog();if($('catalog-headline'))$('catalog-headline').value=draft.catalog.headline;window.lanesjekkAnimationStudio?.render();
+ renderSort('budget');renderSort('cards');renderSlides();renderCatalog();if($('catalog-headline'))$('catalog-headline').value=draft.catalog.headline;window.lanesjekkCatalog?.setNews(draft.catalog);window.lanesjekkAnimationStudio?.render();
 }
 function gather(){
  for(const key of ['autoplay','valuation','rental','receipts'])draft.animations[key]=$('motion-'+key).checked;
@@ -478,6 +479,10 @@ function boot(){
  });
  $('admin-preview').addEventListener('click',()=>{void openFullPreview()});
  $('preview-fullscreen').addEventListener('click',()=>{void openFullPreview()});
+ $('admin-open-features')?.addEventListener('click',event=>{
+  if(!ready||!authUser){event.stopImmediatePropagation();return}
+  window.lanesjekkCatalog?.setNews(gather().catalog);
+ });
  $('catalog-add-news')?.addEventListener('click',()=>{
   if(!ready||!draft||draft.catalog.news.length>=12){msg('Maks 12 nyheter per publisering.',true);return}
   draft.catalog.news.unshift({id:'nyhet-'+crypto.randomUUID(),title:'Ny funksjon',summary:'Beskriv hva brukeren kan gjøre og hvordan funksjonen brukes.',route:'topp',date:new Date().toISOString().slice(0,10)});
