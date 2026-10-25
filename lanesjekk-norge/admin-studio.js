@@ -11,8 +11,10 @@ const SLIDE_IDS=['loan','budget','receipts','invest','property','currency'];
 const CARD_IDS=['sjekk','budsjett','kvitteringer','sparing','utleie','billan','forbrukslan','akademi','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti'];
 const CARD_NAMES={kvitteringer:'Kvitteringsstudio',utleie:'Utleieanalyse',budsjett:'Personlig budsjett',billan:'Billån',forbrukslan:'Forbrukslån',akademi:'Læringsplattform',sparing:'Sparing',sjekk:'Boliglån',banker:'Bankoversikt','offisielle-renter':'Offisielle renter',bsu:'BSU',ask:'ASK',ips:'IPS',innskuddsgaranti:'Innskuddsgaranti'};
 const CARDS_DEFAULT=['sjekk','budsjett','kvitteringer','sparing','utleie','billan','forbrukslan','akademi','banker','offisielle-renter','bsu','ask','ips','innskuddsgaranti'];
+const CARD_PREVIEW_ROUTES=Object.freeze({sjekk:'sjekk',budsjett:'budsjett',kvitteringer:'kvitteringer',sparing:'sparing',utleie:'utleieanalyse',billan:'billan',forbrukslan:'forbrukslan',akademi:'akademi',banker:'banker','offisielle-renter':'sparing',bsu:'guider',ask:'guider',ips:'guider',innskuddsgaranti:'guider'});
+const previewRouteForCard=id=>CARD_PREVIEW_ROUTES[id]||'topp';
 let db=null,authUser=null,published=null,draft=null,revision=0,ready=false,busy=false,lastPublishedAt='';
-let previewWindow=null,previewWindowReady=false,lastPreviewFingerprint='',previewSection='topp',publishEvents=[],historyOffset=0,historyHasMore=false;
+let previewWindow=null,previewWindowReady=false,lastPreviewFingerprint='',previewSection='topp',previewPayload=null,publishEvents=[],historyOffset=0,historyHasMore=false;
 const fmtDate=stamp=>stamp?new Intl.DateTimeFormat('nb-NO',{dateStyle:'medium',timeStyle:'short'}).format(new Date(stamp)):'Ukjent tidspunkt';
 const FIELD_LABELS={brand:'Profil og farger',budget:'Budsjett',cards:'Forsidekort og objekter',slides:'Forsidescener',media:'Animation Studio',animations:'Animasjoner',investing:'Fond og aksjer'};
 function changesBetween(a,b){
@@ -72,23 +74,36 @@ async function prepareAssets(){
 }
 function deliverFullPreview(){
  if(!previewWindow||previewWindow.closed||!previewWindowReady||!ready)return;
- const config=gather();
- previewWindow.postMessage({type:'lanesjekk-studio-preview-data',config,section:previewSection,version:'Utkast til versjon '+(revision+1)},location.origin);
+ const data=previewPayload;
+ const config=data?.config||gather();
+ previewWindow.postMessage({type:'lanesjekk-studio-preview-data',config,section:data?.section||previewSection,
+  version:data?.version||'Utkast til versjon '+(revision+1)},location.origin);
 }
-async function openFullPreview(section='topp'){
+async function openFullPreview(section='topp',historyVersion=null){
  if(!ready||!authUser)return false;
  previewSection=section;
- // Open synchronously on user click, before any asynchronous upload, to prevent popup blockers.
+ // Viewing archived versions must never replace the administrator's current draft.
+ const historical=historyVersion&&historyVersion.snapshot;
+ previewPayload=historical?{section,config:normalize(historyVersion.snapshot),
+  version:'Arkiv: versjon '+historyVersion.revision+' · skrivebeskyttet'}:null;
+ // A history inspection is NOT approval of the current draft.
+ if(historical)lastPreviewFingerprint='';
+ // Popup must be opened synchronously from the click event.
  const win=window.open('./studio-preview.html','lanesjekk-studio-full-preview','width=1460,height=940');
  if(!win){msg('Tillat popup-vinduer fra Lånesjekk Studio for å åpne full forhåndsvisning.',true);return false}
- if(previewWindow!==win||win.closed)previewWindowReady=false;
+ previewWindowReady=false;
  previewWindow=win;win.focus();
  try{
-  await prepareAssets();
-  lastPreviewFingerprint=JSON.stringify(gather());deliverFullPreview();
-  msg('Hele nettsiden er åpnet som et utkast i eget vindu. Kontroller menyene og sidene før du publiserer.');
+  if(!historical)await prepareAssets();
+  if(!historical)lastPreviewFingerprint=JSON.stringify(gather());
+  deliverFullPreview();
+  msg(historical?'Arkivversjon '+historyVersion.revision+' vises i eget vindu. Nåværende utkast er ikke endret.':
+   'Hele nettsiden er åpnet som et utkast i eget vindu. Kontroller menyene og sidene før du publiserer.');
   refreshDashboard();return true;
- }catch(e){lastPreviewFingerprint='';msg('Kunne ikke klargjøre forhåndsvisning: '+(e.message||e),true);return false}
+ }catch(e){
+  lastPreviewFingerprint='';
+  msg('Kunne ikke klargjøre forhåndsvisning: '+(e.message||e),true);return false;
+ }
 }
 function openPreflight(){
  if(busy||!ready)return;
@@ -184,7 +199,7 @@ function rowEl(id,type,label){
  up.title='Flytt opp';down.title='Flytt ned';
  up.addEventListener('click',()=>move(type,id,-1));
  down.addEventListener('click',()=>move(type,id,1));
- const inspect=create('button','↗');inspect.type='button';inspect.title='Åpne objektet i full forhåndsvisning';inspect.setAttribute('aria-label','Forhåndsvis '+label);inspect.addEventListener('click',()=>{void openFullPreview(type==='budget'?'budsjett':id)});actions.append(up,down,inspect);
+ const inspect=create('button','↗');inspect.type='button';inspect.title='Åpne objektet i full forhåndsvisning';inspect.setAttribute('aria-label','Forhåndsvis '+label);inspect.addEventListener('click',()=>{void openFullPreview(type==='budget'?'budsjett':previewRouteForCard(id))});actions.append(up,down,inspect);
  container.append(grip,main,actions);
  container.addEventListener('dragstart',e=>{container.classList.add('dragging');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',type+':'+id)});
  container.addEventListener('dragend',()=>container.classList.remove('dragging'));
@@ -363,10 +378,8 @@ function renderPublishEvents(){
   detailsButton.onclick=()=>{detailBox.hidden=!detailBox.hidden;detailsButton.textContent=detailBox.hidden?'Vis endringer':'Skjul endringer'};
   const previewButton=create('button','Vis denne versjonen','admin-secondary');previewButton.type='button';
   previewButton.onclick=()=>{
-   if(collectChanges().length&&!window.confirm('Erstatte det nåværende upubliserte utkastet med versjon '+event.revision+'?'))return;
-   draft=normalize(event.snapshot);render();lastPreviewFingerprint='';refreshDashboard();
-   void openFullPreview();
-   msg('Versjon '+event.revision+' er hentet som et midlertidig utkast. Ingen endringer er publisert.');
+   // Read-only history inspection. The separate restore action intentionally changes the draft.
+   void openFullPreview('topp',event);
   };
   const restore=create('button','Gjenopprett som utkast','admin-secondary');restore.type='button';
   restore.disabled=event.revision===revision;
@@ -516,7 +529,7 @@ function boot(){
      const root=item.panel==='admin-panel-budget'?'budget-sort':'card-sort';
      const target=[...$(root).children].find(el=>el.dataset.id===item.object);
      if(target){
-      showPreviewSection(item.panel==='admin-panel-budget'?'budsjett':'topp');
+      showPreviewSection(item.panel==='admin-panel-budget'?'budsjett':previewRouteForCard(item.object));
       target.scrollIntoView({behavior:'smooth',block:'center'});
       target.querySelector('input[type="text"],textarea,input[type="checkbox"]')?.focus({preventScroll:true});
      }
@@ -566,8 +579,12 @@ function boot(){
  });
  let previewRefreshTimer=null;
  function refreshMiniPreview(){
-  if(!ready||!$('admin-frame').contentWindow)return;
-  $('admin-frame').contentWindow.postMessage({type:'lanesjekk-cms-preview',config:gather()},location.origin);
+  if(!ready)return;
+  const config=gather();
+  if($('admin-frame').contentWindow)$('admin-frame').contentWindow.postMessage({type:'lanesjekk-cms-preview',config},location.origin);
+  // Full preview also follows edits, unless the user is reviewing a read-only historical version.
+  // Live updates never count as a fresh pre-publish sign-off.
+  if(!previewPayload)deliverFullPreview();
  }
  const refreshSoon=()=>{
   requestAnimationFrame(refreshDashboard);
