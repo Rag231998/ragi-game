@@ -78,6 +78,7 @@
     <button type="button" data-admin-jump="admin-panel-cards">Objekter og kort</button>
     <button type="button" data-admin-jump="admin-panel-slides">Forside</button>
     <button type="button" data-admin-jump="animation-studio-panel">Animation Studio</button>
+    <button type="button" data-admin-jump="admin-panel-catalog">Funksjoner og nyheter</button>
     <button type="button" data-admin-jump="admin-panel-invest">Investering</button>
     <button type="button" data-admin-jump="admin-panel-motion">Bevegelse</button>
     <button type="button" data-admin-jump="admin-panel-history">Versjoner og historikk</button>
@@ -118,6 +119,15 @@
   <details class="admin-panel" id="admin-panel-motion"><summary>05 · Animasjoner</summary><div class="admin-body"><p class="admin-hint">Vis og administrer automatiske produktdemoer. Besøkende kan slå av bevegelse nederst på nettsiden.</p><label class="admin-inline"><input id="motion-autoplay" type="checkbox" checked> Spill demoene automatisk</label><label class="admin-inline"><input id="motion-valuation" type="checkbox" checked> Vis demo i Boligverdi</label><label class="admin-inline"><input id="motion-rental" type="checkbox" checked> Vis demo i Utleieanalyse</label><label class="admin-inline"><input id="motion-receipts" type="checkbox" checked> Vis demo i Kvitteringsstudio</label><p class="admin-hint">Velg Publiser permanent når du er fornøyd.</p></div></details><details class="admin-panel" id="animation-studio-panel"><summary>06 · Animation Studio – videoarkiv og publisering</summary><div class="admin-body animation-studio">
 <div class="media-studio-intro"><span class="admin-eyebrow">PREMIUM MEDIA · ADMINISTRATOR</span><h2>Bytt video uten å endre kode.</h2><p>Last opp korte produktvideoer (MP4 eller WebM), velg modul, legg til forsidebilde og forhåndsvis. Ingen video publiseres før du trykker «Publiser permanent» øverst.</p></div>
 <div class="media-module-grid" id="media-module-grid" aria-label="Moduler med egne videoer"></div>
+<section class="admin-ai-video" aria-labelledby="admin-ai-video-title">
+ <div><span class="admin-eyebrow">AI VIDEO · REALISTISKE MENNESKER</span>
+ <h3 id="admin-ai-video-title">Lag reklamevideo med AI-avatar</h3>
+ <p>Lag et manus med realistiske mennesker for den valgte funksjonen. Bruk manus i HeyGen og last opp ferdig MP4 her. HeyGen installert i ChatGPT gir ikke automatisk nettstedet tilgang til HeyGen API.</p></div>
+ <div class="admin-duo"><label>Stil<select id="ai-video-style"><option value="professional">Profesjonell bankreklame</option><option value="everyday">Naturlig og folkelig</option><option value="teacher">Pedagogisk forklaring</option></select></label><label>Varighet<select id="ai-video-length"><option value="20">20 sekunder</option><option value="30">30 sekunder</option><option value="45">45 sekunder</option></select></label></div>
+ <div class="media-upload-actions"><button id="ai-video-generate" type="button" class="admin-primary">✦ Lag manus og videobrief</button><button id="ai-video-copy" type="button" class="admin-secondary" disabled>Kopier til HeyGen</button><a class="admin-secondary" href="https://www.heygen.com/" rel="noopener noreferrer" target="_blank">Åpne HeyGen ↗</a></div>
+ <label>Videobrief for realistisk AI-skuespiller<textarea id="ai-video-brief" readonly rows="9" placeholder="Velg en modul og trykk «Lag manus og videobrief»."></textarea></label>
+ <p class="admin-hint">Bruk en fiktiv voksen skuespiller og unngå å etterligne en virkelig person uten samtykke. Ingen bank, avkastning eller økonomisk gevinst skal loves.</p>
+</section>
 <label>Hvilken del av nettsiden vil du redigere?<select id="media-target" aria-label="Velg plassering for video"></select></label>
 <div class="media-setting-card">
 <strong id="media-selected-name">Forsiden</strong>
@@ -137,7 +147,14 @@
    <label>Overskrift til investeringsstudio<input id="invest-title" maxlength="110"></label>
    <p class="admin-hint">De faglige beregningene kan ikke slettes eller erstattes med fritekst fra denne portalen. Innholdet redigeres fortsatt i kildekoden for å beskytte faktagrunnlaget.</p>
   </div></details>
-  <details class="admin-panel" id="admin-panel-history"><summary>08 · Publiseringslogg og gjenoppretting</summary><div class="admin-body">
+  <details class="admin-panel" id="admin-panel-catalog"><summary>08 · Funksjonsoversikt og nyheter</summary><div class="admin-body">
+ <p class="admin-hint">Den offentlige knappen «Alle funksjoner» viser hvert verktøy med forklaring, kategorier og søk. Her administrerer du nyheter som vises under «Nytt og oppdatert». Publiser dem først når de er klare.</p>
+ <label>Overskrift for funksjonsoversikten<input id="catalog-headline" type="text" maxlength="100" placeholder="Oppdag alt du kan gjøre"></label>
+ <div id="catalog-news-editor" class="admin-sort"></div>
+ <button type="button" id="catalog-add-news" class="admin-secondary">+ Legg til nyhet</button>
+ <p class="admin-hint">Hver nyhet får tittel, beskrivelse, dato og lenke til riktig funksjon. Maks 12 per publiserte versjon. Ingen endringer publiseres uten din godkjenning.</p>
+ </div></details>
+ <details class="admin-panel" id="admin-panel-history"><summary>09 · Publiseringslogg og gjenoppretting</summary><div class="admin-body">
     <p class="admin-hint">Alle nye publiseringer loggføres automatisk med norsk dato, klokkeslett og versjonsnummer. Velg en versjon for å undersøke endringene eller hente den tilbake som et utkast. Gjenoppretting krever egen forhåndsvisning og publisering.</p>
     <div class="admin-history-toolbar"><label for="admin-history-search">Finn publisering<input id="admin-history-search" type="search" placeholder="Søk i dato, versjon eller endring"></label><button id="admin-history-refresh" type="button" class="admin-secondary">↻ Oppdater logg</button></div>
     <p id="admin-history-status" class="admin-hint" role="status">Laster historikk …</p>
@@ -164,5 +181,5 @@
   <p id="admin-preflight-status" class="admin-hint" aria-live="polite"></p>
 </dialog>
 <footer>Privat administrasjon for Lånesjekk Norge. Bare medlemmer av databasens administratorrolle kan lagre endringer. <a href="./index.html">Til offentlig nettside ↗</a></footer>
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./admin-session.js?v=2"></script><script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script><script defer src="./admin-animation-studio.js?v=7"></script><script defer src="./admin-studio.js?v=14"></script><script defer src="./admin-theme.js?v=1"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./admin-session.js?v=2"></script><script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script><script defer src="./admin-animation-studio.js?v=7"></script><script defer src="./admin-studio.js?v=15"></script><script defer src="./ai-video-brief.js?v=1"></script><script defer src="./admin-theme.js?v=1"></script>
 </body></html>
