@@ -108,6 +108,12 @@ async function openFullPreview(section='topp',historyVersion=null){
  }
 }
 window.lanesjekkStudioPreviewRoute=route=>{if(ready&&authUser&&typeof route==='string')void openFullPreview(route)};
+window.lanesjekkStudioVideoAuth=async()=>{
+ if(!ready||!authUser||await enforceSessionTimeout())throw Error('Logg inn som administrator før du genererer video.');
+ const result=await db.auth.getSession();
+ if(result.error||!result.data?.session?.access_token)throw Error('Administratorøkten er utløpt. Logg inn på nytt.');
+ return result.data.session.access_token;
+};
 function openPreflight(){
  if(busy||!ready)return;
  const paths=collectChanges();
