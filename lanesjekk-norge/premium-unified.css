@@ -38,3 +38,27 @@ html.cms-dark .portal-home .site-header{box-shadow:0 8px 25px #0003}
  #admin-workspace :is(.admin-edit-panel,.admin-preview-panel){min-width:0}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Second pass: consistent hierarchy, readable controls, responsive surfaces. */
+:root{--premium-focus:#14a78c;--premium-surface:#fff;--premium-surface-alt:#f2f8fa;--premium-text:#17334a}
+.portal-home :is(h1,h2,h3),#admin-workspace :is(h1,h2,h3){letter-spacing:-.025em;text-wrap:balance}
+.portal-home :is(p,li,small),#admin-workspace :is(p,li,small){overflow-wrap:break-word}
+.portal-home :is(.site-container,.section-inner),#admin-workspace :is(.admin-editor-layout,.admin-command-center){min-width:0}
+.portal-home :is(.card,.tool-card,.feature-card,.result-card):focus-within{box-shadow:0 14px 40px #0f46671a,0 0 0 2px #16a08540}
+.portal-home :is(input,select,textarea):disabled,#admin-workspace :is(input,select,textarea):disabled{cursor:not-allowed;opacity:.65}
+#admin-workspace .admin-panel[open]>summary{color:#0b806d}
+#admin-workspace :is(.admin-body,.admin-duo,.admin-slide-fields)>*{min-width:0}
+#admin-workspace :is(input[type=search],input[type=text],input[type=url],input[type=number],textarea):focus-visible{border-color:#159b83!important;box-shadow:0 0 0 4px #11aa9030!important}
+#admin-workspace .admin-primary:not(:disabled){box-shadow:0 7px 20px #087d7026}
+#admin-workspace .admin-primary:not(:disabled):hover{filter:brightness(1.06)}
+#admin-workspace .admin-secondary:not(:disabled):hover{box-shadow:0 4px 12px #123b5417}
+#admin-workspace .admin-section-nav>button[aria-current=page],#admin-workspace .admin-section-nav>button[data-active=true]{box-shadow:0 0 0 2px #139b813b}
+html.studio-dark #admin-workspace .admin-panel[open]>summary{color:#a0e6d5}
+@media(max-width:540px){
+ body{font-size:15px}
+ #admin-workspace :is(input,textarea,select),.portal-home :is(input,textarea,select){font-size:16px!important}
+ #admin-workspace .admin-duo{grid-template-columns:minmax(0,1fr)!important}
+ #admin-workspace .admin-action-buttons button{min-width:0}
+ #admin-workspace .admin-panel>summary{padding-block:14px!important}
+}
+@media(forced-colors:active){:where(button,a,input,select,textarea,summary):focus-visible{outline:2px solid Highlight!important}}
