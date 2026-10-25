@@ -58,7 +58,7 @@ function render(){
  $('media-file-status').textContent=item.videoUrl?'Video valgt · '+item.videoUrl.split('/').at(-1):'Ingen video valgt. Eksisterende animasjon beholdes.';
  drawPreview()
 }
-function changeSlot(id){if(!Object.hasOwn(SLOT_NAMES,id))return;active=id;render();text('Redigerer '+SLOT_NAMES[id]+'. Endringer vises offentlig først etter publisering.')}
+function changeSlot(id){if(!Object.hasOwn(SLOT_NAMES,id))return;active=id;render();window.dispatchEvent(new CustomEvent('lanesjekk-studio-media-target',{detail:{module:id}}));text('Redigerer '+SLOT_NAMES[id]+'. Endringer vises offentlig først etter publisering.')}
 async function uploadFile(file,folder){
  const ext=file.type==='video/mp4'?'mp4':file.type==='video/webm'?'webm':file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';
  const path=folder+'/media-'+crypto.randomUUID()+'.'+ext;
