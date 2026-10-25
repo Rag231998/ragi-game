@@ -1,10 +1,15 @@
 'use strict';
-// Studio-only HeyGen integration. HeyGen credentials never leave the Render backend.
+// Strictly free Studio AI video generation. Never select a paid model.
+// OpenRouter free models have limited availability; missing/free-quota failures do not trigger paid fallback.
 // Video import uses the logged-in user's RLS permissions, never a service-role key.
 const crypto=require('node:crypto');
 const SUPABASE='https://pryrgwfjniggjlrizenh.supabase.co';
 const PUBLIC_KEY='sb_publishable_nMwAplLiIZ-p9zIu8F3yPQ_-_XwiMM9';
-const MODEL='heygen-video-1',PROVIDER='https://api.heygen.com/v3/models/videos';
+const PROVIDER='https://openrouter.ai/api/v1/videos';
+const FREE_MODELS=Object.freeze(['bytedance/seedance-2.0-fast:free','bytedance/seedance-2.0:free','bytedance/seedance-1-5-pro:free']);
+const MODEL=FREE_MODELS[0];
+const FREE_COST=0;
+const inventoryCache=new Map();
 const SLOTS=new Set(['home','loans','budget','receipts','valuation','rental','savings','investing','carloan','academy','currency']);
 const rate=new Map();
 const fail=(res,status,message)=>res.status(status).json({ok:false,error:message});
@@ -61,23 +66,55 @@ function promptFor({topic,description,style,duration}){
  ].join(' ');
 }
 const safeSource=url=>{
- try{const parsed=new URL(url);return parsed.protocol==='https:'&&
-  (parsed.hostname==='resource2.heygen.ai'||parsed.hostname==='resource.heygen.ai'||
-   parsed.hostname==='resource.heygen.com'||parsed.hostname==='resource2.heygen.com')&&!parsed.username&&!parsed.password}
+ try{const u=new URL(url);return u.protocol==='https:'&&!u.username&&!u.password&&
+    u.hostname!=='localhost'&&!u.hostname.endsWith('.localhost')&&!u.hostname.endsWith('.local')&&
+    !/^(?:\d+\.){3}\d+$/.test(u.hostname)&&u.hostname.includes('.')&&u.port==='' }
  catch{return false}
 };
+const pricingIsFree=entry=>{
+ if(!entry||!FREE_MODELS.includes(entry.id)||!entry.id.endsWith(':free'))return false;
+ const skus=entry.pricing_skus;
+ if(!skus||typeof skus!=='object'||!Object.keys(skus).length)return false;
+ return Object.values(skus).every(v=>v!==null&&v!==undefined&&Number.isFinite(Number(v))&&Number(v)===FREE_COST);
+};
+async function availableModels(key){
+ const cache=inventoryCache.get(key);
+ if(cache&&Date.now()-cache.time<120000)return cache.models;
+ const {response,body}=await readApi(PROVIDER+'/models',{headers:{Authorization:'Bearer '+key}});
+ if(!response.ok)throw Error('Kunne ikke kontrollere at videomodellen er gratis. Ingen video blir bestilt.');
+ const entries=Array.isArray(body.data)?body.data:[];
+ const models=entries.filter(pricingIsFree);
+ inventoryCache.set(key,{time:Date.now(),models});
+ return models;
+}
+async function freeModel(key,duration){
+ const models=await availableModels(key);
+ return models.find(entry=>(!Array.isArray(entry.supported_durations)||entry.supported_durations.includes(duration))&&
+  (!Array.isArray(entry.supported_aspect_ratios)||entry.supported_aspect_ratios.includes('16:9'))&&
+  (!Array.isArray(entry.supported_resolutions)||entry.supported_resolutions.includes('720p')));
+}
+function responseError(message){
+ if(typeof message==='string')return cleanMessage(message);
+ if(message&&typeof message==='object')return cleanMessage(message.message||message.detail||JSON.stringify(message));
+ return 'Leverandøren kunne ikke behandle forespørselen.';
+}
 async function statusOf(videoId,key){
- const {response,body}=await readApi(PROVIDER+'/'+encodeURIComponent(videoId),{headers:{'x-api-key':key}});
- if(!response.ok)throw Error(cleanMessage(body.message||body.error||'HeyGen-status kunne ikke hentes.'));
+ const {response,body}=await readApi(PROVIDER+'/'+encodeURIComponent(videoId),{headers:{Authorization:'Bearer '+key}});
+ if(!response.ok)throw Error(responseError(body.error||body.message||'Videostatus kunne ikke hentes.'));
  const data=body.data&&typeof body.data==='object'?body.data:body;
- return {status:data.status||'pending',url:data.video_url||'',message:cleanMessage(data.failure_message||data.message||'')};
+ const status=data.status==='succeeded'?'completed':data.status||'pending';
+ const url=Array.isArray(data.unsigned_urls)?data.unsigned_urls[0]:'';
+ return {status,url:safeSource(url)?url:'',cost:data.usage?.cost,message:responseError(data.error||'')};
 }
 module.exports=async(req,res)=>{
  const method=req.method||'GET',action=req.query?.action||'ready';
  if(method==='POST'){
   const origin=req.headers.origin;
   const host=req.headers.host;
-  if(origin&&(!host||new URL(origin).host!==host))return fail(res,403,'Kryssdomeneforespørsler er ikke tillatt.');
+  if(origin){
+   try{if(!host||new URL(origin).host!==host)return fail(res,403,'Kryssdomeneforespørsler er ikke tillatt.')}
+   catch{return fail(res,403,'Ugyldig opprinnelse.')}
+  }
   if(!String(req.headers['content-type']||'').startsWith('application/json'))return fail(res,415,'Bruk JSON.');
  }
  if((action==='ready'||action==='status')&&method!=='GET')return fail(res,405,'Ugyldig metode.');
@@ -86,40 +123,54 @@ module.exports=async(req,res)=>{
  try{
   const user=await authorized(req);
   if(!user)return fail(res,403,'Administratorinnlogging er nødvendig.');
-  const key=process.env.HEYGEN_API_KEY;
-  if(action==='ready')return res.status(200).json({ok:true,configured:Boolean(key),model:MODEL,maxDuration:15});
-  if(!key)return fail(res,503,'Direkte generering er ikke aktivert. Legg HEYGEN_API_KEY i Render Environment.');
+  const key=process.env.OPENROUTER_API_KEY;
+  if(action==='ready'){
+   if(!key)return res.status(200).json({ok:true,configured:false,freeOnly:true,model:MODEL,
+    setup:'Opprett en gratis OpenRouter API-nøkkel uten betalingskort og legg OPENROUTER_API_KEY i Render Environment.'});
+   try{
+    const model=await freeModel(key,10);
+    return res.status(200).json({ok:true,configured:Boolean(model),freeOnly:true,model:model?.id||null,maxDuration:15,
+     setup:model?null:'Ingen verifisert gratis videomodell er tilgjengelig akkurat nå. Ingen betalt modell blir brukt.'});
+   }catch(e){
+    return res.status(200).json({ok:true,configured:false,freeOnly:true,model:null,setup:e.message});
+   }
+  }
+  if(!key)return fail(res,503,'AI-video krever en gratis OPENROUTER_API_KEY. Betalte modeller brukes aldri.');
   if(action==='create'){
    const body=await readJson(req);
    if(!SLOTS.has(body.module)||![5,10,15].includes(body.duration)||!['professional','everyday','teacher'].includes(body.style)||
       typeof body.topic!=='string'||body.topic.trim().length<3||body.topic.length>95||
       typeof body.description!=='string'||body.description.trim().length<12||body.description.length>1100) return fail(res,400,'Velg modul, varighet, stil og en tydelig videobeskrivelse.');
    const now=Date.now(),last=rate.get(user.id)||0;
-   if(now-last<60000)return fail(res,429,'En video er allerede startet. Kontroller statusen før du starter flere betalte genereringer.');
+   if(now-last<60000)return fail(res,429,'Det er allerede startet en videobestilling. Kontroller status før du prøver igjen.');
+   const selected=await freeModel(key,body.duration);
+   if(!selected)return fail(res,503,'Ingen bekreftet gratis videomodell støtter denne varigheten akkurat nå. Ingen kostnad påløper.');
    rate.set(user.id,now);
-   const payload={model:MODEL,mode:'text_to_video',prompt:promptFor(body),duration:body.duration,resolution:'768p',aspect_ratio:'16:9'};
+   const payload={model:selected.id,prompt:promptFor(body),duration:body.duration,resolution:'720p',aspect_ratio:'16:9',generate_audio:false};
    const {response,body:result}=await readApi(PROVIDER,{
-    method:'POST',headers:{'x-api-key':key,'Content-Type':'application/json','Idempotency-Key':crypto.randomUUID()},
+    method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json','Idempotency-Key':crypto.randomUUID()},
     body:JSON.stringify(payload)
    });
    if(!response.ok){
     rate.delete(user.id);
-    return fail(res,response.status===429?429:502,cleanMessage(result.message||result.error||'HeyGen avviste forespørselen.'));
+    return fail(res,response.status===429?429:502,responseError(result.message||result.error||'Gratis videotjeneste er utilgjengelig eller kvoten er brukt opp.'));
    }
    const data=result.data||result;
    const id=data.id||data.video_id;
-   if(!videoID(id))return fail(res,502,'HeyGen returnerte ikke en gyldig video-ID.');
-   return res.status(202).json({ok:true,videoId:id,signature:signature(user.id,id,key),status:'pending',module:body.module});
+   if(!videoID(id))return fail(res,502,'Leverandøren returnerte ikke en gyldig video-ID.');
+   return res.status(202).json({ok:true,videoId:id,signature:signature(user.id,id,key),status:'pending',module:body.module,costNok:0,model:selected.id});
   }
   const body=action==='import'?await readJson(req):req.query;
   const id=body.videoId,sign=body.signature;
   if(!videoID(id)||!isOwner(user.id,id,sign,key))return fail(res,403,'Videoen tilhører ikke denne Studio-økten.');
   const current=await statusOf(id,key);
-  if(action==='status')return res.status(200).json({ok:true,status:current.status,videoUrl:current.status==='completed'&&safeSource(current.url)?current.url:null,message:current.message});
-  if(current.status!=='completed'||!safeSource(current.url))return fail(res,409,'Videoen er ikke ferdig, eller HeyGen har ikke levert en gyldig fil.');
-  // Only import from trusted HeyGen CDN. Redirects are disabled to prevent SSRF.
-  const file=await fetch(current.url,{redirect:'error',signal:AbortSignal.timeout(45000)});
-  if(!file.ok)return fail(res,502,'HeyGen-videofilen kunne ikke hentes.');
+  if(action==='status')return res.status(200).json({ok:true,status:current.status,videoUrl:current.status==='completed'?current.url:null,message:current.message});
+  if(current.status!=='completed')return fail(res,409,'Videoen er ikke ferdig.');
+  // Import only from OpenRouter authenticated content endpoint; never fetch user-supplied URLs.
+  const file=await fetch(PROVIDER+'/'+encodeURIComponent(id)+'/content',{
+   headers:{Authorization:'Bearer '+key},redirect:'error',signal:AbortSignal.timeout(45000)
+  });
+  if(!file.ok)return fail(res,502,'Den gratis genererte videofilen kunne ikke hentes.');
   const length=Number(file.headers.get('content-length'))||0,MAX=40*1024*1024;
   if(length>MAX)return fail(res,413,'Filen overstiger 40 MB. Bruk kortere klipp eller lavere oppløsning.');
   let size=0;const chunks=[];
@@ -145,3 +196,5 @@ module.exports=async(req,res)=>{
 };
 module.exports.promptFor=promptFor;
 module.exports.safeSource=safeSource;
+module.exports.pricingIsFree=pricingIsFree;
+module.exports.FREE_MODELS=FREE_MODELS;
