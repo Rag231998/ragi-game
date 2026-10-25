@@ -83,7 +83,9 @@ test('One unmistakable moon icon is paired with the actual dark mode switch',asy
    return{distance:t.left-(m.left+m.width),overlap:Math.abs((m.top+m.height/2)-(t.top+t.height/2))}
   });
   expect(positions.distance).toBeGreaterThanOrEqual(0);
-  expect(positions.distance).toBeLessThan(60);
+  // Desktop deliberately has a visible "Mørk modus" label between the moon
+  // and the toggle. Tablet/phone hide that text and keep the icons together.
+  expect(positions.distance).toBeLessThan(width>1240?125:55);
   expect(positions.overlap).toBeLessThan(15);
  }
  await page.locator('#site-theme-quick').click();
