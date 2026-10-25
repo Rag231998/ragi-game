@@ -187,7 +187,8 @@ test('Account recovery has compact layout and explains email quota instead of co
  assert.match(page,/admin-studio\.css\?v=9/);
  assert.match(css,/\.password-page-wrap\{max-width:430px/);
  assert.match(css,/\.password-page \.password-page-titleline h1\{font-size:22px/);
- assert.match(file('studio-admin.html'),/href="\.\/admin-password\.html" target="_blank" rel="noopener noreferrer" aria-label="Endre passord/);
+ assert.match(file('studio-admin.html'),/id="admin-account-menu-toggle"/);
+ assert.match(file('studio-admin.html'),/href="\.\/admin-password\.html" target="_blank" rel="noopener noreferrer">[^<]*Endre passord/);
 });
 
 test('Free administrator recovery code path is server-side and one-time only',()=>{
