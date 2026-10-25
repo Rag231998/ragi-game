@@ -148,3 +148,22 @@ html.studio-dark #admin-workspace #slide-editor .admin-slide-field>textarea{
  background:#102d3d!important;color:#f1fafb!important;
  border-color:#547684!important;
 }
+
+/* Visible connection diagnostics without a giant colored AI warning card. */
+#admin-workspace .studio-ai-status-wrap{
+ display:flex!important;align-items:center!important;gap:10px!important;
+ flex-wrap:wrap!important;min-width:0!important;
+}
+#admin-workspace .studio-ai-status-wrap .studio-ai-status{
+ flex:1 1 225px!important;min-width:0!important;
+ padding:11px 12px!important;font-size:12px!important;
+ overflow-wrap:anywhere!important;
+}
+#admin-workspace #studio-ai-recheck{
+ flex:0 0 auto!important;min-height:42px!important;
+ max-width:100%!important;padding:9px 13px!important;
+ border-radius:10px!important;font-size:11px!important;
+}
+@media(max-width:620px){
+ #admin-workspace #studio-ai-recheck{width:100%!important}
+}
