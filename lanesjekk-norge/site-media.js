@@ -68,9 +68,21 @@ function build(name,slot){
  copy.append(eyebrow,title);
  if(slot.description){const p=document.createElement('p');p.textContent=slot.description;copy.append(p)}
  section.append(display,copy);
- if(config.position==='after')root.insertAdjacentElement('afterend',section);
- else if(config.fallback){const item=document.querySelector(config.fallback);if(item)item.insertAdjacentElement('afterend',section);else root.prepend(section)}
- else{const header=root.querySelector(':scope > .tool-hero, :scope > .budget-hero, :scope > .receipt-hero');if(header)header.insertAdjacentElement('afterend',section);else root.prepend(section)}
+ const placement=['before','after-intro','bottom'].includes(slot.placement)?slot.placement:'after-intro';
+ section.dataset.mediaPlacement=placement;
+ if(name==='home'){
+  // Showcase is the home hero itself. Keep its video adjacent to the hero.
+  root.insertAdjacentElement(placement==='before'?'beforebegin':'afterend',section);
+ }else if(placement==='before'){root.prepend(section)}
+ else if(placement==='bottom'){root.append(section)}
+ else if(config.fallback){
+  const item=document.querySelector(config.fallback);
+  if(item&&root.contains(item))item.insertAdjacentElement('afterend',section);
+  else root.prepend(section);
+ }else{
+  const header=root.querySelector(':scope > .tool-hero, :scope > .budget-hero, :scope > .receipt-hero');
+  if(header)header.insertAdjacentElement('afterend',section);else root.prepend(section);
+ }
  return {element:section,video,visible:false};
 }
 function apply(media,animations){
