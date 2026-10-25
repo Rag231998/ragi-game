@@ -2,21 +2,21 @@ const {test,expect}=require('@playwright/test');
 
 test('Public light, dark and site default can be selected without reloading the calculator',async({page})=>{
  await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
- const theme=page.locator('#site-theme-picker');
- await theme.locator('summary').click();
- await theme.locator('[data-public-theme="dark"]').click();
+ const theme=page.locator('#site-theme-quick');
+ await expect(theme).toHaveAttribute('role','switch');
+ await expect.poll(()=>page.evaluate(()=>typeof window.lanesjekkTheme?.setChoice)).toBe('function');
+ await page.evaluate(()=>window.lanesjekkTheme.setChoice('light'));
+ await theme.click();
  await expect(page.locator('html')).toHaveClass(/cms-dark/);
  await expect(page.locator('#budsjett')).toBeVisible();
  await expect(page.locator('html')).toHaveAttribute('data-active-theme','dark');
  await page.reload({waitUntil:'domcontentloaded'});
  await expect(page.locator('html')).toHaveClass(/cms-dark/);
- await theme.locator('summary').click();
- await theme.locator('[data-public-theme="light"]').click();
+ await theme.click();
  await expect(page.locator('html')).not.toHaveClass(/cms-dark/);
  await expect(page.locator('html')).toHaveAttribute('data-active-theme','light');
- await theme.locator('summary').click();
- await theme.locator('[data-public-theme="site"]').click();
- await expect(page.locator('[data-public-theme="site"]')).toHaveAttribute('aria-pressed','true');
+ await page.evaluate(()=>window.lanesjekkTheme.setChoice('site'));
+ await expect(page.locator('#site-theme-picker')).toHaveCount(0);
  await expect.poll(()=>page.evaluate(()=>localStorage.getItem('lanesjekk.public.theme.v1'))).toBeNull();
 });
 
