@@ -4,6 +4,9 @@ on:
     branches: [main]
     paths:
       - 'lanesjekk-norge/tests/navigation-search.spec.cjs'
+      - 'lanesjekk-norge/tests/navigation-engine.test.cjs'
+      - 'lanesjekk-norge/navigation-ux.css'
+      - 'lanesjekk-norge/nav-fix.js'
       - 'lanesjekk-norge/site-search.js'
       - 'lanesjekk-norge/site-search.css'
       - 'lanesjekk-norge/contrast-fix.css'
