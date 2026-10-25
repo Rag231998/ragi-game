@@ -40,6 +40,7 @@ function render(){
  $('media-enabled').checked=item.enabled!==false;
  $('media-loop').checked=item.loop!==false;
  $('media-fit').value=item.fit||'cover';
+ $('media-placement').value=item.placement||'after-intro';
  $('media-title').value=item.title||'';
  $('media-description').value=item.description||'';
  $('media-video').value='';$('media-poster').value='';
@@ -144,7 +145,7 @@ function init(options){
  const select=$('media-target');select.replaceChildren();
  for(const [id,label] of Object.entries(SLOT_NAMES)){const option=document.createElement('option');option.value=id;option.textContent=label;select.append(option)}
  select.addEventListener('change',()=>changeSlot(select.value));
- for(const [id,key,type] of [['media-enabled','enabled','checked'],['media-loop','loop','checked'],['media-fit','fit','value'],['media-title','title','value'],['media-description','description','value']]){
+ for(const [id,key,type] of [['media-enabled','enabled','checked'],['media-loop','loop','checked'],['media-fit','fit','value'],['media-placement','placement','value'],['media-title','title','value'],['media-description','description','value']]){
   $(id).addEventListener(type==='checked'?'change':'input',()=>{
    if(!fields())return;
    fields()[key]=$(id)[type];
