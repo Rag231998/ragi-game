@@ -74,3 +74,30 @@ test('Public and private theme controls are independent and CSS is present',()=>
  assert.match(adminCSS,/html\.studio-dark/);
  for(const mode of ['auto','light','dark'])assert.ok(file('admin-theme.js').includes(mode));
 });
+
+test('Studio and password page use the same persisted appearance choice',()=>{
+ const html=file('studio-admin.html'),reset=file('admin-password.html');
+ for(const text of [html,reset]){
+  assert.match(text,/id="admin-ui-theme"/);
+  assert.match(text,/admin-theme\\.js/);
+  assert.match(text,/admin-dark-mode\\.css/);
+ }
+ const store=new Map([['lanesjekk.studio.theme.v1','dark']]);
+ const callbacks={};
+ const media={matches:false,addEventListener(name,cb){callbacks['media_'+name]=cb}};
+ const select={value:'',addEventListener(name,cb){callbacks['select_'+name]=cb}};
+ const htmlClasses=classes(),htmlRoot={classList:htmlClasses,dataset:{},style:{colorScheme:''}};
+ const doc={getElementById:id=>id==='admin-ui-theme'?select:null,
+  documentElement:htmlRoot,querySelector:()=>({setAttribute(){}})};
+ const window={matchMedia:()=>media,localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)}};
+ vm.runInNewContext(file('admin-theme.js'),{document:doc,window});
+ assert.equal(select.value,'dark');
+ assert.equal(htmlClasses.contains('studio-dark'),true);
+ select.value='light';callbacks.select_change();
+ assert.equal(htmlClasses.contains('studio-dark'),false);
+ assert.equal(store.get('lanesjekk.studio.theme.v1'),'light');
+ media.matches=true;select.value='auto';callbacks.select_change();
+ assert.equal(htmlClasses.contains('studio-dark'),true);
+ media.matches=false;callbacks.media_change();
+ assert.equal(htmlClasses.contains('studio-dark'),false);
+});
