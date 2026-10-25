@@ -31,6 +31,7 @@ function matches(text){return items.map(item=>({item,score:score(item,text)})).f
 function draw(){
  const q=$('site-search-input')?.value||'',container=$('site-search-results');if(!container)return;
  last=matches(q);active=last.length?0:-1;container.replaceChildren();
+ const field=$('site-search-input');if(field){if(active>=0)field.setAttribute('aria-activedescendant','site-search-option-0');else field.removeAttribute('aria-activedescendant');}
  if(!last.length){const p=document.createElement('p');p.className='site-search-empty';p.textContent='Ingen treff. Prøv «boligverdi», «sparing» eller «billån».';container.append(p);return}
  last.forEach((item,i)=>{
   const b=document.createElement('button');b.type='button';b.className='site-search-result';b.id='site-search-option-'+i;
@@ -44,14 +45,15 @@ function draw(){
 }
 function select(n){
  active=Math.max(0,Math.min(last.length-1,n));$('site-search-results').querySelectorAll('button').forEach((button,i)=>{button.setAttribute('aria-selected',String(i===active));button.classList.toggle('is-active',i===active)});
+ const field=$('site-search-input');if(active>=0)field?.setAttribute('aria-activedescendant','site-search-option-'+active);else field?.removeAttribute('aria-activedescendant');
  $('site-search-option-'+active)?.scrollIntoView({block:'nearest'});
 }
 function go(item){close();if(typeof window.lanesjekkNavigate==='function')window.lanesjekkNavigate(item[2]);else location.hash=item[2]}
-function show(){const box=$('site-search');if(!box)return;previousFocus=document.activeElement;document.querySelectorAll('.site-header details.nav-group[open]').forEach(el=>el.open=false);box.hidden=false;open=true;draw();$('site-search-input')?.focus();document.body.classList.add('search-open')}
+function show(){const box=$('site-search');if(!box)return;previousFocus=document.activeElement;document.querySelectorAll('.site-header details.nav-group[open]').forEach(el=>el.open=false);box.hidden=false;open=true;const field=$('site-search-input');if(field)field.value='';draw();field?.focus();document.body.classList.add('search-open')}
 function close(){const box=$('site-search');if(!box||!open)return;box.hidden=true;open=false;document.body.classList.remove('search-open');if(previousFocus?.isConnected)previousFocus.focus();previousFocus=null}
 function init(){
  const btn=$('site-search-open');if(!btn)return;
- btn.addEventListener('click',show);$('site-search-close').addEventListener('click',close);
+ btn.addEventListener('click',show);$('viewbar-switch')?.addEventListener('click',show);$('site-search-close').addEventListener('click',close);
  $('site-search-input').addEventListener('input',draw);
  $('site-search-input').addEventListener('keydown',event=>{
   if(event.key==='ArrowDown'||event.key==='ArrowUp'){event.preventDefault();if(last.length)select((active+(event.key==='ArrowDown'?1:-1)+last.length)%last.length)}
@@ -60,7 +62,7 @@ function init(){
  $('site-search').addEventListener('pointerdown',event=>{if(event.target===$('site-search'))close()});
  document.addEventListener('keydown',event=>{
   if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='k'){event.preventDefault();open?close():show()}
-  else if(event.key==='/'&&!event.ctrlKey&&!event.metaKey&&!event.altKey&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)){event.preventDefault();show()}
+  else if(event.key==='/'&&!event.ctrlKey&&!event.metaKey&&!event.altKey&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&!document.activeElement?.isContentEditable){event.preventDefault();show()}
   else if(event.key==='Escape'&&open){event.preventDefault();close()}
   else if(event.key==='Tab'&&open){const box=$('site-search');const focusable=[...box.querySelectorAll('button:not(:disabled),input:not(:disabled),a[href]')].filter(el=>el.getClientRects().length);if(!focusable.length)return;const first=focusable[0],lastItem=focusable[focusable.length-1];if(event.shiftKey&&(document.activeElement===first||!box.contains(document.activeElement))){event.preventDefault();lastItem.focus()}else if(!event.shiftKey&&(document.activeElement===lastItem||!box.contains(document.activeElement))){event.preventDefault();first.focus()}}
  });
