@@ -231,9 +231,12 @@ test('Studio category navigation, full-window preview, time-limited login and me
  for(const id of ['admin-object-search','preview-inline-section','preview-inline-fullscreen','admin-preflight','admin-history','admin-remember']){
   assert.ok(html.includes('id="'+id+'"'),id+' missing');
  }
- for(const id of ['admin-panel-brand','admin-panel-budget','admin-panel-cards','admin-panel-history','animation-studio-panel']){
+ for(const id of ['admin-panel-brand','admin-panel-budget','admin-panel-cards','animation-studio-panel']){
   assert.ok(html.includes('data-admin-jump="'+id+'"'),id+' not navigable');
  }
+ assert.match(html,/id="admin-panel-history"/);
+ assert.doesNotMatch(html,/data-admin-jump="admin-panel-history"/);
+ assert.match(file('studio-control-center.js'),/studio-publish-history/);
  assert.match(client,/function activatePanel\(/);
  assert.match(client,/function showPreviewSection\(/);
  assert.match(client,/event\.key==='ArrowDown'/);
@@ -248,4 +251,25 @@ test('Studio category navigation, full-window preview, time-limited login and me
   assert.doesNotThrow(()=>new vm.Script(file(name),{filename:name}));
  }
  assert.doesNotThrow(()=>new vm.Script(auth,{filename:'admin-session.js'}));
+});
+
+test('Public navigation and professional footer have one dark switch, real routes, and trustworthy disclaimers',()=>{
+ const site=file('index.html'),css=file('site-footer.css');
+ assert.equal((site.match(/id="site-theme-quick"/g)||[]).length,1);
+ assert.doesNotMatch(site,/id="site-theme-picker"/);
+ assert.match(site,/role="switch" aria-checked="false"/);
+ assert.match(site,/public-nav-polish\.css/);
+ assert.match(site,/site-footer\.css/);
+ assert.equal((site.match(/<footer\b/g)||[]).length,1);
+ assert.match(site,/class="foot site-footer"/);
+ assert.equal((site.match(/id="site-live-status"/g)||[]).length,1);
+ assert.match(site,/veiledende og utgjør ikke personlig finansrådgivning/);
+ assert.doesNotMatch(site,/· Lær mer: <a/);
+ for(const route of ['topp','sjekk','billan','forbrukslan','budsjett','kvitteringer','sparing','investering','boligverdi','utleieanalyse','valutakompass','akademi','guider','banker']){
+  assert.match(site,new RegExp('href="#'+route+'"'),route+' missing in site links');
+  assert.ok(site.includes('id="'+route+'"')||route==='forbrukslan',route+' missing as route');
+ }
+ assert.match(css,/grid-template-columns/);
+ assert.match(css,/focus-visible/);
+ assert.match(file('single-page.js'),/id==='forbrukslan'\?'billan':id/);
 });
