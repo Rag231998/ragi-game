@@ -170,6 +170,16 @@ function apply(input){
  if(heading)heading.textContent=cfg.investing.title;
  window.dispatchEvent(new CustomEvent('lanesjekk-cms-rendered',{detail:{preview}}));
 }
+let lastPublicRevision=0;
+function liveStatus(state){
+ const node=document.getElementById('site-live-status');
+ if(!node)return;
+ node.dataset.state=state;
+ const labels={connected:'Nettstedet synkroniseres automatisk',connecting:'Kobler til nettstedsoppdateringer …',fallback:'Oppdateringer kontrolleres automatisk',offline:'Kunne ikke kontrollere oppdateringer'};
+ node.textContent=labels[state]||labels.fallback;
+ // This describes CMS publishing, NEVER bank quotes, property prices or external data.
+ node.title='Status gjelder publiserte nettstedinnstillinger, ikke finansielle data eller boligpriser.';
+}
 async function init(){
  initThemeControls();
  apply(defaults);
@@ -179,13 +189,41 @@ async function init(){
    preview=true;apply(e.data.config);
   });
  }
+ if(!window.supabase){liveStatus('offline');console.warn('Supabase unavailable');return}
+ const db=window.supabase.createClient(base,key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+ let refreshing=false;
+ async function refreshPublished(){
+  if(refreshing)return;
+  refreshing=true;
+  try{
+   const {data,error}=await db.from('lanesjekk_site_config').select('config,revision').eq('id',1).maybeSingle();
+   if(error)throw error;
+   if(data?.config){
+    const incoming=Number(data.revision)||0;
+    const changed=!published||incoming!==lastPublicRevision;
+    published=data.config;lastPublicRevision=incoming;
+    if(changed&&!preview){
+     apply(published);
+     window.dispatchEvent(new CustomEvent('lanesjekk-published-updated',{detail:{revision:incoming}}));
+    }
+   }
+  }catch(error){liveStatus('offline');console.warn('Published configuration refresh failed',error)}
+  finally{refreshing=false}
+ }
+ await refreshPublished();
+ liveStatus('connecting');
+ // Database publication delivers a low-latency signal. We fetch again under RLS, rather than trusting raw payloads.
  try{
-  if(!window.supabase)throw Error('Supabase unavailable');
-  const db=window.supabase.createClient(base,key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
-  const {data,error}=await db.from('lanesjekk_site_config').select('config,revision').eq('id',1).maybeSingle();
-  if(error)throw error;
-  if(data?.config){published=data.config;if(!preview)apply(published)}
- }catch(e){console.warn('Published design settings could not be loaded; using default',e)}
+  db.channel('lanesjekk-public-config-updates')
+   .on('postgres_changes',{event:'UPDATE',schema:'public',table:'lanesjekk_site_config',filter:'id=eq.1'},()=>{void refreshPublished()})
+   .subscribe(status=>{
+    if(status==='SUBSCRIBED')liveStatus('connected');
+    else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED')liveStatus('fallback');
+   });
+ }catch(error){liveStatus('fallback');console.warn('Realtime subscription unavailable',error)}
+ // Loss of WebSocket connection must never leave old settings indefinitely.
+ setInterval(()=>{if(!document.hidden)void refreshPublished()},60000);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)void refreshPublished()});
 }
 darkPreference?.addEventListener?.('change',()=>applyTheme());
 window.lanesjekkCms={apply,configClean,defaults,getPublished:()=>published};
