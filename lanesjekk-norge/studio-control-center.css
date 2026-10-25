@@ -206,3 +206,33 @@ html.studio-dark #admin-workspace .studio-ai-result p{color:#e2f4f0!important}
 #admin-workspace .studio-ai-manual .admin-ai-video{margin:0;border:0;border-top:1px solid #d7e8e2;border-radius:0;box-shadow:none}
 html.studio-dark #admin-workspace .studio-ai-manual{background:#1d394a!important;border-color:#52747e!important}
 html.studio-dark #admin-workspace .studio-ai-manual>summary{color:#e9f6f7!important}
+
+/* The publication log exists exactly once as a full-width section, not a menu entry. */
+#admin-workspace>.studio-publish-history{
+ display:block!important;max-width:1720px;margin:0 auto 25px!important;
+ border:1px solid #d2e6e2!important;border-radius:18px!important;
+ background:#fff!important;box-shadow:0 12px 38px #103d4f12!important;
+ overflow:hidden
+}
+#admin-workspace>.studio-publish-history>summary{
+ position:relative;display:flex;align-items:center;min-height:69px;
+ padding:17px 22px!important;font-size:17px!important;
+ font-weight:880!important;letter-spacing:-.025em;color:#183f4e!important;
+ background:linear-gradient(115deg,#f8fdfb,#ecf8f3)!important;
+ border-bottom:1px solid #d7e8e3;cursor:pointer
+}
+#admin-workspace>.studio-publish-history>.admin-body{padding:19px 23px!important}
+#admin-workspace>.studio-publish-history>.admin-body .admin-history-feed{
+ max-height:650px;overflow-y:auto
+}
+html.studio-dark #admin-workspace>.studio-publish-history{
+ background:#193543!important;border-color:#52747f!important
+}
+html.studio-dark #admin-workspace>.studio-publish-history>summary{
+ background:linear-gradient(115deg,#214351,#22483f)!important;
+ border-color:#507980!important;color:#edfcf8!important
+}
+@media(max-width:680px){
+ #admin-workspace>.studio-publish-history>.admin-body{padding:13px!important}
+ #admin-workspace>.studio-publish-history>summary{padding:13px 15px!important;font-size:15px!important}
+}
