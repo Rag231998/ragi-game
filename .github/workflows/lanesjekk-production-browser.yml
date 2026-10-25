@@ -28,7 +28,7 @@ jobs:
       - name: Verify public Render production over HTTPS in desktop and Android browsers
         env:
           LANESJEKK_BASE_URL: https://lanesjekk-norge.onrender.com
-        run: npx playwright test animation-studio-workspace.spec.cjs navigation-search.spec.cjs dark-mode.spec.cjs feature-catalog.spec.cjs receipts.spec.cjs currency.spec.cjs header-layout.spec.cjs --project=desktop-chromium --project=android-chromium --workers=2 --retries=0
+        run: npx playwright test animation-studio-workspace.spec.cjs navigation-search.spec.cjs dark-mode.spec.cjs feature-catalog.spec.cjs receipts.spec.cjs currency.spec.cjs header-layout.spec.cjs footer-navigation.spec.cjs --project=desktop-chromium --project=android-chromium --workers=2 --retries=0
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
