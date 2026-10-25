@@ -87,11 +87,18 @@ async function availableModels(key){
  inventoryCache.set(key,{time:Date.now(),models});
  return models;
 }
+const preferredResolution=entry=>{
+ const resolutions=entry.supported_resolutions;
+ if(!Array.isArray(resolutions)||resolutions.includes('720p'))return '720p';
+ return resolutions.includes('480p')?'480p':null;
+};
+const supportsFreeDuration=(entry,duration)=>
+ (!Array.isArray(entry.supported_durations)||entry.supported_durations.includes(duration))&&
+ (!Array.isArray(entry.supported_aspect_ratios)||entry.supported_aspect_ratios.includes('16:9'))&&
+ Boolean(preferredResolution(entry));
 async function freeModel(key,duration){
  const models=await availableModels(key);
- return models.find(entry=>(!Array.isArray(entry.supported_durations)||entry.supported_durations.includes(duration))&&
-  (!Array.isArray(entry.supported_aspect_ratios)||entry.supported_aspect_ratios.includes('16:9'))&&
-  (!Array.isArray(entry.supported_resolutions)||entry.supported_resolutions.includes('720p')));
+ return models.find(entry=>supportsFreeDuration(entry,duration));
 }
 function responseError(message){
  if(typeof message==='string')return cleanMessage(message);
@@ -128,9 +135,12 @@ module.exports=async(req,res)=>{
    if(!key)return res.status(200).json({ok:true,configured:false,freeOnly:true,model:MODEL,
     setup:'Opprett en gratis OpenRouter API-nøkkel uten betalingskort og legg OPENROUTER_API_KEY i Render Environment.'});
    try{
-    const model=await freeModel(key,10);
-    return res.status(200).json({ok:true,configured:Boolean(model),freeOnly:true,model:model?.id||null,maxDuration:15,
-     setup:model?null:'Ingen verifisert gratis videomodell er tilgjengelig akkurat nå. Ingen betalt modell blir brukt.'});
+    const models=await availableModels(key);
+    const durations=[5,10,15].filter(duration=>models.some(model=>supportsFreeDuration(model,duration)));
+    return res.status(200).json({ok:true,configured:durations.length>0,freeOnly:true,
+     model:models.find(model=>durations.some(duration=>supportsFreeDuration(model,duration)))?.id||null,
+     durations,maxDuration:15,
+     setup:durations.length?null:'Ingen verifisert gratis videomodell er tilgjengelig akkurat nå. Ingen betalt modell blir brukt.'});
    }catch(e){
     return res.status(200).json({ok:true,configured:false,freeOnly:true,model:null,setup:e.message});
    }
@@ -146,7 +156,7 @@ module.exports=async(req,res)=>{
    const selected=await freeModel(key,body.duration);
    if(!selected)return fail(res,503,'Ingen bekreftet gratis videomodell støtter denne varigheten akkurat nå. Ingen kostnad påløper.');
    rate.set(user.id,now);
-   const payload={model:selected.id,prompt:promptFor(body),duration:body.duration,resolution:'720p',aspect_ratio:'16:9',generate_audio:false};
+   const payload={model:selected.id,prompt:promptFor(body),duration:body.duration,resolution:preferredResolution(selected),aspect_ratio:'16:9',generate_audio:false};
    const {response,body:result}=await readApi(PROVIDER,{
     method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json','Idempotency-Key':crypto.randomUUID()},
     body:JSON.stringify(payload)
