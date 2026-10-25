@@ -2,6 +2,7 @@
 (()=>{'use strict';
  const KEY='lanesjekk.studio.theme.v1',choices=['auto','light','dark'];
  const dropdown=document.getElementById('admin-ui-theme');
+ const quick=document.getElementById('admin-theme-quick');
  if(!dropdown)return;
  const darkSystem=window.matchMedia?.('(prefers-color-scheme: dark)');
  let choice='auto';
@@ -10,10 +11,12 @@
  function apply(){
   const dark=choice==='dark'||(choice==='auto'&&Boolean(darkSystem?.matches));
   document.documentElement.classList.toggle('studio-dark',dark);
+  if(quick){quick.textContent=dark?'☀':'☾';quick.title=dark?'Bytt til lys modus':'Bytt til mørk modus';quick.setAttribute('aria-label',quick.title)}
   document.documentElement.dataset.studioTheme=choice;
   document.documentElement.style.colorScheme=dark?'dark':'light';
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content',dark?'#0c1b29':'#101f31');
  }
+ quick?.addEventListener('click',()=>{choice=document.documentElement.classList.contains('studio-dark')?'light':'dark';dropdown.value=choice;try{window.localStorage.setItem(KEY,choice)}catch{}apply()});
  dropdown.addEventListener('change',()=>{
   if(!choices.includes(dropdown.value))return;
   choice=dropdown.value;
