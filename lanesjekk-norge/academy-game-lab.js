@@ -20,14 +20,16 @@ function render(){
 $('academy-game-select').addEventListener('change',e=>{topic=e.target.value;index=0;score=0;$('academy-game-score').textContent='0 poeng';render()});
 $('academy-game-next').onclick=()=>{if(index===questions[topic].length-1){index=0;score=0;$('academy-game-score').textContent='0 poeng'}else index++;render();};render();
 const zone=$('academy-live-zone'),status=$('academy-live-status'),value=$('academy-live-value');
+let requestCounter=0;
 async function refresh(){
+ const requestId=++requestCounter;
  status.textContent='Henter publiserte strømpriser …';value.textContent='–';
  try{
  const response=await fetch('/api/market-feed?zone='+encodeURIComponent(zone.value),{cache:'no-store'});
- const data=await response.json();if(!response.ok||!data.ok)throw Error(data.error||'Datakilden svarte ikke.');
+ const data=await response.json();if(requestId!==requestCounter)return;if(!response.ok||!data.ok)throw Error(data.error||'Datakilden svarte ikke.');
  value.textContent=new Intl.NumberFormat('nb-NO',{minimumFractionDigits:2,maximumFractionDigits:2}).format(data.price)+' kr/kWh';
- status.textContent='Spotpris ekskl. mva., avgifter, påslag og nettleie · '+data.zone+' · '+data.hour+' · oppdatert '+data.fetchedAt;
- }catch(err){status.textContent='Strømprisen er ikke tilgjengelig nå. '+(err.message||'Prøv igjen senere.');}
+ status.textContent='Spotpris uten mva., strømstøtte, påslag og nettleie · '+data.zone+' · '+data.hour+' · oppdatert '+data.fetchedAt;
+ }catch(err){if(requestId!==requestCounter)return;status.textContent='Strømprisen er ikke tilgjengelig nå. '+(err.message||'Prøv igjen senere.');}
 }
 $('academy-live-refresh').onclick=refresh;zone.onchange=refresh;void refresh();
 })();
