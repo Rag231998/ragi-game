@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=path.join(__dirname,'..'),file=name=>fs.readFileSync(path.join(root,name),'utf8');
-test('The public feature catalog lists real route destinations with useful descriptions',()=>{
+test('The Studio feature catalog lists real route destinations with useful descriptions',()=>{
  const window={},document={addEventListener(){}};
  vm.runInNewContext(file('site-feature-catalog.js'),{window,document},{filename:'site-feature-catalog.js'});
  const features=window.lanesjekkCatalog.getFeatures();
@@ -15,14 +15,19 @@ test('The public feature catalog lists real route destinations with useful descr
  for(const category of ['Lån','Økonomi','Sparing','Eiendom','Læring'])assert.ok(features.some(x=>x.cat===category));
 });
 test('Feature guide is an accessible dedicated window for desktop and mobile, including dark mode',()=>{
- const html=file('index.html'),css=file('site-feature-catalog.css');
- for(const id of ['site-feature-dialog','site-feature-input','site-feature-tabs','site-feature-list','site-feature-detail','site-feature-close','site-feature-news-count']){
-  assert.ok(html.includes('id="'+id+'"'),id+' missing');
+ const html=file('studio-admin.html'),publicHtml=file('index.html'),
+  css=file('site-feature-catalog.css'),studioCSS=file('admin-feature-catalog.css');
+ for(const id of ['site-feature-dialog','site-feature-input','site-feature-tabs','site-feature-list','site-feature-detail','site-feature-close','admin-open-features']){
+  assert.ok(html.includes('id="'+id+'"'),id+' missing from Studio');
  }
  assert.match(html,/<dialog id="site-feature-dialog"/);
  assert.match(html,/data-open-catalog="tools"/);
+ assert.match(html,/site-feature-catalog\.js/);
+ assert.ok(!publicHtml.includes('id="site-feature-dialog"'));
+ assert.ok(!publicHtml.includes('data-open-catalog='));
+ assert.ok(!publicHtml.includes('site-feature-catalog\.js'));
  assert.match(css,/#site-feature-dialog::backdrop/);
- assert.match(css,/html\.cms-dark #site-feature-dialog/);
+ assert.match(studioCSS,/html\.studio-dark #site-feature-dialog/);
  assert.match(css,/@media\(max-width:670px\)/);
 });
 test('The publishing CMS supports safe editor-controlled release notes with restricted routes',()=>{
@@ -34,6 +39,8 @@ test('The publishing CMS supports safe editor-controlled release notes with rest
  assert.match(admin,/draft\.catalog\.news/);
  assert.match(html,/id="admin-panel-catalog"/);
  assert.match(html,/id="catalog-news-editor"/);
+ assert.match(admin,/lanesjekkStudioPreviewRoute/);
+ assert.match(admin,/lanesjekkCatalog\?\.setNews\(draft\.catalog\)/);
 });
 test('AI presenter brief is generated per tool but a video is only published through the uploader',()=>{
  const handlers={};const elements={
@@ -61,5 +68,6 @@ test('Realtime CMS subscription validates RLS via re-fetch and retains reconnect
  assert.match(client,/setInterval\(\(\)=>\{if\(!document\.hidden\)void refreshPublished\(\)\},60000\)/);
  assert.match(client,/visibilitychange/);
  assert.match(index,/id="site-live-status"/);
- assert.match(index,/site-feature-catalog\.js/);
+ assert.doesNotMatch(index,/site-feature-catalog\.js/);
+ assert.match(file('studio-admin.html'),/site-feature-catalog\.js/);
 });
