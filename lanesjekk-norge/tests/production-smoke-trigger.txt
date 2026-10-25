@@ -1,0 +1,4 @@
+Production browser verification requested 2026-10-25.
+Verified deployed Git commit: a3252e168ddfa1a1dcd17a1f9971b3fe06eb7b02.
+Render deploy ID: dep-dbelecnavr4c73baao40.
+Purpose: Execute Playwright against production HTTPS, not local files.
