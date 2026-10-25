@@ -196,3 +196,13 @@ html.studio-dark #admin-workspace .studio-ai-result p{color:#e2f4f0!important}
  #admin-workspace .studio-ai-action-row button{width:100%}
 }
 @media(prefers-reduced-motion:reduce){#admin-workspace .studio-ai-loader{animation:none}}
+
+/* Advanced external-video workflow is optional, not another large visible form. */
+#admin-workspace .studio-ai-manual{margin:12px 0 18px;border:1px solid #cbe1dc;border-radius:13px;overflow:hidden;background:#f8fcfb}
+#admin-workspace .studio-ai-manual>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:45px;padding:13px 16px;cursor:pointer;list-style:none;color:#345f65;font-size:12px;font-weight:810}
+#admin-workspace .studio-ai-manual>summary::-webkit-details-marker{display:none}
+#admin-workspace .studio-ai-manual>summary:after{content:"⌄";font-size:17px}
+#admin-workspace .studio-ai-manual[open]>summary:after{transform:rotate(180deg)}
+#admin-workspace .studio-ai-manual .admin-ai-video{margin:0;border:0;border-top:1px solid #d7e8e2;border-radius:0;box-shadow:none}
+html.studio-dark #admin-workspace .studio-ai-manual{background:#1d394a!important;border-color:#52747e!important}
+html.studio-dark #admin-workspace .studio-ai-manual>summary{color:#e9f6f7!important}
