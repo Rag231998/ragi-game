@@ -36,10 +36,8 @@ test('iOS dark-mode switch updates the actual live theme and persists on reload'
  await sw.click();
  await expect(sw).toHaveAttribute('aria-checked','false');
  await expect(page.locator('html')).not.toHaveClass(/cms-dark/);
- const picker=page.locator('#site-theme-picker');
- await picker.locator('summary').click();
- await picker.locator('[data-public-theme="site"]').click();
- await expect(picker.locator('[data-public-theme="site"]')).toHaveAttribute('aria-pressed','true');
+ await expect(page.locator('#site-theme-picker')).toHaveCount(0);
+ await page.evaluate(()=>window.lanesjekkTheme.setChoice('site'));
  await expect.poll(()=>page.evaluate(()=>localStorage.getItem('lanesjekk.public.theme.v1'))).toBeNull();
 });
 test('tablet and phone keep one header row with accessible search, dark mode and menu',async({page})=>{
@@ -55,7 +53,7 @@ test('tablet and phone keep one header row with accessible search, dark mode and
   expect(info.height,'height at '+width).toBeLessThan(97);
   expect(info.overflow,'overflow at '+width).toBeLessThanOrEqual(2);
   expect(Math.abs(info.logo.y-info.actions.y),'wrapping at '+width).toBeLessThan(24);
-  await expect(page.locator('.site-header .mobile-menu')).toBeVisible();
+  if(width>1140){await expect(page.locator('.site-header .portal-group-nav')).toBeVisible();await expect(page.locator('.site-header .mobile-menu')).toBeHidden()}else await expect(page.locator('.site-header .mobile-menu')).toBeVisible();
   await expect(page.locator('#site-search-open')).toBeVisible();
   await expect(page.locator('#site-theme-quick')).toBeVisible();
   await expect(page.locator('[data-open-catalog="tools"]')).toHaveCount(0);
