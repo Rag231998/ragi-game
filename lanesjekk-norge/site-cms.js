@@ -49,6 +49,13 @@ function updateThemeControls(){
  });
  const hint=document.getElementById('site-theme-current');
  if(hint)hint.textContent='Viser '+(mode==='dark'?'mørkt':'lyst')+' tema';
+ const quick=document.getElementById('site-theme-quick');
+ if(quick){
+  const checked=mode==='dark';
+  quick.setAttribute('aria-checked',String(checked));
+  quick.setAttribute('aria-label',checked?'Mørk modus på. Slå av mørk modus':'Mørk modus av. Slå på mørk modus');
+  quick.title=checked?'Slå av mørk modus':'Slå på mørk modus';
+ }
 }
 function applyTheme(siteTheme=document.documentElement.dataset.cmsTheme||'light'){
  const normalized=['dark','auto','light'].includes(siteTheme)?siteTheme:'light';
@@ -70,6 +77,11 @@ function initThemeControls(){
  const picker=document.getElementById('site-theme-picker');
  if(!picker)return;
  picker.querySelectorAll('[data-public-theme]').forEach(button=>button.addEventListener('click',()=>setVisitorTheme(button.dataset.publicTheme)));
+ const quick=document.getElementById('site-theme-quick');
+ quick?.addEventListener('click',()=>{
+  const dark=document.documentElement.dataset.activeTheme==='dark';
+  setVisitorTheme(dark?'light':'dark');
+ });
  document.addEventListener('pointerdown',event=>{if(picker.open&&!picker.contains(event.target))picker.open=false});
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&picker.open){picker.open=false;picker.querySelector('summary')?.focus()}});
  updateThemeControls();
