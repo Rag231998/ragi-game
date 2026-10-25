@@ -375,7 +375,23 @@ function renderPublishEvents(){
   if(paths)renderChangeDetails(detailBox,paths,50);
   else detailBox.append(create('p','Last eldre versjoner for å vise en fullstendig sammenligning.'));
   const detailsButton=create('button','Vis endringer','admin-secondary');detailsButton.type='button';
-  detailsButton.onclick=()=>{detailBox.hidden=!detailBox.hidden;detailsButton.textContent=detailBox.hidden?'Vis endringer':'Skjul endringer'};
+  detailsButton.onclick=()=>{
+   detailBox.hidden=!detailBox.hidden;
+   detailsButton.textContent=detailBox.hidden?'Vis endringer':'Skjul endringer';
+   if(!detailBox.hidden){
+    if(paths)renderChangeDetails(detailBox,paths,50);
+    else detailBox.replaceChildren(create('p','Last eldre versjoner for å se endringer fra forrige publisering.'));
+   }
+  };
+  const compareButton=create('button','Sammenlign med aktiv','admin-secondary');compareButton.type='button';
+  compareButton.disabled=event.revision===revision;
+  compareButton.title='Vis alle forskjeller mellom denne arkivversjonen og dagens publiserte versjon';
+  compareButton.onclick=()=>{
+   const difference=changesBetween(normalize(event.snapshot),published);
+   renderChangeDetails(detailBox,difference,80);
+   detailBox.hidden=false;
+   detailsButton.textContent='Vis endringer';
+  };
   const previewButton=create('button','Vis denne versjonen','admin-secondary');previewButton.type='button';
   previewButton.onclick=()=>{
    // Read-only history inspection. The separate restore action intentionally changes the draft.
@@ -389,7 +405,7 @@ function renderPublishEvents(){
    document.getElementById('admin-workspace').scrollIntoView({behavior:'smooth'});
    msg('Gjenoppretting: versjon '+event.revision+' er lagt i utkastet. Bruk «Forhåndsvis hele nettsiden» og «Kontroller og publiser» for å gjøre den aktiv.');
   };
-  actions.append(detailsButton,previewButton,restore);
+  actions.append(detailsButton,compareButton,previewButton,restore);
   row.append(actions,detailBox);root.append(row);
  }
 }
@@ -507,6 +523,16 @@ function boot(){
   for(const id of CARD_IDS)items.push({label:(CARD_NAMES[id]||id)+' · rediger objekt, ikon og synlighet',panel:'admin-panel-cards',object:id});
   for(const [id,label] of Object.entries({home:'Forside',loans:'Boliglån',budget:'Budsjett',receipts:'Kvitteringsstudio',valuation:'Boligverdi',rental:'Utleieanalyse',savings:'Sparing',investing:'Fond og aksjer',carloan:'Billån',academy:'Læringsplattform',currency:'Valutakompass'}))items.push({label:label+' · video / animasjon',panel:'animation-studio-panel',media:id});
   for(const [id,label] of Object.entries(SECTION_NAMES))items.push({label:label+' · budsjett',panel:'admin-panel-budget',object:id});
+  // Index real Studio controls, including fields that are added later, rather than only top-level panels.
+  for(const panel of adminPanels){
+   for(const labelEl of panel.querySelectorAll('.admin-body label')){
+    const field=labelEl.querySelector('input:not([type="file"]),select,textarea');
+    if(!field||field.disabled)continue;
+    const title=labelEl.textContent.replace(/\s+/g,' ').trim().slice(0,110);
+    if(title.length<3)continue;
+    items.push({label:(labels[panel.id]||'Innstilling')+' · '+title,panel:panel.id,field});
+   }
+  }
   return items;
  };
  function searchObjects(){
@@ -533,6 +559,9 @@ function boot(){
       target.scrollIntoView({behavior:'smooth',block:'center'});
       target.querySelector('input[type="text"],textarea,input[type="checkbox"]')?.focus({preventScroll:true});
      }
+    }else if(item.field){
+     item.field.scrollIntoView({behavior:'smooth',block:'center'});
+     item.field.focus({preventScroll:true});
     }else $(item.panel).scrollIntoView({behavior:'smooth',block:'start'});
     resultRoot.hidden=true;queryInput.value='';queryInput.setAttribute('aria-expanded','false');
    });
