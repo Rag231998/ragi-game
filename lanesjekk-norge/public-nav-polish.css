@@ -1,0 +1,148 @@
+/* Lånesjekk public navigation 2026: one line, one appearance switch.
+   Compact top-level categories; descriptions live inside dropdowns, not the header. */
+.portal-home .site-header{
+ background:rgba(255,255,255,.97)!important;
+ border-bottom:1px solid #dfece9!important;
+ backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)
+}
+.portal-home .site-header .site-container.nav-row{
+ width:min(1780px,calc(100% - 48px))!important;min-height:76px!important;
+ gap:clamp(8px,1.3vw,20px)!important
+}
+.portal-home .site-header .portal-logo{
+ max-width:228px!important;font-weight:890!important;
+ letter-spacing:-.025em!important
+}
+.portal-home .site-header .portal-group-nav{
+ display:flex!important;gap:clamp(2px,.55vw,10px)!important;
+ justify-content:center!important;flex:1 1 auto!important;min-width:0!important
+}
+.portal-home .site-header .portal-group-nav>a,
+.portal-home .site-header .portal-group-nav>.nav-group>summary{
+ display:inline-flex!important;align-items:center!important;gap:6px!important;
+ color:#294a59!important;background:transparent!important;
+ border:1px solid transparent!important;
+ border-radius:11px!important;
+ padding:10px clamp(7px,.76vw,13px)!important;
+ font-size:12px!important;font-weight:760!important;
+ line-height:1.3!important;white-space:nowrap;
+ transition:background .16s,border-color .16s,color .16s
+}
+.portal-home .site-header .portal-group-nav>.nav-group>summary>span{
+ color:#64847d!important;font-size:13px;transition:transform .18s
+}
+.portal-home .site-header .portal-group-nav>.nav-group[open]>summary>span{transform:rotate(180deg)}
+.portal-home .site-header .portal-group-nav>.nav-group>summary:hover,
+.portal-home .site-header .portal-group-nav>a:hover,
+.portal-home .site-header .portal-group-nav>.nav-group[open]>summary{
+ background:#ebf7f2!important;color:#096b5a!important;border-color:#cde8df!important
+}
+.portal-home .site-header .portal-group-nav>.nav-group{position:relative!important;isolation:isolate}
+.portal-home .site-header .portal-group-nav>.nav-group>.nav-drop{
+ top:calc(100% + 11px)!important;left:0!important;right:auto!important;
+ width:max-content!important;min-width:225px!important;max-width:360px!important;
+ padding:9px!important;border:1px solid #d2e6e1!important;
+ border-radius:16px!important;background:#fff!important;
+ box-shadow:0 24px 56px #082d3940!important;z-index:610!important
+}
+.portal-home .site-header .portal-group-nav>.nav-group>.nav-drop a{
+ display:flex!important;align-items:center;min-height:45px!important;
+ padding:11px 14px!important;border-radius:10px!important;
+ font-size:12px!important;font-weight:720!important;white-space:normal
+}
+.portal-home .site-header .portal-group-nav>.nav-group>.nav-drop a:hover{
+ background:#e9f8f1!important;color:#076f5b!important
+}
+.portal-home .site-header .header-actions{gap:10px!important;align-items:center!important}
+.portal-home .site-header .header-actions>.site-search-open{
+ border-radius:12px!important;border:1px solid #ccdfdc!important;
+ background:#f4f9f8!important;width:44px!important;height:44px!important;
+ min-width:44px!important;min-height:44px!important;
+ box-shadow:none!important;color:#2b5660!important
+}
+.portal-home .site-header .header-actions>.site-search-open:hover{
+ border-color:#87c8b5!important;background:#e6f6ef!important
+}
+.portal-home .site-header .header-quick-theme{
+ display:flex!important;gap:11px!important;padding:6px 10px 6px 12px!important;
+ height:44px!important;border-radius:13px!important;
+ background:#f4f9f8!important;border:1px solid #cbdedb!important
+}
+.portal-home .site-header .header-theme-label{
+ display:block!important;font-weight:760!important;font-size:11px!important
+}
+.portal-home .site-header .ios-theme-switch{flex:0 0 45px!important}
+.portal-home .site-header .ios-theme-switch:active .ios-theme-thumb{box-shadow:0 2px 9px #0b263a48!important}
+.portal-home .site-header .site-theme-picker{display:none!important}
+.portal-home .site-header .header-actions>.nav-cta{display:none!important}
+@media(min-width:1141px){
+ .portal-home .site-header .portal-group-nav{display:flex!important}
+ .portal-home .site-header .header-actions .mobile-menu{display:none!important}
+}
+@media(max-width:1280px) and (min-width:1141px){
+ .portal-home .site-header .site-container.nav-row{width:calc(100% - 32px)!important;gap:8px!important}
+ .portal-home .site-header .portal-logo{max-width:205px!important;font-size:12px!important}
+ .portal-home .site-header .portal-logo small{font-size:8px!important}
+ .portal-home .site-header .portal-group-nav>a,
+ .portal-home .site-header .portal-group-nav>.nav-group>summary{font-size:11px!important;padding:9px 7px!important}
+ .portal-home .site-header .header-theme-label{display:none!important}
+ .portal-home .site-header .header-quick-theme{padding:6px 8px!important}
+}
+@media(max-width:1140px){
+ .portal-home .site-header .portal-group-nav{display:none!important}
+ .portal-home .site-header .header-actions .mobile-menu{display:block!important}
+ .portal-home .site-header .site-container.nav-row{width:calc(100% - 32px)!important;gap:10px!important;min-height:69px!important}
+ .portal-home .site-header .mobile-menu>summary{min-width:73px!important;height:44px!important;font-size:12px!important;white-space:nowrap!important}
+}
+@media(max-width:700px){
+ .portal-home .site-header .site-container.nav-row{width:calc(100% - 24px)!important;min-height:65px!important}
+ .portal-home .site-header .header-theme-label{display:none!important}
+ .portal-home .site-header .header-quick-theme{padding:5px 8px!important;height:42px!important}
+ .portal-home .site-header .header-actions{gap:6px!important}
+ .portal-home .site-header .header-actions>.site-search-open{width:42px!important;min-width:42px!important;height:42px!important;min-height:42px!important}
+ .portal-home .site-header .header-actions .mobile-menu>summary{
+  min-width:68px!important;min-height:42px!important;height:42px!important;
+  width:auto!important;font-size:11px!important;padding:8px 10px!important
+ }
+}
+@media(max-width:390px){
+ .portal-home .site-header .site-container.nav-row{width:calc(100% - 16px)!important;gap:4px!important}
+ .portal-home .site-header .portal-logo{font-size:10px!important}
+ .portal-home .site-header .logo-emblem{width:25px!important;height:29px!important;font-size:15px!important}
+ .portal-home .site-header .header-quick-theme{padding:4px!important}
+ .portal-home .site-header .header-actions>.site-search-open{width:35px!important;min-width:35px!important;height:38px!important;min-height:38px!important}
+ .portal-home .site-header .header-actions .mobile-menu>summary{
+  font-size:11px!important;min-width:55px!important;width:auto!important;
+  padding:6px 7px!important;min-height:38px!important;height:38px!important
+ }
+}
+html.cms-dark .portal-home .site-header{
+ background:rgba(15,31,44,.97)!important;border-color:#315360!important
+}
+html.cms-dark .portal-home .site-header .portal-group-nav>a,
+html.cms-dark .portal-home .site-header .portal-group-nav>.nav-group>summary{
+ color:#e5f4f5!important;background:transparent!important
+}
+html.cms-dark .portal-home .site-header .portal-group-nav>.nav-group>summary:hover,
+html.cms-dark .portal-home .site-header .portal-group-nav>.nav-group[open]>summary,
+html.cms-dark .portal-home .site-header .portal-group-nav>a:hover{
+ background:#234b4d!important;color:#edfff6!important;border-color:#4e8375!important
+}
+html.cms-dark .portal-home .site-header .portal-group-nav>.nav-group>.nav-drop{
+ background:#193541!important;color:#e5f4f5!important;border-color:#456b73!important
+}
+html.cms-dark .portal-home .site-header .portal-group-nav>.nav-group>.nav-drop a{
+ color:#e6f5f7!important
+}
+html.cms-dark .portal-home .site-header .portal-group-nav>.nav-group>.nav-drop a:hover{
+ background:#2b5953!important;color:#fff!important
+}
+html.cms-dark .portal-home .site-header .header-actions>.site-search-open{
+ background:#234455!important;color:#e3f4f7!important;border-color:#446b76!important
+}
+html.cms-dark .portal-home .site-header .header-quick-theme{
+ background:#234455!important;border-color:#446b76!important
+}
+@media(prefers-reduced-motion:reduce){
+ .portal-home .site-header .portal-group-nav>.nav-group>summary>span{transition:none!important}
+}
