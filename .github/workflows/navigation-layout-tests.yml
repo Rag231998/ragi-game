@@ -7,6 +7,7 @@ on:
       - 'lanesjekk-norge/tests/navigation-engine.test.cjs'
       - 'lanesjekk-norge/tests/theme-regression.test.cjs'
       - 'lanesjekk-norge/tests/feature-catalog.test.cjs'
+      - 'lanesjekk-norge/tests/realtime-functional.test.cjs'
       - 'lanesjekk-norge/tests/feature-catalog.spec.cjs'
       - 'lanesjekk-norge/site-feature-catalog.js'
       - 'lanesjekk-norge/site-feature-catalog.css'
