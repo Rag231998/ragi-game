@@ -1,4 +1,4 @@
-/* Realistic AI presenter production briefs for HeyGen.
+/* Realistic AI presenter production briefs for free AI video models.
    Creation is deliberately separate from publishing; no API token in public code. */
 (()=>{'use strict';
  const $=id=>document.getElementById(id);
@@ -25,7 +25,7 @@
   const style=styles[$('ai-video-style')?.value]||styles.professional;
   const seconds=Number($('ai-video-length')?.value)||30;
   return [
-   'HEYGEN · PRODUKSJONSBRIEF FOR LÅNESJEKK NORGE',
+   'GRATIS AI-VIDEO · PRODUKSJONSBRIEF FOR LÅNESJEKK NORGE',
    'Modul: '+record[0]+' · Format: 16:9 · Varighet: '+seconds+' sekunder · Språk: norsk bokmål.',
    '',
    'SKUESPILLER OG STIL',
