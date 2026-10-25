@@ -49,6 +49,27 @@ test('navigation chooses one category, follows preview, searches a precise objec
  await expect(page.locator('[data-admin-jump="admin-panel-budget"]')).toHaveAttribute('aria-current','page');
 });
 
+test('publication history exists once below editor and not in category navigation',async({page})=>{
+ await prepareStudio(page);
+ await expect(page.locator('[data-admin-jump="admin-panel-history"]')).toHaveCount(0);
+ await expect(page.locator('#admin-panel-history')).toHaveCount(1);
+ await expect(page.locator('#admin-panel-history')).toBeVisible();
+ await expect(page.locator('#admin-history')).toHaveCount(1);
+ await expect(page.locator('#admin-history-search')).toHaveCount(1);
+ await expect(page.locator('#admin-history-refresh')).toHaveCount(1);
+ const geometry=await page.evaluate(()=>{
+  const hist=document.getElementById('admin-panel-history').getBoundingClientRect();
+  const shell=document.getElementById('admin-dashboard-grid').getBoundingClientRect();
+  return {under:hist.y>=shell.y+shell.height-2,width:hist.width,workspaceWidth:shell.width};
+ });
+ expect(geometry.under).toBe(true);
+ expect(geometry.width).toBeGreaterThan(geometry.workspaceWidth*.8);
+ await page.locator('#admin-history-search').fill('Versjon');
+ await page.locator('[data-admin-jump="admin-panel-budget"]').click();
+ await expect(page.locator('#admin-panel-history')).toBeVisible();
+ await expect(page.locator('#admin-history-search')).toHaveValue('Versjon');
+});
+
 test('publish requires whole-site preview and confirmation; history captures the new revision',async({page,context})=>{
  await prepareStudio(page);
  await page.locator('#site-name').fill('Nytt nettstedutkast');
