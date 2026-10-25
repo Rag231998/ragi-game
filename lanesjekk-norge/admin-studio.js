@@ -479,7 +479,7 @@ function boot(){
  $('admin-remember').checked=window.lanesjekkStudioSession.rememberEnabled();
  setInterval(()=>{void enforceSessionTimeout()},60000);
  window.addEventListener('focus',()=>{void enforceSessionTimeout()});
- window.lanesjekkAnimationStudio?.init({db,getDraft:()=>draft,notify:(text,isError=false)=>msg(text,isError),bucket:'animation-assets',storageBase:BASE});
+ window.lanesjekkAnimationStudio?.init({db,getDraft:()=>draft,getPublished:()=>published,notify:(text,isError=false)=>msg(text,isError),bucket:'animation-assets',storageBase:BASE});
  $('admin-login-form').addEventListener('submit',login);
  $('admin-signout').addEventListener('click',async()=>{
   await db.auth.signOut();window.lanesjekkStudioSession.clear();authUser=null;ready=false;published=null;draft=null;if(previewWindow&&!previewWindow.closed)previewWindow.close();await check();
@@ -674,6 +674,7 @@ function boot(){
  $('admin-workspace').addEventListener('change',refreshSoon);
  $('admin-workspace').addEventListener('click',refreshSoon);
  $('admin-workspace').addEventListener('drop',refreshSoon);
+ window.addEventListener('lanesjekk-studio-media-dirty',refreshSoon);
  $('admin-frame').addEventListener('load',()=>{
   if(ready){
    setTimeout(refreshMiniPreview,120);
