@@ -21,6 +21,8 @@ select{border:1px solid #d3e5e8;color:#14394b;background:white;max-width:min(280
 .subbar{display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap;background:white;border-bottom:1px solid #dbe6eb;padding:9px clamp(15px,3vw,35px);color:#55727c;font-size:12px}
 #preview-state{font-weight:850;color:#127f6a}
 #preview-state[data-error="true"]{color:#ad493e}
+#preview-state[data-archived="true"]{color:#174c91}
+.archived-preview .subbar{background:#e7f0ff;border-bottom:2px solid #8aaddc}
 .stage{display:flex;justify-content:center;align-items:flex-start;overflow:hidden;padding:18px;min-height:calc(100dvh - 130px)}
 #site-frame{display:block;width:100%;height:calc(100dvh - 174px);min-height:580px;border:1px solid #bbd0d8;background:white;border-radius:13px;box-shadow:0 12px 48px #11354c20;transition:width .16s ease}
 .stage.mobile #site-frame{width:min(390px,100%);height:calc(100dvh - 174px)}
@@ -68,7 +70,10 @@ function receive(){
 function apply(){
  if(!config||!frame.contentWindow)return;
  frame.contentWindow.postMessage({type:'lanesjekk-cms-preview',config},origin);
- status.textContent='Utkast oppdatert'+(version?' · '+version:'')+' · ikke publisert';
+ const archived=version.startsWith('Arkiv:');
+ status.textContent=archived?version+' · ditt nåværende utkast er urørt':'Utkast oppdatert'+(version?' · '+version:'')+' · ikke publisert';
+ status.dataset.archived=String(archived);
+ document.body.classList.toggle('archived-preview',archived);
  status.dataset.error='false';
 }
 window.addEventListener('message',event=>{
