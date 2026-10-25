@@ -1,0 +1,42 @@
+/* Single theme control with a visible moon icon. No second button. */
+.portal-home .site-header .header-quick-theme{
+ display:inline-flex!important;align-items:center!important;
+ width:auto!important;min-width:0!important;
+ gap:8px!important;padding:6px 9px!important;
+ box-sizing:border-box!important;
+ white-space:nowrap!important;
+}
+.portal-home .site-header .header-theme-moon{
+ display:inline-grid!important;place-items:center!important;
+ flex:0 0 21px!important;width:21px!important;
+ height:25px!important;font-size:25px!important;
+ line-height:1!important;color:#194e5e!important;
+ transform:rotate(-14deg);
+}
+.portal-home .site-header .header-theme-label{
+ display:inline!important;flex:0 0 auto!important;
+ font-size:11px!important;font-weight:780!important;
+ color:#28505d!important;
+}
+.portal-home .site-header .header-quick-theme .ios-theme-switch{
+ flex:0 0 45px!important;margin:0!important;
+}
+html.cms-dark .portal-home .site-header .header-theme-moon{
+ color:#d4f7db!important;
+}
+html.cms-dark .portal-home .site-header .header-theme-label{
+ color:#e4f6f5!important;
+}
+@media(max-width:1240px){
+ .portal-home .site-header .header-theme-label{display:none!important}
+}
+@media(max-width:540px){
+ .portal-home .site-header .header-quick-theme{gap:4px!important;padding:4px 6px!important}
+ .portal-home .site-header .header-theme-moon{
+  flex-basis:18px!important;width:18px!important;height:23px!important;font-size:22px!important;
+ }
+}
+@media(max-width:390px){
+ .portal-home .site-header .header-quick-theme{gap:2px!important;padding:3px!important}
+ .portal-home .site-header .header-theme-moon{flex-basis:15px!important;width:15px!important;font-size:20px!important}
+}
