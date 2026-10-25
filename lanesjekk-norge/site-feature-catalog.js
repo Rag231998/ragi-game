@@ -17,6 +17,25 @@ const FEATURES=Object.freeze([
 ]);
 const categories=['Alle','Lån','Økonomi','Sparing','Eiendom','Læring'];
 let catalog={headline:'Oppdag alt du kan gjøre',news:[]},category='Alle',tab='tools',search='',lastFocus=null;
+const SEEN_KEY='lanesjekk.catalog.read-news.v1';
+function readSeen(){
+ try{const result=JSON.parse(window.localStorage.getItem(SEEN_KEY)||'[]');return new Set(Array.isArray(result)?result.slice(-100):[])}catch{return new Set()}
+}
+function unreadCount(){const seen=readSeen();return catalog.news.filter(item=>!seen.has(item.id)).length}
+function updateBadge(){
+ const badge=$('site-feature-news-count');if(!badge)return;
+ const unread=unreadCount();badge.textContent=unread?'Ny '+unread:'';
+ badge.hidden=!unread;
+}
+function markRead(){
+ if(window.parent!==window||!catalog.news.length)return;
+ try{
+  const saved=readSeen();
+  for(const item of catalog.news)saved.add(item.id);
+  window.localStorage.setItem(SEEN_KEY,JSON.stringify([...saved].slice(-100)));
+ }catch{}
+ updateBadge();
+}
 const $=id=>document.getElementById(id);
 const root=()=>$('site-feature-dialog');
 function node(tag,className,textValue){
@@ -82,8 +101,8 @@ function draw(){
 }
 function open(selectedTab='tools'){
  const dialog=root();if(!dialog)return;
- if(dialog.open){tab=selectedTab;search='';draw();return}
- lastFocus=document.activeElement;tab=selectedTab;search='';category='Alle';draw();
+ if(dialog.open){tab=selectedTab;search='';if(tab==='news')markRead();draw();return}
+ lastFocus=document.activeElement;tab=selectedTab;search='';category='Alle';if(tab==='news')markRead();draw();
  dialog.showModal();$('site-feature-input')?.focus();
 }
 function close(){
@@ -96,8 +115,7 @@ function setNews(input){
   news:(Array.isArray(input?.news)?input.news:[]).filter(x=>x&&typeof x.title==='string'&&x.title.trim()&&FEATURES.some(f=>f.id===x.route||x.route==='topp')).slice(0,12)
  };
  if(root()?.open)draw();
- const badge=$('site-feature-news-count');
- if(badge){badge.textContent=String(catalog.news.length);badge.hidden=!catalog.news.length}
+ updateBadge();
 }
 function init(){
  const dialog=root();if(!dialog)return;
@@ -107,7 +125,7 @@ function init(){
  dialog.addEventListener('close',()=>{if(lastFocus?.isConnected)lastFocus.focus()});
  $('site-feature-tabs')?.addEventListener('click',event=>{
   const btn=event.target.closest('button[data-fc-tab]');if(!btn)return;
-  tab=btn.dataset.fcTab;search='';draw();
+  tab=btn.dataset.fcTab;search='';if(tab==='news')markRead();draw();
  });
  $('site-feature-input')?.addEventListener('input',event=>{search=event.target.value;const focus=document.activeElement;draw();if(focus?.id==='site-feature-input')focus.focus()});
 }
