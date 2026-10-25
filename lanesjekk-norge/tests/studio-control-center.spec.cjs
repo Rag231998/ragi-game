@@ -173,3 +173,80 @@ test('Additional cards require functioning internal route, not a fictitious calc
  await card.locator('input[role="switch"]').check();
  await expect(page.frameLocator('#admin-frame').locator('.cms-custom-tool')).toHaveCount(1);
 });
+
+test('All Studio categories open exactly one editor, preserve unsaved drafts and keep preview route synchronized',async({page})=>{
+ await prepareStudio(page);
+ const cases=[
+  ['admin-panel-brand','topp'],['admin-panel-budget','budsjett'],
+  ['admin-panel-cards','topp'],['admin-panel-slides','topp'],
+  ['admin-panel-motion','boligverdi'],['animation-studio-panel','topp'],
+  ['admin-panel-catalog','topp'],['admin-panel-invest','investering']
+ ];
+ for(const [id,route] of cases){
+  await page.locator('[data-admin-jump="'+id+'"]').click();
+  await expect(page.locator('#'+id)).toHaveAttribute('open','');
+  await expect(page.locator('[data-admin-jump="'+id+'"]')).toHaveAttribute('aria-current','page');
+  await expect(page.locator('#preview-inline-section')).toHaveValue(route);
+  await expect(page.locator('#admin-workspace .admin-edit-panel>details[open]')).toHaveCount(1);
+ }
+ await page.locator('[data-admin-jump="admin-panel-slides"]').click();
+ await expect(page.locator('#slide-editor .admin-slide-item')).toHaveCount(6);
+ const title=page.locator('#slide-editor .admin-slide-item').first().locator('input[type="text"]');
+ await title.fill('Et gjennomtestet utkast');
+ await page.locator('[data-admin-jump="admin-panel-budget"]').click();
+ await page.locator('[data-admin-jump="admin-panel-slides"]').click();
+ await expect(page.locator('#slide-editor .admin-slide-item').first().locator('input[type="text"]')).toHaveValue('Et gjennomtestet utkast');
+ await expect(page.locator('#admin-draft-status')).toContainText('endringer');
+});
+
+test('Advertising scene cards have full-width readable inputs and controls at desktop, tablet and phone sizes',async({page})=>{
+ await prepareStudio(page);
+ await page.locator('[data-admin-jump="admin-panel-slides"]').click();
+ for(const width of [1800,1440,1280,820,390]){
+  await page.setViewportSize({width,height:900});
+  const info=await page.locator('#slide-editor .admin-slide-item').first().evaluate(el=>{
+   const input=el.querySelector('input[type="text"]'),area=el.querySelector('textarea'),switcher=el.querySelector('input[type="checkbox"]'),label=el.querySelector('.admin-slide-visibility');
+   const rect=node=>{const r=node.getBoundingClientRect();return {x:r.x,width:r.width,height:r.height}};
+   return {outer:rect(el),title:rect(input),area:rect(area),toggle:rect(switcher),label:rect(label),visible:getComputedStyle(el).display};
+  });
+  expect(info.outer.width,'card width at '+width).toBeGreaterThan(210);
+  expect(info.title.width,'title width at '+width).toBeGreaterThan(190);
+  expect(info.area.width,'textarea width at '+width).toBeGreaterThan(190);
+  expect(info.title.width/info.outer.width,'proportion at '+width).toBeGreaterThan(.7);
+  expect(info.label.width,'toggle width at '+width).toBeGreaterThan(170);
+  expect(info.visible,'layout at '+width).toBe('grid');
+  await expect(page.locator('#slide-editor .admin-slide-item').first().locator('.admin-slide-tools button')).toHaveCount(2);
+ }
+});
+
+test('Dark Studio displays readable advertising controls and retains one appearance preference',async({page})=>{
+ await prepareStudio(page);
+ await page.locator('[data-admin-jump="admin-panel-slides"]').click();
+ await page.locator('#admin-ui-theme').selectOption('dark');
+ await expect(page.locator('html')).toHaveClass(/studio-dark/);
+ const rgb=await page.locator('#slide-editor .admin-slide-field>input').first().evaluate(input=>({
+  background:getComputedStyle(input).backgroundColor,ink:getComputedStyle(input).color
+ }));
+ expect(rgb.background).not.toBe('rgb(255, 255, 255)');
+ expect(rgb.ink).not.toBe(rgb.background);
+ await expect(page.locator('#admin-panel-history')).toHaveCount(1);
+});
+
+test('Free AI video shows real provider readiness, disables unconfigured generation and supports retry',async({page})=>{
+ let checks=0;
+ await page.route('**/api/admin-video?**',route=>{
+  const url=new URL(route.request().url()),action=url.searchParams.get('action');
+  if(action==='ready'){checks++;return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,configured:false,freeOnly:true,setup:'OPENROUTER_API_KEY mangler. Ingen betaling.'})})}
+  return route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({ok:false,error:'Ikke konfigurert'})});
+ });
+ await prepareStudio(page);
+ await page.locator('[data-admin-jump="animation-studio-panel"]').click();
+ await page.locator('#media-workspace-tab-ai').click();
+ await expect(page.locator('#studio-ai-generate')).toBeDisabled();
+ await expect(page.locator('#studio-ai-connection')).toContainText('OPENROUTER_API_KEY');
+ await expect(page.locator('#studio-ai-recheck')).toBeVisible();
+ const before=checks;
+ await page.locator('#studio-ai-recheck').click();
+ await expect.poll(()=>checks).toBeGreaterThan(before);
+ await expect(page.locator('#studio-ai-generate')).toBeDisabled();
+});
