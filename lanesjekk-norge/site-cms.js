@@ -179,6 +179,23 @@ function apply(input){
    grid.append(card);
   }
   for(const id of CARD_IDS)if(!cfg.cards.order.includes(id)&&found[id])grid.append(found[id]);
+  // New administrator-curated entries always link to an existing, real tool.
+  // Incomplete entries never appear publicly, including before draft approval.
+  grid.querySelectorAll('.cms-custom-tool').forEach(node=>node.remove());
+  for(const entry of cfg.catalog.tools){
+   if(!entry.enabled||!entry.title||!entry.subtitle||!entry.how)continue;
+   const card=document.createElement('a');
+   card.className='home-tool cms-custom-tool';
+   card.href='#'+entry.route;
+   card.dataset.cmsCustomTool=entry.id;
+   card.setAttribute('aria-label','Åpne '+entry.title);
+   const symbol=document.createElement('span');symbol.className='home-tool-art';symbol.textContent=entry.icon;
+   const cat=document.createElement('span');cat.className='home-tool-category';cat.textContent=entry.cat.toUpperCase();
+   const title=document.createElement('strong');title.textContent=entry.title;
+   const hint=document.createElement('small');hint.textContent=entry.subtitle;
+   const arrow=document.createElement('span');arrow.className='home-tool-arrow';arrow.textContent='Åpne '+entry.title+' ↗';
+   card.append(symbol,cat,title,hint,arrow);grid.append(card);
+  }
  }
  const heading=document.querySelector('#investering .tool-hero h1');
  if(heading)heading.textContent=cfg.investing.title;
