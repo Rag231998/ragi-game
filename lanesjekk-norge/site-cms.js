@@ -37,18 +37,7 @@ function effectiveDark(siteTheme){
  return mode==='dark'||(mode==='auto'&&Boolean(darkPreference?.matches));
 }
 function updateThemeControls(){
- const summary=document.getElementById('site-theme-trigger');
  const mode=document.documentElement.dataset.activeTheme||'light';
- if(summary){
-  summary.setAttribute('aria-label','Tema: '+(visitorTheme==='site'?'følg nettstedet':visitorTheme==='dark'?'mørkt':'lyst')+'. Åpne temavelger.');
-  const icon=summary.querySelector('.site-theme-icon');
-  if(icon)icon.textContent=mode==='dark'?'☀':'☾';
- }
- document.querySelectorAll('[data-public-theme]').forEach(button=>{
-  button.setAttribute('aria-pressed',String(button.dataset.publicTheme===visitorTheme));
- });
- const hint=document.getElementById('site-theme-current');
- if(hint)hint.textContent='Viser '+(mode==='dark'?'mørkt':'lyst')+' tema';
  const quick=document.getElementById('site-theme-quick');
  if(quick){
   const checked=mode==='dark';
@@ -71,19 +60,16 @@ function setVisitorTheme(choice){
  visitorTheme=choice;
  try{if(choice==='site')window.localStorage.removeItem(THEME_STORAGE_KEY);else window.localStorage.setItem(THEME_STORAGE_KEY,choice)}catch{}
  applyTheme();
- document.getElementById('site-theme-picker')?.removeAttribute('open');
+
 }
 function initThemeControls(){
- const picker=document.getElementById('site-theme-picker');
- if(!picker)return;
- picker.querySelectorAll('[data-public-theme]').forEach(button=>button.addEventListener('click',()=>setVisitorTheme(button.dataset.publicTheme)));
+ // One control only. Follow the site's published/system preference by default,
+ // then persist an explicit visitor choice only when the switch is activated.
  const quick=document.getElementById('site-theme-quick');
  quick?.addEventListener('click',()=>{
   const dark=document.documentElement.dataset.activeTheme==='dark';
   setVisitorTheme(dark?'light':'dark');
  });
- document.addEventListener('pointerdown',event=>{if(picker.open&&!picker.contains(event.target))picker.open=false});
- document.addEventListener('keydown',event=>{if(event.key==='Escape'&&picker.open){picker.open=false;picker.querySelector('summary')?.focus()}});
  updateThemeControls();
 }
 
