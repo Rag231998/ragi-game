@@ -29,3 +29,7 @@ html.cms-dark #ln-assistant-panel .ln-assistant-tab[aria-selected="true"]{backgr
 html.cms-dark #ln-assistant-panel .ln-assistant-actions{background:#1c3646}
 @media(max-width:600px){#ln-assistant-panel{right:10px;bottom:calc(76px + env(safe-area-inset-bottom));width:calc(100vw - 20px);height:min(510px,calc(100dvh - 112px));border-radius:20px}#ln-assistant-open{right:12px;bottom:calc(13px + env(safe-area-inset-bottom))}#ln-assistant-panel .ln-assistant-head{padding:13px 16px}#ln-assistant-panel .ln-assistant-messages{padding:14px}#ln-assistant-panel .ln-vault{padding:14px 16px}}
 @media(max-height:640px){#ln-assistant-panel{height:calc(100dvh - 105px)}}
+
+#ln-assistant-open[aria-expanded="true"]{display:none!important}
+#ln-assistant-open[aria-expanded="true"] + #ln-assistant-panel{bottom:20px}
+@media(max-width:600px){#ln-assistant-open[aria-expanded="true"] + #ln-assistant-panel{bottom:calc(12px + env(safe-area-inset-bottom))}}
