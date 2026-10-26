@@ -194,6 +194,8 @@ test('Budget storage controls are explained in budget, never buried in chat',asy
  await expect(area).toContainText('Kun fire summer');
  await expect(area.locator('.ln-assistant-account')).toBeVisible();
  await area.locator('.ln-assistant-account>summary').click();
+ await expect(area.locator('.ln-vault-details > summary')).toBeVisible();
+ await area.locator('.ln-vault-details > summary').click();
  await expect(area.locator('#ln-vault-login')).toBeVisible();
  await expect(page.locator('#ln-assistant-panel .ln-vault')).toHaveCount(0);
 });
