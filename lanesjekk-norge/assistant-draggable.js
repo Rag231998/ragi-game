@@ -13,7 +13,7 @@ function bounds(){
 function position(x,y){const b=bounds();button.style.position='fixed';button.style.left=clamp(x,b.left,b.right)+'px';button.style.top=clamp(y,b.top,b.bottom)+'px';button.style.right='auto';button.style.bottom='auto'}
 function persist(){try{const b=bounds(),r=button.getBoundingClientRect();localStorage.setItem(key,JSON.stringify({x:(r.left-b.left)/Math.max(1,b.right-b.left),y:(r.top-b.top)/Math.max(1,b.bottom-b.top)}))}catch{}}
 function restore(){try{const p=JSON.parse(localStorage.getItem(key)||'null');if(!p||!Number.isFinite(p.x)||!Number.isFinite(p.y))return;const b=bounds();position(b.left+clamp(p.x,0,1)*(b.right-b.left),b.top+clamp(p.y,0,1)*(b.bottom-b.top))}catch{}}
-let down=null,suppress=false;
+let down=null,suppressUntil=0;
 button.addEventListener('pointerdown',e=>{
  if(e.button!==0&&e.pointerType!=='touch')return;
  const r=button.getBoundingClientRect();down={id:e.pointerId,x:e.clientX,y:e.clientY,left:r.left,top:r.top,drag:false};
@@ -27,13 +27,13 @@ button.addEventListener('pointermove',e=>{
  e.preventDefault();position(down.left+dx,down.top+dy)
 });
 function stop(e){if(!down||e.pointerId!==down.id)return;
- if(down.drag){suppress=true;persist();button.classList.remove('ln-dragging')}
+ if(down.drag){suppressUntil=performance.now()+450;persist();button.classList.remove('ln-dragging')}
  down=null;
  try{button.releasePointerCapture(e.pointerId)}catch{}
 }
 button.addEventListener('pointerup',stop);
 button.addEventListener('pointercancel',stop);
-button.addEventListener('click',e=>{if(!suppress)return;e.preventDefault();e.stopImmediatePropagation();suppress=false},true);
+button.addEventListener('click',e=>{if(performance.now()>suppressUntil)return;e.preventDefault();e.stopImmediatePropagation();suppressUntil=0},true);
 button.addEventListener('keydown',e=>{
  if(!e.altKey||!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key))return;
  e.preventDefault();const r=button.getBoundingClientRect();position(r.left+(e.key==='ArrowLeft'?-24:e.key==='ArrowRight'?24:0),r.top+(e.key==='ArrowUp'?-24:e.key==='ArrowDown'?24:0));persist()
