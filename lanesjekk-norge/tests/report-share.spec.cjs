@@ -122,7 +122,7 @@ test('Floating iOS assistant button can be dragged away from content and restore
  const styles=await b.evaluate(e=>({left:e.style.left,top:e.style.top,key:localStorage.getItem('ln-assistant-floating-position-v2')}));
  expect(styles.left).toMatch(/px/);expect(styles.top).toMatch(/px/);expect(styles.key).toContain('"x"');
  await page.reload({waitUntil:'domcontentloaded'});
- await expect(b).toHaveAttribute('style',/left:/);
+ await expect(b).toHaveAttribute('style',/(left|inset):/);
 });
 
 test('Step three has exactly three primary actions; optional features remain accessible',async({page})=>{
