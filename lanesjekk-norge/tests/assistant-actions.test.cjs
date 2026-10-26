@@ -21,3 +21,22 @@ test('Neural voice API rejects missing key and creates WAV with valid PCM from t
   assert.match(requestedUrl,/gemini-2\.5-flash-preview-tts/);
  }finally{global.fetch=oldFetch;if(prev===undefined)delete process.env.GEMINI_API_KEY;else process.env.GEMINI_API_KEY=prev}
 });
+
+test('Consent-controlled microphone recording uses an audio transcript API and has a manual stop',()=>{
+ const v=read('assistant-voice.js'),api=read('api/assistant-transcribe.js');
+ for(const x of ['startCloudCapture','MediaRecorder','getUserMedia','getByteTimeDomainData','ln-voice-natural','assistant-transcribe','releaseCapture','recorder.stop()'])assert.ok(v.includes(x),x);
+ assert.match(api,/GEMINI_API_KEY/);assert.match(api,/gemini-3\.5-flash-lite/);assert.match(api,/audioBase64/);new vm.Script(v);new vm.Script(api);
+});
+test('Transcription service fails closed without configured provider and transcribes supported audio',async()=>{
+ const {Readable}=require('node:stream'),handler=require('../api/assistant-transcribe.js');
+ const previous=process.env.GEMINI_API_KEY,oldFetch=global.fetch;
+ const answer=()=>({code:200,setHeader(){},status(v){this.code=v;return this},json(v){this.result=v;return this}});
+ const req=()=>({method:'POST',headers:{origin:'https://lanesjekk-norge.onrender.com','x-forwarded-for':'192.0.2.91'},
+  stream:Readable.from([Buffer.from(JSON.stringify({mimeType:'audio/mp4',audioBase64:Buffer.alloc(2048,42).toString('base64')}))])});
+ try{
+  delete process.env.GEMINI_API_KEY;const no=answer();await handler(req(),no);assert.equal(no.code,503);
+  process.env.GEMINI_API_KEY='mock-key';
+  global.fetch=async(url,opts)=>{assert.match(String(url),/gemini-3\.5-flash-lite/);const request=JSON.parse(opts.body);assert.equal(request.contents[0].parts[1].inlineData.mimeType,'audio/mp4');return {ok:true,json:async()=>({candidates:[{content:{parts:[{text:'Tre millioner kroner'}]}}]})}};
+  const yes=answer();await handler(req(),yes);assert.equal(yes.code,200);assert.equal(yes.result.transcript,'Tre millioner kroner');
+ }finally{global.fetch=oldFetch;if(previous===undefined)delete process.env.GEMINI_API_KEY;else process.env.GEMINI_API_KEY=previous}
+});
