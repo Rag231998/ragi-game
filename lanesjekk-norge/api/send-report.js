@@ -13,7 +13,7 @@ module.exports=async(req,res)=>{
  const bearer=/^Bearer (.+)$/i.exec(req.headers?.authorization||'');
  if(!bearer)return json(res,401,{ok:false,error:'Logg inn for å sende rapporter fra nettstedet.'});
  let auth;try{const response=await fetch(project+'/auth/v1/user',{headers:{Authorization:'Bearer '+bearer[1],apikey:anon},signal:AbortSignal.timeout(6000)});if(!response.ok)throw Error('auth');auth=await response.json();if(!auth.id||!auth.email)throw Error('auth')}catch{return json(res,401,{ok:false,error:'Kunne ikke bekrefte innloggingen.'})}
- const now=Date.now();for(const [k,v] of buckets)if(v.until<now)buckets.delete(k);const b=buckets.get(auth.id)||{count:0,until:now+3600000};if(b.count>=5)return json(res,429,{ok:false,error:'Grensen er fem e-poster i timen. Prøv igjen senere.'});b.count++;buckets.set(auth.id,b);
+ const now=Date.now();for(const [k,v] of buckets)if(v.until<now)buckets.delete(k);const b=buckets.get(auth.id)||{count:0,until:now+3600000};if(b.count>=30)return json(res,429,{ok:false,error:'Sikkerhetsgrensen for utsending er nådd. Prøv igjen senere. E-postleverandørens gratisgrenser gjelder også.'});b.count++;buckets.set(auth.id,b);
  let body;try{body=await readBody(req.stream)}catch{return json(res,400,{ok:false,error:'Ugyldig eller for stor rapport.'})}
  if(!validEmail(body.to)||typeof body.pdf!=='string'||body.pdf.length<100||body.pdf.length>1000000||!/^[A-Za-z0-9+/]+={0,2}$/.test(body.pdf)||typeof body.title!=='string'||body.title.length>100||!body.consent)return json(res,400,{ok:false,error:'Kontroller mottaker, samtykke og PDF-vedlegget.'});
  try{const bytes=Buffer.from(body.pdf,'base64');if(bytes.length<50||bytes.subarray(0,5).toString()!=='%PDF-')throw Error('bad pdf');
