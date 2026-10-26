@@ -51,7 +51,7 @@ test('Conversation history supports new chat, resuming archived conversations an
 test('Voice controls have explicit labels, consent notice and an animated dialog only when speech is supported',()=>{
  const html=read('index.html'),voice=read('assistant-voice.js'),css=read('assistant-voice-history.css');
  assert.match(html,/assistant-voice\.js/);
- for(const word of ['Snakk','Les opp svar','Lytter','Send','Talegjenkjenning kan bruke'])assert.ok(voice.includes(word),word);
+ for(const word of ['Snakk','Les opp svar','Send','Talegjenkjenning kan bruke'])assert.ok(voice.includes(word),word);assert.match(voice,/lytter/i);
  assert.match(voice,/SpeechRecognition\|\|window\.webkitSpeechRecognition/);
  assert.match(voice,/interimResults=true/);
  assert.match(voice,/aria-modal/);
