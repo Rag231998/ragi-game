@@ -1,0 +1,16 @@
+/* Assistant vault – unobtrusive privacy-first accordion */
+#ln-assistant-panel .ln-vault{padding:12px 15px;border-top:1px solid #dce9e8;background:#fff;color:#184251}
+#ln-assistant-panel .ln-vault h3{font-size:14px;margin:0 0 5px}
+#ln-assistant-panel .ln-vault>p{font-size:11px;line-height:1.5;margin:0 0 9px}
+#ln-assistant-panel .ln-vault button{border:1px solid #a6d5c9;border-radius:10px;background:#e8f7f1;color:#08685a;padding:9px 10px;min-height:40px;font-weight:700;font-size:12px;cursor:pointer}
+#ln-assistant-panel .ln-vault-details{margin-top:10px}
+#ln-assistant-panel .ln-vault-details>summary{cursor:pointer;font-weight:700;font-size:12px;padding:11px;border-radius:11px;background:#eff5f7}
+#ln-assistant-panel .ln-vault-details form{display:grid;gap:7px;margin-top:11px}
+#ln-assistant-panel .ln-vault-details label{font-size:12px}
+#ln-assistant-panel .ln-vault-details input{padding:12px;border:1px solid #abc9d1;border-radius:10px;min-width:0}
+#ln-assistant-panel .ln-vault-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+#ln-assistant-panel #ln-vault-status{font-size:11px;line-height:1.5;margin:12px 0 0}
+#ln-assistant-panel .ln-vault [hidden]{display:none!important}
+html.cms-dark #ln-assistant-panel .ln-vault{background:#1c3646;color:#e7f8fc;border-color:#426475}
+html.cms-dark #ln-assistant-panel .ln-vault-details>summary{background:#284755;color:#e7f8fc}
+@media(max-width:600px){#ln-assistant-panel .ln-vault{padding:10px 12px}}
