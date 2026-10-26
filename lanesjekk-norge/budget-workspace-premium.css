@@ -54,3 +54,30 @@ html.cms-dark #budsjett .budget-bank-analysis>summary span{color:#c6dde4}
 
 #budsjett .budget-health-standalone{margin:0 0 20px!important;padding:17px 21px!important;border:1px solid var(--bw-line);border-radius:19px;background:#edf8f5!important}
 html.cms-dark #budsjett .budget-health-standalone{background:#214c48!important}
+ 
+/* iPhone/mobile: restore card layout over the old 800px desktop table override */
+@media(max-width:950px){
+#budsjett .budget-table-wrap{width:100%!important;min-width:0!important;max-width:100%!important;overflow-x:hidden!important;overflow-y:visible!important}
+#budsjett table.budget-table{display:block!important;min-width:0!important;width:100%!important}
+#budsjett .budget-table thead{position:absolute!important;clip-path:inset(50%)!important;width:1px!important;height:1px!important;overflow:hidden!important}
+#budsjett .budget-table tbody{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important;width:100%!important}
+#budsjett .budget-table tbody tr{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;padding:14px!important;border-radius:17px!important;width:100%!important;min-width:0!important;box-sizing:border-box!important;overflow:hidden!important}
+#budsjett .budget-table tbody td{min-width:0!important;max-width:100%!important;width:auto!important;padding:0!important;box-sizing:border-box!important}
+#budsjett .budget-table tbody td:nth-child(-n+4){grid-column:1/-1}
+#budsjett .budget-table tbody td:nth-child(5){grid-column:1}
+#budsjett .budget-table tbody td:nth-child(6){grid-column:2}
+#budsjett .budget-table tbody td:nth-child(7){grid-column:1}
+#budsjett .budget-table tbody td:nth-child(8){grid-column:2}
+#budsjett .budget-table tbody :is(input:not([type=checkbox]),select){width:100%!important;min-width:0!important;max-width:100%!important;box-sizing:border-box!important;font-size:16px!important;min-height:44px!important;text-overflow:ellipsis}
+#budsjett .budget-table tbody td:nth-child(5) input[data-money-input]{min-width:0!important;max-width:100%!important}
+#budsjett .budget-table tbody .budget-row-actions{display:flex!important;gap:8px!important;justify-content:flex-start!important}
+#budsjett .budget-table tbody .budget-row-actions button{width:40px!important;height:40px!important;min-width:0!important}
+#budsjett .budget-workbook{min-width:0!important;padding:14px!important;overflow:hidden!important}
+#budsjett .budget-deep-tools,#budsjett .budget-salary-studio,#budsjett .budget-table-controls{min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+#budsjett .budget-salary-fields,#budsjett .budget-tax-method{grid-template-columns:minmax(0,1fr)!important}
+#budsjett .budget-workbook>.tool-pane-head{display:block!important}
+#budsjett .budget-workbook>.tool-pane-head .tool-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;margin-top:12px}
+#budsjett .budget-workbook>.tool-pane-head #ln-report-open{grid-column:1/-1}
+#budsjett .budget-workbook>.tool-pane-head .tool-button{min-width:0!important;white-space:normal!important}
+}
+@media(max-width:370px){#budsjett .budget-table tbody td:nth-child(n+5){grid-column:1/-1!important}}
