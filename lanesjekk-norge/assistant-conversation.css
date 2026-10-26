@@ -1,0 +1,40 @@
+/* One conversational assistant; privacy and account are a collapsible utility, not a second tab. */
+#ln-assistant-panel{width:min(450px,calc(100vw - 24px));height:min(615px,calc(100dvh - 70px));border:1px solid #aad5ca;border-radius:21px;background:#fff;color:#193c47;box-shadow:0 25px 65px #0a294052}
+#ln-assistant-panel .ln-assistant-head{padding:17px 19px;background:linear-gradient(115deg,#08685f,#0b8776)}
+#ln-assistant-panel .ln-assistant-head strong{font-size:16px;letter-spacing:-.01em}
+#ln-assistant-panel .ln-assistant-head small{font-size:11px;color:#d6f5ec}
+#ln-assistant-panel .ln-assistant-messages{padding:18px;gap:12px;min-height:0;scroll-behavior:smooth}
+#ln-assistant-panel .ln-chat-bubble{width:fit-content;max-width:90%;padding:13px 15px;border-radius:17px 17px 17px 5px;background:#f0f8f5;color:#194552;font:400 13px/1.6 system-ui;box-sizing:border-box;overflow-wrap:anywhere}
+#ln-assistant-panel .ln-chat-bubble p{margin:0}
+#ln-assistant-panel .ln-chat-bubble a{display:inline-block;margin-top:10px;padding:6px 10px;border-radius:8px;background:#def4e9;color:#05675b;font-weight:750;font-size:12px;text-decoration:none}
+#ln-assistant-panel .ln-chat-user{align-self:flex-end;background:#087b6c;color:white;border-radius:17px 17px 5px 17px}
+#ln-assistant-panel .ln-chat-suggestions{display:flex;flex-wrap:wrap;gap:7px;padding:9px 15px 4px;flex-shrink:0}
+#ln-assistant-panel .ln-chat-suggestions[hidden]{display:none}
+#ln-assistant-panel .ln-chat-suggestions button{border:1px solid #b7dbd2;border-radius:50px;padding:8px 11px;font:650 11px system-ui;line-height:1.3;color:#086a5e;background:#f0faf7;cursor:pointer;text-align:left}
+#ln-assistant-panel .ln-chat-suggestions button:hover{background:#dff6ed}
+#ln-assistant-panel .ln-chat-ai-consent{display:flex;align-items:center;gap:8px;padding:9px 18px;font-size:12px;color:#164d4c;background:#f1faf7;flex-shrink:0}
+#ln-assistant-panel .ln-chat-ai-consent[hidden]{display:none}
+#ln-assistant-panel .ln-chat-ai-consent input{width:16px;height:16px;accent-color:#087b6c;flex-shrink:0}
+#ln-assistant-panel .ln-chat-ai-consent small{display:block;font-size:10px;color:#607b79;line-height:1.4}
+#ln-assistant-panel .ln-chat-capability{margin:0;padding:6px 18px;font-size:10px;color:#688184;line-height:1.4;flex-shrink:0}
+#ln-assistant-panel .ln-assistant-form{padding:12px 15px;gap:8px}
+#ln-assistant-panel .ln-assistant-form input{min-height:44px;padding:12px;font-size:13px}
+#ln-assistant-panel .ln-assistant-form button{min-height:44px;padding:10px 17px}
+#ln-assistant-panel .ln-assistant-account{flex:0 0 auto;border-top:1px solid #e0ebec;background:#fbfdfd;max-height:42%;overflow:auto}
+#ln-assistant-panel .ln-assistant-account>summary{cursor:pointer;list-style:none;padding:12px 18px;font:700 12px system-ui;color:#416f70}
+#ln-assistant-panel .ln-assistant-account>summary::-webkit-details-marker{display:none}
+#ln-assistant-panel .ln-assistant-account>summary::before{content:'⌄';display:inline-block;margin-right:8px;font-size:15px;transform:rotate(-90deg);transition:transform .2s}
+#ln-assistant-panel .ln-assistant-account[open]>summary::before{transform:rotate(0)}
+#ln-assistant-panel .ln-assistant-account .ln-vault{display:block!important;max-height:none;min-height:0;flex:none;overflow:visible;border-top:1px solid #d9eae5;background:transparent;padding:12px 17px}
+#ln-assistant-panel .ln-assistant-account .ln-vault>p{font-size:11px}
+#ln-assistant-panel .ln-assistant-account .ln-assistant-actions{display:block!important;background:transparent;padding:4px 17px 14px}
+#ln-assistant-panel .ln-assistant-disclaimer{padding:9px 18px;font-size:10px;flex-shrink:0;background:#f6faf9;color:#617882;line-height:1.4}
+#ln-assistant-panel .ln-assistant-tab{display:none}
+html.cms-dark #ln-assistant-panel{background:#173240;color:#e5f6f8;border-color:#477a7f}
+html.cms-dark #ln-assistant-panel .ln-chat-bubble{background:#2a4f59;color:#f0fafa}
+html.cms-dark #ln-assistant-panel .ln-chat-user{background:#08796e;color:white}
+html.cms-dark #ln-assistant-panel .ln-chat-suggestions button{background:#244754;color:#dcf7ec;border-color:#447c7a}
+html.cms-dark #ln-assistant-panel .ln-chat-ai-consent,html.cms-dark #ln-assistant-panel .ln-assistant-account{background:#1e3b48;color:#e5f2f1;border-color:#48707c}
+html.cms-dark #ln-assistant-panel .ln-assistant-account>summary{color:#c7eee5}
+html.cms-dark #ln-assistant-panel .ln-chat-capability{color:#bfd2d5}
+@media(max-width:600px){#ln-assistant-panel{height:min(590px,calc(100dvh - 48px));right:10px;bottom:calc(11px + env(safe-area-inset-bottom));width:calc(100vw - 20px);border-radius:18px}#ln-assistant-panel .ln-assistant-messages{padding:14px}#ln-assistant-panel .ln-chat-suggestions{padding:8px 12px 3px}#ln-assistant-panel .ln-chat-bubble{font-size:12px}#ln-assistant-panel .ln-assistant-account{max-height:45%}}
