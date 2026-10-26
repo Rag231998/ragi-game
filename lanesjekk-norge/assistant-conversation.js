@@ -4,7 +4,7 @@ if(!panel||!form||!input||!messages)return;
 const brain=window.LNConversationBrain;
 const reduced=matchMedia?.('(prefers-reduced-motion: reduce)')?.matches||false;
 const routes={'#budsjett':'Budsjett','#sjekk':'Boliglånskalkulator','#investering':'Fond og aksjer','#kvitteringer':'Kvitteringer'};
-const history=[];let busy=false,aiMode='guide',aiReady=false,localSession=null;
+const history=[],turns=[];let busy=false,aiMode='guide',aiReady=false,localSession=null;
 messages.replaceChildren();panel.querySelector('.ln-assistant-head small').textContent='Spør helt vanlig · Jeg følger opp spørsmålene dine';
 const quick=document.createElement('div');quick.className='ln-chat-suggestions';quick.setAttribute('aria-label','Forslag til spørsmål');
 const phrases=['Se på budsjettet mitt','Hvor kan jeg spare mer?','Hva koster et lån?','Hvordan deler jeg rapport?'];
@@ -23,11 +23,15 @@ await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resol
 let answer;
 try{if(aiReady&&$('ln-chat-ai-optin')?.checked){if(aiMode==='local'){if(!localSession)localSession=await window.LanguageModel.create({initialPrompts:[{role:'system',content:'Du er Lånesjekk Assistent, en norsk veileder for privatøkonomi. Svar naturlig og hjelpsomt, spør oppfølgingsspørsmål ved behov. Ikke finn opp renter eller tall. Budsjett og deling ligger i budsjettverktøyet. Gi generell informasjon, ikke personlige finansråd.'}]});answer={text:String(await localSession.prompt(q)).slice(0,2900)}}else{const res=await fetch('/api/assistant-ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,history:history.slice(-6)})});const data=await res.json();if(!res.ok||!data.answer)throw Error(data.error||'AI svarte ikke');answer={text:String(data.answer).slice(0,2900)}}}else answer=brain?.response(q)||{text:'Hva ønsker du å vite om økonomien din?'};}catch(e){answer=brain?.response(q)||{text:'Prøv på nytt.'};answer.text='Generativ AI er utilgjengelig akkurat nå. Jeg bruker den lokale veiviseren i stedet. '+answer.text}
 loader.item.classList.remove('ln-chat-processing');loader.p.replaceChildren();await typeOut(loader.p,answer.text);follow(loader.item,answer);
-history.push({role:'user',text:q},{role:'model',text:answer.text});if(history.length>10)history.splice(0,history.length-10);
+history.push({role:'user',text:q},{role:'model',text:answer.text});if(history.length>10)history.splice(0,history.length-10);turns.push({q,a:answer.text,href:answer.href||null,follow:answer.follow||[],at:Date.now()});if(turns.length>60)turns.splice(0,turns.length-60);document.dispatchEvent(new CustomEvent('ln-assistant-turn',{detail:{question:q,answer:answer.text,turns:turns.length}}));
 promptOptions(answer.follow||[]);busy=false;input.disabled=false;if(send)send.disabled=false;input.focus({preventScroll:true});scroll()
 }
 form.addEventListener('submit',e=>{e.preventDefault();e.stopImmediatePropagation();ask(input.value)},true);
 fetch('/api/assistant-status',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(async v=>{if(v?.enabled){aiReady=true;aiMode='remote';ai.hidden=false;status.textContent='Generativ AI tilgjengelig · frivillig og med tydelig personverngodkjenning';return}
  const local=window.LanguageModel;if(!local?.create)return;try{const available=await local.availability?.();if(available==='unavailable')return;aiReady=true;aiMode='local';ai.hidden=false;ai.querySelector('small').textContent='Modellen behandler spørsmål på enheten når nettleseren støtter dette.';status.textContent='Lokal AI tilgjengelig · valgfritt'}catch{}}).catch(()=>{});
-bubble('Hei! 👋 Jeg kan forklare tallene i budsjettet ditt, regne på lån og hjelpe deg med rapporter. Hva har du lyst til å se på først?');
+const greeting='Hei! 👋 Jeg kan forklare tallene i budsjettet ditt, regne på lån og hjelpe deg med rapporter. Hva har du lyst til å se på først?';
+function resetChat(){if(busy)return false;history.length=0;turns.length=0;brain?.reset?.();localSession?.destroy?.();localSession=null;messages.replaceChildren();bubble(greeting);promptOptions(phrases);document.dispatchEvent(new Event('ln-assistant-reset'));return true}
+function restoreChat(saved){if(busy)return false;const arr=Array.isArray(saved)?saved:[];resetChat();for(const entry of arr.slice(-50)){if(!entry||typeof entry.q!=='string'||typeof entry.a!=='string')continue;const q=entry.q.slice(0,700),a=entry.a.slice(0,3500);bubble(q,'user');const b=bubble(a);if(typeof entry.href==='string'&&entry.href.startsWith('#'))follow(b.item,{href:entry.href});turns.push({q,a,href:entry.href||null,follow:Array.isArray(entry.follow)?entry.follow:[],at:entry.at||Date.now()});history.push({role:'user',text:q},{role:'model',text:a})}if(history.length>10)history.splice(0,history.length-10);promptOptions(turns.at(-1)?.follow||phrases);scroll();return true}
+window.LNAssistantConversation={send:ask,reset:resetChat,restore:restoreChat,turns:()=>turns.map(x=>({...x})),isBusy:()=>busy,latestAnswer:()=>turns.at(-1)?.a||''};
+bubble(greeting);
 })();
