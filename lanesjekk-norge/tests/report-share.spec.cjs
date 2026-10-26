@@ -1,13 +1,17 @@
 const {test,expect}=require('@playwright/test');
-test('Budget reporting is local to budget, opens a readable preview and saves a PDF',async({page})=>{
+test('Budget wizard lets the user select, preview, save and close a PDF report',async({page})=>{
  await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#ln-report-open')).toBeVisible();
  await page.locator('#ln-report-open').click();
  await expect(page.locator('#ln-report-modal')).toBeVisible();
- await expect(page.locator('#ln-report-preview')).toHaveAttribute('srcdoc',/budget-report-rows|Resultater/);
+ await expect(page.locator('#ln-rw-title')).toBeVisible();
+ await expect(page.locator('[data-rw-part="summary"]')).toBeChecked();
+ await page.locator('#ln-rw-next').click();
+ await expect(page.locator('#ln-report-preview')).toHaveAttribute('srcdoc',/report-metric-grid|Resultater/);
  const preview=page.frameLocator('#ln-report-preview');
  await expect(preview.locator('.paper')).toBeVisible();
  await expect(preview.locator('body')).toContainText('Lånesjekk Norge');
+ await page.locator('#ln-rw-next').click();
  await page.locator('#ln-report-consent').check();
  await page.locator('#ln-report-save').click();
  await expect(page.locator('#ln-report-status')).toContainText('lagret lokalt');
@@ -16,26 +20,31 @@ test('Budget reporting is local to budget, opens a readable preview and saves a 
  await page.locator('#ln-report-close').click();
  await expect(page.locator('#ln-report-modal')).toBeHidden();
 });
-test('Encrypted budget share link opens in a fresh browser context',async({page,browser})=>{
+test('Encrypted budget report opens in a separate unauthenticated browser session',async({page,browser})=>{
  await page.context().grantPermissions(['clipboard-read','clipboard-write']);
  await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
  await page.locator('#ln-report-open').click();
+ await page.locator('#ln-rw-next').click();
+ await page.locator('#ln-rw-next').click();
  await page.locator('#ln-report-consent').check();
  await page.locator('#ln-report-private-link').click();
  await expect(page.locator('#ln-report-status')).toContainText('Kryptert delingslenke er kopiert');
  const link=await page.evaluate(()=>navigator.clipboard.readText());
  expect(link).toContain('#delt=');
- const isolated=await browser.newContext();
- try{const recipient=await isolated.newPage();await recipient.goto(link,{waitUntil:'domcontentloaded'});await expect(recipient.locator('#ln-report-modal')).toBeVisible();await expect(recipient.locator('#ln-report-status')).toContainText('Rapport åpnet via kryptert lenke');await expect(recipient.frameLocator('#ln-report-preview').locator('body')).toContainText('Lånesjekk Norge')}finally{await isolated.close()}
+ const recipientContext=await browser.newContext();
+ try{const recipient=await recipientContext.newPage();await recipient.goto(link,{waitUntil:'domcontentloaded'});await expect(recipient.locator('#ln-report-modal')).toBeVisible({timeout:15000});await expect(recipient.locator('#ln-report-status')).toContainText('Rapport åpnet via kryptert lenke');await expect(recipient.frameLocator('#ln-report-preview').locator('body')).toContainText('Lånesjekk Norge')}finally{await recipientContext.close()}
 });
-test('Assistant and report are not independent floating overlays',async({page})=>{
+test('Assistant is a single chat view without an extra sharing tab',async({page})=>{
  await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#ln-report-open')).toHaveCSS('position','static');
  await page.locator('#ln-assistant-open').click();
  await expect(page.locator('#ln-assistant-panel')).toBeVisible();
  await expect(page.locator('#ln-assistant-open')).toBeHidden();
- await page.locator('[data-ln-tab="share"]').click();
+ await expect(page.locator('[data-ln-tab="share"]')).toHaveCount(0);
+ await expect(page.locator('.ln-chat-suggestions')).toBeVisible();
+ await page.locator('#ln-assistant-input').fill('Hvordan lager jeg rapport?');
+ await page.locator('#ln-assistant-form button[type="submit"]').click();
+ await expect(page.locator('#ln-assistant-messages')).toContainText('Lag PDF / del budsjettet');
+ await page.locator('.ln-assistant-account>summary').click();
  await expect(page.locator('.ln-vault')).toBeVisible();
- await page.locator('[data-ln-tab="chat"]').click();
- await expect(page.locator('#ln-assistant-form')).toBeVisible();
 });
