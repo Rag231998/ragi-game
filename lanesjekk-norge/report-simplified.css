@@ -40,3 +40,7 @@ html.cms-dark #ln-report-modal #ln-report-mail-group{background:#21434e;border-c
  #ln-report-modal .ln-rw-more>summary{font-size:12px;min-height:47px}
  #ln-report-modal .ln-rw-extra-actions button{min-height:42px!important}
 }
+
+/* Native details can be overridden by global component styles; closed means genuinely hidden. */
+#ln-report-modal .ln-rw-more:not([open])>.ln-rw-extra-actions{display:none!important}
+#ln-report-modal .ln-rw-more[open]>.ln-rw-extra-actions{display:grid!important}
