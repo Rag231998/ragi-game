@@ -44,3 +44,8 @@ html.cms-dark #ln-report-modal #ln-report-mail-group{background:#21434e;border-c
 /* Native details can be overridden by global component styles; closed means genuinely hidden. */
 #ln-report-modal .ln-rw-more:not([open])>.ln-rw-extra-actions{display:none!important}
 #ln-report-modal .ln-rw-more[open]>.ln-rw-extra-actions{display:grid!important}
+
+/* Leave room to scroll the last option entirely above the separate footer. */
+#ln-report-modal .ln-report-controls{scroll-padding-bottom:110px!important;padding-bottom:100px!important;position:relative;isolation:isolate}
+#ln-report-modal .ln-rw-nav{z-index:5!important;box-shadow:0 -7px 16px #142e3010}
+@media(max-width:760px){#ln-report-modal .ln-report-controls{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))!important}#ln-report-modal[data-wizard-step="2"] .ln-report-controls{padding-bottom:9px!important}}
