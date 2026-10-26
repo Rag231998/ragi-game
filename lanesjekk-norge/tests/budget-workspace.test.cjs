@@ -9,3 +9,13 @@ test('Budget redesign retains the operational calculator and accessible actions'
  assert.match(css,/@media\(max-width:700px\)/);
  assert.match(html,/Budsjettet ditt/);
 });
+
+test('Optional bank analysis is collapsed, but remains available to the budget engine',()=>{
+ const html=read('index.html');
+ assert.match(html,/<details class="budget-bank-analysis tool-pane">/);
+ assert.match(html,/<div id="budget-bank-chart"/);
+ assert.match(html,/STEG 2 · REGISTRER POSTER/);
+ assert.match(html,/STEG 3 · FORSTÅ FORBRUKET/);
+ assert.doesNotMatch(html,/id="budget-quick-income"/);
+ assert.doesNotMatch(html,/id="budget-quick-expense"/);
+});
