@@ -5,7 +5,7 @@ const socialImageControl=document.createElement('button');socialImageControl.id=
 const saveButton=document.createElement('button');saveButton.type='button';saveButton.id='ln-report-save';saveButton.textContent='Lagre rapport for senere';$('ln-report-download')?.insertAdjacentElement('afterend',saveButton);
 const openButton=document.createElement('button');openButton.type='button';openButton.id='ln-report-open-saved';openButton.textContent='Åpne sist lagrede rapport';saveButton.insertAdjacentElement('afterend',openButton);
 const linkButton=document.createElement('button');linkButton.type='button';linkButton.id='ln-report-private-link';linkButton.textContent='Lag kryptert delingslenke';$('ln-report-save')?.insertAdjacentElement('afterend',linkButton);
-let directEmail=false;fetch('/api/report-capabilities',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(v=>{directEmail=!!v?.directEmail;const b=$('ln-report-email');if(b)b.textContent=directEmail?'Send PDF direkte på e-post (innlogging kreves)':'Del PDF via e-postapp';}).catch(()=>{});
+let directEmail=false;fetch('/api/report-capabilities',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(v=>{directEmail=!!v?.directEmail;document.dispatchEvent(new Event('ln-report-email-ready'));}).catch(()=>{directEmail=false;document.dispatchEvent(new Event('ln-report-email-ready'))});
 const fmt=new Intl.DateTimeFormat('nb-NO',{dateStyle:'long',timeStyle:'short'});
 const forbidden=/password|passord|token|secret|apikey|api.key|auth|session|email|e.post|personnummer|fnr|fødselsnummer|account.number|kontonummer/i;
 let report=null;const storeKey='lanesjekk-saved-report-v1';
@@ -89,5 +89,5 @@ $('ln-report-email')?.addEventListener('click',async()=>{if(!report)return;
    else say('PDF er lastet ned. Åpne Mail og legg ved PDF-filen for å sende den.');
  }catch(e){if(e.name==='AbortError'){say('Deling ble avbrutt. Ingen e-post er automatisk sendt.');return}say('Kunne ikke dele PDF: '+(e.message||'Ukjent feil')+'. Prøv «Last ned rapport».')}
 });
-window.LNReportCenter={collect,getReport:()=>report,setReport:r=>{report=inspect(r);content.srcdoc=html(report)},open,close,showMessage:say};
+window.LNReportCenter={collect,getReport:()=>report,hasDirectEmail:()=>directEmail,setReport:r=>{report=inspect(r);content.srcdoc=html(report)},open,close,showMessage:say};
 })();
