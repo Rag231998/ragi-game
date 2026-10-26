@@ -25,7 +25,9 @@ function publicTheme(initial='site',systemDark=false,embedded=false){
   dispatchEvent(){},supabase:null
  };
  window.parent=embedded?{}:window;
- vm.runInNewContext(file('site-cms.js'),{window,document,location:{origin:'https://test.invalid'},CustomEvent:class {},console:{warn(){}}});
+ const scope={window,document,location:{origin:'https://test.invalid'},CustomEvent:class {},console:{warn(){}}};
+ vm.runInNewContext(file('feature-introductions-data.js'),scope);
+ vm.runInNewContext(file('site-cms.js'),scope);
  const setSite=theme=>window.lanesjekkCms.apply({brand:{theme}});
  return {window,document,meta,media,store,listeners,setSite};
 }

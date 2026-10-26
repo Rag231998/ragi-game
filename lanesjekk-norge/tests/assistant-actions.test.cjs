@@ -5,7 +5,7 @@ test('History requires opt-in and supports revocation',()=>{const j=read('assist
 test('Voice can mute microphone without sending buffered speech',()=>{const j=read('assistant-voice.js');for(const x of ['ln-voice-mute','if(muted)','recognition.abort','aria-pressed'])assert.ok(j.includes(x));new vm.Script(j)});
 test('Voice mode provides a real multi-turn composer, a dialogue log and no focus stealing',()=>{const v=read('assistant-voice.js'),c=read('assistant-conversation.js'),s=read('assistant-voice-history.css');for(const id of ['ln-voice-followup-form','ln-voice-followup','ln-voice-send','ln-voice-thread'])assert.ok(v.includes(id));assert.match(v,/followupForm\.addEventListener\('submit'/);assert.match(v,/sendFollowup\(q\)/);assert.match(v,/addExchange\(q,answer\)/);assert.match(c,/!panel\.classList\.contains\('ln-voice-mode'\)/);assert.match(s,/\.ln-voice-followup-form/);new vm.Script(v)});
 
-test('Hands-free mode restarts listening only with user choice and offers opt-in neural voice',()=>{const v=read('assistant-voice.js'),s=read('assistant-voice-history.css'),h=read('index.html');for(const x of ['ln-voice-autocontinue','resumeListening','finishSpeaking','ln-voice-natural','cloudReady','assistant-tts','deviceVoice'])assert.ok(v.includes(x));assert.match(h,/assistant-voice\.js\?v=6/);assert.match(s,/ln-voice-natural-wrap/);new vm.Script(v)});
+test('Hands-free mode restarts listening only with user choice and offers opt-in neural voice',()=>{const v=read('assistant-voice.js'),s=read('assistant-voice-history.css'),h=read('index.html');for(const x of ['ln-voice-autocontinue','resumeListening','finishSpeaking','ln-voice-natural','cloudReady','assistant-tts','deviceVoice'])assert.ok(v.includes(x));assert.match(h,/assistant-voice\.js\?v=\d+/);assert.match(s,/ln-voice-natural-wrap/);new vm.Script(v)});
 test('Neural voice API rejects missing key and creates WAV with valid PCM from the configured model',async()=>{
  const {Readable}=require('node:stream'),tts=require('../api/assistant-tts.js');
  const prev=process.env.GEMINI_API_KEY,oldFetch=global.fetch;
@@ -54,7 +54,7 @@ test('Conversation context retains budget cost analysis after a natural follow-u
  brain.response('Forstå budsjettet mitt');
  const follow=brain.response('gå gjennom de største kostnadene');
  assert.match(follow.text,/største registrerte utgiftskategoriene/i);
- assert.match(follow.text,/Bolig/);assert.match(follow.text,/14 500 kr/);
+ assert.match(follow.text,/Bolig/);assert.match(follow.text,/14[\s\u00a0\u202f]?500 kr/);
  assert.doesNotMatch(follow.text,/Fortell gjerne litt mer/i);
  const another=brain.response('Se på Bolig');
  assert.match(another.text,/Bolig/);assert.match(another.text,/45 %/);

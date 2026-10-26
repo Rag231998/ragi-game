@@ -35,6 +35,7 @@ function harness(){
   setInterval(fn,ms){assert.equal(ms,60000);checkAgain=fn},
   CustomEvent:class{constructor(type,opt){this.type=type;this.detail=opt?.detail}},
   console:{warn(){}}};
+ vm.runInNewContext(fs.readFileSync(path.join(root,'feature-introductions-data.js'),'utf8'),context,{filename:'feature-introductions-data.js'});
  vm.runInNewContext(src,context,{filename:'site-cms.js'});
  return{
   listeners,status,html,get readCount(){return readCount},get connected(){return connected},

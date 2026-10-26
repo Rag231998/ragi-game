@@ -3,7 +3,7 @@ test('Assistant has a single conversational view and optional collapsible accoun
 
 test('Opt-in AI never silently replaces free guide',()=>{const ai=read('assistant-local-ai.js');assert.match(ai,/LanguageModel/);assert.match(ai,/availability/);assert.match(ai,/checked=false/);assert.match(ai,/session\.prompt/);assert.match(ai,/addEventListener\('submit'/);new (require('node:vm').Script)(ai)});
 
-test('Gemini integration uses only server-side key and applies limits',()=>{const api=read('api/assistant-ai.js'),client=read('assistant-local-ai.js');assert.match(api,/process\.env\.GEMINI_API_KEY/);assert.match(api,/gemini-2\.5-flash-lite/);assert.match(api,/usage\.n>30/);assert.match(client,/\/api\/assistant-ai/);assert.doesNotMatch(client,/GEMINI_API_KEY|AIza[A-Za-z0-9_-]{20}/);new (require('node:vm').Script)(client)});
+test('Gemini integration uses only server-side key and applies limits',()=>{const api=read('api/assistant-ai.js'),client=read('assistant-local-ai.js');assert.match(api,/process\.env\.GEMINI_API_KEY/);assert.match(api,/models\/gemini-[a-z0-9.\-]+:generateContent/);assert.match(api,/usage\.n>30/);assert.match(client,/\/api\/assistant-ai/);assert.doesNotMatch(client,/GEMINI_API_KEY|AIza[A-Za-z0-9_-]{20}/);new (require('node:vm').Script)(client)});
 
 test('Budget account lives in the budget overview, not inside the assistant',()=>{const h=read('index.html');const i=h.indexOf('id="ln-budget-private-tools"'),a=h.indexOf('id="ln-assistant-panel"');assert.ok(i>0&&a>i);assert.ok(h.slice(i,a).includes('id="ln-vault-login"'));assert.ok(!h.slice(a).includes('id="ln-vault-login"'));assert.match(h,/budget-private-tools\.css/);});
 test('Conversational guidance remembers mortgage amounts and uses current budget numbers',()=>{
@@ -51,7 +51,7 @@ test('Conversation history supports new chat, resuming archived conversations an
 test('Voice controls have explicit labels, consent notice and an animated dialog only when speech is supported',()=>{
  const html=read('index.html'),voice=read('assistant-voice.js'),css=read('assistant-voice-history.css');
  assert.match(html,/assistant-voice\.js/);
- for(const word of ['Snakk','Les opp svar','Ferdig','Talegjenkjenning kan bruke'])assert.ok(voice.includes(word),word);assert.match(voice,/lytter/i);
+ for(const word of ['Snakk','Les opp svar','Ferdig','Nettleserens taletjeneste kan behandle'])assert.ok(voice.includes(word),word);assert.match(voice,/lytter/i);
  assert.match(voice,/SpeechRecognition\|\|window\.webkitSpeechRecognition/);
  assert.match(voice,/interimResults=true/);
  assert.match(voice,/aria-modal/);
@@ -125,7 +125,7 @@ test('iPhone dictation fallback is available without SpeechRecognition and reply
  assert.match(js,/function fallback\(/);
  assert.match(js,/ln-voice-keyboard/);
  assert.match(js,/ln-voice-play/);
- assert.match(js,/Bruk diktering på iPhone/);
+ assert.match(js,/iPhone-tastaturet|iPhone-diktering/);
  assert.match(js,/window\.speechSynthesis/);
  assert.match(js,/Du spurte:/);
  assert.match(css,/ln-voice-alternatives/);
