@@ -1,0 +1,74 @@
+name: Lånesjekk Render rate and budget production verification
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/lanesjekk-render-rate-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  production:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright
+        working-directory: lanesjekk-norge/tests
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: Check real Render API and visible policy rate card
+        working-directory: lanesjekk-norge/tests
+        env:
+          LANESJEKK_BASE_URL: https://lanesjekk-norge.onrender.com
+        run: |
+          node <<'NODE'
+          const assert=require('node:assert/strict');
+          const {chromium}=require('@playwright/test');
+          (async()=>{
+            const base=process.env.LANESJEKK_BASE_URL;
+            const browser=await chromium.launch({headless:true});
+            try{
+              for(const viewport of [{width:1440,height:900},{width:390,height:844}]){
+                const page=await browser.newPage({viewport});
+                const errors=[];
+                page.on('pageerror',error=>errors.push(error.message));
+                const response=await page.goto(base+'/#topp',{waitUntil:'domcontentloaded',timeout:60000});
+                assert.equal(response.status(),200,'homepage HTTP');
+                await page.locator('#policy-rate-value').waitFor({state:'visible',timeout:15000});
+                await page.waitForFunction(()=>{
+                  const value=document.querySelector('#policy-rate-value')?.textContent||'';
+                  const date=document.querySelector('#policy-rate-date')?.textContent||'';
+                  return /4[,.]50\s*%/.test(value)&&date.includes('24.09.2026');
+                },null,{timeout:15000});
+                const card=await page.evaluate(()=>({
+                  rate:document.querySelector('#policy-rate-value')?.textContent,
+                  date:document.querySelector('#policy-rate-date')?.textContent,
+                  status:document.querySelector('#policy-rate-status')?.textContent
+                }));
+                assert.match(card.rate,/4[,.]50\s*%/);
+                assert.match(card.date,/24\.09\.2026/);
+                assert.ok(!/feil|mangler|kunne ikke|ikke tilgjengelig/i.test(card.status),'card error status: '+card.status);
+                const api=await page.request.get(base+'/api/policy-rate',{timeout:30000});
+                assert.equal(api.status(),200,'policy-rate API status');
+                const json=await api.json();
+                assert.equal(json.ok,true,'API confirmed');
+                assert.equal(json.rate,4.5,'API policy rate');
+                assert.equal(json.date,'2026-09-24','API publication date');
+                assert.ok(json.sourceUrl.includes('norges-bank.no'),'official source');
+                assert.deepEqual(errors,[],'uncaught page errors');
+                console.log(JSON.stringify({viewport,card,api:json}));
+                await page.close();
+              }
+            }finally{await browser.close()}
+          })().catch(e=>{console.error(e);process.exitCode=1});
+          NODE
+      - name: Run real Render budget and navigation regression tests
+        working-directory: lanesjekk-norge/tests
+        env:
+          LANESJEKK_BASE_URL: https://lanesjekk-norge.onrender.com
+        run: npx playwright test finance-ui.spec.cjs navigation-search.spec.cjs --project=desktop-chromium --project=android-chromium --grep "editable budget|budget preserves|global search opens|view switcher opens|top-level menus open" --workers=2 --retries=0 --reporter=line
