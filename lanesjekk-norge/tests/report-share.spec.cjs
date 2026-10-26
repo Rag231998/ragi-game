@@ -48,3 +48,37 @@ test('Assistant is a single chat view without an extra sharing tab',async({page}
  await page.locator('.ln-assistant-account>summary').click();
  await expect(page.locator('.ln-vault')).toBeVisible();
 });
+
+test('Mobile sharing controls remain reachable and native PDF + social image files are offered',async({page})=>{
+ await page.setViewportSize({width:390,height:700});
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('#ln-report-open').click();
+ await page.locator('#ln-rw-next').click();
+ await page.locator('#ln-rw-next').click();
+ await expect(page.locator('#ln-report-modal')).toHaveAttribute('data-wizard-step','3');
+ await expect(page.locator('#ln-report-preview')).toBeHidden();
+ await page.locator('#ln-report-consent').check();
+ await page.evaluate(()=>{
+   window.__sharedFiles=[];
+   Object.defineProperty(navigator,'canShare',{configurable:true,value:()=>true});
+   Object.defineProperty(navigator,'share',{configurable:true,value:async payload=>{window.__sharedFiles.push(payload.files?.[0]?.name||'missing')}});
+   window.LNReportPDF.file=()=>new File(['%PDF-1.4'],'budsjett.pdf',{type:'application/pdf'});
+   window.LNReportSocial.file=()=>new File(['picture'],'budsjett.png',{type:'image/png'});
+ });
+ const actions=page.locator('#ln-report-social');
+ await actions.scrollIntoViewIfNeeded();
+ await actions.click();
+ await expect(page.locator('#ln-report-status')).toContainText('Delingsmenyen ble lukket');
+ const image=page.locator('#ln-report-social-image');
+ await image.scrollIntoViewIfNeeded();
+ await image.click();
+ const names=await page.evaluate(()=>window.__sharedFiles);
+ expect(names).toEqual(['budsjett.pdf','budsjett.png']);
+ const box=await image.boundingBox();
+ expect(box).not.toBeNull();
+ expect(box.x).toBeGreaterThanOrEqual(0);
+ expect(box.x+box.width).toBeLessThanOrEqual(391);
+ await page.locator('#ln-rw-back').scrollIntoViewIfNeeded();
+ await page.locator('#ln-rw-back').click();
+ await expect(page.locator('#ln-report-preview')).toBeVisible();
+});
