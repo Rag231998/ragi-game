@@ -10,6 +10,7 @@ const options=[
  ['expenses','Utgifter','Kategorier og månedlige kostnader',true],
  ['savings','Sparing og mål','Til overs, spareandel og mulig utvikling',true],
  ['details','Beregning og poster','Detaljerte budsjettposter og grunnlag',true],
+ ['loans','Lån og renter','Eventuelle lån, gjeld og renteposter',false],
  ['notes','Egne kommentarer','Legg til en kort forklaring',false]
 ];
 selection.innerHTML='<h3>Velg innhold</h3><p>Du bestemmer hva mottakeren får se. Ingen rapport sendes før du deler den.</p><div class="ln-rw-options">'+options.map(([id,name,description,selected])=>'<label class="ln-rw-option"><input data-rw-part="'+id+'" type="checkbox" '+(selected?'checked':'')+'><span><strong>'+name+'</strong><small>'+description+'</small></span></label>').join('')+'</div><label class="ln-rw-label" for="ln-rw-title">Rapporttittel</label><input id="ln-rw-title" type="text" maxlength="90" value="Mitt budsjett" placeholder="Mitt budsjett"><label class="ln-rw-label" for="ln-rw-note">Kommentar (valgfritt)</label><textarea id="ln-rw-note" rows="3" maxlength="500" placeholder="Hva ønsker du at mottakeren skal vite?"></textarea>';
@@ -26,8 +27,8 @@ function makeReport(){
  const r={...source,results:[...source.results],entries:[...source.entries],rows:source.rows.map(c=>[...c])};
  r.title=$('ln-rw-title').value.trim()||'Budsjettrapport';
  const inc=/(lønn|inntekt|pensjon|stønad|trygd|stipend)/i;
- if(!selected('details'))r.entries=[];
- if(!selected('income')||!selected('expenses'))r.rows=r.rows.filter(c=>{const type=inc.test(String(c[1]||''));return type?selected('income'):selected('expenses')});
+ if(!selected('details'))r.entries=[];if(!selected('loans'))r.entries=r.entries.filter(e=>!/(lån|gjeld|rente)/i.test(e.label));
+ r.rows=r.rows.filter(c=>{const category=String(c[1]||'');if(/(lån|gjeld|rente)/i.test(category))return selected('loans');return inc.test(category)?selected('income'):selected('expenses')});
  r.results=r.results.filter(x=>{
   const t=x.label.toLowerCase();
   if(/spare|til overs|overskudd|sparing/.test(t))return selected('savings')||selected('summary');
@@ -53,6 +54,6 @@ next.addEventListener('click',()=>show(step+1));back.addEventListener('click',()
 progress.addEventListener('click',e=>{const b=e.target.closest('[data-rw-step]');if(b&&!b.disabled)show(Number(b.dataset.rwStep))});
 $('ln-report-open')?.addEventListener('click',()=>{original=api.getReport();usedHash=false;if(original){$('ln-rw-title').value='Mitt budsjett – '+new Intl.DateTimeFormat('nb-NO',{month:'long',year:'numeric'}).format(new Date());show(1)}}); 
 // When opening an encrypted recipient link, show the preview directly.
-new MutationObserver(()=>{if(!modal.hidden&&!usedHash&&location.hash.startsWith('#delt=')){usedHash=true;original=api.getReport();show(2)}}).observe(modal,{attributes:true,attributeFilter:['hidden']});
-if(!modal.hidden&&location.hash.startsWith('#delt=')){original=api.getReport();usedHash=true;show(2)}
+new MutationObserver(()=>{if(!modal.hidden&&!usedHash&&location.hash.startsWith('#delt=')){usedHash=true;original=api.getReport();if(original)$('ln-rw-title').value=original.title;show(2)}}).observe(modal,{attributes:true,attributeFilter:['hidden']});
+if(!modal.hidden&&location.hash.startsWith('#delt=')){original=api.getReport();if(original)$('ln-rw-title').value=original.title;usedHash=true;show(2)}
 })();
