@@ -3,7 +3,7 @@ test('Assistant has a single conversational view and optional collapsible accoun
 
 test('Opt-in AI never silently replaces free guide',()=>{const ai=read('assistant-local-ai.js');assert.match(ai,/LanguageModel/);assert.match(ai,/availability/);assert.match(ai,/checked=false/);assert.match(ai,/session\.prompt/);assert.match(ai,/addEventListener\('submit'/);new (require('node:vm').Script)(ai)});
 
-test('Gemini integration uses only server-side key and applies limits',()=>{const api=read('api/assistant-ai.js'),client=read('assistant-local-ai.js');assert.match(api,/process\.env\.GEMINI_API_KEY/);assert.match(api,/gemini-2\.5-flash-lite/);assert.match(api,/usage\.n>12/);assert.match(client,/\/api\/assistant-ai/);assert.doesNotMatch(client,/GEMINI_API_KEY|AIza[A-Za-z0-9_-]{20}/);new (require('node:vm').Script)(client)});
+test('Gemini integration uses only server-side key and applies limits',()=>{const api=read('api/assistant-ai.js'),client=read('assistant-local-ai.js');assert.match(api,/process\.env\.GEMINI_API_KEY/);assert.match(api,/gemini-2\.5-flash-lite/);assert.match(api,/usage\.n>30/);assert.match(client,/\/api\/assistant-ai/);assert.doesNotMatch(client,/GEMINI_API_KEY|AIza[A-Za-z0-9_-]{20}/);new (require('node:vm').Script)(client)});
 
 test('Budget account lives in the budget overview, not inside the assistant',()=>{const h=read('index.html');const i=h.indexOf('id="ln-budget-private-tools"'),a=h.indexOf('id="ln-assistant-panel"');assert.ok(i>0&&a>i);assert.ok(h.slice(i,a).includes('id="ln-vault-login"'));assert.ok(!h.slice(a).includes('id="ln-vault-login"'));assert.match(h,/budget-private-tools\.css/);});
 test('Conversational guidance remembers mortgage amounts and uses current budget numbers',()=>{
@@ -80,4 +80,17 @@ test('Natural multi-topic conversation recovers from unrelated questions and und
  assert.match(brain.response('Jeg vil kjøpe sekundærbolig').text,/bolig nummer to/);
  brain.reset();
  assert.match(brain.response('Kjøp av bolig nummer 2').text,/bolig nummer to/);
+});
+
+test('General purpose assistant uses a real language model for arbitrary questions when configured',()=>{
+ const server=read('api/assistant-ai.js'),ui=read('assistant-conversation.js');
+ for(const marker of ['responseMimeType','responseJsonSchema','systemInstruction','suggestions','page','history'])assert.ok(server.includes(marker),marker);
+ assert.match(server,/GEMINI_API_KEY/);
+ assert.match(server,/ikke finn opp|Ikke finn opp/);
+ assert.match(server,/spørsmål|spørsmålet/);
+ assert.match(ui,/page:\/\^#/);
+ assert.match(ui,/data\.suggestions/);
+ assert.match(ui,/data\.tool/);
+ assert.doesNotMatch(ui,/GEMINI_API_KEY/);
+ new vm.Script(ui);
 });
