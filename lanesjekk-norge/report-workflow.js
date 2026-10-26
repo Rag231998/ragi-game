@@ -34,7 +34,7 @@ copySummary.addEventListener('click',async()=>{
  const r=api.getReport();
  if(!r||!$('ln-report-consent')?.checked){api.showMessage('Godkjenn delingen før du kopierer økonomiske opplysninger.');return}
  const rows=(r.results||[]).slice(0,10).map(x=>x.label+': '+x.value);
- const message=[r.title,'Opprettet med Lånesjekk Norge',...rows,'Beregningene er basert på opplysninger oppgitt av brukeren.'].join('\\n');
+ const message=[r.title,'Opprettet med Lånesjekk Norge',...rows,'Beregningene er basert på opplysninger oppgitt av brukeren.'].join('\n');
  try{if(!navigator.clipboard?.writeText)throw Error('clipboard');await navigator.clipboard.writeText(message);api.showMessage('Kort oppsummering er kopiert og klar for deling.')}catch{api.showMessage('Nettleseren blokkerte kopiering. Bruk Del PDF eller Last ned PDF i stedet.')}
 });
 const selection=document.createElement('div');selection.className='ln-rw-selection';
