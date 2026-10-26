@@ -47,7 +47,7 @@ $('ln-report-social')?.addEventListener('click',async()=>{if(!report)return;
  let file;try{file=window.LNReportPDF.file(report)}catch(e){say('Kunne ikke lage PDF: '+e.message);return}
  try{if(navigator.share&&navigator.canShare?.({files:[file]})){
     say('Velg Mail eller en annen app i delingsmenyen. Mottakeren må velges i appen.');
-    await navigator.share({title:'Lånesjekk Norge – '+report.title,text:'Budsjettrapport som PDF fra Lånesjekk Norge',files:[file]});
+    await navigator.share({files:[file]});
     say('Delingsmenyen ble lukket. Kontroller at meldingen er sendt i appen du valgte.');return
   }
   window.LNReportPDF.download(report);
@@ -58,7 +58,7 @@ $('ln-report-social-image')?.addEventListener('click',async()=>{if(!report)retur
  let file;try{file=window.LNReportSocial.file(report)}catch(e){say('Kunne ikke lage delingsbildet: '+e.message);return}
  try{if(navigator.share&&navigator.canShare?.({files:[file]})){
    say('Velg Instagram, Facebook, Meldinger eller en annen app i delingsmenyen.');
-   await navigator.share({title:'Budsjett fra Lånesjekk Norge',files:[file]});
+   await navigator.share({files:[file]});
    say('Delingsmenyen ble lukket. Kontroller delingen i appen.');return
   }
   window.LNReportSocial.download(report);say('Budsjettbildet er lastet ned. Du kan legge det ved i ønsket app.');
@@ -81,7 +81,7 @@ $('ln-report-email')?.addEventListener('click',async()=>{if(!report)return;
    const file=window.LNReportPDF.file(report);
    if(navigator.share&&navigator.canShare?.({files:[file]})){
      say('PDF er klar. Velg Mail i delingsmenyen og fyll inn mottakeradressen i e-postappen.');
-     await navigator.share({title:report.title,text:'Budsjettrapport fra Lånesjekk Norge med PDF-vedlegg.',files:[file]});
+     await navigator.share({files:[file]});
      say('E-postappen eller delingsmenyen ble lukket. Kontroller i e-postappen at meldingen er sendt.');return
    }
    window.LNReportPDF.download(report);
