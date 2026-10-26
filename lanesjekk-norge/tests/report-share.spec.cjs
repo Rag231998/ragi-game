@@ -13,6 +13,7 @@ test('Budget wizard lets the user select, preview, save and close a PDF report',
  await expect(preview.locator('body')).toContainText('Lånesjekk Norge');
  await page.locator('#ln-rw-next').click();
  await page.locator('#ln-report-consent').check();
+ await page.locator('#ln-rw-more > summary').click();
  await page.locator('#ln-report-save').click();
  await expect(page.locator('#ln-report-status')).toContainText('lagret lokalt');
  await page.locator('#ln-report-open-saved').click();
@@ -69,6 +70,7 @@ test('Mobile sharing controls remain reachable and native PDF + social image fil
  await actions.scrollIntoViewIfNeeded();
  await actions.click();
  await expect(page.locator('#ln-report-status')).toContainText('Delingsmenyen ble lukket');
+ await page.locator('#ln-rw-more > summary').click();
  const image=page.locator('#ln-report-social-image');
  await image.scrollIntoViewIfNeeded();
  await image.click();
@@ -102,6 +104,7 @@ test('iOS report uses a separate unobstructed footer with scrollable action butt
  expect(result.footerAboveControls).toBe(true);
  expect(result.noButtonOverlap).toBe(true);
  expect(result.footerInsideViewport).toBe(true);
+ await page.locator('#ln-rw-more > summary').click();
  await page.locator('#ln-report-social-image').scrollIntoViewIfNeeded();
  await expect(page.locator('#ln-report-social-image')).toBeVisible();
 });
@@ -120,4 +123,25 @@ test('Floating iOS assistant button can be dragged away from content and restore
  expect(styles.left).toMatch(/px/);expect(styles.top).toMatch(/px/);expect(styles.key).toContain('"x"');
  await page.reload({waitUntil:'domcontentloaded'});
  await expect(b).toHaveAttribute('style',/left:/);
+});
+
+test('Step three has exactly three primary actions; optional features remain accessible',async({page})=>{
+ await page.setViewportSize({width:390,height:700});
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('#ln-report-open').click();
+ await page.locator('#ln-rw-next').click();
+ await page.locator('#ln-rw-next').click();
+ const primary=page.locator('#ln-report-modal .ln-rw-main-actions > button');
+ await expect(primary).toHaveCount(3);
+ await expect(primary.nth(0)).toContainText('Del PDF');
+ await expect(primary.nth(1)).toContainText('Last ned PDF');
+ await expect(primary.nth(2)).toContainText('Kopier sikker lenke');
+ await expect(page.locator('#ln-rw-more')).not.toHaveAttribute('open',/.+/);
+ await expect(page.locator('#ln-report-social-image')).toBeHidden();
+ await expect(page.locator('#ln-report-mail-group')).toBeHidden();
+ await expect(page.locator('#ln-rw-share-details')).toContainText('budsjettposter');
+ await page.locator('#ln-rw-more > summary').click();
+ await expect(page.locator('#ln-report-social-image')).toBeVisible();
+ await expect(page.locator('#ln-report-save')).toBeVisible();
+ await expect(page.locator('#ln-rw-copy-summary')).toBeVisible();
 });
