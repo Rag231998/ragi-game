@@ -38,3 +38,11 @@ html.cms-dark .mobile-menu .mobile-menu-feature>span{color:#9de3d4}
 html.cms-dark .site-header .mobile-menu[open]>.mobile-menu-panel{background:#152d3d!important;color:#f0fbff!important;border-color:#355869!important}
 html.cms-dark .site-header .mobile-menu .mobile-menu-category>summary:hover,html.cms-dark .site-header .mobile-menu .mobile-menu-category[open]>summary,html.cms-dark .site-header .mobile-menu .mobile-menu-category>div>a:hover{background:#24534e!important;color:#d6fff4!important}
 @media(max-width:600px){.site-header .mobile-menu[open]>.mobile-menu-panel{position:fixed!important;top:var(--mobile-menu-top,110px)!important;right:12px!important;left:12px!important;width:auto!important;max-width:none!important;max-height:calc(100dvh - 140px)!important}}
+
+/* Strong menu visibility guarantees across older responsive styles. */
+.site-header .mobile-menu{overflow:visible!important}
+.site-header .mobile-menu[open]>.mobile-menu-panel{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;position:fixed!important;inset:auto!important;z-index:2147483000!important;overflow-y:auto!important;overscroll-behavior:contain!important;max-width:calc(100vw - 24px)!important}
+.site-header .mobile-menu:not([open])>.mobile-menu-panel{display:none!important}
+.site-header .mobile-menu>summary{cursor:pointer!important;user-select:none}
+.site-header .mobile-menu>summary:hover,.site-header .mobile-menu[open]>summary{background:#e2f5ef!important;color:#087767!important;box-shadow:0 0 0 2px #11988055!important}
+.site-header .header-theme-label{display:none!important}
