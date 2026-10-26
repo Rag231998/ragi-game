@@ -59,3 +59,25 @@ test('Voice controls have explicit labels, consent notice and an animated dialog
  assert.match(css,/prefers-reduced-motion/);
  new vm.Script(voice);
 });
+
+test('Natural multi-topic conversation recovers from unrelated questions and understands a second property purchase',()=>{
+ const code=read('assistant-brain.js'),window={},document={getElementById:()=>null,querySelectorAll:()=>[]};
+ vm.runInNewContext(code,{window,document,Intl,Number,Math});
+ const brain=window.LNConversationBrain;
+ const unrelated=brain.response('porno').text;assert.match(unrelated,/seksuelt innhold/);
+ const orientation=brain.response('liker gutter som er homo?').text;assert.match(orientation,/homofil|skeiv/);
+ const home=brain.response('Jeg ønsker å se mulighet for boligkjøp nr 2');
+ assert.match(home.text,/bolig nummer to/);assert.match(home.text,/leies ut/);assert.match(home.text,/eksisterende boliglån/);
+ assert.deepEqual(Array.from(home.follow),['Jeg vil leie den ut','Jeg skal bo der selv','Det er en fritidsbolig']);
+ assert.match(brain.response('Jeg vil leie den ut').text,/utleie/);
+ assert.match(brain.response('3 millioner kr').text,/300\s?000/);
+ assert.match(brain.response('500 000 kr i egenkapital').text,/bruttoinntekt/);
+ assert.match(brain.response('Årslønn 800 000 kr').text,/samlet gjeld|annen gjeld/);
+ const estimate=brain.response('Restgjeld 1 000 000 kr').text;
+ assert.match(estimate,/2\s?500\s?000/);
+ assert.match(estimate,/forenklet vurdering/);
+ brain.reset();
+ assert.match(brain.response('Jeg vil kjøpe sekundærbolig').text,/bolig nummer to/);
+ brain.reset();
+ assert.match(brain.response('Kjøp av bolig nummer 2').text,/bolig nummer to/);
+});
