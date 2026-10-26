@@ -604,20 +604,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
   </div>
 <div class="tool-pane budget-workbook">
   <div class="tool-pane-head"><div><span class="section-overline">STEG 2 · REGISTRER POSTER</span><h2>Inntekter og utgifter</h2><p>Bruk knappene ved tabellen for å legge til poster. Fyll inn beløp og periode – alle summer oppdateres automatisk. Bank og konto er valgfritt.</p></div><div class="tool-actions"><button class="tool-button primary" id="budget-add-income" type="button">＋ Legg til inntekt</button><button class="tool-button primary" id="budget-add-expense" type="button">＋ Legg til utgift</button><button id="ln-report-open" type="button" class="tool-button">▤ Lag PDF / del budsjettet</button></div></div>
-  <section id="ln-budget-private-tools" class="ln-budget-data-tools" aria-label="Lagre og dele budsjettet">
- <div class="ln-budget-data-intro"><div><span class="section-overline">BUDSJETT · DELING OG LAGRING</span><h3>Ta vare på budsjettet ditt</h3><p>Vil du sende en full oversikt? Bruk <strong>«Lag PDF / del budsjettet»</strong> ovenfor. Rapporten lar deg velge poster, forhåndsvise resultatet, laste ned PDF eller dele en kryptert lenke.</p></div></div>
- <div class="ln-budget-data-methods"><div><strong>Full rapport</strong><span>PDF med de postene du velger, pluss nøkkeltall</span></div><div><strong>Lagre lokalt</strong><span>Hele det redigerbare budsjettet lagres i denne nettleseren via «Lagre lokalt» under Flere verktøy</span></div><div><strong>Privat konto</strong><span>Kun fire summer lagres i din konto etter godkjenning, ikke alle budsjettpostene</span></div></div>
- <details class="ln-assistant-account"><summary>Privat budsjettkonto og deling (valgfritt)</summary><section class="ln-vault" aria-label="Deling og privat budsjett">
-<h3>Din budsjettlagring</h3>
-<p>Denne kontoen lagrer bare fire hovedtall (inntekter, utgifter, til overs og spareandel). Den lagrer ikke alle budsjettpostene. For full rapport med enkeltposter bruker du «Lag PDF / del budsjettet» ovenfor.</p>
-<button id="ln-share-report" type="button">Del bare de fire hovedtallene</button>
-<details class="ln-vault-details"><summary>Min private økonomi · Innlogging</summary>
-<form id="ln-vault-login"><label for="ln-vault-email">E-postadresse</label><input id="ln-vault-email" type="email" autocomplete="email" required placeholder="deg@eksempel.no"><button type="submit">Send sikker innloggingslenke</button></form>
-<div id="ln-vault-private" hidden><p>Innlogget · bare dine egne lagrede oppsummeringer er tilgjengelige.</p><div class="ln-vault-actions"><button type="button" id="ln-vault-save">Lagre oppsummering privat</button><button type="button" id="ln-vault-view">Vis lagret oppsummering</button><button type="button" id="ln-vault-delete">Slett lagring</button><button type="button" id="ln-vault-logout">Logg ut</button></div></div>
-<p id="ln-vault-status" role="status" aria-live="polite">Ingen data sendes automatisk.</p></details>
-</section><div class="ln-assistant-actions"><button id="ln-share-current" type="button" class="ln-share-current">↗ Del lenke til dette verktøyet</button></div></details>
- </section>
- <details class="budget-advanced-tools"><summary>⚙ Flere verktøy: Excel og lagring <span>Åpne</span></summary><div class="budget-toolbar">
+  <details class="budget-advanced-tools"><summary>⚙ Flere verktøy: Excel og lagring <span>Åpne</span></summary><div class="budget-toolbar">
    <label for="budget-bank-filter">Vis poster fra bank/konto</label><input id="budget-bank-query" type="search" placeholder="Søk blant norske banker" aria-label="Søk etter bank eller konto" autocomplete="off"><select id="budget-bank-filter"><option value="all">Alle banker og kontoer</option></select><small id="budget-bank-results" role="status"></small><label class="budget-auto-switch"><input id="budget-auto-category" type="checkbox" checked> Foreslå kategori fra beskrivelsen</label>
    <button id="budget-demo" type="button" class="tool-button">Vis eksempelbudsjett</button>
    <button id="budget-reset" type="button" class="tool-button">Tøm skjema</button>
@@ -644,6 +631,20 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
   <div class="budget-table-wrap"><table class="budget-table" aria-label="Redigerbart husholdningsbudsjett"><thead><tr><th scope="col">Velg / type</th><th scope="col">Kategori</th><th scope="col">Beskrivelse</th><th scope="col" class="budget-bank-cell">Bank / konto</th><th scope="col">Beløp (kr)</th><th scope="col">Periode</th><th scope="col">Per måned</th><th scope="col"><span class="sr-only">Handling</span></th></tr></thead><tbody id="budget-rows"></tbody></table></div>
   <p id="budget-empty" class="tool-empty" hidden>Ingen poster her. Velg «+ Inntekt» eller «+ Utgift», eller prøv et eksempelbudsjett.</p>
   <div class="budget-table-bottom"><span id="budget-row-count">0 poster</span><span>Beløpene omregnes til månedlige kostnader.</span></div>
+<section id="ln-budget-private-tools" class="ln-budget-data-tools" aria-label="Lagre og dele budsjettet">
+ <div class="ln-budget-data-intro"><div><span class="section-overline">BUDSJETT · DELING OG LAGRING</span><h3>Ta vare på budsjettet ditt</h3><p>Vil du sende en full oversikt? Bruk <strong>«Lag PDF / del budsjettet»</strong> ovenfor. Rapporten lar deg velge poster, forhåndsvise resultatet, laste ned PDF eller dele en kryptert lenke.</p></div></div>
+ <div class="ln-budget-data-methods"><div><strong>Full rapport</strong><span>PDF med de postene du velger, pluss nøkkeltall</span></div><div><strong>Lagre lokalt</strong><span>Hele det redigerbare budsjettet lagres i denne nettleseren via «Lagre lokalt» under Flere verktøy</span></div><div><strong>Privat konto</strong><span>Kun fire summer lagres i din konto etter godkjenning, ikke alle budsjettpostene</span></div></div>
+ <details class="ln-assistant-account"><summary>Privat budsjettkonto og deling (valgfritt)</summary><section class="ln-vault" aria-label="Deling og privat budsjett">
+<h3>Din budsjettlagring</h3>
+<p>Denne kontoen lagrer bare fire hovedtall (inntekter, utgifter, til overs og spareandel). Den lagrer ikke alle budsjettpostene. For full rapport med enkeltposter bruker du «Lag PDF / del budsjettet» ovenfor.</p>
+<button id="ln-share-report" type="button">Del bare de fire hovedtallene</button>
+<details class="ln-vault-details"><summary>Min private økonomi · Innlogging</summary>
+<form id="ln-vault-login"><label for="ln-vault-email">E-postadresse</label><input id="ln-vault-email" type="email" autocomplete="email" required placeholder="deg@eksempel.no"><button type="submit">Send sikker innloggingslenke</button></form>
+<div id="ln-vault-private" hidden><p>Innlogget · bare dine egne lagrede oppsummeringer er tilgjengelige.</p><div class="ln-vault-actions"><button type="button" id="ln-vault-save">Lagre oppsummering privat</button><button type="button" id="ln-vault-view">Vis lagret oppsummering</button><button type="button" id="ln-vault-delete">Slett lagring</button><button type="button" id="ln-vault-logout">Logg ut</button></div></div>
+<p id="ln-vault-status" role="status" aria-live="polite">Ingen data sendes automatisk.</p></details>
+</section><div class="ln-assistant-actions"><button id="ln-share-current" type="button" class="ln-share-current">↗ Del lenke til dette verktøyet</button></div></details>
+ </section>
+ 
  </div>
  <div class="budget-insights-grid">
   <div class="tool-pane"><div class="tool-pane-head"><div><span class="section-overline">STEG 3 · FORSTÅ FORBRUKET</span><h2>Hvor går pengene?</h2><p>Fordeling av månedlige utgifter per kategori.</p></div></div>
