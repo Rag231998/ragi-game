@@ -33,9 +33,9 @@ function start(){
  transcript='';text.textContent='';listening=false;
  try{const r=new Speech();recognition=r;r.lang='nb-NO';r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
   r.onstart=()=>{if(cancelled||!voiceOpen)return;listening=true;phase('listening','Jeg lytter …','Snakk naturlig. Du ser ordene mens du snakker.');again.textContent='Stopp opptak'};
-  r.onresult=e=>{if(cancelled||!voiceOpen)return;let draft='';for(let i=0;i<e.results.length;i++){draft+=e.results[i][0].transcript+' ';if(e.results[i].isFinal)transcript+=e.results[i][0].transcript+' '}text.textContent=draft.trim()};
+  r.onresult=e=>{if(cancelled||!voiceOpen||recognition!==r)return;let draft='',finalText='';for(let i=0;i<e.results.length;i++){const part=e.results[i][0].transcript;draft+=part+' ';if(e.results[i].isFinal)finalText+=part+' '}transcript=finalText.trim();text.textContent=draft.trim()};
   r.onerror=e=>{if(cancelled||!voiceOpen)return;listening=false;if(e.error==='aborted')return;phase('error','Kunne ikke bruke mikrofonen',e.error==='not-allowed'?'Tillat mikrofon i Safari-innstillingene eller skriv spørsmålet.':'Kontroller mikrofontilgang og prøv igjen.');again.textContent='🎙 Prøv igjen'};
-  r.onend=()=>{if(cancelled||!voiceOpen)return;listening=false;recognition=null;again.textContent='🎙 Snakk nå';const q=(transcript||text.textContent).trim();if(q&&!pending){pending=true;phase('processing','Ser på spørsmålet ditt …','Jeg finner et svar.');conversation.send(q)}else if(!q&&modal.dataset.phase!=='error'){phase('ready','Jeg hørte ikke spørsmålet','Trykk «Snakk nå» og prøv igjen.')}}
+  r.onend=()=>{if(cancelled||!voiceOpen||recognition!==r)return;listening=false;recognition=null;again.textContent='🎙 Snakk nå';const q=(transcript||text.textContent).trim();if(q&&!pending){pending=true;phase('processing','Ser på spørsmålet ditt …','Jeg finner et svar.');conversation.send(q)}else if(!q&&modal.dataset.phase!=='error'){phase('ready','Jeg hørte ikke spørsmålet','Trykk «Snakk nå» og prøv igjen.')}}
   r.start();
   phase('starting','Klargjør mikrofon …','Gi tillatelse dersom nettleseren spør.');
  }catch(e){phase('error','Mikrofonen kunne ikke startes','Bruk skrivefeltet i stedet, eller kontroller tillatelsene.');again.textContent='🎙 Prøv igjen'}
