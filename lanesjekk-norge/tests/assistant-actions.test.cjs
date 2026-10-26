@@ -40,3 +40,22 @@ test('Transcription service fails closed without configured provider and transcr
   const yes=answer();await handler(req(),yes);assert.equal(yes.code,200);assert.equal(yes.result.transcript,'Tre millioner kroner');
  }finally{global.fetch=oldFetch;if(previous===undefined)delete process.env.GEMINI_API_KEY;else process.env.GEMINI_API_KEY=previous}
 });
+
+test('Conversation context retains budget cost analysis after a natural follow-up',()=>{
+ const vm=require('node:vm');
+ const sum={ 'budget-income':'44 000 kr','budget-expenses':'32 200 kr','budget-balance':'11 800 kr'};
+ const entry=(name,value)=>({querySelectorAll:()=>Array.from({length:8},(_,i)=>i===1?{querySelector:()=>({selectedOptions:[{textContent:name}]})}:i===6?{textContent:value}:{} )});
+ const document={
+  getElementById:id=>({textContent:sum[id]||'0 kr'}),
+  querySelectorAll:selector=>selector==='#budget-rows tr'?[entry('Bolig','14 500 kr'),entry('Mat og drikke','6 500 kr'),entry('Transport','3 800 kr')]:[]
+ };
+ const ctx={window:{},document,console};vm.runInNewContext(read('assistant-brain.js'),ctx);
+ const brain=ctx.window.LNConversationBrain;brain.reset();
+ brain.response('Forstå budsjettet mitt');
+ const follow=brain.response('gå gjennom de største kostnadene');
+ assert.match(follow.text,/største registrerte utgiftskategoriene/i);
+ assert.match(follow.text,/Bolig/);assert.match(follow.text,/14 500 kr/);
+ assert.doesNotMatch(follow.text,/Fortell gjerne litt mer/i);
+ const another=brain.response('Se på Bolig');
+ assert.match(another.text,/Bolig/);assert.match(another.text,/45 %/);
+});
