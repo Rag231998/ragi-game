@@ -4,6 +4,7 @@ if(!button)return;
 const key='ln-assistant-floating-position-v2',gap=12,threshold=9;
 button.setAttribute('title','Trykk for hjelp. Hold og dra for å flytte knappen.');
 button.setAttribute('aria-label','Åpne assistenten. Knappen kan flyttes med fingeren.');
+const grip=document.createElement('span');grip.className='ln-drag-grip';grip.setAttribute('aria-hidden','true');grip.textContent='⠿';button.prepend(grip);
 const clamp=(n,min,max)=>Math.min(Math.max(n,min),Math.max(min,max));
 function bounds(){
  const v=window.visualViewport;
