@@ -1,0 +1,40 @@
+/* Report wizard — calm, accessible finance workspace */
+#ln-report-modal .ln-report-card{width:min(1160px,calc(100vw - 32px));height:min(90dvh,940px);border-radius:22px}
+#ln-report-modal .ln-report-header{padding:17px 24px;background:linear-gradient(105deg,#055d55,#098a75)}
+#ln-report-modal .ln-rw-progress{display:flex;align-items:center;gap:8px;padding:14px 24px;background:#f7fbfa;border-bottom:1px solid #dbe9e7}
+#ln-report-modal .ln-rw-progress button{background:transparent;color:#576d76;border:0;border-radius:99px;font:700 12px system-ui;padding:10px 14px;cursor:pointer;min-width:0}
+#ln-report-modal .ln-rw-progress button[data-active="true"]{background:#076c60;color:#fff}
+#ln-report-modal .ln-rw-progress button:disabled{opacity:.6;cursor:default}
+#ln-report-modal .ln-report-body{grid-template-columns:minmax(280px,345px) minmax(0,1fr)}
+#ln-report-modal .ln-report-controls{gap:14px;padding:20px 22px;background:#fff;overflow-y:auto}
+#ln-report-modal .ln-rw-selection h3{font-size:18px;margin:0;color:#153c47}
+#ln-report-modal .ln-rw-selection>p{font-size:12px;color:#697c84;line-height:1.55;margin:7px 0 14px}
+#ln-report-modal .ln-rw-options{display:grid;gap:8px}
+#ln-report-modal .ln-rw-option{display:flex;align-items:flex-start;gap:10px;padding:11px 12px;border:1px solid #d7e8e5;background:#f8fcfb;border-radius:12px;font-weight:400;cursor:pointer}
+#ln-report-modal .ln-rw-option:hover{border-color:#65b7a8}
+#ln-report-modal .ln-rw-option input{accent-color:#057b69;min-width:16px;min-height:16px;margin:3px 0}
+#ln-report-modal .ln-rw-option span{display:grid;gap:3px}
+#ln-report-modal .ln-rw-option strong{font-size:13px;color:#1e4045}
+#ln-report-modal .ln-rw-option small{font-size:11px;color:#6a7e83;line-height:1.4}
+#ln-report-modal .ln-rw-label{display:block;margin:15px 0 6px;font-size:12px}
+#ln-report-modal #ln-rw-title,#ln-report-modal #ln-rw-note{font:inherit;font-size:13px;color:#1c4047;background:#fff;border:1px solid #b4d0d0;border-radius:10px;padding:11px;width:100%;box-sizing:border-box;resize:vertical}
+#ln-report-modal .ln-rw-nav{display:flex;gap:8px;position:sticky;bottom:0;padding:10px 0 0;background:inherit}
+#ln-report-modal .ln-rw-nav button{flex:1;text-align:center!important}
+#ln-report-modal #ln-rw-next{background:#087c6b;color:white;border-color:#087c6b}
+#ln-report-modal .ln-rw-share{display:grid;gap:9px}
+#ln-report-modal .ln-rw-share[hidden],#ln-report-modal .ln-rw-selection[hidden],#ln-report-modal .ln-rw-nav [hidden]{display:none!important}
+#ln-report-modal #ln-report-download{background:#086a60;color:white}
+#ln-report-modal #ln-report-print{display:none}
+#ln-report-modal #ln-report-status{font-size:11px;line-height:1.5;background:#eaf6f1;color:#24564f;padding:10px 12px;border-radius:10px}
+#ln-report-modal [data-rw-step]{transition:background-color .15s}
+#ln-report-modal button:focus-visible,#ln-report-modal input:focus-visible,#ln-report-modal textarea:focus-visible{outline:3px solid #50d4ba;outline-offset:2px}
+html.cms-dark #ln-report-modal .ln-rw-progress{background:#153b48;border-color:#426575}
+html.cms-dark #ln-report-modal .ln-rw-progress button{color:#b9d9de}
+html.cms-dark #ln-report-modal .ln-rw-progress button[data-active="true"]{color:white}
+html.cms-dark #ln-report-modal .ln-report-controls{background:#1c3646}
+html.cms-dark #ln-report-modal .ln-rw-selection h3,html.cms-dark #ln-report-modal .ln-rw-option strong{color:#e6f8f7}
+html.cms-dark #ln-report-modal .ln-rw-option{background:#254654;border-color:#446d71}
+html.cms-dark #ln-report-modal .ln-rw-option small,html.cms-dark #ln-report-modal .ln-rw-selection>p{color:#c6d8dc}
+html.cms-dark #ln-report-modal .ln-rw-nav{background:#1c3646}
+@media(max-width:760px){#ln-report-modal{padding:5px}#ln-report-modal .ln-report-card{width:100%;height:calc(100dvh - 10px);border-radius:13px}#ln-report-modal .ln-rw-progress{padding:9px 12px;gap:3px}#ln-report-modal .ln-rw-progress button{padding:9px 7px;font-size:10px;flex:1;line-height:1.3}#ln-report-modal .ln-report-body{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(160px,auto) minmax(200px,1fr)}#ln-report-modal .ln-report-controls{padding:12px 16px;max-height:53dvh;display:flex;flex-direction:column;overflow-y:auto}#ln-report-modal #ln-report-preview{min-height:220px}#ln-report-modal .ln-rw-options{grid-template-columns:1fr 1fr}#ln-report-modal .ln-rw-option{padding:9px;gap:6px}#ln-report-modal .ln-rw-option strong{font-size:12px}#ln-report-modal .ln-rw-option small{font-size:10px}#ln-report-modal .ln-report-header{padding:12px 16px;min-height:58px}#ln-report-modal .ln-report-header h2{font-size:15px}}
+@media(max-width:380px){#ln-report-modal .ln-rw-options{grid-template-columns:1fr}}
