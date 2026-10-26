@@ -382,6 +382,15 @@ test('Admin publication settings hide history by default and reveal a one-time f
  await page.locator('#ln-chat-list').click();
  await expect(page.locator('#ln-chat-history')).toBeVisible();
  await page.locator('#ln-chat-history-close').click();
- await page.locator('.ln-intro-help').first().click();
+ await page.locator('#ln-chat-list + .ln-intro-help').click();
  await expect(page.locator('#ln-intro-dialog')).toBeVisible();
+});
+
+test('Local budget assistant understands follow-up about largest expenses and selected expense category',async({page})=>{
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('#ln-assistant-open').click();
+ const ask=async q=>{await page.locator('#ln-assistant-input').fill(q);await page.locator('#ln-assistant-form button[type="submit"]').click();};
+ await ask('Forstå budsjettet mitt');await expect(page.locator('#ln-assistant-messages')).toContainText('Budsjettet viser',{timeout:15000});
+ await ask('gå gjennom de største kostnadene');await expect(page.locator('#ln-assistant-messages')).toContainText('største registrerte utgiftskategoriene',{timeout:15000});
+ await ask('Se på Bolig');await expect(page.locator('#ln-assistant-messages')).toContainText('per måned i budsjettet ditt',{timeout:15000});
 });

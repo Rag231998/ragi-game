@@ -63,6 +63,12 @@ function response(q){const t=norm(q),vague=/^(ja|gjerne|ok|fortell mer|mer|nei|h
   return{text:'Med '+kr(l.amount)+', '+l.rate+' % nominell rente og '+l.years+' år er anslått terminbeløp '+kr(payment)+' per måned. Anslåtte rentekostnader i hele perioden: '+kr(payment*n-l.amount)+'. Det forutsetter uendret rente og tar ikke med gebyrer. Vil du sammenligne med en annen rente?',href:'#sjekk',follow:['Hva om renten øker?','Hva betyr effektiv rente?']};
  }
  if(topic==='budget'){
+  if(/^(se på|forklar|fortell om|undersøk|gå gjennom)\s+/.test(t)&&b.categories.length){
+   const match=b.categories.find(([name])=>t.includes(name.toLocaleLowerCase('nb-NO')));
+   if(match){const [name,value]=match,share=b.expenses>0?Math.round(value/b.expenses*100):0;
+    return{text:name+' står med '+kr(value)+' per måned i budsjettet ditt, som er omtrent '+share+' % av dine registrerte utgifter. Se på enkeltpostene i kategorien før du bestemmer deg for å redusere noe. Er dette hovedsakelig en fast kostnad, eller varierer beløpet fra måned til måned?',href:'#budsjett',follow:['Hvordan kan jeg spare på '+name+'?','Gå gjennom de største kostnadene']};
+   }
+  }
   if(/(største|størst|gå gjennom|kostnadene|utgiftskategoriene)/.test(t)){
    if(!b.categories.length)return{text:'Jeg ser ingen positive utgiftsposter i budsjettet ennå. Legg inn noen utgifter først, så kan vi gå gjennom dem én etter én.',href:'#budsjett'};
    const list=b.categories.slice(0,5).map(([category,amount],i)=>(i+1)+'. '+category+': '+kr(amount)).join('; ');

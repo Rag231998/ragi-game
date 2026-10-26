@@ -20,3 +20,6 @@ html.cms-dark .ln-intro-dialog{background:#183647;color:#eef9fb}
 html.cms-dark .ln-intro-panel h2{color:#f1fcfd}
 html.cms-dark .ln-intro-panel p,html.cms-dark .ln-intro-panel label{color:#d0e2e7}
 @media(max-width:600px){.ln-intro-panel{padding:20px 18px}.ln-intro-dialog{max-width:calc(100vw - 22px)}}
+
+/* Hiding optional chat history must win over original toolbar button display. */
+#ln-chat-list[hidden],#ln-chat-history[hidden]{display:none!important}
