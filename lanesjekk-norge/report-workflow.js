@@ -3,6 +3,40 @@ const $=id=>document.getElementById(id),api=window.LNReportCenter,modal=$('ln-re
 if(!api||!modal||!controls||!preview)return;
 const share=document.createElement('div');share.className='ln-rw-share';share.setAttribute('aria-label','Lagre og del rapporten');
 for(const child of [...controls.children])if(child!==status)share.append(child);
+const description=document.createElement('div');description.className='ln-rw-share-summary';description.innerHTML='<h3>Klar til å dele</h3><p id="ln-rw-share-details" aria-live="polite">Rapporten vises her før du deler den.</p><p class="ln-rw-privacy">Bare opplysningene du valgte i trinn 1 er med. Alle som får PDF-filen eller den komplette lenken kan lese dem.</p>';
+share.prepend(description);
+const consent=share.querySelector('.ln-report-check');
+if(consent)description.insertAdjacentElement('afterend',consent);
+const actions=document.createElement('div');actions.className='ln-rw-main-actions';
+const pdf=$('ln-report-social'),download=$('ln-report-download'),link=$('ln-report-private-link');
+if(pdf){pdf.textContent='Del PDF';pdf.classList.add('ln-rw-primary');actions.append(pdf)}
+if(download){download.textContent='Last ned PDF';actions.append(download)}
+if(link){link.textContent='Kopier sikker lenke';actions.append(link)}
+share.append(actions);
+const more=document.createElement('details');more.className='ln-rw-more';more.id='ln-rw-more';
+const title=document.createElement('summary');title.textContent='Flere valg – bilde, lagring og e-post';more.append(title);
+const moreList=document.createElement('div');moreList.className='ln-rw-extra-actions';more.append(moreList);
+const image=$('ln-report-social-image'),save=$('ln-report-save'),openSaved=$('ln-report-open-saved');
+if(image){image.textContent='Del budsjettbilde (Instagram, Facebook m.m.)';moreList.append(image)}
+if(save){save.textContent='Lagre i denne nettleseren';moreList.append(save)}
+if(openSaved){openSaved.textContent='Åpne lagret rapport';moreList.append(openSaved)}
+const copySummary=document.createElement('button');copySummary.type='button';copySummary.id='ln-rw-copy-summary';copySummary.textContent='Kopier kort oppsummering';moreList.append(copySummary);
+const mailGroup=document.createElement('div');mailGroup.id='ln-report-mail-group';mailGroup.className='ln-rw-mail-group';mailGroup.hidden=true;
+const recipientLabel=share.querySelector('label[for="ln-report-recipient"]'),recipient=$('ln-report-recipient'),email=$('ln-report-email');
+for(const el of [recipientLabel,recipient,email])if(el)mailGroup.append(el);
+if(email)email.textContent='Send PDF direkte (krever innlogging)';
+moreList.append(mailGroup);
+const print=$('ln-report-print');if(print)print.hidden=true;
+share.append(more);
+function updateMail(){mailGroup.hidden=!api.hasDirectEmail?.()}
+document.addEventListener('ln-report-email-ready',updateMail);updateMail();
+copySummary.addEventListener('click',async()=>{
+ const r=api.getReport();
+ if(!r||!$('ln-report-consent')?.checked){api.showMessage('Godkjenn delingen før du kopierer økonomiske opplysninger.');return}
+ const rows=(r.results||[]).slice(0,10).map(x=>x.label+': '+x.value);
+ const message=[r.title,'Opprettet med Lånesjekk Norge',...rows,'Beregningene er basert på opplysninger oppgitt av brukeren.'].join('\\n');
+ try{if(!navigator.clipboard?.writeText)throw Error('clipboard');await navigator.clipboard.writeText(message);api.showMessage('Kort oppsummering er kopiert og klar for deling.')}catch{api.showMessage('Nettleseren blokkerte kopiering. Bruk Del PDF eller Last ned PDF i stedet.')}
+});
 const selection=document.createElement('div');selection.className='ln-rw-selection';
 const options=[
  ['summary','Sammendrag','Hovedtall, resultater og nøkkelinformasjon',true],
@@ -47,7 +81,10 @@ function show(n){
  selection.hidden=step!==1;share.hidden=step!==3;back.hidden=step===1;next.hidden=step===3;
  next.textContent=step===1?'Generer forhåndsvisning →':'Fortsett til deling →';back.textContent=step===3?'← Se forhåndsvisning':'← Velg innhold';
  if(step===2){const filtered=makeReport();if(filtered)api.setReport(filtered);preview.title='Forhåndsvisning av valgt budsjett';api.showMessage('Kontroller beløp og innhold. Bruk Tilbake for å endre hva som er med.')}
- if(step===3)api.showMessage('Velg PDF, e-post, deling eller en kryptert lenke. Bekreft samtykke før du deler.');
+ if(step===3){const prepared=api.getReport(),metrics=prepared?.results?.length||0,items=prepared?.rows?.length||0,inputs=prepared?.entries?.length||0;
+ const info=document.getElementById('ln-rw-share-details');if(info)info.textContent=metrics+' nøkkeltall · '+items+' budsjettposter · '+inputs+' opplysninger fra beregningen.';
+ api.showMessage('Velg hvordan du vil dele rapporten. Ingen e-post sendes automatisk uten at du fullfører sendingen.')}
+
  if(step===1)api.showMessage('Velg hvilke opplysninger rapporten skal inneholde.');
 }
 next.addEventListener('click',()=>show(step+1));back.addEventListener('click',()=>show(step-1));
