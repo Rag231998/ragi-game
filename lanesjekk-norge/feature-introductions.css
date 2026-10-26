@@ -1,0 +1,22 @@
+/* One-time contextual introductions, visible only for newly activated features. */
+.ln-intro-new{position:relative!important;outline:3px solid #19bc95!important;outline-offset:3px!important;box-shadow:0 0 0 6px #2cd8aa26!important;overflow:visible!important}
+.ln-intro-new::after{content:"NY FUNKSJON";position:absolute;right:3px;top:-12px;z-index:2;pointer-events:none;background:#0a695b;color:#fff;border-radius:6px;padding:4px 7px;font:800 9px/1.1 system-ui;letter-spacing:.02em;white-space:nowrap}
+.ln-intro-help{display:inline-flex;align-items:center;justify-content:center;flex:none;width:28px;height:28px;min-height:28px;padding:0;border:1px solid #89c5b9;border-radius:50%;background:#e6fbf3;color:#066357;font:800 14px system-ui;cursor:pointer}
+.ln-intro-help[hidden]{display:none!important}
+.ln-intro-dialog{position:fixed;inset:0;margin:auto;border:0;max-width:min(420px,calc(100vw - 28px));max-height:min(88dvh,700px);overflow:auto;padding:0;background:#fff;color:#173c46;border-radius:22px;box-shadow:0 24px 75px #092b3d57}
+.ln-intro-dialog::backdrop{background:#081f36aa;backdrop-filter:blur(5px)}
+.ln-intro-panel{padding:24px;display:grid;gap:13px}
+.ln-intro-kicker{font:800 10px system-ui;letter-spacing:.12em;color:#087b6b}
+.ln-intro-panel h2{margin:0;font:800 clamp(21px,5vw,27px)/1.2 system-ui;letter-spacing:-.03em;color:#163d49}
+.ln-intro-panel p{margin:0;font:400 14px/1.65 system-ui;color:#45636d;white-space:pre-line}
+.ln-intro-panel label{display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.55;color:#234b51}
+.ln-intro-panel label input{margin-top:3px;width:18px;height:18px;accent-color:#007d65;flex:none}
+.ln-intro-actions{display:flex;align-items:center;gap:9px}
+.ln-intro-actions button{border:0;border-radius:11px;padding:12px;min-height:44px;font:800 13px system-ui;cursor:pointer}
+.ln-intro-actions .ln-intro-accept{background:#087e6f;color:white;flex:1}
+.ln-intro-actions .ln-intro-cancel{background:#eff4f6;color:#31545d}
+.ln-intro-actions .ln-intro-accept:disabled{opacity:.45;cursor:not-allowed}
+html.cms-dark .ln-intro-dialog{background:#183647;color:#eef9fb}
+html.cms-dark .ln-intro-panel h2{color:#f1fcfd}
+html.cms-dark .ln-intro-panel p,html.cms-dark .ln-intro-panel label{color:#d0e2e7}
+@media(max-width:600px){.ln-intro-panel{padding:20px 18px}.ln-intro-dialog{max-width:calc(100vw - 22px)}}

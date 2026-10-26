@@ -205,6 +205,7 @@ test('Chat on iPhone persists across refresh and New chat keeps archived convers
  await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
  await page.locator('#ln-assistant-open').click();
  await expect(page.locator('#ln-chat-new')).toBeVisible();
+ await page.evaluate(()=>window.lanesjekkCms.apply({...window.lanesjekkCms.defaults,introductions:{historyEnabled:true,items:{history:{enabled:false}}}}));
  await page.locator('#ln-chat-list').click();
  await page.locator('#ln-chat-storage-optin').check();
  await page.locator('#ln-chat-history-close').click();
@@ -214,6 +215,7 @@ test('Chat on iPhone persists across refresh and New chat keeps archived convers
  await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('lanesjekk-chat-history-v1')||'[]').length)).toBeGreaterThan(0);
  await page.locator('#ln-chat-new').click();
  await expect(page.locator('#ln-assistant-messages')).not.toContainText('Hvor stort lån');
+ await page.evaluate(()=>window.lanesjekkCms.apply({...window.lanesjekkCms.defaults,introductions:{historyEnabled:true,items:{history:{enabled:false}}}}));
  await page.locator('#ln-chat-list').click();
  await expect(page.locator('.ln-chat-history-select')).toContainText(['Hva koster et lån?']);
  await page.locator('.ln-chat-history-select').first().click();
@@ -263,12 +265,14 @@ test('iPhone voice pop-up offers keyboard dictation when speech API is unavailab
 test('New chat keeps local history and backups can restore conversations after clearing',async({page})=>{
  await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
  await page.locator('#ln-assistant-open').click();
+ await page.evaluate(()=>window.lanesjekkCms.apply({...window.lanesjekkCms.defaults,introductions:{historyEnabled:true,items:{history:{enabled:false}}}}));
  await page.locator('#ln-chat-list').click();
  await page.locator('#ln-chat-storage-optin').check();
  await page.locator('#ln-chat-history-close').click();
  await page.locator('#ln-assistant-input').fill('Hva koster et lån?');
  await page.locator('#ln-assistant-form button[type="submit"]').click();
  await expect(page.locator('#ln-assistant-messages')).toContainText('Hvor stort lån',{timeout:15000});
+ await page.evaluate(()=>window.lanesjekkCms.apply({...window.lanesjekkCms.defaults,introductions:{historyEnabled:true,items:{history:{enabled:false}}}}));
  await page.locator('#ln-chat-list').click();
  const promise=page.waitForEvent('download');
  await page.locator('#ln-chat-export').click();
@@ -277,6 +281,7 @@ test('New chat keeps local history and backups can restore conversations after c
  await expect(page.locator('.ln-chat-backup-status')).toContainText('Sikkerhetskopien');
  page.once('dialog',d=>d.accept());
  await page.locator('#ln-chat-delete-all').click();
+ await page.evaluate(()=>window.lanesjekkCms.apply({...window.lanesjekkCms.defaults,introductions:{historyEnabled:true,items:{history:{enabled:false}}}}));
  await page.locator('#ln-chat-list').click();
  await expect(page.locator('.ln-chat-no-history')).toBeVisible();
  const backup={format:'lanesjekk-assistant-backup',version:1,conversations:[{id:'old-chat',title:'Hva koster et lån?',updated:Date.now(),turns:[{q:'Hva koster et lån?',a:'Hvor stort lån vurderer du?',at:Date.now()}]}]};
@@ -356,4 +361,27 @@ test('Opt-in AI voice can record Norwegian speech, transcribe and speak a reply 
  await expect(page.locator('.ln-voice-modal')).toHaveAttribute('data-phase','listening',{timeout:15000});
  await expect(page.locator('#ln-voice-thread')).toContainText('Hva koster et lån?',{timeout:16000});
  await expect(page.locator('#ln-voice-thread .ln-voice-answer')).toHaveCount(1);
+});
+
+test('Admin publication settings hide history by default and reveal a one-time feature explanation when enabled',async({page})=>{
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});await page.locator('#ln-assistant-open').click();
+ await expect(page.locator('#ln-chat-list')).toBeHidden();
+ await page.evaluate(()=>window.lanesjekkCms.apply({...window.lanesjekkCms.defaults,introductions:{
+  historyEnabled:true,items:{history:{enabled:true,title:'Ny samtalefunksjon',body:'Les dette før du lagrer samtaler.',version:22,highlight:true,requireAck:true}}
+ }}));
+ await expect(page.locator('#ln-chat-list')).toBeVisible();
+ await expect(page.locator('#ln-chat-list')).toHaveClass(/ln-intro-new/);
+ await page.locator('#ln-chat-list').click();
+ await expect(page.locator('#ln-intro-dialog')).toBeVisible();
+ await expect(page.locator('#ln-chat-history')).toBeHidden();
+ await expect(page.locator('#ln-intro-confirm')).toBeDisabled();
+ await page.locator('#ln-intro-ack').check();
+ await page.locator('#ln-intro-confirm').click();
+ await expect(page.locator('#ln-intro-dialog')).toBeHidden();
+ await expect(page.locator('#ln-chat-list')).not.toHaveClass(/ln-intro-new/);
+ await page.locator('#ln-chat-list').click();
+ await expect(page.locator('#ln-chat-history')).toBeVisible();
+ await page.locator('#ln-chat-history-close').click();
+ await page.locator('.ln-intro-help').first().click();
+ await expect(page.locator('#ln-intro-dialog')).toBeVisible();
 });

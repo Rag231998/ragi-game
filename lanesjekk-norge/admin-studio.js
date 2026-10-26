@@ -18,7 +18,7 @@ const previewRouteForCard=id=>CARD_PREVIEW_ROUTES[id]||'topp';
 let db=null,authUser=null,published=null,draft=null,revision=0,ready=false,busy=false,lastPublishedAt='';
 let previewWindow=null,previewWindowReady=false,lastPreviewFingerprint='',previewSection='topp',previewPayload=null,publishEvents=[],historyOffset=0,historyHasMore=false;
 const fmtDate=stamp=>stamp?new Intl.DateTimeFormat('nb-NO',{dateStyle:'medium',timeStyle:'short'}).format(new Date(stamp)):'Ukjent tidspunkt';
-const FIELD_LABELS={brand:'Profil og farger',budget:'Budsjett',cards:'Forsidekort og objekter',slides:'Forsidescener',media:'Animation Studio',animations:'Animasjoner',investing:'Fond og aksjer',catalog:'Funksjoner og nyheter'};
+const FIELD_LABELS={brand:'Profil og farger',budget:'Budsjett',cards:'Forsidekort og objekter',slides:'Forsidescener',media:'Animation Studio',animations:'Animasjoner',investing:'Fond og aksjer',catalog:'Funksjoner og nyheter',introductions:'Introduksjoner og lesebekreftelser'};
 function changesBetween(a,b){
  const result=[];
  function walk(before,after,path='',depth=0){
@@ -137,6 +137,7 @@ function normalize(data){
  const order=[...new Set([...(Array.isArray(budget.order)?budget.order.filter(x=>DEFAULT_IDS.includes(x)):[]),...DEFAULT_IDS])];
  const cardOrder=[...new Set([...(Array.isArray(cards.order)?cards.order.filter(x=>CARD_IDS.includes(x)):[]),...CARDS_DEFAULT])];
  return {
+ introductions:window.LNIntroConfig.normalize(src.introductions),
  media:{slots:Object.fromEntries(MEDIA_IDS.map(id=>{const x=src.media?.slots?.[id]||{};return [id,{enabled:x.enabled!==false,videoUrl:String(x.videoUrl||'').slice(0,500),posterUrl:String(x.posterUrl||'').slice(0,500),title:clamp(x.title,90),description:clamp(x.description,210),fit:x.fit==='contain'?'contain':'cover',loop:x.loop!==false,placement:['before','after-intro','bottom'].includes(x.placement)?x.placement:'after-intro'}]}))},
  animations:{autoplay:src.animations?.autoplay!==false,valuation:src.animations?.valuation!==false,rental:src.animations?.rental!==false,receipts:src.animations?.receipts!==false},
  slides:{visible:src.slides?.visible!==false,order:[...new Set([...(Array.isArray(src.slides?.order)?src.slides.order.filter(id=>SLIDE_IDS.includes(id)):[]),...SLIDE_IDS])],items:Object.fromEntries(SLIDE_IDS.map(id=>[id,{title:clamp(src.slides?.items?.[id]?.title,95),description:clamp(src.slides?.items?.[id]?.description,220),enabled:src.slides?.items?.[id]?.enabled!==false}]))},
@@ -512,6 +513,7 @@ function render(){
  $('invest-title').value=draft.investing.title;
  $('site-logo-preview').hidden=!draft.brand.logoUrl;
  if(draft.brand.logoUrl)$('site-logo-preview').src=draft.brand.logoUrl;
+ window.lanesjekkIntroAdmin?.render(draft.introductions);
  renderSort('budget');renderSort('cards');renderSlides();renderCatalog();if($('catalog-headline'))$('catalog-headline').value=draft.catalog.headline;window.lanesjekkCatalog?.setNews(draft.catalog);window.lanesjekkAnimationStudio?.render();
 }
 function gather(){
@@ -667,6 +669,7 @@ function boot(){
  $('admin-remember').checked=window.lanesjekkStudioSession.rememberEnabled();
  setInterval(()=>{void enforceSessionTimeout()},60000);
  window.addEventListener('focus',()=>{void enforceSessionTimeout()});
+ window.lanesjekkIntroAdmin?.init({getDraft:()=>draft,changed:()=>refreshDashboard()});
  window.lanesjekkAnimationStudio?.init({db,getDraft:()=>draft,getPublished:()=>published,notify:(text,isError=false)=>msg(text,isError),bucket:'animation-assets',storageBase:BASE});
  $('admin-login-form').addEventListener('submit',login);
  $('admin-signout').addEventListener('click',async()=>{
@@ -751,11 +754,11 @@ function boot(){
  const labels={
  'admin-panel-brand':'Design, logo og farger','admin-panel-budget':'Budsjett og beregning','admin-panel-cards':'Objekter og forsidekort',
  'admin-panel-slides':'Forsidescener','admin-panel-motion':'Animasjoner','animation-studio-panel':'Animation Studio',
- 'admin-panel-invest':'Fond og aksjer','admin-panel-catalog':'Funksjoner og nyheter'
+ 'admin-panel-invest':'Fond og aksjer','admin-panel-catalog':'Funksjoner og nyheter','admin-panel-introductions':'Introduksjoner og lesebekreftelser'
  };
- const panelPreviews={'admin-panel-brand':'topp','admin-panel-budget':'budsjett','admin-panel-cards':'topp','admin-panel-slides':'topp','admin-panel-motion':'boligverdi','animation-studio-panel':'topp','admin-panel-invest':'investering','admin-panel-catalog':'topp'};
+ const panelPreviews={'admin-panel-brand':'topp','admin-panel-budget':'budsjett','admin-panel-cards':'topp','admin-panel-slides':'topp','admin-panel-motion':'boligverdi','animation-studio-panel':'topp','admin-panel-invest':'investering','admin-panel-catalog':'topp','admin-panel-introductions':'budsjett'};
  const mediaRoutes={home:'topp',loans:'sjekk',budget:'budsjett',receipts:'kvitteringer',valuation:'boligverdi',rental:'utleieanalyse',savings:'sparing',investing:'investering',carloan:'billan',academy:'akademi',currency:'valutakompass'};
- const panelHelp={'admin-panel-brand':'Logo, farger og visningsmodus.','admin-panel-budget':'Flytt budsjettseksjoner og kontroller synlighet.','admin-panel-cards':'Rediger hvert kort og objekt, inkludert ikon, tekst og synlighet.','admin-panel-slides':'Tilpass rekkefølge og tekst på forsiden.','admin-panel-motion':'Velg hvilke animasjoner som vises.','animation-studio-panel':'Velg modul og videofiler, og forhåndsvis resultatet.','admin-panel-invest':'Investeringsoversikt og overskrift.','admin-panel-history':'Se tidspunkt, endringer og gjenopprett en eldre publisering.','admin-panel-catalog':'Opprett funksjonskort som åpner eksisterende verktøy, og skriv nyheter om forbedringene. Alt lagres som utkast.'};
+ const panelHelp={'admin-panel-brand':'Logo, farger og visningsmodus.','admin-panel-budget':'Flytt budsjettseksjoner og kontroller synlighet.','admin-panel-cards':'Rediger hvert kort og objekt, inkludert ikon, tekst og synlighet.','admin-panel-slides':'Tilpass rekkefølge og tekst på forsiden.','admin-panel-motion':'Velg hvilke animasjoner som vises.','animation-studio-panel':'Velg modul og videofiler, og forhåndsvis resultatet.','admin-panel-invest':'Investeringsoversikt og overskrift.','admin-panel-history':'Se tidspunkt, endringer og gjenopprett en eldre publisering.','admin-panel-catalog':'Opprett funksjonskort som åpner eksisterende verktøy, og skriv nyheter om forbedringene. Alt lagres som utkast.','admin-panel-introductions':'Styr samtalehistorikk, introduksjonsmeldinger og én-gangs lesebekreftelser. Bruk Publiser etter forhåndsvisning.'};
  let panelTransition=false,previewSelection='topp';
  function showPreviewSection(section){
   const selector=$('preview-inline-section'),frame=$('admin-frame');

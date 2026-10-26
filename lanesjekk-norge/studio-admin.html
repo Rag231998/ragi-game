@@ -1,7 +1,7 @@
 <!doctype html><html lang="nb"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#101f31">
 <title>Lånesjekk · Privat administrasjon</title>
-<link rel="stylesheet" href="./admin-studio.css?v=12"><link rel="stylesheet" href="./admin-dark-mode.css?v=3"><link rel="stylesheet" href="./ios-controls.css?v=1"><link rel="stylesheet" href="./site-feature-catalog.css?v=1"><link rel="stylesheet" href="./admin-feature-catalog.css?v=1"><link rel="stylesheet" href="./studio-control-center.css?v=4"><link rel="stylesheet" href="./studio-media-workspace.css?v=1"><link rel="stylesheet" href="./studio-catalog-flow.css?v=1"><link rel="stylesheet" href="./admin-catalog-workflow.css?v=1"><link rel="stylesheet" href="./studio-layout-fix.css?v=1"><script>try{const v=localStorage.getItem('lanesjekk.studio.theme.v1')||'auto';if(v==='dark'||(v==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('studio-dark')}catch{}</script><link rel="stylesheet" href="./premium-unified.css?v=2"></head><body>
+<link rel="stylesheet" href="./admin-studio.css?v=12"><link rel="stylesheet" href="./admin-introductions.css?v=1"><link rel="stylesheet" href="./admin-dark-mode.css?v=3"><link rel="stylesheet" href="./ios-controls.css?v=1"><link rel="stylesheet" href="./site-feature-catalog.css?v=1"><link rel="stylesheet" href="./admin-feature-catalog.css?v=1"><link rel="stylesheet" href="./studio-control-center.css?v=4"><link rel="stylesheet" href="./studio-media-workspace.css?v=1"><link rel="stylesheet" href="./studio-catalog-flow.css?v=1"><link rel="stylesheet" href="./admin-catalog-workflow.css?v=1"><link rel="stylesheet" href="./studio-layout-fix.css?v=1"><script>try{const v=localStorage.getItem('lanesjekk.studio.theme.v1')||'auto';if(v==='dark'||(v==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('studio-dark')}catch{}</script><link rel="stylesheet" href="./premium-unified.css?v=2"></head><body>
 <header class="admin-header"><a href="./studio-admin.html" aria-label="Lånesjekk Studio – administrasjon">◈ <strong>LÅNESJEKK</strong><span> / STUDIO</span></a><div class="admin-header-right"><button id="admin-theme-quick" type="button" aria-label="Bytt mellom lys og mørk modus" title="Bytt mellom lys og mørk modus" style="border:1px solid currentColor;border-radius:50%;width:38px;height:38px;display:inline-grid;place-items:center;background:transparent;color:inherit;font-size:22px;cursor:pointer" >☾</button><label class="admin-ui-theme-wrap" for="admin-ui-theme"><span>Utseende</span><select id="admin-ui-theme" aria-label="Utseende for administrasjonsportalen"><option value="auto">◐ Automatisk</option><option value="light">☀ Lys</option><option value="dark">☾ Mørk</option></select></label><span class="admin-badge">Kun godkjente administratorer</span>
 <div class="admin-account-wrapper" id="admin-account-wrapper" hidden>
  <button id="admin-account-menu-toggle" type="button" aria-expanded="false" aria-controls="admin-account-menu">◉ Konto og sikkerhet <span aria-hidden="true">⌄</span></button>
@@ -79,7 +79,7 @@
     <button type="button" data-admin-jump="admin-panel-slides">Forside</button>
     <button type="button" data-admin-jump="animation-studio-panel">Animation Studio</button>
     <button type="button" data-admin-jump="admin-panel-catalog">Funksjoner og nyheter</button>
-    <button type="button" data-admin-jump="admin-panel-invest">Investering</button>
+    <button type="button" data-admin-jump="admin-panel-introductions">Introduksjoner og bekreftelser</button><button type="button" data-admin-jump="admin-panel-invest">Investering</button>
     <button type="button" data-admin-jump="admin-panel-motion">Bevegelse</button>
   </nav>
   <p class="admin-navigation-tip" id="admin-navigation-tip">Velg et område. Bare én kategori er åpen om gangen, og forhåndsvisningen følger det du redigerer. Valget huskes i denne fanen.</p>
@@ -190,6 +190,21 @@
  </section>
  <p id="admin-catalog-status" class="catalog-workflow-status" role="status" aria-live="polite">Endringer vises først i forhåndsvisningen og publiseres når du godkjenner en ny versjon.</p>
  </div></details>
+ <details class="admin-panel" id="admin-panel-introductions"><summary>09 · Funksjonsintroduksjoner og lesebekreftelser</summary><div class="admin-body">
+ <p class="admin-hint">Styr samtalehistorikk og hva besøkende får forklart når nye funksjoner lanseres. Endringer lagres som utkast og gjelder først etter publisering.</p>
+ <div class="admin-intro-highlight"><label class="admin-intro-switch"><input type="checkbox" id="admin-intro-history"><span><strong>Vis «Samtaler» på nettsiden</strong><br>Av som standard. Ny chat, vanlig chat og taleassistent fungerer selv om historikkknappen er skjult.</span></label><p id="admin-intro-history-state" class="admin-intro-note"></p></div>
+ <div class="admin-intro-editor">
+  <label>Velg funksjon som skal introduseres<select id="admin-intro-target"></select></label>
+  <label class="admin-intro-switch"><input id="admin-intro-enabled" type="checkbox">Aktiver introduksjonen på nettsiden</label>
+  <label class="admin-intro-switch"><input id="admin-intro-highlight" type="checkbox">Marker funksjonen med «NY FUNKSJON» til den er lest</label>
+  <label class="admin-intro-switch"><input id="admin-intro-ack" type="checkbox">Krev at brukeren aktivt bekrefter «Jeg har lest»</label>
+  <label>Overskrift<input id="admin-intro-title" type="text" maxlength="110"></label>
+  <label>Forklaring<textarea id="admin-intro-body" rows="4" maxlength="650"></textarea></label>
+  <label>Informasjonsversjon</label><div class="admin-intro-version-row"><input id="admin-intro-version" type="number" min="1" max="9999" step="1"><button type="button" id="admin-intro-next-version" class="admin-secondary">Ny versjon (+1)</button></div>
+  <p class="admin-intro-note">Bekreftelse lagres kun lokalt på besøkendes enhet. En ny informasjonsversjon vises på nytt. Å bekrefte at informasjon er lest beviser ikke at den er forstått.</p>
+  <button type="button" id="admin-intro-preview" class="admin-secondary">◎ Forhåndsvis introduksjonen</button>
+ </div>
+ </div></details>
  <details class="admin-panel" id="admin-panel-history"><summary>09 · Publiseringslogg og gjenoppretting</summary><div class="admin-body">
     <p class="admin-hint">Alle nye publiseringer loggføres automatisk med norsk dato, klokkeslett og versjonsnummer. Velg en versjon for å undersøke endringene eller hente den tilbake som et utkast. Gjenoppretting krever egen forhåndsvisning og publisering.</p>
     <div class="admin-history-toolbar"><label for="admin-history-search">Finn publisering<input id="admin-history-search" type="search" placeholder="Søk i dato, versjon eller endring"></label><button id="admin-history-refresh" type="button" class="admin-secondary">↻ Oppdater logg</button></div>
@@ -206,6 +221,7 @@
  </div>
  <p id="admin-message" class="admin-message" role="status" aria-live="polite"></p>
 </section></main>
+<dialog id="admin-intro-preview-dialog" class="admin-intro-preview-dialog" aria-labelledby="admin-intro-preview-title"><span id="admin-intro-preview-tag" class="admin-eyebrow">NY FUNKSJON</span><h3 id="admin-intro-preview-title"></h3><p id="admin-intro-preview-text"></p><button type="button" id="admin-intro-preview-action" class="admin-primary">Forstått</button> <button type="button" id="admin-intro-preview-close" class="admin-secondary">Lukk</button></dialog>
 <dialog id="admin-preflight" class="admin-preflight" aria-labelledby="admin-preflight-title">
   <div class="admin-preflight-head"><div><span class="admin-eyebrow">SIKKER PUBLISERING</span><h2 id="admin-preflight-title">Kontroller før du publiserer</h2></div><button id="admin-preflight-close" class="admin-secondary" type="button" aria-label="Lukk">✕</button></div>
   <p>Se hele nettsiden med utkastet ditt i et eget vindu. Endringer publiseres ikke før du bekrefter nedenfor.</p>
@@ -233,5 +249,5 @@
  </div>
 </dialog>
 <footer>Privat administrasjon for Lånesjekk Norge. Bare medlemmer av databasens administratorrolle kan lagre endringer. <a href="./index.html">Til offentlig nettside ↗</a></footer>
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./admin-session.js?v=2"></script><script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script><script defer src="./admin-animation-studio.js?v=10"></script><script defer src="./admin-studio.js?v=23"></script><script defer src="./admin-ai-direct.js?v=5"></script><script defer src="./studio-control-center.js?v=2"></script><script defer src="./studio-media-workspace.js?v=1"></script><script defer src="./site-feature-catalog.js?v=4"></script><script defer src="./ai-video-brief.js?v=2"></script><script defer src="./admin-theme.js?v=2"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./admin-session.js?v=2"></script><script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script><script defer src="./admin-animation-studio.js?v=10"></script><script defer src="./feature-introductions-data.js?v=1"></script><script defer src="./admin-introductions.js?v=1"></script><script defer src="./admin-studio.js?v=24"></script><script defer src="./admin-ai-direct.js?v=5"></script><script defer src="./studio-control-center.js?v=2"></script><script defer src="./studio-media-workspace.js?v=1"></script><script defer src="./site-feature-catalog.js?v=4"></script><script defer src="./ai-video-brief.js?v=2"></script><script defer src="./admin-theme.js?v=2"></script>
 </body></html>

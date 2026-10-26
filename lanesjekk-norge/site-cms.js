@@ -19,7 +19,7 @@ const CARD_IDS=Object.freeze(['sjekk','budsjett','kvitteringer','sparing','utlei
 const RELEASE_ROUTES=new Set(['topp','sjekk','billan','forbrukslan','banker','budsjett','kvitteringer','sparing','investering','valutakompass','boligverdi','utleieanalyse','akademi','guider']);
 const nodes=()=>({quick:document.querySelector('#budsjett > .budget-start-panel'),hero:document.querySelector('#budsjett > .budget-hero'),
 stats:document.querySelector('#budsjett > .tool-overview'),workbook:document.querySelector('#budsjett > .budget-workbook'),insights:document.querySelector('#budsjett > .budget-insights-grid')});
-const defaults={animations:{autoplay:true,valuation:true,rental:true,receipts:true},brand:{name:'LÅNESJEKK NORGE',tagline:'Mer oversikt. Bedre valg.',theme:'light',accent:'#0c8878',logoUrl:'',heroVisual:true,heroMotion:true},
+const defaults={introductions:window.LNIntroConfig.normalize(),animations:{autoplay:true,valuation:true,rental:true,receipts:true},brand:{name:'LÅNESJEKK NORGE',tagline:'Mer oversikt. Bedre valg.',theme:'light',accent:'#0c8878',logoUrl:'',heroVisual:true,heroMotion:true},
 budget:{order:['quick','hero','stats','workbook','insights'],visible:{quick:true,hero:true,stats:true,workbook:true,insights:true},title:'Ditt budsjett.',subtitle:'Din økonomiske kontroll.',quickTitle:'Tre steg til økonomisk oversikt'},
 investing:{title:'Fond og aksjer – forstå risiko og muligheter'},catalog:{headline:'Oppdag alt du kan gjøre',news:[]}};
 let published=null,preview=false;
@@ -84,6 +84,7 @@ function configClean(input){
  const inputCardOrder=Array.isArray(a.cards?.order)?a.cards.order.filter(id=>CARD_IDS.includes(id)):CARD_IDS;
  for(const id of SECTIONS)if(!order.includes(id))order.push(id);
  return {
+ introductions:window.LNIntroConfig.normalize(a.introductions),
  media:{slots:Object.fromEntries(MEDIA_IDS.map(id=>{const x=a.media?.slots?.[id]||{};return [id,{enabled:x.enabled!==false,videoUrl:safeMedia(x.videoUrl,'video'),posterUrl:safeMedia(x.posterUrl,'image'),title:plain(x.title,90),description:plain(x.description,210),fit:x.fit==='contain'?'contain':'cover',loop:x.loop!==false,placement:['before','after-intro','bottom'].includes(x.placement)?x.placement:'after-intro'}]}))},
  animations:{autoplay:a.animations?.autoplay!==false,valuation:a.animations?.valuation!==false,rental:a.animations?.rental!==false,receipts:a.animations?.receipts!==false},
  slides:{visible:a.slides?.visible!==false,order:[...new Set([...(Array.isArray(a.slides?.order)?a.slides.order.filter(id=>SLIDE_IDS.includes(id)):[]),...SLIDE_IDS])],items:Object.fromEntries(SLIDE_IDS.map(id=>[id,{title:plain(a.slides?.items?.[id]?.title,95),description:plain(a.slides?.items?.[id]?.description,220),enabled:a.slides?.items?.[id]?.enabled!==false}]))},
@@ -204,6 +205,7 @@ function apply(input){
  const heading=document.querySelector('#investering .tool-hero h1');
  if(heading)heading.textContent=cfg.investing.title;
  window.lanesjekkCatalog?.setNews(cfg.catalog);
+ window.dispatchEvent(new CustomEvent('lanesjekk-intro-config',{detail:{...cfg.introductions,preview}}));
  window.dispatchEvent(new CustomEvent('lanesjekk-cms-rendered',{detail:{preview}}));
 }
 let lastPublicRevision=0;
