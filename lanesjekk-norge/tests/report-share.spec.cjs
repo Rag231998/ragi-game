@@ -284,3 +284,24 @@ test('New chat keeps local history and backups can restore conversations after c
  await expect(page.locator('.ln-chat-backup-status')).toContainText('gjenopprettet');
  await expect(page.locator('.ln-chat-history-select')).toContainText(['Hva koster et lån?']);
 });
+
+test('iPhone voice dialog supports two typed follow-up turns without closing or losing the input',async({page})=>{
+ await page.addInitScript(()=>{Object.defineProperty(window,'SpeechRecognition',{configurable:true,value:undefined});Object.defineProperty(window,'webkitSpeechRecognition',{configurable:true,value:undefined})});
+ await page.setViewportSize({width:390,height:780});
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('#ln-assistant-open').click();await page.locator('#ln-voice-start').click();
+ const dialog=page.locator('.ln-voice-modal');await expect(dialog).toBeVisible();
+ for(const q of ['Hva koster et lån?','Hva om renten øker?']){
+  await page.locator('#ln-voice-followup').fill(q);
+  await page.locator('#ln-voice-followup-form button[type="submit"]').click();
+  await expect(page.locator('#ln-voice-thread')).toContainText(q,{timeout:15000});
+  await expect(page.locator('#ln-voice-followup')).toBeEnabled();
+  await expect(dialog).toBeVisible();
+ }
+ await expect(page.locator('#ln-voice-thread .ln-voice-question')).toHaveCount(2);
+ const dimensions=await page.locator('#ln-voice-followup').boundingBox();
+ expect(dimensions).toBeTruthy();expect(dimensions.y+dimensions.height).toBeLessThan(780);
+ await page.locator('#ln-voice-done').click();
+ await expect(dialog).toBeHidden();
+ await expect(page.locator('#ln-assistant-messages')).toContainText('Hva om renten øker?');
+});
