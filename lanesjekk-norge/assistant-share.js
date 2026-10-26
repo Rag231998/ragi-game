@@ -14,7 +14,6 @@ function answer(q){const t=q.toLocaleLowerCase('nb-NO').trim();
 }
 function toggle(open){panel.hidden=!open;launcher.setAttribute('aria-expanded',String(open));if(open)input.focus();else launcher.focus()}
 launcher.addEventListener('click',()=>toggle(panel.hidden));close.addEventListener('click',()=>toggle(false));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)toggle(false)});
-form.addEventListener('submit',e=>{e.preventDefault();const q=input.value.trim().slice(0,400);if(!q)return;bubble(q);const result=answer(q);bubble(result.body,result.href);input.value=''});
 $('ln-share-current')?.addEventListener('click',async()=>{const route=location.hash&&location.hash!=='#topp'?location.hash:'#topp';const safeUrl=location.origin+location.pathname+route;const title='Lånesjekk Norge – '+(document.getElementById('viewbar-title')?.textContent||'økonomiverktøy');try{if(navigator.share){await navigator.share({title,url:safeUrl});return}if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(safeUrl);bubble('Lenke til verktøyet er kopiert. Ingen budsjettposter eller private tall er inkludert.');return}throw Error('clipboard')}catch(e){if(e.name==='AbortError')return;bubble('Kopier denne lenken manuelt: '+safeUrl)}});
-bubble('Hei! Jeg hjelper deg å finne verktøyene på Lånesjekk Norge. Du kan også dele lenken til siden uten å dele personlige tall.');
+
 })();
