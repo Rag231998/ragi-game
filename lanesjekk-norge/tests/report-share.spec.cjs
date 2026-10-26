@@ -22,7 +22,7 @@ test('Budget wizard lets the user select, preview, save and close a PDF report',
  await expect(page.locator('#ln-report-modal')).toBeHidden();
 });
 test('Encrypted budget report opens in a separate unauthenticated browser session',async({page,browser})=>{
- await page.context().grantPermissions(['clipboard-read','clipboard-write']);
+ await page.addInitScript(()=>{window.__copiedReportLink='';Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async value=>{window.__copiedReportLink=value},readText:async()=>window.__copiedReportLink}})});
  await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
  await page.locator('#ln-report-open').click();
  await page.locator('#ln-rw-next').click();
@@ -30,7 +30,7 @@ test('Encrypted budget report opens in a separate unauthenticated browser sessio
  await page.locator('#ln-report-consent').check();
  await page.locator('#ln-report-private-link').click();
  await expect(page.locator('#ln-report-status')).toContainText('Kryptert delingslenke er kopiert');
- const link=await page.evaluate(()=>navigator.clipboard.readText());
+ const link=await page.evaluate(()=>window.__copiedReportLink);
  expect(link).toContain('#delt=');
  const recipientContext=await browser.newContext();
  try{const recipient=await recipientContext.newPage();await recipient.goto(link,{waitUntil:'domcontentloaded'});await expect(recipient.locator('#ln-report-modal')).toBeVisible({timeout:15000});await expect(recipient.locator('#ln-report-status')).toContainText('Rapport åpnet via kryptert lenke');await expect(recipient.frameLocator('#ln-report-preview').locator('body')).toContainText('Lånesjekk Norge')}finally{await recipientContext.close()}
