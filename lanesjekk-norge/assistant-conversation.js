@@ -4,7 +4,7 @@ if(!panel||!form||!input||!messages)return;
 const brain=window.LNConversationBrain;
 const reduced=matchMedia?.('(prefers-reduced-motion: reduce)')?.matches||false;
 const routes={'#budsjett':'Budsjett','#sjekk':'Boliglånskalkulator','#investering':'Fond og aksjer','#kvitteringer':'Kvitteringer'};
-const history=[];let busy=false,aiMode='guide',aiReady=false,localSession=null,speakReplies=false,lastReply='';
+const history=[];let busy=false,aiMode='guide',aiReady=false,localSession=null;
 messages.replaceChildren();panel.querySelector('.ln-assistant-head small').textContent='Spør helt vanlig · Jeg følger opp spørsmålene dine';
 const quick=document.createElement('div');quick.className='ln-chat-suggestions';quick.setAttribute('aria-label','Forslag til spørsmål');
 const phrases=['Se på budsjettet mitt','Hvor kan jeg spare mer?','Hva koster et lån?','Hvordan deler jeg rapport?'];
@@ -12,14 +12,6 @@ function promptOptions(options){quick.replaceChildren();for(const text of (optio
 promptOptions(phrases);form.before(quick);
 const ai=document.createElement('label');ai.className='ln-chat-ai-consent';ai.hidden=true;ai.innerHTML='<input id="ln-chat-ai-optin" type="checkbox"><span>Bruk generativ AI <small>Spørsmålene sendes til Google når du aktiverer dette. Ikke oppgi sensitive opplysninger.</small></span>';form.before(ai);
 const status=document.createElement('p');status.className='ln-chat-capability';status.textContent='Personlig veiviser · bruker tallene i det åpne budsjettet lokalt';form.before(status);
-const actions=document.createElement('div');actions.className='ln-chat-input-actions';
-const recognitionClass=window.SpeechRecognition||window.webkitSpeechRecognition;
-if(recognitionClass){const mic=document.createElement('button');mic.type='button';mic.className='ln-chat-icon-button';mic.textContent='🎙';mic.title='Snakk til assistenten';mic.setAttribute('aria-label','Dikter spørsmålet med mikrofonen. Nettleserens taletjeneste kan behandle lyd eksternt.');mic.addEventListener('click',()=>{
- if(busy)return;try{const rec=new recognitionClass();rec.lang='nb-NO';rec.interimResults=false;mic.setAttribute('aria-pressed','true');status.textContent='Lytter etter spørsmålet ditt …';rec.onresult=e=>{const value=e.results?.[0]?.[0]?.transcript;if(value){input.value=value;ask(value)}};rec.onerror=()=>{status.textContent='Mikrofonen er ikke tilgjengelig. Du kan fortsatt skrive.'};rec.onend=()=>{mic.setAttribute('aria-pressed','false')};rec.start()}catch{status.textContent='Talegjenkjenning støttes ikke akkurat nå. Prøv tastaturet.'}
-});actions.append(mic)}
-if(window.speechSynthesis){const speech=document.createElement('button');speech.type='button';speech.className='ln-chat-icon-button';speech.textContent='🔈';speech.title='Les svar høyt';speech.setAttribute('aria-label','Slå på eller av opplesning av svar');speech.setAttribute('aria-pressed','false');speech.addEventListener('click',()=>{speakReplies=!speakReplies;speech.setAttribute('aria-pressed',String(speakReplies));speech.textContent=speakReplies?'🔊':'🔈';if(speakReplies&&lastReply)readAloud(lastReply);else speechSynthesis.cancel()});actions.append(speech)}
-if(actions.childElementCount)form.insertBefore(actions,input);
-function readAloud(text){if(!speakReplies||!('speechSynthesis'in window))return;try{speechSynthesis.cancel();const say=new SpeechSynthesisUtterance(text);say.lang='nb-NO';say.rate=.97;const voices=speechSynthesis.getVoices();say.voice=voices.find(x=>x.lang.toLowerCase().startsWith('nb'))||voices.find(x=>x.lang.toLowerCase().startsWith('no'))||null;speechSynthesis.speak(say)}catch{}}
 function scroll(){messages.scrollTop=messages.scrollHeight}
 function bubble(message,side='assistant'){const item=document.createElement('div');item.className='ln-chat-bubble ln-chat-'+side;const p=document.createElement('p');p.textContent=message;item.append(p);messages.append(item);scroll();return{item,p}}
 function dots(){const b=bubble('','assistant');b.item.classList.add('ln-chat-processing');b.p.innerHTML='<span class="ln-chat-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="sr-only">Forbereder svar</span>';return b}
@@ -30,7 +22,7 @@ async function ask(raw){const q=String(raw||'').trim().slice(0,700);if(!q||busy)
 await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
 let answer;
 try{if(aiReady&&$('ln-chat-ai-optin')?.checked){if(aiMode==='local'){if(!localSession)localSession=await window.LanguageModel.create({initialPrompts:[{role:'system',content:'Du er Lånesjekk Assistent, en norsk veileder for privatøkonomi. Svar naturlig og hjelpsomt, spør oppfølgingsspørsmål ved behov. Ikke finn opp renter eller tall. Budsjett og deling ligger i budsjettverktøyet. Gi generell informasjon, ikke personlige finansråd.'}]});answer={text:String(await localSession.prompt(q)).slice(0,2900)}}else{const res=await fetch('/api/assistant-ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,history:history.slice(-6)})});const data=await res.json();if(!res.ok||!data.answer)throw Error(data.error||'AI svarte ikke');answer={text:String(data.answer).slice(0,2900)}}}else answer=brain?.response(q)||{text:'Hva ønsker du å vite om økonomien din?'};}catch(e){answer=brain?.response(q)||{text:'Prøv på nytt.'};answer.text='Generativ AI er utilgjengelig akkurat nå. Jeg bruker den lokale veiviseren i stedet. '+answer.text}
-loader.item.classList.remove('ln-chat-processing');loader.p.replaceChildren();await typeOut(loader.p,answer.text);follow(loader.item,answer);lastReply=answer.text;readAloud(answer.text);
+loader.item.classList.remove('ln-chat-processing');loader.p.replaceChildren();await typeOut(loader.p,answer.text);follow(loader.item,answer);
 history.push({role:'user',text:q},{role:'model',text:answer.text});if(history.length>10)history.splice(0,history.length-10);
 promptOptions(answer.follow||[]);busy=false;input.disabled=false;if(send)send.disabled=false;input.focus({preventScroll:true});scroll()
 }
