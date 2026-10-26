@@ -33,3 +33,29 @@ test('iOS chat has a single clear message input and does not display unusable vo
  assert.match(html,/id="ln-assistant-form"/);
  new vm.Script(client);
 });
+
+test('Conversation history supports new chat, resuming archived conversations and deletion',()=>{
+ const html=read('index.html'),api=read('assistant-conversation.js'),history=read('assistant-history.js'),css=read('assistant-voice-history.css');
+ assert.match(html,/assistant-history\.js/);
+ assert.match(html,/assistant-voice-history\.css/);
+ assert.match(history,/localStorage\.setItem/);
+ assert.match(history,/conversation\.restore/);
+ assert.match(history,/conversation\.reset/);
+ assert.match(history,/Slett alle samtaler/);
+ assert.match(history,/Ny chat/);
+ assert.match(api,/ln-assistant-turn/);
+ assert.match(api,/latestAnswer/);
+ assert.match(css,/ln-chat-history/);
+ new vm.Script(history);
+});
+test('Voice controls have explicit labels, consent notice and an animated dialog only when speech is supported',()=>{
+ const html=read('index.html'),voice=read('assistant-voice.js'),css=read('assistant-voice-history.css');
+ assert.match(html,/assistant-voice\.js/);
+ for(const word of ['Snakk','Les opp svar','Lytter','Send','Talegjenkjenning kan bruke'])assert.ok(voice.includes(word),word);
+ assert.match(voice,/SpeechRecognition\|\|window\.webkitSpeechRecognition/);
+ assert.match(voice,/interimResults=true/);
+ assert.match(voice,/aria-modal/);
+ assert.match(css,/ln-voice-ring/);
+ assert.match(css,/prefers-reduced-motion/);
+ new vm.Script(voice);
+});
