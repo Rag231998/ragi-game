@@ -172,3 +172,28 @@ test('Real PDF and Instagram-ready PNG have valid file signatures on mobile',asy
  expect(png.head).toEqual([137,80,78,71]);
  expect(png.size).toBeGreaterThan(1000);
 });
+
+test('Assistant keeps conversational loan parameters across several turns',async({page})=>{
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('#ln-assistant-open').click();
+ const field=page.locator('#ln-assistant-input'),send=page.locator('#ln-assistant-form button[type="submit"]');
+ async function ask(q,text){await field.fill(q);await send.click();await expect(page.locator('#ln-assistant-messages')).toContainText(text,{timeout:15000})}
+ await ask('Hva koster et lån?','Hvor stort lån');
+ await ask('3 millioner kr','3 000 000');
+ await ask('5,2 %','nedbetalingstid');
+ await ask('25 år','terminbeløp');
+ await ask('Hva om renten øker 1 %?','6.2 %');
+ await expect(page.locator('#ln-assistant-panel .ln-assistant-account')).toHaveCount(0);
+ await expect(page.locator('.ln-chat-capability')).toContainText('veiviser');
+});
+test('Budget storage controls are explained in budget, never buried in chat',async({page})=>{
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ const area=page.locator('#ln-budget-private-tools');
+ await expect(area).toBeVisible();
+ await expect(area).toContainText('Lagre lokalt');
+ await expect(area).toContainText('Kun fire summer');
+ await expect(area.locator('.ln-assistant-account')).toBeVisible();
+ await area.locator('.ln-assistant-account>summary').click();
+ await expect(area.locator('#ln-vault-login')).toBeVisible();
+ await expect(page.locator('#ln-assistant-panel .ln-vault')).toHaveCount(0);
+});
