@@ -4,15 +4,16 @@ if(!menu)return;
 const trigger=menu.querySelector(':scope > summary');
 const panel=menu.querySelector(':scope > .mobile-menu-panel');
 if(!trigger||!panel)return;
+panel.id='global-menu-panel';document.body.appendChild(panel);
 const groups=[...panel.querySelectorAll('.mobile-menu-category')];
-function place(){const rect=trigger.getBoundingClientRect();const narrow=window.innerWidth<=600;panel.style.position='fixed';panel.style.top=Math.round(rect.bottom+10)+'px';panel.style.right=Math.max(12,Math.round(window.innerWidth-rect.right))+'px';panel.style.left=narrow?'12px':'auto';panel.style.width=narrow?'calc(100vw - 24px)':'min(410px, calc(100vw - 24px))';panel.style.maxHeight=Math.max(180,Math.floor(window.innerHeight-rect.bottom-25))+'px';}
-function setOpen(open){menu.open=Boolean(open);trigger.setAttribute('aria-expanded',String(Boolean(open)));if(open)place();}
-trigger.setAttribute('aria-expanded',String(menu.open));
-trigger.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();setOpen(!menu.open)});
-groups.forEach(group=>group.addEventListener('toggle',()=>{if(group.open)groups.forEach(other=>{if(other!==group)other.open=false})}));
-document.addEventListener('pointerdown',event=>{if(menu.open&&!menu.contains(event.target))setOpen(false)});
-document.addEventListener('keydown',event=>{if(event.key==='Escape'&&menu.open){setOpen(false);trigger.focus()}});
+let isOpen=false;
+function position(){const rect=trigger.getBoundingClientRect();const narrow=innerWidth<640;panel.style.top=Math.max(8,Math.round(rect.bottom+8))+'px';panel.style.left=narrow?'12px':'auto';panel.style.right=narrow?'12px':Math.max(12,Math.round(innerWidth-rect.right))+'px';panel.style.width=narrow?'auto':'min(410px, calc(100vw - 24px))';panel.style.maxHeight=Math.max(160,Math.floor(innerHeight-rect.bottom-24))+'px'}
+function setOpen(next){isOpen=!!next;menu.open=false;trigger.setAttribute('aria-expanded',String(isOpen));panel.hidden=!isOpen;if(isOpen)position()}
+panel.hidden=true;trigger.setAttribute('aria-controls','global-menu-panel');trigger.setAttribute('aria-expanded','false');
+trigger.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();setOpen(!isOpen)});
+groups.forEach(g=>g.addEventListener('toggle',()=>{if(g.open)groups.forEach(other=>{if(other!==g)other.open=false})}));
+document.addEventListener('pointerdown',e=>{if(isOpen&&!panel.contains(e.target)&&!trigger.contains(e.target))setOpen(false)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&isOpen){setOpen(false);trigger.focus()}});
 panel.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',()=>setOpen(false)));
-window.addEventListener('resize',()=>{if(menu.open)place()});
-window.addEventListener('scroll',()=>{if(menu.open)place()},{passive:true});
+addEventListener('resize',()=>{if(isOpen)position()});addEventListener('scroll',()=>{if(isOpen)position()},{passive:true});
 })();
