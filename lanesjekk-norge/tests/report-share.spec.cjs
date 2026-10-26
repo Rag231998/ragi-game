@@ -326,3 +326,34 @@ test('Hands-free voice resumes listening automatically after speaking and accept
  await expect(page.locator('#ln-voice-thread')).toContainText('3 millioner kr',{timeout:15000});
  await expect(page.locator('#ln-voice-thread .ln-voice-question')).toHaveCount(2);
 });
+
+test('Opt-in AI voice can record Norwegian speech, transcribe and speak a reply without Web Speech support',async({page})=>{
+ await page.route('**/api/assistant-status',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({enabled:false,voiceAvailable:true})}));
+ await page.route('**/api/assistant-transcribe',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,transcript:'Hva koster et lån?'})}));
+ await page.route('**/api/assistant-tts',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,mimeType:'audio/wav',audioBase64:'UklGRiQAAABXQVZFZm10IBAAAAABAAEAwF0AAMA6AAACABAAZGF0YQAAAAA='})}));
+ await page.addInitScript(()=>{
+  Object.defineProperty(window,'SpeechRecognition',{configurable:true,value:undefined});
+  Object.defineProperty(window,'webkitSpeechRecognition',{configurable:true,value:undefined});
+  Object.defineProperty(navigator,'mediaDevices',{configurable:true,value:{getUserMedia:async()=>({getTracks:()=>[{stop(){}}]})}});
+  window.MediaRecorder=class{
+   static isTypeSupported(){return true}
+   constructor(){this.mimeType='audio/mp4';this.state='inactive'}
+   start(){this.state='recording'}
+   stop(){if(this.state!=='recording')return;this.state='inactive';this.ondataavailable?.({data:new Blob([new Uint8Array(2048)])});this.onstop?.()}
+  };
+  window.AudioContext=class{
+   createAnalyser(){return {fftSize:2048,n:0,getByteTimeDomainData(buf){this.n++;buf.fill(this.n<=3?77:128)}}}
+   createMediaStreamSource(){return {connect(){}}}
+   resume(){return Promise.resolve()}close(){return Promise.resolve()}
+  };
+  window.Audio=class{constructor(){this.src=''}play(){queueMicrotask(()=>{this.onplay?.();this.onended?.()});return Promise.resolve()}pause(){}};
+ });
+ await page.setViewportSize({width:390,height:780});await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('#ln-assistant-open').click();await page.locator('#ln-voice-start').click();
+ await page.locator('#ln-voice-autocontinue').uncheck();
+ await expect(page.locator('#ln-voice-natural-wrap')).toBeVisible();
+ await page.locator('#ln-voice-natural').check();
+ await expect(page.locator('.ln-voice-modal')).toHaveAttribute('data-phase','listening',{timeout:15000});
+ await expect(page.locator('#ln-voice-thread')).toContainText('Hva koster et lån?',{timeout:16000});
+ await expect(page.locator('#ln-voice-thread .ln-voice-answer')).toHaveCount(1);
+});

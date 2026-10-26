@@ -171,7 +171,7 @@ async function startCloudCapture(){
     const analyser=context.createAnalyser();analyser.fftSize=2048;
     context.createMediaStreamSource(stream).connect(analyser);
     const values=new Uint8Array(analyser.fftSize);
-    await context.resume().catch(()=>{});
+    context.resume().catch(()=>{});
     state.monitor=setInterval(()=>{
      if(activeCapture!==state||recorder.state!=='recording')return;
      analyser.getByteTimeDomainData(values);
@@ -219,7 +219,7 @@ autoToggle.addEventListener('change',()=>{if(!autoToggle.checked)relistenSerial+
 modal.querySelector('#ln-voice-speak-toggle').addEventListener('change',e=>{if(!e.target.checked){stopSpeaking();phase('ready','Skriv eller snakk videre','Automatisk opplesning er slått av.');resumeListening()}});
 naturalToggle.addEventListener('change',()=>{if(!voiceOpen||pending)return;releaseCapture();if(recognition){try{recognition.abort()}catch{}recognition=null}if(!spoken&&!cloudAudio)start()});
 muteButton.addEventListener('click',()=>{if(muted){muted=false;updateMute();if(!pending&&voiceOpen)start();return}muted=true;updateMute();releaseCapture();if(recognition){try{recognition.abort()}catch{}recognition=null}listening=false;phase('muted','Mikrofonen er av','Trykk «Slå på mikrofon» for å fortsette.');again.textContent='🎙 Snakk nå'});
-again.addEventListener('click',()=>{if(muted){muted=false;updateMute()}if((!Speech&&!(cloudReady&&naturalToggle.checked))||modal.dataset.phase==='unavailable'){followupInput.focus({preventScroll:true});return}if(listening){if(activeCapture){try{activeCapture.recorder.stop()}catch{}}else{try{recognition?.stop()}catch{}}return}if(pending)return;start()});
+again.addEventListener('click',()=>{if(muted){muted=false;updateMute()}if((!Speech&&!(cloudReady&&naturalToggle.checked))||(modal.dataset.phase==='unavailable'&&!(cloudReady&&naturalToggle.checked))){followupInput.focus({preventScroll:true});return}if(listening){if(activeCapture){try{activeCapture.recorder.stop()}catch{}}else{try{recognition?.stop()}catch{}}return}if(pending)return;start()});
 keyboard.addEventListener('click',()=>{close();form.querySelector('input')?.focus({preventScroll:true})});
 play.addEventListener('click',()=>{if(spoken||cloudAudio){stopSpeaking();phase('ready','Opplesningen er stoppet','Trykk «Snakk igjen», eller skriv et spørsmål.');return}if(latestVoiceAnswer)read(latestVoiceAnswer,true)});
 document.addEventListener('ln-assistant-turn',e=>{
