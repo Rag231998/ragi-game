@@ -1,7 +1,7 @@
 (()=>{'use strict';
 const $=id=>document.getElementById(id),panel=$('ln-assistant-panel'),form=$('ln-assistant-form'),input=$('ln-assistant-input'),messages=$('ln-assistant-messages');
 if(!panel||!form||!input||!messages)return;
-let busy=false,aiReady=false,history=[];
+let busy=false,aiReady=false,aiMode='guide',localSession=null,history=[];
 messages.replaceChildren();
 const header=panel.querySelector('.ln-assistant-head small');
 if(header)header.textContent='Spør om budsjett, lån, sparing og rapporter';
@@ -13,7 +13,7 @@ const consent=document.createElement('label');consent.className='ln-chat-ai-cons
 form.before(consent);
 const cap=document.createElement('p');cap.className='ln-chat-capability';cap.textContent='Gratis veiviser · Ingen spørsmål sendes til en ekstern AI-tjeneste.';
 form.before(cap);
-fetch('/api/assistant-status',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(v=>{if(v?.enabled){aiReady=true;consent.hidden=false;cap.textContent='AI er tilgjengelig som et frivillig valg. Skriv gjerne spørsmål som i en vanlig samtale.'}}).catch(()=>{});
+fetch('/api/assistant-status',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(async v=>{if(v?.enabled){aiReady=true;aiMode='remote';consent.hidden=false;cap.textContent='Generativ AI er tilgjengelig som et frivillig valg. Du kan skrive som i en vanlig samtale.';return}const local=window.LanguageModel;if(!local?.create)return;try{const availability=typeof local.availability==='function'?await local.availability():'unavailable';if(availability==='unavailable')return;aiReady=true;aiMode='local';consent.hidden=false;consent.querySelector('small').textContent='Kjøres på enheten din når den lokale AI-modellen er klar.';cap.textContent='Lokal generativ AI er tilgjengelig. Du kan aktivere den uten API-nøkkel.'}catch{}}).catch(()=>{});
 function bubble(text,kind='assistant',link){const el=document.createElement('div');el.className='ln-chat-bubble ln-chat-'+kind;const p=document.createElement('p');p.textContent=text;el.append(p);if(link){const a=document.createElement('a');a.href=link;a.textContent='Åpne '+(tools.find(t=>t[2]===link)?.[1]||'verktøyet')+' ↗';a.addEventListener('click',()=>{$('ln-assistant-close')?.click()});el.append(a)}messages.append(el);messages.scrollTop=messages.scrollHeight;return el}
 function money(id){return $(id)?.textContent?.trim()||'ikke oppgitt'}
 function localAnswer(q){const t=q.toLocaleLowerCase('nb-NO'),previous=history.at(-1)?.text?.toLocaleLowerCase('nb-NO')||'',topic=t.length<18?t+' '+previous:t;
@@ -26,8 +26,7 @@ function localAnswer(q){const t=q.toLocaleLowerCase('nb-NO'),previous=history.at
 async function ask(raw){const q=String(raw||'').trim().slice(0,400);if(!q||busy)return;busy=true;input.disabled=true;const send=form.querySelector('button[type="submit"]');if(send)send.disabled=true;input.value='';bubble(q,'user');quick.hidden=true;
  const placeholder=bubble('Ser på spørsmålet ditt …','assistant');let answer;
  try{if(aiReady&&$('ln-chat-ai-optin')?.checked){
-  const resp=await fetch('/api/assistant-ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,history:history.slice(-6)})});
-  const data=await resp.json();if(!resp.ok||!data.answer)throw Error(data.error||'AI-tjenesten svarte ikke');answer={text:String(data.answer).slice(0,2600)}
+  if(aiMode==='local'){if(!localSession)localSession=await window.LanguageModel.create({initialPrompts:[{role:'system',content:'Du er en vennlig norsk økonomiveileder for Lånesjekk Norge. Svar konkret i korte avsnitt, still naturlige oppfølgingsspørsmål, og ikke finn på personlige tall, renter eller tilbud. Svar generelt om budsjett, sparing og lån.'}]});const result=await localSession.prompt(q);answer={text:String(result).slice(0,2600)}}else{const resp=await fetch('/api/assistant-ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,history:history.slice(-6)})});const data=await resp.json();if(!resp.ok||!data.answer)throw Error(data.error||'AI-tjenesten svarte ikke');answer={text:String(data.answer).slice(0,2600)}}
  }else answer=localAnswer(q);
  }catch(e){answer=localAnswer(q);answer.text='AI kunne ikke svare akkurat nå, så jeg bruker veiviseren. '+answer.text}
  placeholder.replaceWith(document.createElement('span')); // removed below without displaying an empty bubble
