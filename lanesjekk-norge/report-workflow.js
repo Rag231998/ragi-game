@@ -14,7 +14,7 @@ if(download){download.textContent='Last ned PDF';actions.append(download)}
 if(link){link.textContent='Kopier sikker lenke';actions.append(link)}
 share.append(actions);
 const more=document.createElement('details');more.className='ln-rw-more';more.id='ln-rw-more';
-const title=document.createElement('summary');title.textContent='Flere valg – bilde, lagring og e-post';more.append(title);
+const title=document.createElement('summary');title.textContent='Flere valg';more.append(title);
 const moreList=document.createElement('div');moreList.className='ln-rw-extra-actions';more.append(moreList);
 const image=share.querySelector('#ln-report-social-image'),save=share.querySelector('#ln-report-save'),openSaved=share.querySelector('#ln-report-open-saved');
 if(image){image.textContent='Del budsjettbilde (Instagram, Facebook m.m.)';moreList.append(image)}
