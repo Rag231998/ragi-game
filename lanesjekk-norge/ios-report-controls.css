@@ -43,3 +43,5 @@
 }
 html.cms-dark #ln-report-modal .ln-rw-nav{background:#183744!important;border-color:#426475}
 html.cms-dark #ln-report-modal .ln-rw-nav button{background:#294e52!important;color:#def8ef!important;border-color:#46756d!important}
+
+#ln-assistant-open .ln-drag-grip{display:inline-block;font-size:18px;line-height:0;vertical-align:-2px;margin-right:7px;opacity:.9;pointer-events:none}#ln-assistant-open:active{cursor:grabbing}
