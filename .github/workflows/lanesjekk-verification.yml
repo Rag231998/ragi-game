@@ -20,6 +20,9 @@ jobs:
         run: |
           set -e
           for file in lanesjekk-norge/*.js; do node --check "$file"; done
+      - name: Run all Lånesjekk application tests before browser setup
+        working-directory: lanesjekk-norge
+        run: npm test
       - name: Install browser tests
         working-directory: lanesjekk-norge/tests
         run: |
