@@ -20,6 +20,11 @@ jobs:
         run: |
           set -e
           for file in lanesjekk-norge/*.js; do node --check "$file"; done
+      - name: Prepare offline PDF dependency for application tests
+        working-directory: lanesjekk-norge
+        run: |
+          npm install --omit=dev --ignore-scripts --no-audit --no-fund
+          node scripts/install-report-deps.cjs
       - name: Run all Lånesjekk application tests before browser setup
         working-directory: lanesjekk-norge
         run: npm test
