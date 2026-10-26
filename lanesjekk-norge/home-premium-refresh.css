@@ -1,0 +1,26 @@
+/* Lånesjekk Norge — Home 2026: restrained, compact, responsive */
+:root{--home-border:#dce8ed;--home-ink:#17354b;--home-green:#087d70}
+.portal-home{background:#f7fafc!important}
+.portal-home .home-navigation{max-width:1250px!important;margin-inline:auto!important;padding:clamp(22px,3.5vw,46px) clamp(16px,3vw,32px)!important}
+.portal-home .home-navigation .home-intro{max-width:760px;margin:0 auto 24px!important;text-align:center}
+.portal-home .home-navigation .home-intro h2{font-size:clamp(29px,3.5vw,46px)!important;line-height:1.1;margin:10px 0!important;letter-spacing:-.045em}
+.portal-home .home-navigation .home-intro p{font-size:14px;line-height:1.6;max-width:680px;margin:10px auto!important}
+.portal-home .home-navigation .home-tool-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:14px!important;align-items:stretch!important}
+.portal-home .home-navigation .home-tool-grid>.home-tool{display:flex!important;flex-direction:column!important;align-items:flex-start!important;min-width:0!important;min-height:295px!important;height:auto!important;padding:22px!important;border-radius:22px!important;border:1px solid var(--home-border)!important;background:#fff!important;box-shadow:0 7px 26px #0e31490a!important;transform:none!important;transition:box-shadow .2s,border-color .2s,transform .2s!important;gap:0!important}
+.portal-home .home-navigation .home-tool-grid>.home-tool:hover{transform:translateY(-3px)!important;border-color:#83cdbb!important;box-shadow:0 18px 38px #0e31491a!important}
+.portal-home .home-navigation:not(.show-all-tools) .home-tool-grid>.home-tool:nth-child(n+5){display:none!important}
+.portal-home .home-navigation .home-tool-grid>.home-tool .home-tool-art{width:52px!important;height:52px!important;min-height:52px!important;max-height:52px!important;border-radius:15px!important;margin-bottom:18px!important;font-size:25px!important}
+.portal-home .home-navigation .home-tool-grid>.home-tool .home-tool-category{font-size:10px!important;letter-spacing:.115em!important;margin-bottom:11px!important}
+.portal-home .home-navigation .home-tool-grid>.home-tool>strong{font-size:clamp(16px,1.35vw,19px)!important;line-height:1.3!important;letter-spacing:-.02em!important;margin:0 0 9px!important}
+.portal-home .home-navigation .home-tool-grid>.home-tool>small{font-size:12.5px!important;line-height:1.6!important;margin-bottom:14px!important}
+.portal-home .home-navigation .home-tool-grid>.home-tool .premium-tool-preview{display:none!important}
+.portal-home .home-navigation .home-tool-grid>.home-tool .receipt-feature-illustration{display:block!important;height:105px!important;max-height:105px!important;width:100%!important;object-fit:contain!important;margin:0 0 10px!important}
+.portal-home .home-navigation .home-tool-grid>.home-tool .home-tool-arrow{margin:auto 0 0!important;min-height:42px!important;width:100%!important;max-width:none!important;padding:10px 12px!important;text-align:center!important;display:flex!important;align-items:center!important;justify-content:center!important;border-radius:12px!important;font-size:12.5px!important;font-weight:750!important;white-space:normal!important;line-height:1.3!important}
+.portal-home .home-navigation .home-tools-toggle{margin:23px auto 0!important;border-radius:14px!important;padding:12px 24px!important;min-height:45px!important}
+.portal-home .economy-pulse-home{box-shadow:0 12px 34px #0e31490b}
+#loan-showcase .sc-motion-control{display:none!important}
+html.cms-dark .portal-home .home-navigation .home-tool-grid>.home-tool{background:#1b3344!important;border-color:#345668!important;color:#ebf8ff!important}
+html.cms-dark .portal-home .home-navigation .home-tool-grid>.home-tool>small{color:#c9dce6!important}
+@media(max-width:1050px){.portal-home .home-navigation .home-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:600px){.portal-home .home-navigation{padding:22px 15px!important}.portal-home .home-navigation .home-tool-grid{grid-template-columns:1fr!important;gap:12px!important}.portal-home .home-navigation .home-tool-grid>.home-tool{min-height:240px!important;padding:19px!important}.portal-home .home-navigation .home-tool-grid>.home-tool .receipt-feature-illustration{height:100px!important}}
+@media(prefers-reduced-motion:reduce){.portal-home .home-navigation .home-tool-grid>.home-tool{transition:none!important}}
