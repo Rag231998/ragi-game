@@ -32,7 +32,7 @@ $('ln-report-open-saved')?.addEventListener('click',()=>{try{const data=localSto
 
 $('ln-report-open')?.addEventListener('click',open);$('ln-report-close')?.addEventListener('click',close);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)close()});
 
-const byte64=bytes=>btoa(Array.from(bytes,b=>String.fromCharCode(b)).join('')).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=+$/,'');
+const byte64=bytes=>btoa(Array.from(bytes,b=>String.fromCharCode(b)).join('')).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const unbyte64=s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-s.length%4)%4)),c=>c.charCodeAt(0));
 async function zip(source){const blob=new Blob([new TextEncoder().encode(source)]);const stream=blob.stream().pipeThrough(new CompressionStream('gzip'));return new Uint8Array(await new Response(stream).arrayBuffer())}
 async function unzip(bytes){const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));return new Response(stream).text()}
