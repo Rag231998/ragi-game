@@ -1,10 +1,13 @@
-name: Lånesjekk report sharing on iPhone
+name: Lånesjekk iPhone assistant and report UI
 on:
   push:
     branches: [main]
     paths:
       - 'lanesjekk-norge/report-*.js'
       - 'lanesjekk-norge/report-*.css'
+      - 'lanesjekk-norge/assistant-conversation.js'
+      - 'lanesjekk-norge/assistant-conversation-upgrade.css'
+      - 'lanesjekk-norge/tests/assistant-ios.spec.cjs'
       - 'lanesjekk-norge/index.html'
       - 'lanesjekk-norge/ios-report-controls.css'
       - 'lanesjekk-norge/tests/report-share.spec.cjs'
@@ -30,6 +33,6 @@ jobs:
       - name: Install browsers
         working-directory: lanesjekk-norge/tests
         run: npx playwright install --with-deps chromium webkit
-      - name: Run iPhone Safari and desktop report workflows
+      - name: Run iPhone Safari and desktop assistant and report workflows
         working-directory: lanesjekk-norge/tests
-        run: npx playwright test report-share.spec.cjs --project=iphone-webkit --project=desktop-chromium --workers=2 --reporter=line
+        run: npx playwright test report-share.spec.cjs assistant-ios.spec.cjs --project=iphone-webkit --project=desktop-chromium --workers=2 --reporter=line
