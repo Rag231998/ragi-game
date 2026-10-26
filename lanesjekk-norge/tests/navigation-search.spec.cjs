@@ -129,6 +129,8 @@ test('view switcher opens global search from a tool without resetting another to
 
 test('rental homepage shortcut opens rental mode and browser history restores the prior view',async({page})=>{
  await page.goto('/#topp',{waitUntil:'domcontentloaded'});
+ await page.locator('#home-tools-toggle').click();
+ await expect(page.locator('.home-tool-property')).toBeVisible();
  await page.locator('.home-tool-property').click();
  await expect(page).toHaveURL(/#utleieanalyse$/);
  await expect(page.locator('#utleie')).toHaveClass(/pv-mode-rental/);
