@@ -135,3 +135,19 @@ html.cms-dark #ln-assistant-panel .ln-chat-storage-consent{background:#204743;bo
  #ln-assistant-panel .ln-voice-center>p{font-size:10px}
  #ln-assistant-panel .ln-voice-privacy{display:none}
 }
+
+/* Hands-free turn-taking and explicit choice of a natural voice when configured. */
+#ln-assistant-panel .ln-voice-auto-toggle,
+#ln-assistant-panel .ln-voice-natural-wrap{display:flex;align-items:center;justify-content:center;gap:7px;min-height:31px;color:#e9fff7;font-size:11px;line-height:1.4}
+#ln-assistant-panel .ln-voice-natural-wrap[hidden]{display:none!important}
+#ln-assistant-panel .ln-voice-auto-toggle input,
+#ln-assistant-panel .ln-voice-natural-wrap input{height:17px;width:17px;accent-color:#83ecca;flex:none}
+#ln-assistant-panel .ln-voice-natural-wrap small{color:#bde6db;font-size:10px}
+#ln-assistant-panel .ln-voice-modal[data-phase="starting"] .ln-voice-orb i{animation:ln-voice-ring 2s ease-out infinite}
+#ln-assistant-panel .ln-voice-modal[data-phase="starting"] .ln-voice-orb i:nth-of-type(2){animation-delay:.65s}
+#ln-assistant-panel .ln-voice-modal[data-phase="starting"] .ln-voice-orb i:nth-of-type(3){animation-delay:1.3s}
+@media(max-height:620px){
+ #ln-assistant-panel .ln-voice-auto-toggle,
+ #ln-assistant-panel .ln-voice-natural-wrap{min-height:23px}
+ #ln-assistant-panel .ln-voice-orb{height:38px;width:38px;margin:0 auto 3px}
+}

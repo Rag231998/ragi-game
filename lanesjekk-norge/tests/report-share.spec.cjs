@@ -305,3 +305,24 @@ test('iPhone voice dialog supports two typed follow-up turns without closing or 
  await expect(dialog).toBeHidden();
  await expect(page.locator('#ln-assistant-messages')).toContainText('Hva om renten øker?');
 });
+
+test('Hands-free voice resumes listening automatically after speaking and accepts another question',async({page})=>{
+ await page.addInitScript(()=>{
+  Object.defineProperty(window,'SpeechRecognition',{configurable:true,value:undefined});
+  Object.defineProperty(window,'SpeechSynthesisUtterance',{configurable:true,value:class{constructor(text){this.text=text}}});
+  Object.defineProperty(window,'speechSynthesis',{configurable:true,value:{getVoices:()=>[{name:'Norwegian Enhanced',lang:'nb-NO'}],cancel(){},speak(u){queueMicrotask(()=>{u.onstart?.();u.onend?.()})}}});
+  window.__lnVoiceStarts=0;
+  window.webkitSpeechRecognition=class{
+   start(){window.__lnVoiceStarts++;this.onstart?.();window.__lnLiveRecognizer=this;
+    if(window.__lnVoiceStarts===1)queueMicrotask(()=>{this.onresult?.({results:[Object.assign([{transcript:'Hva koster et lån?'}],{isFinal:true})]});this.onend?.()})}
+   stop(){this.onend?.()}abort(){}
+  };
+ });
+ await page.setViewportSize({width:390,height:780});await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('#ln-assistant-open').click();await page.locator('#ln-voice-start').click();
+ await expect(page.locator('#ln-voice-autocontinue')).toBeChecked();
+ await expect.poll(()=>page.evaluate(()=>window.__lnVoiceStarts),{timeout:15000}).toBeGreaterThan(1);
+ await page.evaluate(()=>{const r=window.__lnLiveRecognizer;r.onresult?.({results:[Object.assign([{transcript:'3 millioner kr'}],{isFinal:true})]});r.onend?.()});
+ await expect(page.locator('#ln-voice-thread')).toContainText('3 millioner kr',{timeout:15000});
+ await expect(page.locator('#ln-voice-thread .ln-voice-question')).toHaveCount(2);
+});

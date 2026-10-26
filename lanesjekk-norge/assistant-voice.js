@@ -139,7 +139,7 @@ modal.querySelector('#ln-voice-speak-toggle').addEventListener('change',e=>{if(!
 muteButton.addEventListener('click',()=>{if(muted){muted=false;updateMute();if(!pending&&voiceOpen)start();return}muted=true;updateMute();if(recognition){try{recognition.abort()}catch{}recognition=null}listening=false;phase('muted','Mikrofonen er av','Trykk «Slå på mikrofon» for å fortsette.');again.textContent='🎙 Snakk nå'});
 again.addEventListener('click',()=>{if(muted){muted=false;updateMute()}if(!Speech||modal.dataset.phase==='unavailable'){followupInput.focus({preventScroll:true});return}if(listening){try{recognition?.stop()}catch{}return}if(pending)return;start()});
 keyboard.addEventListener('click',()=>{close();form.querySelector('input')?.focus({preventScroll:true})});
-play.addEventListener('click',()=>{if(spoken){stopSpeaking();return}if(latestVoiceAnswer)read(latestVoiceAnswer,true)});
+play.addEventListener('click',()=>{if(spoken||cloudAudio){stopSpeaking();phase('ready','Opplesningen er stoppet','Trykk «Snakk igjen», eller skriv et spørsmål.');return}if(latestVoiceAnswer)read(latestVoiceAnswer,true)});
 document.addEventListener('ln-assistant-turn',e=>{
  if(readButton)readButton.disabled=false;
  if(!voiceOpen||!pending)return;
