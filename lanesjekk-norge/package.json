@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node server.js",
-    "test": "node --test tests/site-integrity.test.cjs tests/navigation-engine.test.cjs tests/theme-regression.test.cjs tests/studio-safety.test.cjs tests/feature-catalog.test.cjs tests/realtime-functional.test.cjs tests/admin-ai-api.test.cjs tests/academy-market.test.cjs tests/academy-premium.test.cjs tests/academy-playground.test.cjs tests/economy-home.test.cjs tests/premium-navigation.test.cjs tests/property-sources.test.cjs tests/property-provenance.test.cjs tests/menu-coins.test.cjs tests/home-refresh.test.cjs tests/budget-workspace.test.cjs tests/policy-rate.test.cjs",
+    "test": "node --test tests/site-integrity.test.cjs tests/navigation-engine.test.cjs tests/theme-regression.test.cjs tests/studio-safety.test.cjs tests/feature-catalog.test.cjs tests/realtime-functional.test.cjs tests/admin-ai-api.test.cjs tests/academy-market.test.cjs tests/academy-premium.test.cjs tests/academy-playground.test.cjs tests/economy-home.test.cjs tests/premium-navigation.test.cjs tests/property-sources.test.cjs tests/property-provenance.test.cjs tests/menu-coins.test.cjs tests/home-refresh.test.cjs tests/budget-workspace.test.cjs tests/policy-rate.test.cjs tests/assistant-share.test.cjs",
     "prestart": "npm test",
     "postinstall": "node scripts/check-live-data.cjs"
   },
