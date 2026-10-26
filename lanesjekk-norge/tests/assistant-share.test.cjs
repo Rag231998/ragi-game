@@ -21,5 +21,15 @@ test('Conversational guidance remembers mortgage amounts and uses current budget
  assert.match(brain.response('Hvor kan jeg spare mer i budsjettet?').text,/55\s?000/);
  assert.match(brain.response('Hva hvis jeg sparer 1 000 kr?').text,/12\s?000/);
  assert.match(frontend,/ln-chat-dots/);assert.match(frontend,/requestAnimationFrame/);
- assert.match(frontend,/SpeechRecognition/);assert.match(frontend,/speechSynthesis/);
+ assert.doesNotMatch(frontend,/SpeechRecognition|speechSynthesis|ln-chat-icon-button/);
+});
+
+test('iOS chat has a single clear message input and does not display unusable voice buttons',()=>{
+ const client=read('assistant-conversation.js');
+ const html=read('index.html');
+ assert.doesNotMatch(client,/🎙|🔈|🔊|recognitionClass|readAloud/);
+ assert.doesNotMatch(client,/Mikrofonen er ikke tilgjengelig/);
+ assert.match(html,/id="ln-assistant-input"/);
+ assert.match(html,/id="ln-assistant-form"/);
+ new vm.Script(client);
 });
