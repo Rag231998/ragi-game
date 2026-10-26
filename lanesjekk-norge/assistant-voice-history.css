@@ -1,0 +1,59 @@
+/* Personal conversation controls: quiet, compact and usable on iOS. */
+#ln-assistant-panel .ln-chat-toolbar{display:flex;gap:8px;align-items:center;padding:8px 13px;background:#f7fbfa;border-bottom:1px solid #dfebe9;flex:0 0 auto}
+#ln-assistant-panel .ln-chat-toolbar button{border:1px solid #bddbd4;border-radius:10px;background:#fff;color:#24675f;font:700 11px system-ui;min-height:34px;padding:7px 13px;cursor:pointer}
+#ln-assistant-panel .ln-chat-toolbar button:hover{background:#e9f8f3}
+#ln-assistant-panel .ln-chat-history{min-height:0;flex:1;overflow-y:auto;padding:15px 16px;background:#fff}
+#ln-assistant-panel .ln-chat-history[hidden],#ln-assistant-panel .ln-voice-modal[hidden]{display:none!important}
+#ln-assistant-panel.ln-chat-history-open .ln-assistant-messages,
+#ln-assistant-panel.ln-chat-history-open .ln-chat-suggestions,
+#ln-assistant-panel.ln-chat-history-open .ln-chat-ai-consent,
+#ln-assistant-panel.ln-chat-history-open .ln-chat-capability,
+#ln-assistant-panel.ln-chat-history-open .ln-voice-tools,
+#ln-assistant-panel.ln-chat-history-open .ln-assistant-form{display:none!important}
+#ln-assistant-panel .ln-chat-history-head{display:flex;justify-content:space-between;gap:10px;align-items:center}
+#ln-assistant-panel .ln-chat-history-head strong{font-size:16px;color:#174b48}
+#ln-assistant-panel .ln-chat-history-head button{padding:6px 10px;background:transparent;color:#286e64;border:0;cursor:pointer}
+#ln-assistant-panel .ln-chat-history>p{font-size:11px;line-height:1.55;color:#64817e}
+#ln-assistant-panel #ln-chat-history-items{display:grid;gap:9px}
+#ln-assistant-panel .ln-chat-history-row{display:flex;gap:6px;border:1px solid #dceae6;border-radius:11px;background:#f9fcfb;padding:4px;min-width:0}
+#ln-assistant-panel .ln-chat-history-select{flex:1;min-width:0;text-align:left;border:0;background:transparent;color:#174f48;padding:10px;font-size:12px;font-weight:700;cursor:pointer;overflow-wrap:anywhere}
+#ln-assistant-panel .ln-chat-history-select small{display:block;color:#70908a;font-weight:400;font-size:10px;margin-top:5px}
+#ln-assistant-panel .ln-chat-history-remove{flex:0 0 auto;border:0;background:transparent;color:#935456;padding:7px;cursor:pointer;font-size:11px}
+#ln-assistant-panel .ln-chat-delete-all{margin-top:17px;border:1px solid #e7c9c9;color:#a04445;background:#fff5f4;border-radius:9px;padding:10px 13px;cursor:pointer;font-size:11px}
+#ln-assistant-panel .ln-chat-no-history{font-size:12px;color:#62807d;line-height:1.6}
+#ln-assistant-panel .ln-voice-tools{display:flex;align-items:center;gap:8px;padding:7px 13px;background:#fbfdfd;border-top:1px solid #e4eeee;flex:0 0 auto}
+#ln-assistant-panel .ln-voice-tools button{border:1px solid #bddbd5;border-radius:10px;background:#f3faf7;color:#17685d;min-height:39px;padding:8px 13px;display:inline-flex;align-items:center;gap:7px;cursor:pointer;font:750 12px system-ui}
+#ln-assistant-panel .ln-voice-tools button:focus-visible,#ln-assistant-panel .ln-chat-toolbar button:focus-visible,#ln-assistant-panel .ln-voice-modal button:focus-visible{outline:3px solid #62d5b8;outline-offset:2px}
+#ln-assistant-panel .ln-voice-modal{position:absolute;inset:0;z-index:30;background:#06362ff2;color:#f1fffa;display:grid;place-items:center;border-radius:inherit;padding:16px;box-sizing:border-box;overflow-y:auto}
+#ln-assistant-panel .ln-voice-shell{width:100%;min-height:min(495px,100%);display:flex;flex-direction:column;align-items:stretch;text-align:center}
+#ln-assistant-panel .ln-voice-top{display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left}
+#ln-assistant-panel .ln-voice-top span{font-size:10px;letter-spacing:.14em;font-weight:800;color:#a5e9d7}
+#ln-assistant-panel .ln-voice-live{display:inline-block;width:7px;height:7px;margin-right:7px;background:#73e2c4;border-radius:50%;vertical-align:2px}
+#ln-assistant-panel .ln-voice-top button{color:white;background:#ffffff1b;border:1px solid #ffffff60;border-radius:10px;min-width:36px;min-height:36px}
+#ln-assistant-panel .ln-voice-center{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:170px;padding:18px 4px}
+#ln-assistant-panel .ln-voice-orb{width:110px;height:110px;display:grid;place-items:center;position:relative;margin:0 auto 20px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#79f5d7,#14a68d 58%,#0a655a);box-shadow:0 0 0 10px #89edce17,0 0 42px #36e7b754}
+#ln-assistant-panel .ln-voice-orb .ln-voice-wave{font-size:35px;color:#effffb;text-shadow:0 2px 15px #073d44;z-index:1;line-height:1}
+#ln-assistant-panel .ln-voice-orb i{position:absolute;inset:-6px;border:2px solid #8affdf;border-radius:50%;opacity:0}
+#ln-assistant-panel .ln-voice-modal[data-phase="listening"] .ln-voice-orb i,#ln-assistant-panel .ln-voice-modal[data-phase="speaking"] .ln-voice-orb i{animation:ln-voice-ring 2s ease-out infinite}
+#ln-assistant-panel .ln-voice-orb i:nth-of-type(2){animation-delay:.65s!important}
+#ln-assistant-panel .ln-voice-orb i:nth-of-type(3){animation-delay:1.3s!important}
+@keyframes ln-voice-ring{0%{transform:scale(.86);opacity:.78}100%{transform:scale(1.6);opacity:0}}
+#ln-assistant-panel .ln-voice-center h3{font-size:19px;margin:0 0 7px;color:white}
+#ln-assistant-panel .ln-voice-center>p{font-size:12px;margin:0 0 8px;line-height:1.55;color:#d0f0e6}
+#ln-assistant-panel #ln-voice-transcript{font-size:14px;line-height:1.6;color:white;max-height:105px;overflow-y:auto;overflow-wrap:anywhere}
+#ln-assistant-panel .ln-voice-bottom{display:grid;gap:12px;text-align:center}
+#ln-assistant-panel .ln-voice-speak-toggle{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;color:#e8fcf6}
+#ln-assistant-panel .ln-voice-speak-toggle input{width:16px;height:16px;accent-color:#61e0bd}
+#ln-assistant-panel .ln-voice-buttons{display:grid;grid-template-columns:1.5fr 1fr;gap:9px}
+#ln-assistant-panel .ln-voice-buttons button{min-height:47px;border:1px solid #c0f2df;border-radius:12px;font-size:13px;font-weight:800}
+#ln-assistant-panel #ln-voice-again{background:#82e8c9;color:#064e47}
+#ln-assistant-panel #ln-voice-done{background:transparent;color:white}
+#ln-assistant-panel .ln-voice-bottom>p{color:#afd3c8;font-size:10px;line-height:1.5;margin:0}
+html.cms-dark #ln-assistant-panel .ln-chat-toolbar,html.cms-dark #ln-assistant-panel .ln-voice-tools{background:#22414b;border-color:#446b70}
+html.cms-dark #ln-assistant-panel .ln-chat-toolbar button,html.cms-dark #ln-assistant-panel .ln-voice-tools button{background:#2a5360;color:#e2fbf4;border-color:#52817a}
+html.cms-dark #ln-assistant-panel .ln-chat-history{background:#193b47;color:#d7f3eb}
+html.cms-dark #ln-assistant-panel .ln-chat-history-head strong{color:#e2faf2}
+html.cms-dark #ln-assistant-panel .ln-chat-history-row{background:#244c57;border-color:#446c70}
+html.cms-dark #ln-assistant-panel .ln-chat-history-select{color:#e9fdf6}
+@media(max-width:600px){#ln-assistant-panel .ln-chat-toolbar{padding:7px 11px}#ln-assistant-panel .ln-chat-toolbar button{min-height:34px;padding:7px 11px}#ln-assistant-panel .ln-voice-tools{padding:7px 10px}#ln-assistant-panel .ln-voice-tools button{min-height:36px}#ln-assistant-panel .ln-voice-shell{min-height:0}#ln-assistant-panel .ln-voice-center{padding:18px 4px;min-height:145px}#ln-assistant-panel .ln-voice-orb{width:94px;height:94px;margin-bottom:16px}}
+@media(prefers-reduced-motion:reduce){#ln-assistant-panel .ln-voice-orb i{animation:none!important;opacity:0!important}}
