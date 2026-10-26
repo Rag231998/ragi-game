@@ -1,0 +1,31 @@
+/* Budget-only account, storage and sharing panel. Never overlay the assistant. */
+#ln-budget-private-tools{padding:20px 22px;margin:12px 0 18px;background:linear-gradient(125deg,#f6fbf9,#f2f9fc);border:1px solid #d7e9e5;border-radius:17px;color:#183f49}
+#ln-budget-private-tools .ln-budget-data-intro h3{font-size:19px;margin:5px 0 9px;letter-spacing:-.02em}
+#ln-budget-private-tools .ln-budget-data-intro p{max-width:850px;font-size:13px;line-height:1.65;color:#526f7a;margin:0 0 15px}
+#ln-budget-private-tools .ln-budget-data-methods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 15px}
+#ln-budget-private-tools .ln-budget-data-methods>div{display:flex;flex-direction:column;gap:5px;padding:12px 14px;border:1px solid #dbe8e8;border-radius:12px;background:#fff}
+#ln-budget-private-tools .ln-budget-data-methods strong{font-size:12px;color:#086b60}
+#ln-budget-private-tools .ln-budget-data-methods span{font-size:11px;line-height:1.5;color:#627987}
+#ln-budget-private-tools .ln-assistant-account{border:1px solid #cadfda;border-radius:12px;background:#fff;padding:0;overflow:hidden}
+#ln-budget-private-tools .ln-assistant-account>summary{padding:14px 16px;cursor:pointer;list-style:none;font:750 13px system-ui;color:#0b6659}
+#ln-budget-private-tools .ln-assistant-account>summary::-webkit-details-marker{display:none}
+#ln-budget-private-tools .ln-assistant-account>summary::before{content:'⌄';display:inline-block;transform:rotate(-90deg);margin-right:8px;transition:transform .18s}
+#ln-budget-private-tools .ln-assistant-account[open]>summary::before{transform:rotate(0deg)}
+#ln-budget-private-tools .ln-vault{padding:15px 17px;color:#204953;border-top:1px solid #dfebe8}
+#ln-budget-private-tools .ln-vault h3{font-size:16px;margin:0 0 7px}
+#ln-budget-private-tools .ln-vault>p{font-size:12px;line-height:1.6;margin:0 0 14px;color:#607880}
+#ln-budget-private-tools .ln-vault button,#ln-budget-private-tools .ln-assistant-actions button{min-height:41px;padding:10px 14px;border:1px solid #a8d8ca;border-radius:10px;background:#e8f7f1;color:#066a5c;font:750 12px system-ui;cursor:pointer}
+#ln-budget-private-tools .ln-vault-details{margin-top:12px;border-top:1px solid #e0ebe8}
+#ln-budget-private-tools .ln-vault-details>summary{cursor:pointer;font-weight:700;font-size:13px;padding:13px 0}
+#ln-budget-private-tools .ln-vault-details form{display:grid;gap:9px;max-width:420px}
+#ln-budget-private-tools .ln-vault-details label{font-size:12px}
+#ln-budget-private-tools .ln-vault-details input{padding:11px 13px;border-radius:10px;border:1px solid #bad5d4;font-size:14px}
+#ln-budget-private-tools .ln-vault-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+#ln-budget-private-tools .ln-assistant-actions{padding:10px 17px 15px}
+#ln-budget-private-tools #ln-vault-status{font-size:11px;line-height:1.5;color:#5c7882}
+#ln-budget-private-tools [hidden]{display:none!important}
+html.cms-dark #ln-budget-private-tools{background:#193742;color:#e8f7f7;border-color:#44676c}
+html.cms-dark #ln-budget-private-tools :is(.ln-budget-data-intro p,.ln-vault>p,.ln-budget-data-methods span){color:#c6dade}
+html.cms-dark #ln-budget-private-tools :is(.ln-assistant-account,.ln-budget-data-methods>div){background:#234652;border-color:#426876}
+html.cms-dark #ln-budget-private-tools :is(.ln-vault,.ln-assistant-account>summary){color:#e0f5f0}
+@media(max-width:700px){#ln-budget-private-tools{padding:15px 14px;margin:10px 0 15px}#ln-budget-private-tools .ln-budget-data-methods{grid-template-columns:1fr}#ln-budget-private-tools .ln-budget-data-methods>div{padding:10px 13px}#ln-budget-private-tools .ln-budget-data-intro h3{font-size:17px}}
