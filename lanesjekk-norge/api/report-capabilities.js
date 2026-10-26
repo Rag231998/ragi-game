@@ -1,0 +1,1 @@
+'use strict';module.exports=async(req,res)=>{res.setHeader('Cache-Control','no-store');return res.status(200).json({ok:true,directEmail:!!(process.env.RESEND_API_KEY&&process.env.LANESJEKK_REPORT_FROM),requiresLogin:true,provider:'Resend',note:'Direct email is available only when an administrator has verified the sending domain.'})};
