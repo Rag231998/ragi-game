@@ -10,7 +10,7 @@ function title(t){if(y>255){doc.addPage();y=20}y+=4;doc.setFont('helvetica','bol
 if(report.results?.length){title('RESULTATER');for(const r of report.results)row(r.label,r.value)}
 if(report.entries?.length){title('BEREGNINGSGRUNNLAG');for(const r of report.entries)row(r.label,r.value)}
 if(report.rows?.length){title('BUDSJETTPOSTER');report.rows.forEach((cells,i)=>{const headings=report.heads||[];const joined=cells.map((v,j)=>headings[j]?headings[j]+': '+v:v).filter(Boolean).join('  |  ');row((i+1)+'.',joined)})}
-const pages=doc.getNumberOfPages();for(let n=1;n<=pages;n++){doc.setPage(n);doc.setTextColor(231,241,239);doc.setFont('helvetica','bold');doc.setFontSize(33);doc.text('LANESJEKK NORGE',105,156,{align:'center',angle:30});doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(89,112,122);doc.text('Opprettet med Lanesjekk Norge - beregninger er ikke bankbekreftede.',margin,289);doc.text(String(n)+' / '+pages,194,289,{align:'right'})}
+const pages=doc.getNumberOfPages();for(let n=1;n<=pages;n++){doc.setPage(n);doc.setTextColor(231,241,239);doc.setFont('helvetica','bold');doc.setFontSize(15);doc.text('LANESJEKK NORGE',194,282,{align:'right'});doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(89,112,122);doc.text('Opprettet med Lanesjekk Norge - beregninger er ikke bankbekreftede.',margin,289);doc.text(String(n)+' / '+pages,194,289,{align:'right'})}
 return doc}
 window.LNReportPDF={build,download(r){build(r).save('lanesjekk-rapport-'+new Date().toISOString().slice(0,10)+'.pdf')},base64(r){return build(r).output('datauristring').split(',')[1]},file(r){return new File([build(r).output('blob')],'lanesjekk-rapport.pdf',{type:'application/pdf'})}};
 })();
