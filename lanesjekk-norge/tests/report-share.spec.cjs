@@ -46,8 +46,10 @@ test('Assistant is a single chat view without an extra sharing tab',async({page}
  await page.locator('#ln-assistant-input').fill('Hvordan lager jeg rapport?');
  await page.locator('#ln-assistant-form button[type="submit"]').click();
  await expect(page.locator('#ln-assistant-messages')).toContainText('Lag PDF / del budsjettet');
- await page.locator('.ln-assistant-account>summary').click();
- await expect(page.locator('.ln-vault')).toBeVisible();
+ await expect(page.locator('#ln-assistant-panel .ln-assistant-account')).toHaveCount(0);
+ await page.locator('#ln-assistant-close').click();
+ await page.locator('#ln-budget-private-tools .ln-assistant-account>summary').click();
+ await expect(page.locator('#ln-budget-private-tools .ln-vault')).toBeVisible();
 });
 
 test('Mobile sharing controls remain reachable and native PDF + social image files are offered',async({page})=>{
