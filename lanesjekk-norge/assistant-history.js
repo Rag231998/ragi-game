@@ -14,17 +14,18 @@ toolbar.after(drawer);
 const backups=document.createElement('div');backups.className='ln-chat-backups';
 backups.innerHTML='<button id="ln-chat-export" type="button">↓ Sikkerhetskopi av samtaler</button><button id="ln-chat-import" type="button">↑ Gjenopprett sikkerhetskopi</button><input id="ln-chat-import-file" type="file" accept=".json,application/json" hidden><p>Ny chat sletter ikke tidligere samtaler. De lagres på denne enheten, og kan eksporteres som en JSON-fil. Filen inneholder samtaletekst og bør oppbevares privat.</p>';
 drawer.querySelector('#ln-chat-delete-all')?.before(backups);
-function exportHistory(){saveCurrent();if(!entries.length){alert('Ingen samtaler å sikkerhetskopiere ennå.');return}
+function exportHistory(){saveCurrent();if(!entries.length){announce('Ingen samtaler å sikkerhetskopiere ennå.');return}
  const backup={format:'lanesjekk-assistant-backup',version:1,exported:new Date().toISOString(),conversations:entries};
  const url=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json;charset=utf-8'}));
- const link=document.createElement('a');link.href=url;link.download='lanesjekk-samtaler-'+new Date().toISOString().slice(0,10)+'.json';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1200)
+ const link=document.createElement('a');link.href=url;link.download='lanesjekk-samtaler-'+new Date().toISOString().slice(0,10)+'.json';document.body.append(link);link.click();link.remove();announce('Sikkerhetskopien er klar som fil. Oppbevar den privat.');setTimeout(()=>URL.revokeObjectURL(url),1200)
 }
 backups.querySelector('#ln-chat-export').addEventListener('click',exportHistory);
+const backupStatus=document.createElement('p');backupStatus.className='ln-chat-backup-status';backupStatus.setAttribute('role','status');backups.append(backupStatus);const announce=(message)=>{backupStatus.textContent=message};
 const fileInput=backups.querySelector('#ln-chat-import-file');
 backups.querySelector('#ln-chat-import').addEventListener('click',()=>fileInput.click());
 fileInput.addEventListener('change',async()=>{
  const file=fileInput.files?.[0];fileInput.value='';if(!file)return;
- if(file.size>450000){alert('Filen er for stor. Velg en sikkerhetskopi laget fra Lånesjekk Assistent.');return}
+ if(file.size>450000){announce('Filen er for stor. Velg en sikkerhetskopi laget fra Lånesjekk Assistent.');return}
  try{
   const data=JSON.parse(await file.text());if(data?.format!=='lanesjekk-assistant-backup'||data.version!==1||!Array.isArray(data.conversations))throw Error('invalid format');
   const imported=data.conversations.slice(0,KEEP).filter(item=>item&&typeof item.id==='string'&&Array.isArray(item.turns)).map(item=>({
@@ -37,8 +38,8 @@ fileInput.addEventListener('change',async()=>{
   if(!imported.length)throw Error('no conversations');
   saveCurrent();entries=[...imported,...entries].slice(0,KEEP);
   if(!persist())throw Error('storage full');
-  draw();alert(imported.length+' samtale(r) gjenopprettet på denne enheten.')
- }catch{alert('Kunne ikke gjenopprette filen. Bruk en gyldig sikkerhetskopi fra Lånesjekk Assistent.')}
+  draw();announce(imported.length+' samtale(r) gjenopprettet på denne enheten.')
+ }catch{announce('Kunne ikke gjenopprette filen. Bruk en gyldig sikkerhetskopi fra Lånesjekk Assistent.')}
 });
 const newButton=toolbar.querySelector('#ln-chat-new'),listButton=toolbar.querySelector('#ln-chat-list'),items=drawer.querySelector('#ln-chat-history-items');
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(entries));localStorage.setItem(CUR,currentId);return true}catch{return false}}
