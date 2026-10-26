@@ -15,7 +15,7 @@ const options=[
 ];
 selection.innerHTML='<h3>Velg innhold</h3><p>Du bestemmer hva mottakeren får se. Ingen rapport sendes før du deler den.</p><div class="ln-rw-options">'+options.map(([id,name,description,selected])=>'<label class="ln-rw-option"><input data-rw-part="'+id+'" type="checkbox" '+(selected?'checked':'')+'><span><strong>'+name+'</strong><small>'+description+'</small></span></label>').join('')+'</div><label class="ln-rw-label" for="ln-rw-title">Rapporttittel</label><input id="ln-rw-title" type="text" maxlength="90" value="Mitt budsjett" placeholder="Mitt budsjett"><label class="ln-rw-label" for="ln-rw-note">Kommentar (valgfritt)</label><textarea id="ln-rw-note" rows="3" maxlength="500" placeholder="Hva ønsker du at mottakeren skal vite?"></textarea>';
 controls.prepend(selection,share);
-const nav=document.createElement('div');nav.className='ln-rw-nav';nav.innerHTML='<button id="ln-rw-back" type="button">Tilbake</button><button id="ln-rw-next" type="button">Forhåndsvis rapport →</button>';controls.append(nav);
+const nav=document.createElement('div');nav.className='ln-rw-nav';nav.innerHTML='<button id="ln-rw-back" type="button">Tilbake</button><button id="ln-rw-next" type="button">Forhåndsvis rapport →</button>';modal.querySelector('.ln-report-card')?.append(nav);
 if(status)controls.append(status);
 const progress=document.createElement('nav');progress.className='ln-rw-progress';progress.setAttribute('aria-label','Trinn for rapportdeling');progress.innerHTML=['1. Velg innhold','2. Forhåndsvis','3. Del rapport'].map((txt,i)=>'<button type="button" data-rw-step="'+(i+1)+'">'+txt+'</button>').join('');
 modal.querySelector('.ln-report-header')?.after(progress);
@@ -45,7 +45,7 @@ function show(n){
  step=Math.min(3,Math.max(1,n));modal.dataset.wizardStep=String(step);controls.scrollTop=0;
  for(const b of progress.querySelectorAll('button')){const i=Number(b.dataset.rwStep);b.dataset.active=String(i===step);b.disabled=i>step;b.setAttribute('aria-current',i===step?'step':'false')}
  selection.hidden=step!==1;share.hidden=step!==3;back.hidden=step===1;next.hidden=step===3;
- next.textContent=step===1?'Generer forhåndsvisning →':'Fortsett til deling →';
+ next.textContent=step===1?'Generer forhåndsvisning →':'Fortsett til deling →';back.textContent=step===3?'← Se forhåndsvisning':'← Velg innhold';
  if(step===2){const filtered=makeReport();if(filtered)api.setReport(filtered);preview.title='Forhåndsvisning av valgt budsjett';api.showMessage('Kontroller beløp og innhold. Bruk Tilbake for å endre hva som er med.')}
  if(step===3)api.showMessage('Velg PDF, e-post, deling eller en kryptert lenke. Bekreft samtykke før du deler.');
  if(step===1)api.showMessage('Velg hvilke opplysninger rapporten skal inneholde.');
