@@ -1,7 +1,4 @@
 /* Conversation experience: same visual identity with responsive, accessible chat controls. */
-#ln-assistant-panel .ln-chat-input-actions{display:flex;align-items:center;gap:4px;flex:0 0 auto}
-#ln-assistant-panel .ln-chat-icon-button{display:grid;place-items:center;border:1px solid #bddbd5;border-radius:11px;background:#f1f9f6;color:#0c655c;width:38px;height:44px;min-height:44px;min-width:38px;padding:0;cursor:pointer;font-size:17px;flex:0 0 auto}
-#ln-assistant-panel .ln-chat-icon-button[aria-pressed="true"]{background:#c7ede2;color:#075d53;border-color:#58ae9b}
 #ln-assistant-panel .ln-chat-processing{min-width:72px;min-height:42px;display:flex;align-items:center}
 #ln-assistant-panel .ln-chat-dots{display:flex;align-items:center;gap:5px;min-height:16px}
 #ln-assistant-panel .ln-chat-dots i{width:7px;height:7px;border-radius:50%;background:#2e9e8d;display:block;animation:ln-chat-bounce 1.2s infinite ease-in-out}
@@ -22,9 +19,18 @@
 #ln-assistant-panel .ln-assistant-disclaimer{line-height:1.4;font-size:10px}
 #ln-assistant-panel .ln-chat-ai-consent{display:flex;align-items:flex-start}
 #ln-assistant-panel .ln-chat-ai-consent[hidden]{display:none!important}
-#ln-assistant-panel .ln-chat-icon-button:focus-visible,#ln-assistant-panel .ln-chat-suggestions button:focus-visible{outline:3px solid #62d7b7;outline-offset:2px}
-html.cms-dark #ln-assistant-panel .ln-chat-icon-button{background:#274e56;color:#e3fcf2;border-color:#4a7b79}
 html.cms-dark #ln-assistant-panel .ln-chat-open-tool{color:#0b5b51!important;background:#c8f2e6!important}
 html.cms-dark #ln-assistant-panel .ln-chat-suggestions{border-color:#446970}
-@media(max-width:600px){#ln-assistant-panel .ln-assistant-form{padding:9px 10px;gap:6px}#ln-assistant-panel .ln-chat-icon-button{width:34px;min-width:34px;height:42px;min-height:42px}#ln-assistant-panel .ln-assistant-form input{min-height:44px;padding:10px 9px;font-size:14px}#ln-assistant-panel .ln-assistant-form button[type="submit"]{min-height:43px;padding:10px 12px;font-size:12px}#ln-assistant-panel .ln-chat-suggestions{padding:7px 10px}#ln-assistant-panel .ln-assistant-disclaimer{padding:7px 11px}}
+@media(max-width:600px){#ln-assistant-panel .ln-assistant-form{padding:9px 10px;gap:6px}#ln-assistant-panel .ln-assistant-form input{min-height:44px;padding:10px 9px;font-size:14px}#ln-assistant-panel .ln-assistant-form button[type="submit"]{min-height:43px;padding:10px 12px;font-size:12px}#ln-assistant-panel .ln-chat-suggestions{padding:7px 10px}#ln-assistant-panel .ln-assistant-disclaimer{padding:7px 11px}}
 @media(prefers-reduced-motion:reduce){#ln-assistant-panel .ln-chat-dots i{animation:none;opacity:1}}
+
+/* Text-first chat: no nonfunctional voice buttons; large iOS-friendly composer. */
+#ln-assistant-panel .ln-chat-input-actions{display:none!important}
+#ln-assistant-panel .ln-assistant-form{display:flex;align-items:center;gap:9px}
+#ln-assistant-panel .ln-assistant-form input{flex:1;min-width:0;font-size:16px;line-height:1.3;border-radius:13px;min-height:48px}
+#ln-assistant-panel .ln-assistant-form button[type="submit"]{min-height:48px;font-size:13px;border-radius:13px;padding:10px 19px}
+@media(max-width:600px){
+ #ln-assistant-panel .ln-assistant-form{padding:11px 12px calc(11px + env(safe-area-inset-bottom,0px));gap:8px}
+ #ln-assistant-panel .ln-assistant-form input{font-size:16px!important;min-height:48px;padding:12px}
+ #ln-assistant-panel .ln-assistant-form button[type="submit"]{font-size:13px;min-height:48px;min-width:67px;padding:10px 12px}
+}
