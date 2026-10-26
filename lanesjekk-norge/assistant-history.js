@@ -9,8 +9,37 @@ const toolbar=document.createElement('div');toolbar.className='ln-chat-toolbar';
 toolbar.innerHTML='<button type="button" id="ln-chat-new" title="Arkiver denne og start en ny samtale"><span aria-hidden="true">＋</span> Ny chat</button><button type="button" id="ln-chat-list" aria-expanded="false" aria-controls="ln-chat-history"><span aria-hidden="true">☷</span> Samtaler</button>';
 panel.querySelector('.ln-assistant-head')?.after(toolbar);
 const drawer=document.createElement('section');drawer.id='ln-chat-history';drawer.className='ln-chat-history';drawer.hidden=true;
-drawer.innerHTML='<div class="ln-chat-history-head"><strong>Tidligere samtaler</strong><button type="button" id="ln-chat-history-close" aria-label="Lukk samtalehistorikken">Lukk</button></div><p>Lagres bare i denne nettleseren på denne enheten, ikke i en konto eller på serveren. Unngå sensitive opplysninger på delte enheter.</p><div id="ln-chat-history-items"></div><button type="button" id="ln-chat-delete-all" class="ln-chat-delete-all">Slett alle samtaler</button>';
+drawer.innerHTML='<div class="ln-chat-history-head"><strong>Tidligere samtaler</strong><button type="button" id="ln-chat-history-close" aria-label="Lukk samtalehistorikken">Lukk</button></div><p><strong>Ny chat sletter ikke tidligere samtaler.</strong> Historikken lagres lokalt i denne nettleseren på denne enheten, ikke i kontoen. Bruk sikkerhetskopi før du bytter telefon, sletter nettleserdata eller reinstalllerer.</p><div id="ln-chat-history-items"></div><button type="button" id="ln-chat-delete-all" class="ln-chat-delete-all">Slett alle samtaler</button>';
 toolbar.after(drawer);
+const backups=document.createElement('div');backups.className='ln-chat-backups';
+backups.innerHTML='<button id="ln-chat-export" type="button">↓ Sikkerhetskopi av samtaler</button><button id="ln-chat-import" type="button">↑ Gjenopprett sikkerhetskopi</button><input id="ln-chat-import-file" type="file" accept=".json,application/json" hidden><p>Ny chat sletter ikke tidligere samtaler. De lagres på denne enheten, og kan eksporteres som en JSON-fil. Filen inneholder samtaletekst og bør oppbevares privat.</p>';
+drawer.querySelector('#ln-chat-delete-all')?.before(backups);
+function exportHistory(){saveCurrent();if(!entries.length){alert('Ingen samtaler å sikkerhetskopiere ennå.');return}
+ const backup={format:'lanesjekk-assistant-backup',version:1,exported:new Date().toISOString(),conversations:entries};
+ const url=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json;charset=utf-8'}));
+ const link=document.createElement('a');link.href=url;link.download='lanesjekk-samtaler-'+new Date().toISOString().slice(0,10)+'.json';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1200)
+}
+backups.querySelector('#ln-chat-export').addEventListener('click',exportHistory);
+const fileInput=backups.querySelector('#ln-chat-import-file');
+backups.querySelector('#ln-chat-import').addEventListener('click',()=>fileInput.click());
+fileInput.addEventListener('change',async()=>{
+ const file=fileInput.files?.[0];fileInput.value='';if(!file)return;
+ if(file.size>450000){alert('Filen er for stor. Velg en sikkerhetskopi laget fra Lånesjekk Assistent.');return}
+ try{
+  const data=JSON.parse(await file.text());if(data?.format!=='lanesjekk-assistant-backup'||data.version!==1||!Array.isArray(data.conversations))throw Error('invalid format');
+  const imported=data.conversations.slice(0,KEEP).filter(item=>item&&typeof item.id==='string'&&Array.isArray(item.turns)).map(item=>({
+   id:uuid(),title:String(item.title||'Gjenopprettet samtale').slice(0,56),updated:Date.now(),
+   turns:item.turns.slice(-35).filter(t=>t&&typeof t.q==='string'&&typeof t.a==='string').map(t=>({
+    q:t.q.slice(0,700),a:t.a.slice(0,3500),href:typeof t.href==='string'&&/^#[a-z0-9-]+$/.test(t.href)?t.href:null,
+    follow:Array.isArray(t.follow)?t.follow.filter(x=>typeof x==='string').slice(0,3):[],at:Number.isFinite(t.at)?t.at:Date.now()
+   }))
+  })).filter(item=>item.turns.length);
+  if(!imported.length)throw Error('no conversations');
+  saveCurrent();entries=[...imported,...entries].slice(0,KEEP);
+  if(!persist())throw Error('storage full');
+  draw();alert(imported.length+' samtale(r) gjenopprettet på denne enheten.')
+ }catch{alert('Kunne ikke gjenopprette filen. Bruk en gyldig sikkerhetskopi fra Lånesjekk Assistent.')}
+});
 const newButton=toolbar.querySelector('#ln-chat-new'),listButton=toolbar.querySelector('#ln-chat-list'),items=drawer.querySelector('#ln-chat-history-items');
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(entries));localStorage.setItem(CUR,currentId);return true}catch{return false}}
 function saveCurrent(){if(suspend)return;const turns=conversation.turns();if(!turns.length)return;const first=turns[0]?.q||'Ny samtale',i=entries.findIndex(x=>x.id===currentId);
