@@ -11,5 +11,17 @@ test('Direct PDF email is enabled only after server confirms sender configuratio
 
 test('Report wizard includes user-selectable budget sections and clear three-step navigation',()=>{const h=read('index.html'),js=read('report-workflow.js'),css=read('report-workflow.css');assert.match(h,/report-workflow\.js/);assert.match(h,/report-workflow\.css/);for(const name of ['Sammendrag','Inntekter','Utgifter','Sparing og mål','Lån og renter','Egne kommentarer'])assert.ok(js.includes(name),name);assert.match(js,/ln-rw-next/);assert.match(js,/setReport/);assert.match(js,/data-rw-step/);assert.match(css,/ln-rw-progress/);new vm.Script(js)});
 
-test('Mobile step-three share is a full-height scrollable view with no obstructing preview',()=>{const css=read('report-workflow.css'),js=read('report-center.js'),index=read('index.html'),social=read('report-social-image.js');assert.match(css,/data-wizard-step="3"/);assert.match(css,/overflow-y:auto!important/);assert.match(css,/env\(safe-area-inset-bottom/);assert.match(css,/position:static!important/);assert.match(css,/display:none!important/);assert.match(index,/report-social-image\.js/);assert.match(js,/ln-report-social-image/);assert.match(js,/canShare/);assert.match(js,/Del PDF via e-postapp/);assert.match(social,/image\/png/);new vm.Script(social)});
+test('Mobile step-three share is a full-height scrollable view with no obstructing preview',()=>{const css=read('report-workflow.css'),js=read('report-center.js'),index=read('index.html'),social=read('report-social-image.js');assert.match(css,/data-wizard-step="3"/);assert.match(css,/overflow-y:auto!important/);assert.match(css,/env\(safe-area-inset-bottom/);assert.match(css,/position:static!important/);assert.match(css,/display:none!important/);assert.match(index,/report-social-image\.js/);assert.match(js,/ln-report-social-image/);assert.match(js,/canShare/);assert.match(js,/Del PDF til Mail eller andre apper/);assert.match(social,/image\/png/);new vm.Script(social)});
 test('Mobile mail flow accepts normal email addresses and does not promise an automatically attached mailto file',()=>{const ui=read('report-center.js');assert.match(ui,/mottakeradressen i e-postappen/);assert.match(ui,/legge ved PDF-filen manuelt/);new vm.Script(ui)});
+
+test('Sharing is limited to three primary buttons; optional features are collapsible',()=>{
+ const ui=read('report-workflow.js'),css=read('report-simplified.css'),html=read('index.html');
+ for(const part of ['ln-rw-main-actions','ln-rw-more','ln-rw-extra-actions','ln-rw-share-details','ln-rw-copy-summary','ln-report-mail-group'])assert.match(ui,new RegExp(part));
+ assert.match(ui,/mailGroup\.hidden=true/);
+ assert.match(ui,/share\.append\(more\)/);
+ assert.match(ui,/api\.hasDirectEmail/);
+ assert.match(ui,/Kopier sikker lenke/);
+ assert.match(html,/report-simplified\.css/);
+ assert.match(css,/ln-rw-main-actions/);
+ new vm.Script(ui);
+});
