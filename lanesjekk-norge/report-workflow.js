@@ -42,7 +42,7 @@ function makeReport(){
  return r;
 }
 function show(n){
- step=Math.min(3,Math.max(1,n));modal.dataset.wizardStep=String(step);
+ step=Math.min(3,Math.max(1,n));modal.dataset.wizardStep=String(step);controls.scrollTop=0;
  for(const b of progress.querySelectorAll('button')){const i=Number(b.dataset.rwStep);b.dataset.active=String(i===step);b.disabled=i>step;b.setAttribute('aria-current',i===step?'step':'false')}
  selection.hidden=step!==1;share.hidden=step!==3;back.hidden=step===1;next.hidden=step===3;
  next.textContent=step===1?'Generer forhåndsvisning →':'Fortsett til deling →';
