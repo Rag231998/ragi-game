@@ -46,8 +46,8 @@ test('all main navigation targets appear on property and financing groups',async
  await page.goto('/#topp',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.portal-nav a[href="#boligverdi"]')).toHaveCount(1);
  await expect(page.locator('.portal-nav a[href="#utleieanalyse"]')).toHaveCount(1);
- await expect(page.locator('.mobile-menu a[href="#boligverdi"]')).toHaveCount(1);
- await expect(page.locator('.mobile-menu a[href="#utleieanalyse"]')).toHaveCount(1);
+ await expect(page.locator('#global-menu-panel a[href="#boligverdi"]')).toHaveCount(1);
+ await expect(page.locator('#global-menu-panel a[href="#utleieanalyse"]')).toHaveCount(1);
 });
 
 test('dashboard CTA pills have readable foreground on dark blue background',async({page})=>{
@@ -67,8 +67,9 @@ test('top-level menus open with mouse and close by Escape',async({page})=>{
  const group=page.locator('.portal-nav .nav-group').filter({has:page.locator('summary', {hasText:'Eiendom'})});
  if((page.viewportSize()?.width||0)<810){
   await page.locator('.mobile-menu summary').click();
-  await expect(page.locator('.mobile-menu')).toHaveAttribute('open','');
-  await expect(page.locator('.mobile-menu a[href="#boligverdi"]')).toBeVisible();
+  await expect(page.locator('#global-menu-panel')).toBeVisible();
+  await page.locator('#global-menu-panel .mobile-menu-category').filter({has:page.locator('summary', {hasText:'Eiendom'})}).locator('summary').click();
+  await expect(page.locator('#global-menu-panel a[href="#boligverdi"]')).toBeVisible();
   await page.keyboard.press('Escape');
   return;
  }
@@ -166,9 +167,10 @@ test('mobile navigation is a single row of six actions and closes when choosing 
  expect(layout.count).toBe(6);
  expect(layout.width).toBeLessThanOrEqual(layout.viewport+2);
  await page.locator('.mobile-menu > summary').click();
- await expect(page.locator('.mobile-menu')).toHaveAttribute('open','');
- await page.locator('.mobile-menu a[href="#utleieanalyse"]').click();
+ await expect(page.locator('#global-menu-panel')).toBeVisible();
+ await page.locator('#global-menu-panel .mobile-menu-category').filter({has:page.locator('summary', {hasText:'Eiendom'})}).locator('summary').click();
+ await page.locator('#global-menu-panel a[href="#utleieanalyse"]').click();
  await expect(page).toHaveURL(/#utleieanalyse$/);
- await expect(page.locator('.mobile-menu')).not.toHaveAttribute('open','');
+ await expect(page.locator('#global-menu-panel')).toBeHidden();
  await expect(page.locator('#utleie')).toHaveClass(/pv-mode-rental/);
 });
