@@ -17,6 +17,7 @@ test('Conversational guidance remembers mortgage amounts and uses current budget
  assert.match(brain.response('5,2 %').text,/nedbetalingstid/);
  assert.match(brain.response('25 år').text,/terminbeløp/);
  assert.match(brain.response('Hva om renten øker 1 %?').text,/6.2 %/);
+ brain.reset();assert.match(brain.response('Hva koster et lån?').text,/Hvor stort lån/);assert.match(brain.response('3.000.000').text,/3\s?000\s?000/);assert.match(brain.response('5,2').text,/nedbetalingstid/);assert.match(brain.response('25').text,/terminbeløp/);
  assert.match(brain.response('Hvor kan jeg spare mer i budsjettet?').text,/55\s?000/);
  assert.match(brain.response('Hva hvis jeg sparer 1 000 kr?').text,/12\s?000/);
  assert.match(frontend,/ln-chat-dots/);assert.match(frontend,/requestAnimationFrame/);
