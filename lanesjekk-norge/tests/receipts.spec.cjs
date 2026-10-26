@@ -45,11 +45,7 @@ test('cinematic slider shows six independently animated scenes and navigates',as
  await page.locator('.sc-next').click();
  await expect(page.locator('.sc-slide[data-sc-index="1"]')).toHaveClass(/is-active/);
  await expect(page.locator('.sc-pause')).toHaveCount(0);
- await page.locator('#motion-toggle').click();
- await expect(page.locator('html')).toHaveClass(/motion-stopped/);
- await expect(hero).toHaveClass(/sc-paused/);
- await page.locator('#motion-toggle').click();
- await expect(page.locator('html')).not.toHaveClass(/motion-stopped/);
+ await expect(page.locator('#motion-toggle')).toBeHidden();
  await page.locator('.sc-chapter[data-sc-goto="2"]').click();
  await expect(page.locator('.sc-slide[data-sc-index="2"]')).toHaveClass(/is-active/);
  await page.locator('.sc-slide.is-active .sc-action').click();
