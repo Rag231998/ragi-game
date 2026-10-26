@@ -3,7 +3,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const root=path.join(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
 test('Budget redesign retains the operational calculator and accessible actions',()=>{
  const html=read('index.html'),css=read('budget-workspace-premium.css');
- for(const id of ['budsjett','budget-income','budget-expenses','budget-balance','budget-ratio','budget-quick-sample','budget-quick-csv','budget-print','budget-rows','budget-add-income','budget-add-expense','budget-donut','budget-timeline','budget-insights','budget-scenario-category','budget-scenario-percent'])assert.ok(html.includes('id="'+id+'"'),id+' missing');
+ for(const id of ['budsjett','budget-income','budget-expenses','budget-balance','budget-ratio','budget-print','budget-rows','budget-add-income','budget-add-expense','budget-donut','budget-timeline','budget-insights','budget-scenario-category','budget-scenario-percent'])assert.ok(html.includes('id="'+id+'"'),id+' missing');
  assert.match(html,/budget-workspace-premium\.css\?v=2/);
  assert.match(css,/budget-insights-grid/);assert.match(css,/budget-table-wrap/);
  assert.match(css,/@media\(max-width:700px\)/);
@@ -19,3 +19,5 @@ test('Optional bank analysis is collapsed, but remains available to the budget e
  assert.doesNotMatch(html,/id="budget-quick-income"/);
  assert.doesNotMatch(html,/id="budget-quick-expense"/);
 });
+
+test('Budget has one add-action location and no redundant month-plan CTA panel',()=>{const html=read('index.html');assert.equal((html.match(/id="budget-add-income"/g)||[]).length,1);assert.equal((html.match(/id="budget-add-expense"/g)||[]).length,1);assert.doesNotMatch(html,/class="budget-start-panel"/);assert.doesNotMatch(html,/class="budget-primary-actions"/);assert.match(html,/budget-health-standalone/);});
