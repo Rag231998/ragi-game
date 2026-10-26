@@ -199,3 +199,42 @@ test('Budget storage controls are explained in budget, never buried in chat',asy
  await expect(area.locator('#ln-vault-login')).toBeVisible();
  await expect(page.locator('#ln-assistant-panel .ln-vault')).toHaveCount(0);
 });
+
+test('Chat on iPhone persists across refresh and New chat keeps archived conversations',async({page})=>{
+ await page.setViewportSize({width:390,height:780});
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('#ln-assistant-open').click();
+ await expect(page.locator('#ln-chat-new')).toBeVisible();
+ await page.locator('#ln-assistant-input').fill('Hva koster et lån?');
+ await page.locator('#ln-assistant-form button[type="submit"]').click();
+ await expect(page.locator('#ln-assistant-messages')).toContainText('Hvor stort lån',{timeout:15000});
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('lanesjekk-chat-history-v1')||'[]').length)).toBeGreaterThan(0);
+ await page.locator('#ln-chat-new').click();
+ await expect(page.locator('#ln-assistant-messages')).not.toContainText('Hvor stort lån');
+ await page.locator('#ln-chat-list').click();
+ await expect(page.locator('.ln-chat-history-select')).toContainText(['Hva koster et lån?']);
+ await page.locator('.ln-chat-history-select').first().click();
+ await expect(page.locator('#ln-assistant-messages')).toContainText('Hvor stort lån');
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.locator('#ln-assistant-open').click();
+ await expect(page.locator('#ln-assistant-messages')).toContainText('Hva koster et lån?');
+});
+test('Voice on Safari opens animated dialog, displays transcript, sends question and offers spoken answer',async({page})=>{
+ await page.addInitScript(()=>{
+  window.webkitSpeechRecognition=class {
+   start(){queueMicrotask(()=>{this.onstart?.();this.onresult?.({results:[Object.assign([{transcript:'Hva koster et lån?'}],{isFinal:true})]});this.onend?.()})}
+   stop(){this.onend?.()}
+   abort(){}
+  };
+ });
+ await page.setViewportSize({width:390,height:780});
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('#ln-assistant-open').click();
+ await expect(page.locator('#ln-voice-start')).toContainText('Snakk');
+ await page.locator('#ln-voice-start').click();
+ await expect(page.locator('#ln-voice-modal, .ln-voice-modal')).toBeVisible();
+ await expect(page.locator('#ln-voice-transcript')).toContainText('Hva koster et lån?');
+ await expect(page.locator('#ln-assistant-messages')).toContainText('Hvor stort lån',{timeout:15000});
+ await page.locator('#ln-voice-done').click();
+ await expect(page.locator('.ln-voice-modal')).toBeHidden();
+});
