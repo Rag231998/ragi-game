@@ -94,3 +94,28 @@ test('General purpose assistant uses a real language model for arbitrary questio
  assert.doesNotMatch(ui,/GEMINI_API_KEY/);
  new vm.Script(ui);
 });
+
+test('Gemini backend handles arbitrary general questions with multi-turn context and safe suggestions',async()=>{
+ const source=read('api/assistant-ai.js'),requests=[],mod={exports:{}};
+ const fakeFetch=async(url,options)=>{
+  requests.push({url,body:JSON.parse(options.body)});
+  return{ok:true,json:async()=>({candidates:[{content:{parts:[{text:JSON.stringify({answer:'Jeg kan svare på dette uten å sende deg tilbake til budsjettet.',suggestions:['Vil du ha et eksempel?','Kan du forklare mer?'],tool:''})}]}}]})};
+ };
+ const context={module:mod,process:{env:{GEMINI_API_KEY:'fake-key'}},fetch:fakeFetch,AbortController,AbortSignal,Buffer,Date,Map,setTimeout,clearTimeout};
+ vm.runInNewContext(source,context);
+ const payload={question:'Kan du forklare hva empati betyr?',page:'#budsjett',history:[{role:'user',text:'Først snakket vi om en ekstra bolig.'},{role:'model',text:'Ja, hvordan skal boligen brukes?'}]};
+ const req={method:'POST',headers:{origin:'https://lanesjekk-norge.onrender.com'},stream:{async *[Symbol.asyncIterator](){yield Buffer.from(JSON.stringify(payload))}}};
+ let http=0,result;
+ const res={setHeader(){},status(code){http=code;return this},json(data){result=data;return this}};
+ await mod.exports(req,res);
+ assert.equal(http,200);
+ assert.equal(result.ok,true);
+ assert.match(result.answer,/empati|dette/);
+ assert.deepEqual(Array.from(result.suggestions),['Vil du ha et eksempel?','Kan du forklare mer?']);
+ assert.equal(result.tool,null);
+ assert.equal(requests.length,1);
+ assert.equal(requests[0].body.contents.length,3);
+ assert.equal(requests[0].body.generationConfig.responseMimeType,'application/json');
+ assert.match(requests[0].body.systemInstruction.parts[0].text,/privatøkonomi|hjelper med/);
+ assert.match(requests[0].body.systemInstruction.parts[0].text,/utenfor økonomi|ufarlige tema/);
+});
