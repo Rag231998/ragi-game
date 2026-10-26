@@ -1,14 +1,14 @@
 (()=>{'use strict';
 const norm=s=>String(s||'').toLocaleLowerCase('nb-NO').replace(/\s+/g,' ').trim();
 const kr=n=>Math.round(n).toLocaleString('nb-NO')+' kr';
-const num=s=>Number(String(s||'').replace(/\s|\u00a0/g,'').replace(/[^0-9,.-]/g,'').replace(',','.'))||0;
+const num=value=>{let s=String(value||'').replace(/[\s\u00a0\u202f]/g,'').replace(/[^0-9,.-]/g,'');if(!s)return 0;if(s.includes(',')&&s.includes('.')){const lastComma=s.lastIndexOf(',')>s.lastIndexOf('.');s=lastComma?s.replace(/\./g,'').replace(',','.'):s.replace(/,/g,'')}else if((s.match(/\./g)||[]).length>1||/^\d{1,3}(?:\.\d{3})+$/.test(s))s=s.replace(/\./g,'');else if(/^\d{1,3}(?:,\d{3})+$/.test(s))s=s.replace(/,/g,'');else s=s.replace(',','.');return Number(s)||0};
 const state={topic:null,loan:{amount:null,rate:null,years:null}};
 function budget(){const $=id=>num(document.getElementById(id)?.textContent);const rows=document.querySelectorAll('#budget-rows tr'),cats=new Map();
  rows.forEach(row=>{const td=row.querySelectorAll('td');if(td.length<7)return;const label=td[1]?.querySelector('select')?.selectedOptions?.[0]?.textContent||td[1]?.textContent||'',v=num(td[6]?.textContent);if(v>0&&!/(lønn|inntekt|pensjon|trygd|stipend)/i.test(label))cats.set(label,(cats.get(label)||0)+v)});
  return{income:$('budget-income'),expenses:$('budget-expenses'),balance:$('budget-balance'),categories:[...cats].sort((a,b)=>b[1]-a[1])}}
 function response(q){const t=norm(q),vague=/^(ja|gjerne|ok|fortell mer|mer|nei|hvordan da|fortsett|ja takk)[.!? ]*$/.test(t),b=budget();let topic=vague?state.topic:null;
  if(/rapport|pdf|dele|deling|mail|e-post|epost|facebook|instagram|lenke/.test(t))topic='report';
- else if(/lån|låne|rente|termin|nedbetaling/.test(t)||(state.topic==='loan'&&(/\d[\d .,]*(kr|millioner|mill)\b/.test(t)||/\d+(?:[.,]\d+)?\s*%/.test(t)||/\d+\s*år/.test(t))))topic='loan';
+ else if(/lån|låne|rente|termin|nedbetaling/.test(t)||(state.topic==='loan'&&(/\d[\d .,]*(kr|millioner|mill)\b/.test(t)||/\d+(?:[.,]\d+)?\s*%/.test(t)||/\d+\s*år/.test(t)||/^[\d\s.,]+$/.test(t))))topic='loan';
  else if(state.topic==='report'&&/^(hele budsjettet|bare hovedtallene|alle poster|alle postene)/.test(t))topic='report';
  else if(/budsjett|spare|sparing|utgift|inntekt|forbruk|overskudd|reduser|kutte/.test(t))topic='budget';
  else if(/fond|aksje|investering/.test(t))topic='invest';
@@ -18,10 +18,10 @@ function response(q){const t=norm(q),vague=/^(ja|gjerne|ok|fortell mer|mer|nei|h
  if(/takk|det hjalp/.test(t))return{text:'Bare hyggelig! Vi kan fortsette med et annet spørsmål når du vil.'};
  if(topic==='report')return{text:'Dette gjør du i Budsjett, ikke i chatten: Trykk «Lag PDF / del budsjettet», velg hvilke opplysninger som skal være med, se forhåndsvisningen og del PDF eller kopier en kryptert lenke. Egen forklaring på lokal og privat lagring ligger rett under budsjettverktøyene. Hva ønsker du å dele?',href:'#budsjett',follow:['Hele budsjettet','Bare hovedtallene']};
  if(topic==='loan'){
-  const amount=t.match(/([\d][\d\s.,]*)\s*(millioner|million|mill|kr|kroner)\b/);
+  const amount=t.match(/([\d][\d\s.,]*)\s*(millioner|million|mill|kr|kroner)\b/)||((state.loan.amount===null&&/^[\d\s.,]+$/.test(t)&&num(t)>=10000)?[null,t,'kr']:null);
   if(amount){let n=num(amount[1]);if(/mill/.test(amount[2]))n*=1e6;if(n>=10000)state.loan.amount=n}
-  const rate=t.match(/(\d{1,2}(?:[.,]\d{1,2})?)\s*(?:%|prosent)/);if(rate)state.loan.rate=/(øker|opp|høyere|mer)/.test(t)&&state.loan.rate!==null?state.loan.rate+num(rate[1]):/(synker|ned|lavere|mindre)/.test(t)&&state.loan.rate!==null?Math.max(0,state.loan.rate-num(rate[1])):num(rate[1]);
-  const years=t.match(/(\d{1,2})\s*år/);if(years)state.loan.years=Number(years[1]);
+  const rate=t.match(/(\d{1,2}(?:[.,]\d{1,2})?)\s*(?:%|prosent)/)||((state.loan.amount!==null&&state.loan.rate===null&&/^\d{1,2}(?:[.,]\d{1,2})?$/.test(t))?[null,t]:null);if(rate)state.loan.rate=/(øker|opp|høyere|mer)/.test(t)&&state.loan.rate!==null?state.loan.rate+num(rate[1]):/(synker|ned|lavere|mindre)/.test(t)&&state.loan.rate!==null?Math.max(0,state.loan.rate-num(rate[1])):num(rate[1]);
+  const years=t.match(/(\d{1,2})\s*år/)||((state.loan.amount!==null&&state.loan.rate!==null&&state.loan.years===null&&/^\d{1,2}$/.test(t))?[null,t]:null);if(years)state.loan.years=Number(years[1]);
   const l=state.loan;if(l.amount===null)return{text:'Vi kan beregne dette sammen. Hvor stort lån vurderer du, for eksempel «3 millioner kr»?',href:'#sjekk'};
   if(l.rate===null)return{text:'Da regner vi på '+kr(l.amount)+'. Hvilken årlig rente skal vi bruke, for eksempel «5,2 %»?',href:'#sjekk'};
   if(l.years===null)return{text:'Vi har '+kr(l.amount)+' og '+l.rate+' % rente. Hvor lang nedbetalingstid ser du for deg, for eksempel «25 år»?',href:'#sjekk'};
