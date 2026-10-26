@@ -14,3 +14,8 @@
 html.cms-dark #ln-assistant-panel .ln-vault{background:#1c3646;color:#e7f8fc;border-color:#426475}
 html.cms-dark #ln-assistant-panel .ln-vault-details>summary{background:#284755;color:#e7f8fc}
 @media(max-width:600px){#ln-assistant-panel .ln-vault{padding:10px 12px}}
+/* Keep the form and account actions reachable without covering the chat. */
+#ln-assistant-panel .ln-vault{max-height:45%;overflow-y:auto;flex-shrink:0}
+#ln-assistant-panel .ln-assistant-messages{min-height:95px}
+#ln-assistant-panel .ln-vault button:hover,#ln-assistant-panel .ln-vault button:focus-visible{background:#c9eee0;outline-offset:2px}
+@media(max-height:700px){#ln-assistant-panel .ln-vault{max-height:40%}}
