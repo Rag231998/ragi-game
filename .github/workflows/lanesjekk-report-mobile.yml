@@ -1,0 +1,35 @@
+name: Lånesjekk report sharing on iPhone
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lanesjekk-norge/report-*.js'
+      - 'lanesjekk-norge/report-*.css'
+      - 'lanesjekk-norge/index.html'
+      - 'lanesjekk-norge/ios-report-controls.css'
+      - 'lanesjekk-norge/tests/report-share.spec.cjs'
+      - '.github/workflows/lanesjekk-report-mobile.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  report-sharing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install test dependencies
+        run: npm install --prefix lanesjekk-norge/tests --no-fund --no-audit
+      - name: Install local PDF library
+        run: |
+          npm install --prefix lanesjekk-norge --omit=dev --ignore-scripts --no-fund --no-audit
+          node lanesjekk-norge/scripts/install-report-deps.cjs
+      - name: Install browsers
+        working-directory: lanesjekk-norge/tests
+        run: npx playwright install --with-deps chromium webkit
+      - name: Run iPhone Safari and desktop report workflows
+        working-directory: lanesjekk-norge/tests
+        run: npx playwright test report-share.spec.cjs --project=iphone-webkit --project=desktop-chromium --workers=2 --reporter=line
