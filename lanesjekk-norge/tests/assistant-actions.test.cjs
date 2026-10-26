@@ -1,0 +1,5 @@
+'use strict';const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const read=n=>fs.readFileSync(path.join(__dirname,'..',n),'utf8');
+test('Chat actions: real copy/share/detail controls with user feedback',()=>{const h=read('index.html'),j=read('assistant-actions.js');assert.match(h,/assistant-actions\.js/);assert.match(h,/assistant-actions\.css/);for(const x of ['chat.send','navigator.share','navigator.clipboard','aria-pressed','ln-assistant-restored','Se detaljer','Kopier','Del','👍','👎'])assert.ok(j.includes(x));new vm.Script(j)});
+test('History requires opt-in and supports revocation',()=>{const j=read('assistant-history.js');for(const x of ['CONSENT=','if(!storageAllowed)return false','localStorage.removeItem(KEY)','ln-chat-storage-optin'])assert.ok(j.includes(x));new vm.Script(j)});
+test('Voice can mute microphone without sending buffered speech',()=>{const j=read('assistant-voice.js');for(const x of ['ln-voice-mute','if(muted)','recognition.abort','aria-pressed'])assert.ok(j.includes(x));new vm.Script(j)});

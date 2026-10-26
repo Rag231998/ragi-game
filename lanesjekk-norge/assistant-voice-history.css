@@ -76,3 +76,14 @@ html.cms-dark #ln-assistant-panel .ln-chat-backups button{background:#285959;bor
 html.cms-dark #ln-assistant-panel .ln-chat-backups>p{color:#bed8d3}
 @media(max-width:600px){#ln-assistant-panel .ln-voice-modal{padding:12px}#ln-assistant-panel .ln-voice-buttons button{min-height:48px}#ln-assistant-panel .ln-voice-alternatives button{width:100%}#ln-assistant-panel .ln-voice-center{min-height:100px}}
 @media(prefers-reduced-motion:reduce){#ln-assistant-panel .ln-voice-modal[data-phase="processing"] .ln-voice-orb{animation:none}}
+
+#ln-assistant-panel .ln-chat-storage-consent{display:flex;gap:10px;padding:13px;margin:12px 0;border:1px solid #b3dcd0;border-radius:12px;background:#eef8f5;color:#184e48;cursor:pointer}
+#ln-assistant-panel .ln-chat-storage-consent input{height:19px;width:19px;flex:none;accent-color:#118773}
+#ln-assistant-panel .ln-chat-storage-consent span{display:grid;gap:5px}
+#ln-assistant-panel .ln-chat-storage-consent strong{font-size:12px}
+#ln-assistant-panel .ln-chat-storage-consent small{font-size:11px;line-height:1.4}
+#ln-assistant-panel .ln-voice-buttons{grid-template-columns:1.2fr 1.3fr .7fr}
+#ln-assistant-panel #ln-voice-mute{background:#ffffff20;color:white;min-width:0;padding:6px}
+#ln-assistant-panel #ln-voice-mute[aria-pressed="true"]{background:#f7ddc3;color:#59311c}
+html.cms-dark #ln-assistant-panel .ln-chat-storage-consent{background:#204743;border-color:#507c72;color:#e9fff6}
+@media(max-width:600px){#ln-assistant-panel .ln-voice-buttons{grid-template-columns:1fr 1fr}#ln-assistant-panel #ln-voice-done{grid-column:1/-1}}

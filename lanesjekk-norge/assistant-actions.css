@@ -1,0 +1,9 @@
+
+#ln-assistant-panel .ln-chat-answer-actions{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:10px;padding-top:8px;border-top:1px solid #d8ebe5}
+#ln-assistant-panel .ln-chat-answer-actions button{min-height:35px;padding:7px 9px;border-radius:9px;border:1px solid #c5ded6;background:#eff8f5;color:#126457;cursor:pointer;font:650 11px system-ui}
+#ln-assistant-panel .ln-chat-answer-actions button[aria-pressed="true"]{border-color:#11816b;background:#b6e9d5}
+#ln-assistant-panel .ln-chat-answer-actions button:focus-visible{outline:3px solid #21a284;outline-offset:2px}
+#ln-assistant-panel .ln-chat-action-status{flex-basis:100%;font-size:11px;color:#46736c;line-height:1.4}
+html.cms-dark #ln-assistant-panel .ln-chat-answer-actions{border-color:#4a6c66}
+html.cms-dark #ln-assistant-panel .ln-chat-answer-actions button{background:#285352;border-color:#57857c;color:#e6fff6}
+html.cms-dark #ln-assistant-panel .ln-chat-action-status{color:#c9e9df}
