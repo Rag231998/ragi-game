@@ -259,3 +259,13 @@ test('investment workspace opens as distinct view, runs mathematical simulator',
  await page.locator('#invest-reset').click();
  await expect(page.locator('#invest-years-value')).toHaveText('15 år');
 });
+
+test('Budget entries are completely visible, editable and removable on 390px iPhone without sideways clipping',async({page})=>{
+ await page.setViewportSize({width:390,height:844});await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ const row=page.locator('#budget-rows tr').first();await expect(row).toBeVisible();
+ for(const element of [row,row.locator('[data-field="category"]'),row.locator('[data-field="description"]'),row.locator('[data-field="amount"]'),row.locator('[data-field="period"]'),row.locator('.budget-remove')]){
+  const bounds=await element.boundingBox();expect(bounds).toBeTruthy();expect(bounds.x).toBeGreaterThanOrEqual(-1);expect(bounds.x+bounds.width).toBeLessThanOrEqual(391);
+ }
+ await row.locator('[data-field="description"]').fill('Test månedslønn');await expect(row.locator('[data-field="description"]')).toHaveValue('Test månedslønn');
+ const before=await page.locator('#budget-rows tr').count();await row.locator('.budget-remove').click();await expect(page.locator('#budget-rows tr')).toHaveCount(before-1);
+});

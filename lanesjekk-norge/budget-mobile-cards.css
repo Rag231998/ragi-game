@@ -1,0 +1,53 @@
+/* Budget cards must stay fully inside the iPhone viewport. Override old desktop min-width:800px. */
+@media(max-width:950px){
+ #budsjett,#budsjett *{box-sizing:border-box}
+ #budsjett{width:100%;max-width:100%;min-width:0;padding-inline:clamp(8px,2.5vw,16px);overflow-x:clip}
+ #budsjett .budget-workbook{width:100%;max-width:100%;min-width:0;padding:clamp(10px,3vw,18px)!important}
+ #budsjett .budget-workbook .tool-pane-head{display:flex;flex-direction:column;align-items:stretch;gap:13px}
+ #budsjett .budget-workbook .tool-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%}
+ #budsjett .budget-workbook .tool-actions button{white-space:normal;min-width:0;width:100%;min-height:44px;padding:9px!important;font-size:12px;line-height:1.35}
+ #budsjett #ln-report-open{grid-column:1/-1}
+ #budsjett .budget-table-wrap{display:block;width:100%!important;max-width:100%;min-width:0;overflow:visible!important;border:0!important;background:transparent!important;box-shadow:none!important}
+ #budsjett table.budget-table{display:block!important;min-width:0!important;width:100%!important;max-width:100%!important;border:0!important;border-collapse:separate!important;background:transparent!important}
+ #budsjett .budget-table thead{position:absolute!important;clip-path:inset(50%);width:1px!important;height:1px!important;overflow:hidden!important}
+ #budsjett .budget-table tbody{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:14px!important;width:100%!important;min-width:0!important}
+ #budsjett .budget-table tbody tr{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;min-width:0!important;width:100%!important;max-width:100%!important;margin:0!important;padding:15px!important;border:1px solid #c9e1dd!important;border-radius:18px!important;background:#f5fcf9!important;box-shadow:0 3px 12px #17384b0a;overflow:hidden}
+ #budsjett .budget-table tbody tr.budget-expense-row{background:#fffaf6!important;border-color:#ecded3!important}
+ #budsjett .budget-table tbody tr[hidden]{display:none!important}
+ #budsjett .budget-table tbody td{display:block!important;min-width:0!important;width:auto!important;max-width:100%!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;overflow:visible}
+ #budsjett .budget-table tbody td:nth-child(1),#budsjett .budget-table tbody td:nth-child(2),#budsjett .budget-table tbody td:nth-child(3){grid-column:1/-1!important}
+ #budsjett .budget-table tbody td:nth-child(4){grid-column:1/-1!important}
+ #budsjett .budget-table:not(.budget-bank-visible) tbody td:nth-child(4){display:none!important}
+ #budsjett .budget-table tbody td:nth-child(5){grid-column:1}
+ #budsjett .budget-table tbody td:nth-child(6){grid-column:2}
+ #budsjett .budget-table tbody td:nth-child(7){grid-column:1}
+ #budsjett .budget-table tbody td:nth-child(8){grid-column:2}
+ #budsjett .budget-table tbody td::before{display:block;font-size:11px;font-weight:800;color:#587482;line-height:1.4;margin:0 0 6px;letter-spacing:0;white-space:normal}
+ #budsjett .budget-table tbody td:nth-child(2)::before{content:"Kategori"}
+ #budsjett .budget-table tbody td:nth-child(3)::before{content:"Beskrivelse"}
+ #budsjett .budget-table tbody td:nth-child(4)::before{content:"Bank / konto"}
+ #budsjett .budget-table tbody td:nth-child(5)::before{content:"Beløp (kr)"}
+ #budsjett .budget-table tbody td:nth-child(6)::before{content:"Periode"}
+ #budsjett .budget-table tbody td:nth-child(7)::before{content:"Per måned"}
+ #budsjett .budget-table tbody td:nth-child(8)::before{content:"Flytt / slett"}
+ #budsjett .budget-table tbody td:first-child{display:flex!important;align-items:center;gap:10px;padding-bottom:6px!important}
+ #budsjett .budget-table tbody td:first-child::before{display:none}
+ #budsjett .budget-table tbody td:first-child .line-kind{font-size:14px;line-height:1.5}
+ #budsjett .budget-table tbody :is(input:not([type=checkbox]),select){display:block;width:100%!important;max-width:100%!important;min-width:0!important;height:auto;min-height:46px!important;font-size:16px!important;padding:10px!important;box-sizing:border-box!important;overflow:hidden;text-overflow:ellipsis}
+ #budsjett .budget-table tbody td:nth-child(5) input{min-width:0!important;max-width:100%!important;text-align:right!important}
+ #budsjett .budget-table tbody .budget-month-value{display:flex;align-items:center;min-height:46px;color:#0c7168;font-size:clamp(15px,4vw,18px)!important;white-space:normal;overflow-wrap:anywhere}
+ #budsjett .budget-table tbody .budget-row-actions{display:flex;gap:6px;justify-content:flex-start;align-items:center;min-height:46px}
+ #budsjett .budget-table tbody .budget-row-actions button{flex:0 0 43px;height:44px;width:43px;min-width:0}
+ #budsjett .budget-table-controls{display:flex;flex-wrap:wrap;gap:8px}
+ #budsjett .budget-table-controls>span{min-width:0;overflow-wrap:anywhere}
+ #budsjett :is(.budget-salary-fields,.budget-tax-method,.budget-toolbar){min-width:0;max-width:100%}
+ #budsjett .budget-salary-fields{grid-template-columns:1fr!important}
+ #budsjett .budget-salary-studio{padding:14px!important;min-width:0;max-width:100%}
+ #budsjett .budget-table-bottom{line-height:1.5}
+}
+@media(max-width:390px){
+ #budsjett .budget-table tbody tr{padding:11px!important;gap:8px!important}
+ #budsjett .budget-table tbody .budget-row-actions button{flex-basis:39px;width:39px}
+ #budsjett .budget-workbook .tool-actions{grid-template-columns:1fr}
+ #budsjett #ln-report-open{grid-column:auto}
+}

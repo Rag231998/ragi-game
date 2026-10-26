@@ -32,7 +32,7 @@ function response(q){const t=norm(q),vague=/^(ja|gjerne|ok|fortell mer|mer|nei|h
  if(/rapport|pdf|dele|deling|mail|e-post|epost|facebook|instagram|lenke/.test(t))topic='report';
  else if(/lån|låne|rente|termin|nedbetaling/.test(t)||(state.topic==='loan'&&(/\d[\d .,]*(kr|millioner|mill)\b/.test(t)||/\d+(?:[.,]\d+)?\s*%/.test(t)||/\d+\s*år/.test(t)||/^[\d\s.,]+$/.test(t))))topic='loan';
  else if(state.topic==='report'&&/^(hele budsjettet|bare hovedtallene|alle poster|alle postene)/.test(t))topic='report';
- else if(/budsjett|spare|sparing|utgift|inntekt|forbruk|overskudd|reduser|kutte/.test(t))topic='budget';
+ else if(/budsjett|spare|sparing|utgift|inntekt|forbruk|overskudd|reduser|kutte/.test(t)||(state.topic==='budget'&&/(kostnad|største|størst|postene|postene mine|gå gjennom|disse|forklar|hvor mye|mat|bolig|transport)/.test(t)))topic='budget';
  else if(/fond|aksje|investering/.test(t))topic='invest';
  else if(/kvittering/.test(t))topic='receipt';
  state.topic=topic||state.topic;
@@ -63,6 +63,11 @@ function response(q){const t=norm(q),vague=/^(ja|gjerne|ok|fortell mer|mer|nei|h
   return{text:'Med '+kr(l.amount)+', '+l.rate+' % nominell rente og '+l.years+' år er anslått terminbeløp '+kr(payment)+' per måned. Anslåtte rentekostnader i hele perioden: '+kr(payment*n-l.amount)+'. Det forutsetter uendret rente og tar ikke med gebyrer. Vil du sammenligne med en annen rente?',href:'#sjekk',follow:['Hva om renten øker?','Hva betyr effektiv rente?']};
  }
  if(topic==='budget'){
+  if(/(største|størst|gå gjennom|kostnadene|utgiftskategoriene)/.test(t)){
+   if(!b.categories.length)return{text:'Jeg ser ingen positive utgiftsposter i budsjettet ennå. Legg inn noen utgifter først, så kan vi gå gjennom dem én etter én.',href:'#budsjett'};
+   const list=b.categories.slice(0,5).map(([category,amount],i)=>(i+1)+'. '+category+': '+kr(amount)).join('; ');
+   return{text:'Dette er de største registrerte utgiftskategoriene dine per måned: '+list+'. Til sammen bruker du '+kr(b.expenses)+' på utgifter. Hvilken kategori vil du undersøke først? Vi kan se på konkrete muligheter for å spare, uten å anta at alt kan kuttes.',href:'#budsjett',follow:b.categories.slice(0,3).map(([name])=>'Se på '+name)};
+  }
   if(b.income===0&&b.expenses===0)return{text:'Jeg ser ingen registrerte budsjettbeløp ennå. Legg inn netto inntekt og faste utgifter først, så kan jeg hjelpe deg med å forstå resultatet. Vil du begynne med inntektene eller utgiftene?',href:'#budsjett'};
   const top=b.categories.slice(0,3).map(([name,value])=>name+' ('+kr(value)+')').join(', ');
   const cut=t.match(/(?:kutter|spare|sparer|reduserer)\s*([\d\s.,]+)\s*kr/);
@@ -72,7 +77,7 @@ function response(q){const t=norm(q),vague=/^(ja|gjerne|ok|fortell mer|mer|nei|h
  }
  if(topic==='invest')return{text:'Du kan sammenligne fond og aksjer i investeringsverktøyet. En god start er å se på sparehorisont, risiko og hva du tåler av svingninger. Vil du vite mer om indeksfond eller aksjer?',href:'#investering'};
  if(topic==='receipt')return{text:'Kvitteringsoversikten hjelper deg å se hva innkjøpene faktisk koster. Vil du gjennomgå et kjøp eller sammenligne forbruk fra flere kvitteringer?',href:'#kvitteringer'};
- return{text:'Fortell gjerne litt mer om det du ønsker hjelp med. Jeg kan forklare budsjett, sparing, lån, investering og rapportdeling. Du kan skrive et spørsmål helt vanlig, så følger jeg opp med et mer konkret spørsmål.',follow:['Forstå budsjettet mitt','Hva koster et lån?']};
+ return{text:t.length<5?'Jeg fikk bare med meg «'+String(q).trim().slice(0,20)+'». Kan du skrive litt mer om hva du ønsker å spørre om?':'Jeg er usikker på hva du mener med dette. Gjelder det budsjettet ditt, et lån eller noe annet? Fortell gjerne litt mer, så kan jeg hjelpe deg videre.',follow:['Forstå budsjettet mitt','Hva koster et lån?']};
 }
 window.LNConversationBrain={response,budget,reset:()=>{state.topic=null;state.loan={amount:null,rate:null,years:null};state.property={purpose:null,price:null,equity:null,income:null,debt:null}}};
 })();
