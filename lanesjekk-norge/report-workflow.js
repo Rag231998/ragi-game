@@ -8,7 +8,7 @@ share.prepend(description);
 const consent=share.querySelector('.ln-report-check');
 if(consent)description.insertAdjacentElement('afterend',consent);
 const actions=document.createElement('div');actions.className='ln-rw-main-actions';
-const pdf=$('ln-report-social'),download=$('ln-report-download'),link=$('ln-report-private-link');
+const pdf=share.querySelector('#ln-report-social'),download=share.querySelector('#ln-report-download'),link=share.querySelector('#ln-report-private-link');
 if(pdf){pdf.textContent='Del PDF';pdf.classList.add('ln-rw-primary');actions.append(pdf)}
 if(download){download.textContent='Last ned PDF';actions.append(download)}
 if(link){link.textContent='Kopier sikker lenke';actions.append(link)}
@@ -16,17 +16,17 @@ share.append(actions);
 const more=document.createElement('details');more.className='ln-rw-more';more.id='ln-rw-more';
 const title=document.createElement('summary');title.textContent='Flere valg – bilde, lagring og e-post';more.append(title);
 const moreList=document.createElement('div');moreList.className='ln-rw-extra-actions';more.append(moreList);
-const image=$('ln-report-social-image'),save=$('ln-report-save'),openSaved=$('ln-report-open-saved');
+const image=share.querySelector('#ln-report-social-image'),save=share.querySelector('#ln-report-save'),openSaved=share.querySelector('#ln-report-open-saved');
 if(image){image.textContent='Del budsjettbilde (Instagram, Facebook m.m.)';moreList.append(image)}
 if(save){save.textContent='Lagre i denne nettleseren';moreList.append(save)}
 if(openSaved){openSaved.textContent='Åpne lagret rapport';moreList.append(openSaved)}
 const copySummary=document.createElement('button');copySummary.type='button';copySummary.id='ln-rw-copy-summary';copySummary.textContent='Kopier kort oppsummering';moreList.append(copySummary);
 const mailGroup=document.createElement('div');mailGroup.id='ln-report-mail-group';mailGroup.className='ln-rw-mail-group';mailGroup.hidden=true;
-const recipientLabel=share.querySelector('label[for="ln-report-recipient"]'),recipient=$('ln-report-recipient'),email=$('ln-report-email');
+const recipientLabel=share.querySelector('label[for="ln-report-recipient"]'),recipient=share.querySelector('#ln-report-recipient'),email=share.querySelector('#ln-report-email');
 for(const el of [recipientLabel,recipient,email])if(el)mailGroup.append(el);
 if(email)email.textContent='Send PDF direkte (krever innlogging)';
 moreList.append(mailGroup);
-const print=$('ln-report-print');if(print)print.hidden=true;
+const print=share.querySelector('#ln-report-print');if(print)print.hidden=true;
 share.append(more);
 function updateMail(){mailGroup.hidden=!api.hasDirectEmail?.()}
 document.addEventListener('ln-report-email-ready',updateMail);updateMail();
@@ -80,7 +80,7 @@ function show(n){
  for(const b of progress.querySelectorAll('button')){const i=Number(b.dataset.rwStep);b.dataset.active=String(i===step);b.disabled=i>step;b.setAttribute('aria-current',i===step?'step':'false')}
  selection.hidden=step!==1;share.hidden=step!==3;back.hidden=step===1;next.hidden=step===3;
  next.textContent=step===1?'Generer forhåndsvisning →':'Fortsett til deling →';back.textContent=step===3?'← Se forhåndsvisning':'← Velg innhold';
- if(step===2){const filtered=makeReport();if(filtered)api.setReport(filtered);preview.title='Forhåndsvisning av valgt budsjett';api.showMessage('Kontroller beløp og innhold. Bruk Tilbake for å endre hva som er med.')}
+ if(step===2){if(!usedHash){const filtered=makeReport();if(filtered)api.setReport(filtered)}preview.title='Forhåndsvisning av valgt budsjett';api.showMessage(usedHash?'Rapport åpnet via kryptert lenke. Kontroller innholdet før du laster ned.':'Kontroller beløp og innhold. Bruk Tilbake for å endre hva som er med.')}
  if(step===3){const prepared=api.getReport(),metrics=prepared?.results?.length||0,items=prepared?.rows?.length||0,inputs=prepared?.entries?.length||0;
  const info=document.getElementById('ln-rw-share-details');if(info)info.textContent=metrics+' nøkkeltall · '+items+' budsjettposter · '+inputs+' opplysninger fra beregningen.';
  api.showMessage('Velg hvordan du vil dele rapporten. Ingen e-post sendes automatisk uten at du fullfører sendingen.')}
