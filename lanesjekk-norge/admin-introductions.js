@@ -26,7 +26,7 @@ function edit(key,value){
  const record=draft();if(!record||!record.items[chosen])return;
  if(key==='historyEnabled')record.historyEnabled=value;
  else record.items[chosen][key]=value;
- render(record);app.changed?.();
+ if(!['title','body'].includes(key))render(record);app.changed?.();
 }
 function fillPreview(){
  const settings=draft(),item=settings?.items[chosen];if(!item)return;

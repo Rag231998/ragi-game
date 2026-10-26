@@ -23,3 +23,5 @@ html.cms-dark .ln-intro-panel p,html.cms-dark .ln-intro-panel label{color:#d0e2e
 
 /* Hiding optional chat history must win over original toolbar button display. */
 #ln-chat-list[hidden],#ln-chat-history[hidden]{display:none!important}
+
+.ln-intro-panel [hidden]{display:none!important}

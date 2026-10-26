@@ -15,3 +15,5 @@
 .admin-intro-preview-dialog button{padding:12px 17px;margin-top:7px}
 html.cms-dark .admin-intro-highlight{background:#1a4546;border-color:#477d7c}
 html.cms-dark .admin-intro-preview-dialog{background:#203c4c;color:#f1fdff}
+
+.admin-intro-preview-dialog [hidden]{display:none!important}

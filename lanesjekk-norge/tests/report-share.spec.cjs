@@ -364,6 +364,7 @@ test('Opt-in AI voice can record Norwegian speech, transcribe and speak a reply 
 });
 
 test('Admin publication settings hide history by default and reveal a one-time feature explanation when enabled',async({page})=>{
+ await page.route('https://pryrgwfjniggjlrizenh.supabase.co/**',route=>route.abort());
  await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});await page.locator('#ln-assistant-open').click();
  await expect(page.locator('#ln-chat-list')).toBeHidden();
  await page.evaluate(()=>window.lanesjekkCms.apply({...window.lanesjekkCms.defaults,introductions:{
