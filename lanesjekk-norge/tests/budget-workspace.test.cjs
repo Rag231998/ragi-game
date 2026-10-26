@@ -4,7 +4,7 @@ const root=path.join(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'
 test('Budget redesign retains the operational calculator and accessible actions',()=>{
  const html=read('index.html'),css=read('budget-workspace-premium.css');
  for(const id of ['budsjett','budget-income','budget-expenses','budget-balance','budget-ratio','budget-print','budget-rows','budget-add-income','budget-add-expense','budget-donut','budget-timeline','budget-insights','budget-scenario-category','budget-scenario-percent'])assert.ok(html.includes('id="'+id+'"'),id+' missing');
- assert.match(html,/budget-workspace-premium\.css\?v=3/);
+ assert.match(html,/budget-workspace-premium\.css\?v=4/);
  assert.match(css,/budget-insights-grid/);assert.match(css,/budget-table-wrap/);
  assert.match(css,/@media\(max-width:700px\)/);
  assert.match(html,/Budsjettet ditt/);
