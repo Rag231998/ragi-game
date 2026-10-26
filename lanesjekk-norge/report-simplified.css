@@ -1,0 +1,42 @@
+/* Simplified budget sharing actions – iOS-first design */
+#ln-report-modal .ln-rw-share{display:flex!important;flex-direction:column!important;gap:13px!important;min-width:0}
+#ln-report-modal .ln-rw-share-summary{padding:13px 15px;background:#f1f8f6;border:1px solid #d5e8e2;border-radius:13px}
+#ln-report-modal .ln-rw-share-summary h3{margin:0 0 6px;color:#145449;font-size:16px;line-height:1.35}
+#ln-report-modal .ln-rw-share-summary #ln-rw-share-details{margin:0;font-size:12px;font-weight:650;color:#2f6662;line-height:1.5}
+#ln-report-modal .ln-rw-share-summary .ln-rw-privacy{margin:8px 0 0;font-size:11px;line-height:1.55;color:#5e7778}
+#ln-report-modal .ln-rw-share>.ln-report-check{background:#fff;border:0;padding:4px 0 2px;display:flex;gap:10px;align-items:flex-start;font-weight:500;font-size:12px;line-height:1.55}
+#ln-report-modal .ln-report-check input{width:20px;height:20px;flex:0 0 auto;accent-color:#087c6c;margin:0}
+#ln-report-modal .ln-rw-main-actions{display:grid;gap:9px}
+#ln-report-modal .ln-rw-main-actions button{min-height:48px!important;line-height:1.3;text-align:center!important;border-radius:12px!important;font-size:13px!important}
+#ln-report-modal .ln-rw-main-actions .ln-rw-primary{background:#087b6c!important;border-color:#087b6c!important;color:white!important;font-weight:800!important;font-size:14px!important}
+#ln-report-modal .ln-rw-main-actions #ln-report-download{background:#e8f6f0!important;color:#0d695d!important;border-color:#b9d9ce!important}
+#ln-report-modal .ln-rw-main-actions #ln-report-private-link{background:#fff!important;color:#22605b!important;border-color:#bfd9d5!important}
+#ln-report-modal .ln-rw-more{border:1px solid #d7e5e2;border-radius:12px;overflow:hidden;background:#fafdfc}
+#ln-report-modal .ln-rw-more>summary{display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer;list-style:none;padding:14px 16px;font-size:12px;font-weight:750;color:#2c625d;min-height:45px;box-sizing:border-box}
+#ln-report-modal .ln-rw-more>summary::-webkit-details-marker{display:none}
+#ln-report-modal .ln-rw-more>summary::after{content:'⌄';font-size:17px;line-height:1;transition:transform .15s}
+#ln-report-modal .ln-rw-more[open]>summary::after{transform:rotate(180deg)}
+#ln-report-modal .ln-rw-extra-actions{display:grid;gap:8px;padding:12px;border-top:1px solid #d7e5e2}
+#ln-report-modal .ln-rw-extra-actions button{min-height:43px!important;padding:10px 12px!important;font-size:12px!important;background:#eaf6f2!important;color:#19675d!important;border:1px solid #c6e2da!important;white-space:normal!important;text-align:center!important}
+#ln-report-modal #ln-report-mail-group{display:grid;gap:8px;padding:10px;border:1px solid #dae9e2;border-radius:10px;background:#fff}
+#ln-report-modal #ln-report-mail-group[hidden]{display:none!important}
+#ln-report-modal #ln-report-mail-group label{font-size:12px}
+#ln-report-modal #ln-report-print{display:none!important}
+#ln-report-modal .ln-rw-nav{flex-shrink:0}
+#ln-report-modal .ln-report-controls button:focus-visible,#ln-report-modal .ln-rw-more summary:focus-visible{outline:3px solid #61beaa!important;outline-offset:2px}
+html.cms-dark #ln-report-modal .ln-rw-share-summary{background:#21484b;border-color:#47736e}
+html.cms-dark #ln-report-modal .ln-rw-share-summary h3,html.cms-dark #ln-report-modal .ln-rw-share-summary #ln-rw-share-details{color:#d8faf1}
+html.cms-dark #ln-report-modal .ln-rw-share-summary .ln-rw-privacy{color:#c5deda}
+html.cms-dark #ln-report-modal .ln-rw-more{background:#21434e;border-color:#446b6d}
+html.cms-dark #ln-report-modal .ln-rw-more>summary{color:#e3f5ef}
+html.cms-dark #ln-report-modal .ln-rw-extra-actions{border-color:#446b6d}
+html.cms-dark #ln-report-modal #ln-report-mail-group{background:#21434e;border-color:#446b6d}
+@media(max-width:760px){
+ #ln-report-modal .ln-rw-share{gap:11px!important}
+ #ln-report-modal .ln-rw-share-summary{padding:12px 13px}
+ #ln-report-modal .ln-rw-share-summary h3{font-size:15px}
+ #ln-report-modal .ln-rw-main-actions{gap:8px}
+ #ln-report-modal .ln-rw-main-actions button{min-height:47px!important}
+ #ln-report-modal .ln-rw-more>summary{font-size:12px;min-height:47px}
+ #ln-report-modal .ln-rw-extra-actions button{min-height:42px!important}
+}
