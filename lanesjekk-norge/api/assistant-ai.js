@@ -10,10 +10,10 @@ module.exports=async(req,res)=>{
  const ip=(req.headers?.['x-forwarded-for']||'anonymous').split(',')[0].trim().slice(0,70),now=Date.now();
  for(const [k,v] of current)if(v.until<now)current.delete(k);
  const usage=current.get(ip)||{n:0,until:now+3600000};
- if(++usage.n>12)return res.status(429).json({ok:false,error:'For mange AI-spørsmål fra denne forbindelsen. Prøv senere.'});current.set(ip,usage);
+ if(++usage.n>30)return res.status(429).json({ok:false,error:'For mange AI-spørsmål fra denne forbindelsen. Prøv senere.'});current.set(ip,usage);
  let raw='',size=0;
  try{for await(const part of req.stream){size+=part.length;if(size>12000)throw Error('large');raw+=part} }catch{return res.status(413).json({ok:false,error:'Spørsmålet er for langt'})}
- let question,history=[];try{const data=JSON.parse(raw);question=data.question;if(Array.isArray(data.history))history=data.history.slice(-6).filter(x=>x&&['user','model'].includes(x.role)&&typeof x.text==='string'&&x.text.length<=500)}catch{}
+ let question,history=[],page='';try{const data=JSON.parse(raw);question=data.question;if(Array.isArray(data.history))history=data.history.slice(-10).filter(x=>x&&['user','model'].includes(x.role)&&typeof x.text==='string'&&x.text.length<=800);if(typeof data.page==='string'&&/^#[a-z0-9-]{1,40}$/.test(data.page))page=data.page}catch{}
  if(typeof question!=='string'||question.trim().length<2||question.length>1200)return res.status(400).json({ok:false,error:'Skriv et kort spørsmål.'});
  try{
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),14000);let response;
