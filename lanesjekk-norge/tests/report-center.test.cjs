@@ -6,3 +6,5 @@ test('Report action belongs to budget; report rows use readable cards',()=>{cons
 test('Report shares PDF file and supports local snapshots without server upload',()=>{const j=read('report-center.js');assert.match(j,/navigator\.canShare/);assert.match(j,/LNReportPDF\.file/);assert.match(j,/localStorage\.setItem/);assert.match(j,/localStorage\.getItem/);new vm.Script(j)});
 
 test('Shared report links are encrypted and require consent',()=>{const j=read('report-center.js');assert.match(j,/AES-GCM/);assert.match(j,/crypto\.subtle\.encrypt/);assert.match(j,/crypto\.subtle\.decrypt/);assert.match(j,/ln-report-private-link/);assert.match(j,/ln-report-consent/);assert.match(j,/CompressionStream/);new vm.Script(j)});
+
+test('Direct PDF email is enabled only after server confirms sender configuration',()=>{const ui=read('report-center.js'),cap=read('api/report-capabilities.js');assert.match(ui,/api\/report-capabilities/);assert.match(ui,/directEmail/);assert.match(ui,/api\/send-report/);assert.match(ui,/mailto:/);assert.match(cap,/RESEND_API_KEY/);assert.match(cap,/LANESJEKK_REPORT_FROM/);new vm.Script(ui)});
