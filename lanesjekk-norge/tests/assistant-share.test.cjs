@@ -119,3 +119,27 @@ test('Gemini backend handles arbitrary general questions with multi-turn context
  assert.match(requests[0].body.systemInstruction.parts[0].text,/privatøkonomi|hjelper med/);
  assert.match(requests[0].body.systemInstruction.parts[0].text,/utenfor økonomi|ufarlige tema/);
 });
+
+test('iPhone dictation fallback is available without SpeechRecognition and reply has replay control',()=>{
+ const js=read('assistant-voice.js'),css=read('assistant-voice-history.css');
+ assert.match(js,/function fallback\(/);
+ assert.match(js,/ln-voice-keyboard/);
+ assert.match(js,/ln-voice-play/);
+ assert.match(js,/Bruk diktering på iPhone/);
+ assert.match(js,/window\.speechSynthesis/);
+ assert.match(js,/Du spurte:/);
+ assert.match(css,/ln-voice-alternatives/);
+ assert.match(css,/ln-orb-processing/);
+ new vm.Script(js);
+});
+test('New chat preserves local history, offers export and import without sending data to server',()=>{
+ const js=read('assistant-history.js');
+ assert.match(js,/lanesjekk-chat-history-v1/);
+ assert.match(js,/ln-chat-export/);
+ assert.match(js,/ln-chat-import-file/);
+ assert.match(js,/lanesjekk-assistant-backup/);
+ assert.match(js,/Ny chat sletter ikke/);
+ assert.match(js,/localStorage/);
+ assert.doesNotMatch(js,/fetch\(|XMLHttpRequest/);
+ new vm.Script(js);
+});
