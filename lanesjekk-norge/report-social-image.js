@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const clean=s=>String(s??'').replace(/\\s+/g,' ').trim();
+const clean=s=>String(s??'').replace(/\s+/g,' ').trim();
 function graphic(report){if(!report)throw Error('Rapporten mangler');
  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');if(!ctx)throw Error('Bildedeling støttes ikke i denne nettleseren');
  canvas.width=900;canvas.height=1100;const w=canvas.width;
