@@ -601,8 +601,6 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
  <section class="budget-start-panel" aria-label="Kom raskt i gang med budsjettet">
   <div class="budget-start-copy"><span class="section-overline">DIN MÅNEDSPLAN</span><h2>Kom i gang med budsjettet</h2><p><b>1.</b> Fyll inn det du får utbetalt. <b>2.</b> Legg til månedens kostnader. <b>3.</b> Se hva du har igjen og lag en rapport.</p></div>
   <div class="budget-primary-actions">
-    <button id="budget-quick-income" type="button" class="tool-button primary">＋ Legg til inntekt</button>
-    <button id="budget-quick-expense" type="button" class="tool-button primary">＋ Legg til utgift</button>
     <button id="budget-quick-sample" type="button" class="tool-button">Se eksempel</button>
     <button id="budget-quick-csv" type="button" class="tool-button">↓ Excel (CSV)</button>
     <button id="budget-print" type="button" class="tool-button budget-print-button">▤ Skriv ut / Lagre PDF</button>
@@ -614,7 +612,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
   </div>
 </section>
 <div class="tool-pane budget-workbook">
-  <div class="tool-pane-head"><div><span class="section-overline">REDIGERBART BUDSJETT</span><h2>Inntekter og utgifter</h2><p>Start med inntekten din, legg til faste og variable utgifter, og se resultatet med én gang. Bank og konto er ikke nødvendig.</p></div><div class="tool-actions"><button class="tool-button primary" id="budget-add-income" type="button">+ Inntekt</button><button class="tool-button primary" id="budget-add-expense" type="button">+ Utgift</button></div></div>
+  <div class="tool-pane-head"><div><span class="section-overline">REDIGERBART BUDSJETT</span><h2>Inntekter og utgifter</h2><p>Start med inntekten din, legg til faste og variable utgifter, og se resultatet med én gang. Bank og konto er ikke nødvendig.</p></div><div class="tool-actions"><button class="tool-button primary" id="budget-add-income" type="button">＋ Legg til inntekt</button><button class="tool-button primary" id="budget-add-expense" type="button">＋ Legg til utgift</button></div></div>
   <details class="budget-advanced-tools"><summary>⚙ Flere verktøy: Excel og lagring <span>Åpne</span></summary><div class="budget-toolbar">
    <label for="budget-bank-filter">Vis poster fra bank/konto</label><input id="budget-bank-query" type="search" placeholder="Søk blant norske banker" aria-label="Søk etter bank eller konto" autocomplete="off"><select id="budget-bank-filter"><option value="all">Alle banker og kontoer</option></select><small id="budget-bank-results" role="status"></small><label class="budget-auto-switch"><input id="budget-auto-category" type="checkbox" checked> Foreslå kategori fra beskrivelsen</label>
    <button id="budget-demo" type="button" class="tool-button">Vis eksempelbudsjett</button>
