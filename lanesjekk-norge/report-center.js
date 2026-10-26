@@ -65,7 +65,7 @@ $('ln-report-social-image')?.addEventListener('click',async()=>{if(!report)retur
  }catch(e){if(e.name!=='AbortError'){window.LNReportSocial.download(report);say('Deling ble ikke åpnet. Budsjettbildet ble lastet ned.')}}});
 $('ln-report-email')?.addEventListener('click',async()=>{if(!report)return;
  const recipient=$('ln-report-recipient')?.value.trim()||'';
- if(recipient&&!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(recipient)){say('Skriv en gyldig e-postadresse, eller velg mottaker i Mail-appen.');return}
+ if(recipient&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient)){say('Skriv en gyldig e-postadresse, eller velg mottaker i Mail-appen.');return}
  if(!$('ln-report-consent')?.checked){say('Bekreft at du har kontrollert opplysningene før du deler dem.');return}
  try{
    if(!window.LNReportPDF)throw Error('PDF-generatoren er ikke tilgjengelig');
