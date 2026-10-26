@@ -1,5 +1,6 @@
 (()=>{'use strict';
 const $=id=>document.getElementById(id), modal=$('ln-report-modal'), content=$('ln-report-preview'), notice=$('ln-report-status');if(!modal||!content)return;
+const shareControl=document.createElement('button');shareControl.id='ln-report-social';shareControl.type='button';shareControl.textContent='Del via mobil og sosiale apper';$('ln-report-email')?.insertAdjacentElement('afterend',shareControl);
 const fmt=new Intl.DateTimeFormat('nb-NO',{dateStyle:'long',timeStyle:'short'});
 const forbidden=/password|passord|token|secret|apikey|api.key|auth|session|email|e.post|personnummer|fnr|fødselsnummer|account.number|kontonummer/i;
 let report=null;
