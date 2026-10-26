@@ -205,6 +205,9 @@ test('Chat on iPhone persists across refresh and New chat keeps archived convers
  await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
  await page.locator('#ln-assistant-open').click();
  await expect(page.locator('#ln-chat-new')).toBeVisible();
+ await page.locator('#ln-chat-list').click();
+ await page.locator('#ln-chat-storage-optin').check();
+ await page.locator('#ln-chat-history-close').click();
  await page.locator('#ln-assistant-input').fill('Hva koster et lån?');
  await page.locator('#ln-assistant-form button[type="submit"]').click();
  await expect(page.locator('#ln-assistant-messages')).toContainText('Hvor stort lån',{timeout:15000});
@@ -221,6 +224,7 @@ test('Chat on iPhone persists across refresh and New chat keeps archived convers
 });
 test('Voice on Safari opens animated dialog, displays transcript, sends question and offers spoken answer',async({page})=>{
  await page.addInitScript(()=>{
+  Object.defineProperty(window,'SpeechRecognition',{configurable:true,value:undefined});
   window.webkitSpeechRecognition=class {
    start(){queueMicrotask(()=>{this.onstart?.();this.onresult?.({results:[Object.assign([{transcript:'Hva koster et lån?'}],{isFinal:true})]});this.onend?.()})}
    stop(){this.onend?.()}
@@ -259,6 +263,9 @@ test('iPhone voice pop-up offers keyboard dictation when speech API is unavailab
 test('New chat keeps local history and backups can restore conversations after clearing',async({page})=>{
  await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
  await page.locator('#ln-assistant-open').click();
+ await page.locator('#ln-chat-list').click();
+ await page.locator('#ln-chat-storage-optin').check();
+ await page.locator('#ln-chat-history-close').click();
  await page.locator('#ln-assistant-input').fill('Hva koster et lån?');
  await page.locator('#ln-assistant-form button[type="submit"]').click();
  await expect(page.locator('#ln-assistant-messages')).toContainText('Hvor stort lån',{timeout:15000});
@@ -270,6 +277,7 @@ test('New chat keeps local history and backups can restore conversations after c
  await expect(page.locator('.ln-chat-backup-status')).toContainText('Sikkerhetskopien');
  page.once('dialog',d=>d.accept());
  await page.locator('#ln-chat-delete-all').click();
+ await page.locator('#ln-chat-list').click();
  await expect(page.locator('.ln-chat-no-history')).toBeVisible();
  const backup={format:'lanesjekk-assistant-backup',version:1,conversations:[{id:'old-chat',title:'Hva koster et lån?',updated:Date.now(),turns:[{q:'Hva koster et lån?',a:'Hvor stort lån vurderer du?',at:Date.now()}]}]};
  await page.locator('#ln-chat-import-file').setInputFiles({name:'lanesjekk-samtaler.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))});
