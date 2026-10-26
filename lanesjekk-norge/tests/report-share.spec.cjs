@@ -145,3 +145,28 @@ test('Step three has exactly three primary actions; optional features remain acc
  await expect(page.locator('#ln-report-save')).toBeVisible();
  await expect(page.locator('#ln-rw-copy-summary')).toBeVisible();
 });
+
+test('Real PDF and Instagram-ready PNG have valid file signatures on mobile',async({page})=>{
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('#ln-report-open').click();
+ await page.locator('#ln-rw-next').click();
+ await page.locator('#ln-rw-next').click();
+ const pdf=await page.evaluate(async()=>{
+   const report=window.LNReportCenter.getReport();
+   const file=window.LNReportPDF.file(report);
+   const bytes=new Uint8Array(await file.arrayBuffer());
+   return{name:file.name,mime:file.type,size:file.size,head:String.fromCharCode(...bytes.slice(0,5))};
+ });
+ expect(pdf.mime).toBe('application/pdf');
+ expect(pdf.head).toBe('%PDF-');
+ expect(pdf.size).toBeGreaterThan(250);
+ const png=await page.evaluate(async()=>{
+   const report=window.LNReportCenter.getReport();
+   const file=window.LNReportSocial.file(report);
+   const bytes=new Uint8Array(await file.arrayBuffer());
+   return{name:file.name,mime:file.type,size:file.size,head:Array.from(bytes.slice(0,4))};
+ });
+ expect(png.mime).toBe('image/png');
+ expect(png.head).toEqual([137,80,78,71]);
+ expect(png.size).toBeGreaterThan(1000);
+});
