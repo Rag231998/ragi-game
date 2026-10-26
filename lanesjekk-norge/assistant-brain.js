@@ -8,7 +8,8 @@ function budget(){const $=id=>num(document.getElementById(id)?.textContent);cons
  return{income:$('budget-income'),expenses:$('budget-expenses'),balance:$('budget-balance'),categories:[...cats].sort((a,b)=>b[1]-a[1])}}
 function response(q){const t=norm(q),vague=/^(ja|gjerne|ok|fortell mer|mer|nei|hvordan da|fortsett|ja takk)[.!? ]*$/.test(t),b=budget();let topic=vague?state.topic:null;
  if(/rapport|pdf|dele|deling|mail|e-post|epost|facebook|instagram|lenke/.test(t))topic='report';
- else if(/lån|låne|rente|termin|nedbetaling/.test(t)||/\d[\d .,]*(kr|millioner|mill)\b/.test(t)||/\d+(?:[.,]\d+)?\s*%/.test(t)||/\d+\s*år/.test(t))topic='loan';
+ else if(/lån|låne|rente|termin|nedbetaling/.test(t)||(state.topic==='loan'&&(/\d[\d .,]*(kr|millioner|mill)\b/.test(t)||/\d+(?:[.,]\d+)?\s*%/.test(t)||/\d+\s*år/.test(t))))topic='loan';
+ else if(state.topic==='report'&&/^(hele budsjettet|bare hovedtallene|alle poster|alle postene)/.test(t))topic='report';
  else if(/budsjett|spare|sparing|utgift|inntekt|forbruk|overskudd|reduser|kutte/.test(t))topic='budget';
  else if(/fond|aksje|investering/.test(t))topic='invest';
  else if(/kvittering/.test(t))topic='receipt';
@@ -19,7 +20,7 @@ function response(q){const t=norm(q),vague=/^(ja|gjerne|ok|fortell mer|mer|nei|h
  if(topic==='loan'){
   const amount=t.match(/([\d][\d\s.,]*)\s*(millioner|million|mill|kr|kroner)\b/);
   if(amount){let n=num(amount[1]);if(/mill/.test(amount[2]))n*=1e6;if(n>=10000)state.loan.amount=n}
-  const rate=t.match(/(\d{1,2}(?:[.,]\d{1,2})?)\s*(?:%|prosent)/);if(rate)state.loan.rate=num(rate[1]);
+  const rate=t.match(/(\d{1,2}(?:[.,]\d{1,2})?)\s*(?:%|prosent)/);if(rate)state.loan.rate=/(øker|opp|høyere|mer)/.test(t)&&state.loan.rate!==null?state.loan.rate+num(rate[1]):/(synker|ned|lavere|mindre)/.test(t)&&state.loan.rate!==null?Math.max(0,state.loan.rate-num(rate[1])):num(rate[1]);
   const years=t.match(/(\d{1,2})\s*år/);if(years)state.loan.years=Number(years[1]);
   const l=state.loan;if(l.amount===null)return{text:'Vi kan beregne dette sammen. Hvor stort lån vurderer du, for eksempel «3 millioner kr»?',href:'#sjekk'};
   if(l.rate===null)return{text:'Da regner vi på '+kr(l.amount)+'. Hvilken årlig rente skal vi bruke, for eksempel «5,2 %»?',href:'#sjekk'};
