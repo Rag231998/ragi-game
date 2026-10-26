@@ -592,7 +592,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
 
 <section class="tool-view" id="budsjett" data-portal-view="budget" hidden aria-label="Personlig budsjett">
  <div class="tool-hero budget-hero"><div><span class="tool-eyebrow">ØKONOMISK OVERSIKT · GRATIS</span><h1>Budsjettet ditt.<br><em>Full oversikt, enkelt forklart.</em></h1><p>Legg inn nettoinntekt og utgifter i en redigerbar tabell. Få full oversikt over inntekter, utgifter og spareevne – uten komplisert bankføring.</p><div class="tool-hero-tags"><span>◉ Ingen banktilkobling</span><span>◉ Beregning mens du skriver</span><span>◉ Eksporter CSV eller skriv ut som PDF</span></div></div><div class="tool-hero-decoration" aria-hidden="true"><strong>DIN ØKONOMI</strong><div class="decor-bars"><i></i><i></i><i></i><i></i><i></i></div><small>Full oversikt på ett sted ↗</small></div></div>
- <div class="tool-overview" aria-live="polite">
+ <div class="tool-overview" aria-label="Budsjettresultat" aria-live="polite">
   <div class="tool-kpi"><span>Netto inntekt / mnd</span><strong id="budget-income">0 kr</strong><small>Sum inntekter</small></div>
   <div class="tool-kpi"><span>Utgifter / mnd</span><strong id="budget-expenses">0 kr</strong><small>Faste og variable utgifter</small></div>
   <div class="tool-kpi accent"><span>Til overs / mnd</span><strong id="budget-balance">0 kr</strong><small id="budget-balance-caption">Basert på dine tall</small></div>
@@ -602,8 +602,8 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
   <div class="budget-start-copy"><span class="section-overline">DIN MÅNEDSPLAN</span><h2>Kom i gang med budsjettet</h2><p><b>1.</b> Fyll inn det du får utbetalt. <b>2.</b> Legg til månedens kostnader. <b>3.</b> Se hva du har igjen og lag en rapport.</p></div>
   <div class="budget-primary-actions">
     <button id="budget-quick-sample" type="button" class="tool-button">Se eksempel</button>
-    <button id="budget-quick-csv" type="button" class="tool-button">↓ Excel (CSV)</button>
-    <button id="budget-print" type="button" class="tool-button budget-print-button">▤ Skriv ut / Lagre PDF</button>
+    <button id="budget-quick-csv" type="button" class="tool-button">↓ Last ned budsjett (CSV)</button>
+    <button id="budget-print" type="button" class="tool-button budget-print-button">▤ Skriv ut / lagre som PDF</button>
   </div>
   <div class="budget-health" aria-live="polite">
     <div class="budget-health-head"><strong id="budget-health-title">Ditt månedlige resultat</strong><span id="budget-health-ratio">–</span></div>
@@ -612,7 +612,7 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
   </div>
 </section>
 <div class="tool-pane budget-workbook">
-  <div class="tool-pane-head"><div><span class="section-overline">REDIGERBART BUDSJETT</span><h2>Inntekter og utgifter</h2><p>Start med inntekten din, legg til faste og variable utgifter, og se resultatet med én gang. Bank og konto er ikke nødvendig.</p></div><div class="tool-actions"><button class="tool-button primary" id="budget-add-income" type="button">＋ Legg til inntekt</button><button class="tool-button primary" id="budget-add-expense" type="button">＋ Legg til utgift</button></div></div>
+  <div class="tool-pane-head"><div><span class="section-overline">STEG 2 · REGISTRER POSTER</span><h2>Inntekter og utgifter</h2><p>Bruk knappene ved tabellen for å legge til poster. Fyll inn beløp og periode – alle summer oppdateres automatisk. Bank og konto er valgfritt.</p></div><div class="tool-actions"><button class="tool-button primary" id="budget-add-income" type="button">＋ Legg til inntekt</button><button class="tool-button primary" id="budget-add-expense" type="button">＋ Legg til utgift</button></div></div>
   <details class="budget-advanced-tools"><summary>⚙ Flere verktøy: Excel og lagring <span>Åpne</span></summary><div class="budget-toolbar">
    <label for="budget-bank-filter">Vis poster fra bank/konto</label><input id="budget-bank-query" type="search" placeholder="Søk blant norske banker" aria-label="Søk etter bank eller konto" autocomplete="off"><select id="budget-bank-filter"><option value="all">Alle banker og kontoer</option></select><small id="budget-bank-results" role="status"></small><label class="budget-auto-switch"><input id="budget-auto-category" type="checkbox" checked> Foreslå kategori fra beskrivelsen</label>
    <button id="budget-demo" type="button" class="tool-button">Vis eksempelbudsjett</button>
@@ -642,10 +642,10 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
   <div class="budget-table-bottom"><span id="budget-row-count">0 poster</span><span>Beløpene omregnes til månedlige kostnader.</span></div>
  </div>
  <div class="budget-insights-grid">
-  <div class="tool-pane"><div class="tool-pane-head"><div><span class="section-overline">FORBRUK</span><h2>Hvor går pengene?</h2><p>Fordeling av månedlige utgifter per kategori.</p></div></div>
+  <div class="tool-pane"><div class="tool-pane-head"><div><span class="section-overline">STEG 3 · FORSTÅ FORBRUKET</span><h2>Hvor går pengene?</h2><p>Fordeling av månedlige utgifter per kategori.</p></div></div>
    <div class="budget-donut-layout"><div id="budget-donut" class="budget-donut" role="img" aria-label="Fordeling av budsjettets utgifter"><div><strong id="budget-donut-value">0 kr</strong><small>Utgifter / mnd</small></div></div><div id="budget-category-list" class="budget-legend"></div></div>
   </div>
-  <div class="tool-pane"><div class="tool-pane-head"><div><span class="section-overline">EKSTRA ANALYSE</span><h2>Kostnadsfordeling på bank (valgfritt)</h2><p>Dette skjules som standard. Bruk kategorifordelingen for vanlig budsjett.</p></div></div><div id="budget-bank-chart" class="tool-bar-list"></div></div>
+  <details class="budget-bank-analysis tool-pane"><summary><strong>Bank- og kontofordeling</strong><span>Valgfri analyse – vis detaljer</span></summary><p>Bruk denne oversikten bare hvis du har valgt å føre bank eller konto på budsjettpostene. Den er ikke nødvendig for et vanlig budsjett.</p><div id="budget-bank-chart" class="tool-bar-list"></div></details>
   <div class="tool-pane"><div class="tool-pane-head"><div><span class="section-overline">12 MÅNEDER</span><h2>Mulig spareutvikling</h2><p>Forutsetter samme månedlige overskudd hele året, uten renteinntekter.</p></div></div><div id="budget-timeline" class="budget-timeline" role="img" aria-label="Prognose for akkumulert sparebeløp i tolv måneder"></div><div class="budget-summary-strip"><span>Mulig sparebeløp / år</span><strong id="budget-annual">0 kr</strong></div></div>
   <div class="tool-pane"><div class="tool-pane-head"><div><span class="section-overline">PERSONLIG INNSIKT</span><h2>Hva kan du forbedre?</h2><p>Regneeksempler ut fra tallene du har skrevet inn.</p></div></div><div id="budget-insights" class="insight-list"></div>
   <div class="budget-scenario">
