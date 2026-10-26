@@ -598,26 +598,17 @@ tbody tr:last-child{border-bottom:0}.positive{color:#087b57;font-weight:900}.neg
   <div class="tool-kpi accent"><span>Til overs / mnd</span><strong id="budget-balance">0 kr</strong><small id="budget-balance-caption">Basert på dine tall</small></div>
   <div class="tool-kpi"><span>Spareandel</span><strong id="budget-ratio">–</strong><small>Av netto inntekt</small></div>
  </div>
- <section class="budget-start-panel" aria-label="Kom raskt i gang med budsjettet">
-  <div class="budget-start-copy"><span class="section-overline">DIN MÅNEDSPLAN</span><h2>Kom i gang med budsjettet</h2><p><b>1.</b> Fyll inn det du får utbetalt. <b>2.</b> Legg til månedens kostnader. <b>3.</b> Se hva du har igjen og lag en rapport.</p></div>
-  <div class="budget-primary-actions">
-    <button id="budget-quick-sample" type="button" class="tool-button">Se eksempel</button>
-    <button id="budget-quick-csv" type="button" class="tool-button">↓ Last ned budsjett (CSV)</button>
-    <button id="budget-print" type="button" class="tool-button budget-print-button">▤ Skriv ut / lagre som PDF</button>
-  </div>
-  <div class="budget-health" aria-live="polite">
-    <div class="budget-health-head"><strong id="budget-health-title">Ditt månedlige resultat</strong><span id="budget-health-ratio">–</span></div>
+ <div class="budget-health budget-health-standalone" aria-live="polite"><div class="budget-health-head"><strong id="budget-health-title">Ditt månedlige resultat</strong><span id="budget-health-ratio">–</span></div>
     <div class="budget-health-track"><span id="budget-health-fill"></span></div>
     <p id="budget-health-description">Tallene oppdateres mens du endrer budsjettet.</p>
   </div>
-</section>
 <div class="tool-pane budget-workbook">
   <div class="tool-pane-head"><div><span class="section-overline">STEG 2 · REGISTRER POSTER</span><h2>Inntekter og utgifter</h2><p>Bruk knappene ved tabellen for å legge til poster. Fyll inn beløp og periode – alle summer oppdateres automatisk. Bank og konto er valgfritt.</p></div><div class="tool-actions"><button class="tool-button primary" id="budget-add-income" type="button">＋ Legg til inntekt</button><button class="tool-button primary" id="budget-add-expense" type="button">＋ Legg til utgift</button></div></div>
   <details class="budget-advanced-tools"><summary>⚙ Flere verktøy: Excel og lagring <span>Åpne</span></summary><div class="budget-toolbar">
    <label for="budget-bank-filter">Vis poster fra bank/konto</label><input id="budget-bank-query" type="search" placeholder="Søk blant norske banker" aria-label="Søk etter bank eller konto" autocomplete="off"><select id="budget-bank-filter"><option value="all">Alle banker og kontoer</option></select><small id="budget-bank-results" role="status"></small><label class="budget-auto-switch"><input id="budget-auto-category" type="checkbox" checked> Foreslå kategori fra beskrivelsen</label>
    <button id="budget-demo" type="button" class="tool-button">Vis eksempelbudsjett</button>
    <button id="budget-reset" type="button" class="tool-button">Tøm skjema</button>
-   <button id="budget-export" type="button" class="tool-button">↓ Last ned CSV</button>
+   <button id="budget-export" type="button" class="tool-button">↓ Last ned CSV</button><button id="budget-print" type="button" class="tool-button budget-print-button">▤ Skriv ut / lagre PDF</button>
    <button id="budget-save" type="button" class="tool-button">Lagre lokalt</button>
    <button id="budget-clear-save" type="button" class="tool-button subtle">Slett lokal lagring</button>
   </div></details>
