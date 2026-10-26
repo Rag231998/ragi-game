@@ -10,16 +10,16 @@ const officialRules='https://www.regjeringen.no/no/tema/okonomi-og-budsjett/fina
 function secondHome(t){
  const p=state.property;
  const intro='Det er mulig å kjøpe bolig nummer to, men banken vil normalt vurdere eksisterende boliglån, samlet gjeld, inntekt, egenkapital og kostnadene ved begge boligene. Etter utlånsforskriften er hovedgrensene normalt 90 % belåning, samlet gjeld opptil fem ganger årsinntekt og at du tåler minst 7 % rente eller tre prosentpoeng renteøkning. Banken kan ha strengere krav. ';
- if(/(utleie|leie ut|leieinntek|investering)/.test(t))p.purpose='utleie';
+ if(/(utleie|leie ut|leie den ut|leie boligen ut|vil leie|leieinntek|investering)/.test(t))p.purpose='utleie';
  else if(/(ferie|fritid|hytte)/.test(t))p.purpose='fritid';
  else if(/(selv|egen bruk|bo selv|familie|pendle|pendler)/.test(t))p.purpose='egen bruk';
  const m=t.match(/(?:bolig(?:en)?|pris|koste|kostnad|kjøpe|prisantydning)\D{0,20}(\d[\d\s.,]*)\s*(millioner|million|mill|kr|kroner)?/i);
- const amount=t.match(/^(\d[\d\s.,]*)\s*(millioner|million|mill|kr|kroner)?\s*$/i);
+ const amount=t.match(/^(\d[\d\s.,]*)\s*(millioner|million|mill|kr|kroner)?(?:\s+kr)?\s*$/i);
  const v=m||amount;if(v){let n=num(v[1]);if(/mill/.test(v[2]||''))n*=1e6;if(n>=100000&&n<1e10)p.price=n}
  if(/(egenkapital|sparepeng|oppspart|kontant)/.test(t)){const x=t.match(/(\d[\d\s.,]*)\s*(millioner|million|mill|kr|kroner)?/);if(x){let n=num(x[1]);if(/mill/.test(x[2]||''))n*=1e6;if(n>=0&&n<1e10)p.equity=n}}
  if(/(årsinntekt|årslønn|lønn|bruttoinntekt)/.test(t)){const x=t.match(/(\d[\d\s.,]*)\s*(millioner|million|mill|kr|kroner)?/);if(x){let n=num(x[1]);if(/mill/.test(x[2]||''))n*=1e6;if(n>=10000&&n<1e10)p.income=n}}
  if(/(eksisterende lån|gjeld fra før|boliglån i dag|restgjeld|gjeld)/.test(t)){const x=t.match(/(\d[\d\s.,]*)\s*(millioner|million|mill|kr|kroner)?/);if(x){let n=num(x[1]);if(/mill/.test(x[2]||''))n*=1e6;if(n>=0&&n<1e10)p.debt=n}}
- if(!p.purpose)return{text:'Ja, vi kan undersøke muligheten for å kjøpe bolig nummer to. '+intro+'Skal den nye boligen **leies ut**, brukes som **fritidsbolig**, eller skal du **bo der selv**?',href:'#sjekk',sourceUrl:officialRules,follow:['Jeg vil leie den ut','Jeg skal bo der selv','Det er en fritidsbolig']};
+ if(!p.purpose)return{text:'Ja, vi kan undersøke muligheten for å kjøpe bolig nummer to. '+intro+'Skal den nye boligen leies ut, brukes som fritidsbolig, eller skal du bo der selv?',href:'#sjekk',sourceUrl:officialRules,follow:['Jeg vil leie den ut','Jeg skal bo der selv','Det er en fritidsbolig']};
  if(p.price===null)return{text:'Da ser vi på en ekstra bolig til '+(p.purpose==='utleie'?'utleie':p.purpose==='fritid'?'fritidsbruk':'egen bruk')+'. '+intro+'Hva er omtrent kjøpesummen du ser for deg, for eksempel «3 millioner kr»?',href:'#sjekk',sourceUrl:officialRules,follow:['3 millioner kr','4 millioner kr','5 millioner kr']};
  const minEquity=p.price*.1;
  if(p.equity===null)return{text:'Med en kjøpesum på '+kr(p.price)+' tilsvarer 10 % av prisen '+kr(minEquity)+'. Det kan i tillegg komme dokumentavgift og andre kjøpskostnader, og banken vurderer egenkapital og pant samlet. Hvor mye egenkapital eller tilgjengelig sikkerhet har du til denne boligen?',href:'#sjekk',follow:['Jeg har 500 000 kr i egenkapital','Jeg har egenkapital i første bolig']};
@@ -41,7 +41,7 @@ function response(q){const t=norm(q),vague=/^(ja|gjerne|ok|fortell mer|mer|nei|h
    return{text:'Pornografi er seksuelt innhold beregnet for voksne. Jeg kan gi generell informasjon om samtykke, nettvett og hvordan pornografi kan påvirke forventninger til sex og forhold, hvis du lurer på det.'};
  }
  const propertyIntent=/(sekundærbolig|utleiebolig|boligkjøp|kjøp(?:e|er)? (?:en )?(?:ny |annen |ekstra |andre )?bolig|bolig (?:nummer |nr[.]? ?)?(?:2|to)\b|bolig nr[.]? ?2|bolig nummer to|enda en bolig|bolig til utleie|eiendom nr[.]? ?2)/.test(t);
- const propertyReply=state.topic==='secondhome'&&(/^(utleie|leie ut|jeg vil leie|egen bruk|jeg skal bo|fritid|hytte|ferie|selv)/.test(t)||/^\d[\d\s.,]*(millioner|million|mill|kr|kroner)?\s*$/.test(t)||/(egenkapital|årsinntekt|årslønn|bruttoinntekt|gjeld|restgjeld)/.test(t));
+ const propertyReply=state.topic==='secondhome'&&(/^(utleie|leie ut|jeg vil leie|egen bruk|jeg skal bo|fritid|hytte|ferie|selv)/.test(t)||/^\d[\d\s.,]*(millioner|million|mill|kr|kroner)?(?:\s+kr)?\s*$/.test(t)||/(egenkapital|årsinntekt|årslønn|bruttoinntekt|gjeld|restgjeld)/.test(t));
  if(propertyIntent||propertyReply){state.topic='secondhome';return secondHome(t)}
  if(/(effektiv rente|nominell rente)/.test(t))return{text:'Nominell rente er selve lånerenten. Effektiv rente inkluderer også gebyrer og viser dermed en mer samlet lånekostnad. Når du sammenligner lånetilbud, er effektiv rente ofte best å bruke. Vil du beregne forskjellen på to renter?',href:'#sjekk',follow:['Vis et eksempel','Hva koster et lån?']};
  if(/(refinansier|refinansiering|samle lån)/.test(t))return{text:'Refinansiering betyr å endre eller samle eksisterende gjeld. For boliglån er det særlig effektiv rente, nedbetalingstid, gebyrer og eventuelle kostnader ved å bytte bank som er relevante. Ønsker du å sammenligne et nytt tilbud med lånet du har i dag?',href:'#sjekk',follow:['Sammenlign renter','Hva er effektiv rente?']};
