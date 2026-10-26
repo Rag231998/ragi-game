@@ -1,0 +1,43 @@
+/* Budget Workspace 2026 — controlled visual hierarchy, no DOM reordering. */
+#budsjett{--bw-ink:#17384b;--bw-line:#dce8ed;--bw-soft:#f5f9fb;--bw-accent:#078575;max-width:1320px;margin-inline:auto;padding:0 clamp(14px,2vw,28px) 70px;min-width:0;color:var(--bw-ink)}
+#budsjett .budget-hero{border-radius:0 0 28px 28px!important;padding:clamp(26px,4vw,46px)!important;min-height:0!important;margin-bottom:24px!important}
+#budsjett .budget-hero h1{font-size:clamp(30px,4.3vw,54px)!important;letter-spacing:-.045em;line-height:1.06}
+#budsjett .budget-hero p{max-width:650px;line-height:1.65}
+#budsjett .tool-overview{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important;margin:0 0 22px!important;padding:0!important;align-items:stretch}
+#budsjett .tool-overview>.tool-kpi{min-width:0!important;min-height:125px!important;border:1px solid var(--bw-line)!important;border-radius:20px!important;padding:19px!important;background:#fff!important;box-shadow:0 8px 24px #17384b0a!important;display:flex;flex-direction:column;justify-content:space-between;gap:9px}
+#budsjett .tool-overview>.tool-kpi.accent{background:linear-gradient(135deg,#ebf9f2,#e1f3fb)!important;border-color:#afd9c9!important}
+#budsjett .tool-overview>.tool-kpi strong{font-size:clamp(22px,2.2vw,32px)!important;letter-spacing:-.04em;overflow-wrap:anywhere}
+#budsjett .tool-overview>.tool-kpi span{font-size:12px;font-weight:700}
+#budsjett .budget-start-panel{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr)!important;gap:20px!important;align-items:start!important;background:#fff!important;border:1px solid var(--bw-line)!important;border-radius:24px!important;padding:clamp(19px,3vw,30px)!important;box-shadow:0 10px 30px #17384b09!important;margin-bottom:20px!important}
+#budsjett .budget-start-copy h2{font-size:clamp(22px,2.4vw,30px);letter-spacing:-.035em}
+#budsjett .budget-start-copy p{line-height:1.75;max-width:530px}
+#budsjett .budget-primary-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;align-content:start!important}
+#budsjett .budget-primary-actions>.tool-button{width:100%!important;min-height:46px!important;padding:11px 14px!important;border-radius:13px!important;white-space:normal!important;line-height:1.35;text-align:center!important}
+#budsjett #budget-quick-income,#budsjett #budget-quick-expense{background:#087d70!important;color:white!important;border-color:#087d70!important}
+#budsjett .budget-health{grid-column:1/-1;min-width:0!important;margin:0!important;border-radius:17px!important;padding:16px 18px!important;background:#f1f8f6!important}
+#budsjett .budget-workbook{background:#fff!important;border:1px solid var(--bw-line)!important;border-radius:24px!important;padding:clamp(16px,2.5vw,28px)!important;margin:0 0 20px!important;min-width:0;box-shadow:0 10px 30px #17384b0b}
+#budsjett .budget-workbook>.tool-pane-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+#budsjett .budget-workbook .tool-pane-head h2{font-size:clamp(22px,2.5vw,30px);letter-spacing:-.035em}
+#budsjett .budget-workbook .tool-actions{display:flex;flex-wrap:wrap;gap:9px}
+#budsjett .budget-workbook .tool-actions>.tool-button{min-height:43px;border-radius:12px;padding:10px 16px}
+#budsjett .budget-advanced-tools,#budsjett .budget-deep-tools{border:1px solid var(--bw-line)!important;border-radius:14px!important;margin:12px 0!important;background:var(--bw-soft)!important;overflow:visible}
+#budsjett .budget-advanced-tools>summary,#budsjett .budget-deep-tools>summary{padding:15px 17px!important;cursor:pointer;font-weight:700;line-height:1.5}
+#budsjett .budget-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:16px}
+#budsjett .budget-toolbar :is(input,select){max-width:100%}
+#budsjett .budget-table-wrap{max-width:100%;overflow-x:auto!important;overscroll-behavior-x:contain;border:1px solid var(--bw-line);border-radius:16px;background:#fff}
+#budsjett .budget-table{min-width:800px;width:100%;border-collapse:separate;border-spacing:0}
+#budsjett .budget-table th{position:sticky;top:0;background:#ecf5f5!important;color:#225467!important;font-size:12px;padding:12px!important;white-space:nowrap}
+#budsjett .budget-table td{padding:10px!important;vertical-align:middle}
+#budsjett .budget-table :is(input,select){min-height:39px!important;max-width:100%;border-radius:10px!important;font-size:14px}
+#budsjett .budget-insights-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:start!important;gap:16px!important}
+#budsjett .budget-insights-grid>.tool-pane{min-width:0!important;margin:0!important;padding:clamp(16px,2vw,24px)!important;border:1px solid var(--bw-line)!important;border-radius:21px!important;background:#fff!important;box-shadow:0 7px 22px #17384b08}
+#budsjett .budget-insights-grid .tool-pane-head h2{font-size:clamp(20px,2vw,25px);letter-spacing:-.025em}
+#budsjett :is(button,a,input,select,summary):focus-visible{outline:3px solid #0aa88b!important;outline-offset:3px!important}
+html.cms-dark #budsjett{--bw-ink:#edf8ff;--bw-line:#345365;--bw-soft:#183447}
+html.cms-dark #budsjett :is(.budget-workbook,.budget-start-panel,.budget-insights-grid>.tool-pane,.tool-overview>.tool-kpi){background:#1b3447!important;color:#edf8ff!important;border-color:#3c5a6c!important}
+html.cms-dark #budsjett .budget-health{background:#214c48!important}
+html.cms-dark #budsjett .budget-table-wrap{background:#1b3447}
+html.cms-dark #budsjett .budget-table th{background:#234658!important;color:#e5f7fc!important}
+@media(max-width:980px){#budsjett .tool-overview{grid-template-columns:repeat(2,minmax(0,1fr))!important}#budsjett .budget-start-panel{grid-template-columns:1fr!important}}
+@media(max-width:700px){#budsjett .budget-insights-grid{grid-template-columns:1fr!important}#budsjett .budget-primary-actions{grid-template-columns:1fr 1fr!important}#budsjett .budget-hero .tool-hero-decoration{display:none}#budsjett .tool-overview>.tool-kpi{padding:14px!important;min-height:112px!important}#budsjett .tool-overview>.tool-kpi strong{font-size:clamp(18px,5vw,26px)!important}}
+@media(max-width:420px){#budsjett .budget-primary-actions{grid-template-columns:1fr!important}#budsjett .tool-overview{gap:8px!important}#budsjett .budget-hero{padding:25px 18px!important}}
