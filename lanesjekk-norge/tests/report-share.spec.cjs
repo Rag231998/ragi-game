@@ -82,3 +82,42 @@ test('Mobile sharing controls remain reachable and native PDF + social image fil
  await page.locator('#ln-rw-back').click();
  await expect(page.locator('#ln-report-preview')).toBeVisible();
 });
+
+test('iOS report uses a separate unobstructed footer with scrollable action buttons',async({page})=>{
+ await page.setViewportSize({width:390,height:700});
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('#ln-report-open').click();
+ await page.locator('#ln-rw-next').click();
+ await page.locator('#ln-rw-next').click();
+ const back=page.locator('#ln-rw-back'),controls=page.locator('#ln-report-modal .ln-report-controls');
+ await expect(back).toBeVisible();
+ await expect(controls).toHaveCSS('overflow-y','auto');
+ expect(await page.locator('#ln-report-modal .ln-report-card > .ln-rw-nav').count()).toBe(1);
+ const result=await page.evaluate(()=>{
+  const r=document.querySelector('#ln-rw-back').getBoundingClientRect();
+  const c=document.querySelector('#ln-report-modal .ln-report-controls').getBoundingClientRect();
+  const footer=document.querySelector('#ln-report-modal .ln-rw-nav').getBoundingClientRect();
+  return{footerAboveControls:footer.top>=c.bottom-1,noButtonOverlap:r.top>=c.bottom-1,footerInsideViewport:footer.bottom<=innerHeight+1}
+ });
+ expect(result.footerAboveControls).toBe(true);
+ expect(result.noButtonOverlap).toBe(true);
+ expect(result.footerInsideViewport).toBe(true);
+ await page.locator('#ln-report-social-image').scrollIntoViewIfNeeded();
+ await expect(page.locator('#ln-report-social-image')).toBeVisible();
+});
+test('Floating iOS assistant button can be dragged away from content and restores its placement',async({page})=>{
+ await page.setViewportSize({width:390,height:780});
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ const b=page.locator('#ln-assistant-open');await expect(b).toBeVisible();
+ await page.evaluate(()=>{
+  const el=document.querySelector('#ln-assistant-open'),r=el.getBoundingClientRect();
+  const args={pointerId:12,pointerType:'touch',bubbles:true,isPrimary:true,button:0};
+  el.dispatchEvent(new PointerEvent('pointerdown',{...args,clientX:r.left+12,clientY:r.top+12}));
+  el.dispatchEvent(new PointerEvent('pointermove',{...args,clientX:r.left-90,clientY:r.top-130}));
+  el.dispatchEvent(new PointerEvent('pointerup',{...args,clientX:r.left-90,clientY:r.top-130}));
+ });
+ const styles=await b.evaluate(e=>({left:e.style.left,top:e.style.top,key:localStorage.getItem('ln-assistant-floating-position-v2')}));
+ expect(styles.left).toMatch(/px/);expect(styles.top).toMatch(/px/);expect(styles.key).toContain('"x"');
+ await page.reload({waitUntil:'domcontentloaded'});
+ await expect(b).toHaveAttribute('style',/left:/);
+});
