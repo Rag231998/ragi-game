@@ -238,3 +238,41 @@ test('Voice on Safari opens animated dialog, displays transcript, sends question
  await page.locator('#ln-voice-done').click();
  await expect(page.locator('.ln-voice-modal')).toBeHidden();
 });
+
+test('iPhone voice pop-up offers keyboard dictation when speech API is unavailable',async({page})=>{
+ await page.addInitScript(()=>{
+  Object.defineProperty(window,'SpeechRecognition',{configurable:true,value:undefined});
+  Object.defineProperty(window,'webkitSpeechRecognition',{configurable:true,value:undefined});
+ });
+ await page.setViewportSize({width:390,height:780});
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('#ln-assistant-open').click();
+ await expect(page.locator('#ln-voice-start')).toBeVisible();
+ await page.locator('#ln-voice-start').click();
+ await expect(page.locator('.ln-voice-modal')).toBeVisible();
+ await expect(page.locator('.ln-voice-modal')).toHaveAttribute('data-phase','unavailable');
+ await expect(page.locator('#ln-voice-caption')).toContainText('diktere');
+ await page.locator('#ln-voice-keyboard').click();
+ await expect(page.locator('.ln-voice-modal')).toBeHidden();
+ await expect(page.locator('#ln-assistant-input')).toBeFocused();
+});
+test('New chat keeps local history and backups can restore conversations after clearing',async({page})=>{
+ await page.goto('/#budsjett',{waitUntil:'domcontentloaded'});
+ await page.locator('#ln-assistant-open').click();
+ await page.locator('#ln-assistant-input').fill('Hva koster et lån?');
+ await page.locator('#ln-assistant-form button[type="submit"]').click();
+ await expect(page.locator('#ln-assistant-messages')).toContainText('Hvor stort lån',{timeout:15000});
+ await page.locator('#ln-chat-list').click();
+ const promise=page.waitForEvent('download');
+ await page.locator('#ln-chat-export').click();
+ const downloaded=await promise;
+ expect(downloaded.suggestedFilename()).toContain('lanesjekk-samtaler');
+ await expect(page.locator('.ln-chat-backup-status')).toContainText('Sikkerhetskopien');
+ page.once('dialog',d=>d.accept());
+ await page.locator('#ln-chat-delete-all').click();
+ await expect(page.locator('.ln-chat-no-history')).toBeVisible();
+ const backup={format:'lanesjekk-assistant-backup',version:1,conversations:[{id:'old-chat',title:'Hva koster et lån?',updated:Date.now(),turns:[{q:'Hva koster et lån?',a:'Hvor stort lån vurderer du?',at:Date.now()}]}]};
+ await page.locator('#ln-chat-import-file').setInputFiles({name:'lanesjekk-samtaler.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))});
+ await expect(page.locator('.ln-chat-backup-status')).toContainText('gjenopprettet');
+ await expect(page.locator('.ln-chat-history-select')).toContainText(['Hva koster et lån?']);
+});
